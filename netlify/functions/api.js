@@ -157,9 +157,48 @@ function notFound(route) {
   return { statusCode: 404, headers: headers(), body: JSON.stringify({ error: 'not_found', route }) };
 }
 
-exports.handler = async (event) => {
+function parseUrlPath(value) {
+  if (!value) return '';
+  try {
+    const u = new URL(value, 'https://example.netlify.app');
+    return u.pathname || '';
+  } catch {
+    return String(value || '');
+  }
+}
+
+function normalizeRoute(value) {
+  let route = String(value || '').trim();
+  if (!route || route === ':splat') return '';
+  route = route.replace(/^https?:\/\/[^/]+/i, '');
+  route = route.replace(/^\/+(?=.)/, '');
+  route = route.replace(/^\.netlify\/functions\/api\/?/, '');
+  route = route.replace(/^api\/?/, '');
+  route = route.replace(/^\?path=/, '');
+  route = route.replace(/^\/+(?=.)/, '');
+  return route.replace(/\/+$/g, '');
+}
+
+function resolveRoute(event, context) {
   const params = event.queryStringParameters || {};
-  const route = String(params.path || '').replace(/^\/+|\/+$/g, '');
+  const candidates = [
+    params.path,
+    context && context.params ? context.params.splat : null,
+    event.path,
+    event.rawPath,
+    parseUrlPath(event.rawUrl),
+    event.headers ? (event.headers['x-original-uri'] || event.headers['x-nf-original-path'] || event.headers['x-forwarded-uri']) : null
+  ];
+  for (const candidate of candidates) {
+    const route = normalizeRoute(candidate);
+    if (route || candidate === '' || candidate === '/') return route;
+  }
+  return '';
+}
+
+exports.handler = async (event, context) => {
+  const params = event.queryStringParameters || {};
+  const route = resolveRoute(event, context);
   const metadata = loadJson('metadata.json', {});
   const weeks = loadJson('weeks.json', []);
   const decks = loadJson('decks.json', []);
@@ -168,11 +207,12 @@ exports.handler = async (event) => {
   const deckDetails = loadJson('deck_details.json', []);
   const deckContent = loadJson('deck_content.json', []);
   const deckContentSummary = loadJson('deck_content_summary.json', {});
-  const deckContentIndex = Object.fromEntries(deckContent.filter((d) => d.file_id).map((d) => [d.file_id, d]));
+  const deckContentIndex = Object.fromEntries((deckContent || []).filter((d) => d.file_id).map((d) => [d.file_id, d]));
 
   if (!route || route === 'health') {
     return ok({
       ok: true,
+      route,
       week_count: weeks.length,
       deck_count: decks.length,
       deck_detail_count: deckDetails.length,
