@@ -54,6 +54,7 @@ function markdownToHtml(title, markdown) {
 <body>
   <h1>${esc(title)}</h1>
   <div class="meta">Static artifact generated during build for GitHub Pages and Netlify compatibility.</div>
+  <p><a href="../index.html">Back to homepage</a></p>
   <pre>${esc(markdown)}</pre>
 </body>
 </html>`;
@@ -94,15 +95,16 @@ function buildNewsIndex(status, links) {
   ])}</ul>
   <h2>Discovery</h2>
   <ul>${buildList([
-    { href: '/status.json', label: '/status.json' },
-    { href: '/api/status.json', label: '/api/status.json' },
-    { href: '/api/index.html', label: '/api/index.html' }
+    { href: '../status.json', label: '../status.json' },
+    { href: '../api/status.json', label: '../api/status.json' },
+    { href: '../api/index.html', label: '../api/index.html' }
   ])}</ul>
+  <p><a href="../index.html">Back to homepage</a></p>
 </body>
 </html>`;
 }
 
-function buildApiIndex(links) {
+function buildApiIndex() {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -118,15 +120,15 @@ function buildApiIndex(links) {
   <h1>Everpure Static API Mirror</h1>
   <p>GitHub Pages-friendly static equivalents of the most useful API outputs.</p>
   <ul>${buildList([
-    { href: '/api/status.json', label: '/api/status.json' },
-    { href: '/api/newsletter-default.json', label: '/api/newsletter-default.json' },
-    { href: '/api/newsletter-default.md', label: '/api/newsletter-default.md' },
-    { href: '/api/newsletter-marketing-activity-30d.json', label: '/api/newsletter-marketing-activity-30d.json' },
-    { href: '/api/newsletter-marketing-activity-30d.md', label: '/api/newsletter-marketing-activity-30d.md' },
-    { href: '/data/weeks.json', label: '/data/weeks.json' },
-    { href: '/data/deck-content.json', label: '/data/deck-content.json' }
+    { href: 'status.json', label: 'status.json' },
+    { href: 'newsletter-default.json', label: 'newsletter-default.json' },
+    { href: 'newsletter-default.md', label: 'newsletter-default.md' },
+    { href: 'newsletter-marketing-activity-30d.json', label: 'newsletter-marketing-activity-30d.json' },
+    { href: 'newsletter-marketing-activity-30d.md', label: 'newsletter-marketing-activity-30d.md' },
+    { href: '../data/weeks.json', label: '../data/weeks.json' },
+    { href: '../data/deck-content.json', label: '../data/deck-content.json' }
   ])}</ul>
-  <p><a href="/">Back to homepage</a></p>
+  <p><a href="../index.html">Back to homepage</a></p>
 </body>
 </html>`;
 }
@@ -151,28 +153,28 @@ function buildHomeHtml(status) {
   <p><strong>Generated:</strong> ${esc(generatedAt)}</p>
   <h2>Default monthly issue</h2>
   <ul>${buildList([
-    { href: '/newsletter/default.html', label: '/newsletter/default.html' },
-    { href: '/newsletter/default.md', label: '/newsletter/default.md' },
-    { href: '/newsletter/default.json', label: '/newsletter/default.json' }
+    { href: 'newsletter/default.html', label: 'newsletter/default.html' },
+    { href: 'newsletter/default.md', label: 'newsletter/default.md' },
+    { href: 'newsletter/default.json', label: 'newsletter/default.json' }
   ])}</ul>
   <h2>Marketing activity log</h2>
   <ul>${buildList([
-    { href: '/newsletter/marketing-activity-30d.html', label: '/newsletter/marketing-activity-30d.html' },
-    { href: '/newsletter/marketing-activity-30d.md', label: '/newsletter/marketing-activity-30d.md' },
-    { href: '/newsletter/marketing-activity-30d.json', label: '/newsletter/marketing-activity-30d.json' }
+    { href: 'newsletter/marketing-activity-30d.html', label: 'newsletter/marketing-activity-30d.html' },
+    { href: 'newsletter/marketing-activity-30d.md', label: 'newsletter/marketing-activity-30d.md' },
+    { href: 'newsletter/marketing-activity-30d.json', label: 'newsletter/marketing-activity-30d.json' }
   ])}</ul>
   <h2>Discovery and freshness</h2>
   <ul>${buildList([
-    { href: '/status.json', label: '/status.json' },
-    { href: '/api/index.html', label: '/api/index.html' },
-    { href: '/newsletter/index.html', label: '/newsletter/index.html' }
+    { href: 'status.json', label: 'status.json' },
+    { href: 'api/index.html', label: 'api/index.html' },
+    { href: 'newsletter/index.html', label: 'newsletter/index.html' }
   ])}</ul>
   <h2>Static data outputs</h2>
   <ul>${buildList([
-    { href: '/data/weeks.json', label: '/data/weeks.json' },
-    { href: '/data/summary.json', label: '/data/summary.json' },
-    { href: '/data/deck-content.json', label: '/data/deck-content.json' },
-    { href: '/data/refresh_manifest.json', label: '/data/refresh_manifest.json' }
+    { href: 'data/weeks.json', label: 'data/weeks.json' },
+    { href: 'data/summary.json', label: 'data/summary.json' },
+    { href: 'data/deck-content.json', label: 'data/deck-content.json' },
+    { href: 'data/refresh_manifest.json', label: 'data/refresh_manifest.json' }
   ])}</ul>
 </body>
 </html>`;
@@ -195,17 +197,17 @@ function buildHomeHtml(status) {
   const marketingMd = marketingMdRes.body;
 
   const discovery = {
-    homepage: '/',
-    status_json: '/status.json',
-    api_status_json: '/api/status.json',
-    newsletter_index: '/newsletter/index.html',
-    api_index: '/api/index.html',
-    default_json: '/newsletter/default.json',
-    default_md: '/newsletter/default.md',
-    default_html: '/newsletter/default.html',
-    marketing_json: '/newsletter/marketing-activity-30d.json',
-    marketing_md: '/newsletter/marketing-activity-30d.md',
-    marketing_html: '/newsletter/marketing-activity-30d.html'
+    homepage: 'index.html',
+    status_json: 'status.json',
+    api_status_json: 'api/status.json',
+    newsletter_index: 'newsletter/index.html',
+    api_index: 'api/index.html',
+    default_json: 'newsletter/default.json',
+    default_md: 'newsletter/default.md',
+    default_html: 'newsletter/default.html',
+    marketing_json: 'newsletter/marketing-activity-30d.json',
+    marketing_md: 'newsletter/marketing-activity-30d.md',
+    marketing_html: 'newsletter/marketing-activity-30d.html'
   };
 
   const statusOut = {
@@ -222,12 +224,12 @@ function buildHomeHtml(status) {
   fs.writeFileSync(path.join(NEWSLETTER_DIR, 'marketing-activity-30d.html'), markdownToHtml(marketingJson.title || 'Marketing activity log', marketingMd));
 
   fs.writeFileSync(path.join(NEWSLETTER_DIR, 'index.html'), buildNewsIndex(statusJson, {
-    defaultJson: '/newsletter/default.json',
-    defaultMd: '/newsletter/default.md',
-    defaultHtml: '/newsletter/default.html',
-    marketingJson: '/newsletter/marketing-activity-30d.json',
-    marketingMd: '/newsletter/marketing-activity-30d.md',
-    marketingHtml: '/newsletter/marketing-activity-30d.html'
+    defaultJson: 'default.json',
+    defaultMd: 'default.md',
+    defaultHtml: 'default.html',
+    marketingJson: 'marketing-activity-30d.json',
+    marketingMd: 'marketing-activity-30d.md',
+    marketingHtml: 'marketing-activity-30d.html'
   }));
 
   fs.writeFileSync(path.join(PUBLISH_DIR, 'index.html'), buildHomeHtml(statusOut));
@@ -238,5 +240,5 @@ function buildHomeHtml(status) {
   fs.writeFileSync(path.join(API_DIR, 'newsletter-default.md'), defaultMd);
   fs.writeFileSync(path.join(API_DIR, 'newsletter-marketing-activity-30d.json'), JSON.stringify(marketingJson, null, 2));
   fs.writeFileSync(path.join(API_DIR, 'newsletter-marketing-activity-30d.md'), marketingMd);
-  fs.writeFileSync(path.join(API_DIR, 'index.html'), buildApiIndex(discovery));
+  fs.writeFileSync(path.join(API_DIR, 'index.html'), buildApiIndex());
 })();
