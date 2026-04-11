@@ -1,32 +1,14 @@
-# Everpure Netlify patch: newsletter quality defaults
+This refinement patch improves the default monthly newsletter issue for the live Everpure Netlify deployment.
 
-This patch upgrades the newsletter synthesis layer in two ways:
+What it changes:
+- keeps the default issue settings at `30d + exec + strategic`
+- reduces internal concept IDs in the executive narrative while preserving source references
+- replaces the generic fallback theme label with a clearer executive-friendly label
+- filters deck-backed evidence more aggressively so boilerplate is less likely to appear as supporting insight
+- keeps the `marketing_activity_30d` preset for the marketing cadence/activity-log use case
 
-1. Sets the practical default issue to:
-   - `window=30d`
-   - `audience=exec`
-   - `tone=strategic`
-
-2. Adds a marketing-friendly activity-log preset:
-   - `preset=marketing_activity_30d`
-
-## Primary endpoints
-
-### Default monthly leadership brief
-- `/api/newsletter?ts=<unique>`
-- `/api/newsletter.md?ts=<unique>`
-
-These now default to a 30-day executive strategic issue if window/audience/tone are omitted.
-
-### Explicit executive monthly combination
-- `/api/newsletter?window=30d&audience=exec&tone=strategic&ts=<unique>`
-
-### Marketing activity log preset
-- `/api/newsletter?preset=marketing_activity_30d&ts=<unique>`
-- `/api/newsletter.md?preset=marketing_activity_30d&ts=<unique>`
-
-This variant emphasizes cadence, weekly activity, and volume of testing over strategic compression.
-
-## Important
-
-Always use a unique `ts` query string when checking the deployed API.
+After deploying, test with unique query strings:
+- `/api/newsletter?ts=...`
+- `/api/newsletter.md?ts=...`
+- `/api/newsletter?preset=marketing_activity_30d&ts=...`
+- `/api/newsletter.md?preset=marketing_activity_30d&ts=...`

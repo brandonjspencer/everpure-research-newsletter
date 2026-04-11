@@ -332,14 +332,29 @@ function truncate(text, limit = 240) {
   return `${clean.slice(0, limit - 1).trim()}…`;
 }
 
+function deckSentenceLooksBoilerplate(text) {
+  const low = safeLower(text);
+  return [
+    'google slides',
+    'all rights reserved',
+    'copyright',
+    'confidential and proprietary',
+    'this material',
+    'this presentation',
+    'do not distribute',
+    'for internal use only'
+  ].some((snippet) => low.includes(snippet));
+}
+
 function firstUsefulDeckSentence(deck) {
   const text = String((deck || {}).text_excerpt || (deck || {}).full_text || '').replace(/\s+/g, ' ').trim();
   if (!text) return null;
   const parts = text.split(/(?<=[.!?])\s+/).map((p) => p.trim()).filter(Boolean);
   for (const part of parts) {
-    if (part.length >= 40 && safeLower(part) !== 'google slides') return truncate(part, 220);
+    if (part.length >= 50 && !deckSentenceLooksBoilerplate(part)) return truncate(part, 220);
   }
-  return truncate(text, 220);
+  const fallback = parts.find((part) => part.length >= 35 && !deckSentenceLooksBoilerplate(part));
+  return fallback ? truncate(fallback, 220) : null;
 }
 
 function collectGroupRows(weeks, group) {
@@ -421,12 +436,14 @@ function buildDeckBackedInsights(windowedWeeks, deckContentIndex, limit = 6) {
     if (!fileId || seen.has(fileId) || !deckContentIndex[fileId]) continue;
     seen.add(fileId);
     const deck = deckContentIndex[fileId];
+    const excerpt = firstUsefulDeckSentence(deck);
+    if (!excerpt) continue;
     insights.push({
       week_date: week.week_date,
       file_id: fileId,
       page_count: deck.page_count || null,
       total_chars: deck.total_chars || null,
-      excerpt: firstUsefulDeckSentence(deck),
+      excerpt,
       canonical_url: deck.canonical_url || ((week.deck || {}).url) || null
     });
     if (insights.length >= limit) break;
@@ -569,15 +586,19 @@ function buildRecommendedHighlights(windowedWeeks, audience, limit = 6) {
   return out;
 }
 
-function buildEditorialRecommendations(recurringThemes, inProgress, deckBackedInsights, audience) {
+function buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode) {
   const recommendations = [];
-  if (recurringThemes.length) recommendations.push(`Lead with ${recurringThemes.slice(0, 2).map((row) => row.theme).join(' and ')} since those signals repeat across multiple weeks.`);
-  if (inProgress.length) recommendations.push(`Reserve a short section for ${inProgress.slice(0, 2).map((row) => row.workstream).join(' and ')} so ongoing work is visible between issues.`);
-  if (deckBackedInsights.length) recommendations.push('Use deck-backed evidence to support at least one major highlight so the issue feels grounded rather than anecdotal.');
-  if (audience === 'exec') recommendations.push('Keep the lead summary short and decision-oriented, with explicit mention of repeated patterns and active workstreams.');
-  if (audience === 'marketing') recommendations.push('Emphasize implications for messaging, page strategy, and content prioritization rather than raw research process detail.');
-  if (audience === 'ux') recommendations.push('Preserve the testing context and iteration history so the issue is useful to research and design partners.');
-  if (audience === 'product') recommendations.push('Translate repeated signals into possible decision, taxonomy, or flow implications for product stakeholders.');
+  if (mode === 'activity_log') {
+    recommendations.push('Lead with cadence and volume first so stakeholders can see how consistently the research program is operating.');
+    recommendations.push('Use a week-by-week log after the opening summary to make the monthly research rhythm visible.');
+    recommendations.push('Keep concept IDs in the marketing activity view where they help show throughput and testing volume.');
+    return recommendations;
+  }
+  if (strategicThemes.length) recommendations.push(`Lead with ${strategicThemes.slice(0, 2).map((row) => row.theme).join(' and ')} because those are the clearest repeated patterns across the month.`);
+  if (validatedFindings.length) recommendations.push('Keep confirmed findings separate from exploratory concepts so the issue reads as a leadership brief rather than a weekly activity log.');
+  if (workstreamsToWatch.length) recommendations.push(`Reserve a short “watch next” section for ${workstreamsToWatch.slice(0, 2).map((row) => row.workstream).join(' and ')}.`);
+  if (deckBackedInsights.length) recommendations.push('Use deck-backed evidence only when the excerpt adds a concrete insight, not when it repeats document boilerplate.');
+  if (audience === 'exec') recommendations.push('Keep internal concept IDs in source references, but remove them from the main narrative wherever possible.');
   return recommendations;
 }
 
@@ -650,7 +671,7 @@ function themeBucketLabel(bucket) {
     brand_and_rebrand_signals: 'Brand and rebrand signals',
     comparison_and_evaluation_behavior: 'Comparison and evaluation behavior',
     ai_and_personalization: 'AI and personalization',
-    general_research_signal: 'General research signals'
+    general_research_signal: 'Emerging research priorities'
   };
   return labels[bucket] || sentenceCase(bucket.replace(/_/g, ' '));
 }
@@ -700,12 +721,12 @@ function buildStrategicThemeClusters(windowedWeeks, audience, limit = 5) {
 function formatClusterImplication(audience, cluster) {
   if (audience === 'exec') {
     if (cluster.finding_mentions > 0 && cluster.in_progress_mentions > 0) {
-      return `This theme shows both confirmed evidence and active follow-up, making it a live priority rather than a one-off observation.`;
+      return `This pattern combines confirmed evidence with active follow-up, which suggests a live business issue rather than a closed research thread.`;
     }
     if (cluster.finding_mentions > 1) {
-      return `This theme appears in validated findings across the month and is strong enough to shape leadership-level prioritization.`;
+      return `This pattern appears in validated findings across the month and is strong enough to shape leadership attention and prioritization.`;
     }
-    return `This theme is emerging repeatedly enough to warrant leadership attention in the next planning cycle.`;
+    return `This pattern is emerging across multiple updates and is worth monitoring in the next decision cycle.`;
   }
   if (audience === 'marketing') {
     return `This theme recurs across recent studies and can anchor how the team communicates research momentum and focus.`;
@@ -725,15 +746,17 @@ function buildValidatedFindings(windowedWeeks, audience, limit = 5) {
     if (seen.has(key)) continue;
     seen.add(key);
     const bucket = themeBucketLabel(inferThemeBucket(row.label));
+    const plain = sentenceCase(row.label);
     out.push({
-      headline: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
+      headline: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
       summary: audience === 'exec'
-        ? `${sentenceCase(row.label)} surfaced as a validated finding in the ${row.week_date} reporting cycle and maps most closely to ${bucket.toLowerCase()}.`
-        : `${sentenceCase(row.label)} appeared as a validated finding in ${row.week_date}.`,
+        ? `${plain} emerged as a confirmed signal in the ${row.week_date} update and reinforces the broader theme of ${bucket.toLowerCase()}.`
+        : `${plain} appeared as a validated finding in ${row.week_date}.`,
       implication: audience === 'exec'
-        ? `Treat this as a confirmed signal rather than an exploratory concept.`
+        ? `Treat this as a validated takeaway that can inform messaging, prioritization, or follow-up decisions now.`
         : `Use this as a confirmed finding in the issue rather than a work-in-progress mention.`,
-      source_refs: [traceRef(row.week_date, ((row.deck || {}).file_id) || null, row.record_id)]
+      source_refs: [traceRef(row.week_date, ((row.deck || {}).file_id) || null, row.record_id)],
+      source_label: row.identifier || null
     });
     if (out.length >= limit) break;
   }
@@ -741,31 +764,39 @@ function buildValidatedFindings(windowedWeeks, audience, limit = 5) {
 }
 
 function buildEmergingSignals(windowedWeeks, audience, limit = 5) {
-  return topGroupRows(windowedWeeks, 'testing_concepts', limit).map((row) => ({
-    signal: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
-    summary: audience === 'exec'
-      ? `This topic is still in active exploration and should be interpreted as an emerging signal rather than a settled conclusion.`
-      : `This topic is active in testing and shows where the research stream is concentrating next.`,
-    mentions: row.count,
-    source_refs: collectGroupRows(windowedWeeks, 'testing_concepts')
-      .filter((r) => r.label === row.label)
-      .slice(0, 3)
-      .map((r) => traceRef(r.week_date, r.deck_id, r.record_id))
-  }));
+  return topGroupRows(windowedWeeks, 'testing_concepts', limit).map((row) => {
+    const plain = sentenceCase(row.label);
+    return ({
+      signal: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
+      summary: audience === 'exec'
+        ? `This is still exploratory work, but it is showing up often enough to signal where the team is concentrating next.`
+        : `This topic is active in testing and shows where the research stream is concentrating next.`,
+      mentions: row.count,
+      source_refs: collectGroupRows(windowedWeeks, 'testing_concepts')
+        .filter((r) => r.label === row.label)
+        .slice(0, 3)
+        .map((r) => traceRef(r.week_date, r.deck_id, r.record_id)),
+      source_label: row.identifier || null
+    });
+  });
 }
 
 function buildWorkstreamsToWatch(windowedWeeks, audience, limit = 5) {
-  return topGroupRows(windowedWeeks, 'in_process', limit).map((row) => ({
-    workstream: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
-    summary: audience === 'exec'
-      ? `This workstream remained active across the month, which makes it a likely carry-forward item for the next issue.`
-      : `This workstream remained active across multiple weekly updates.`,
-    mentions: row.count,
-    source_refs: collectGroupRows(windowedWeeks, 'in_process')
-      .filter((r) => r.label === row.label)
-      .slice(0, 3)
-      .map((r) => traceRef(r.week_date, r.deck_id, r.record_id))
-  }));
+  return topGroupRows(windowedWeeks, 'in_process', limit).map((row) => {
+    const plain = sentenceCase(row.label);
+    return ({
+      workstream: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
+      summary: audience === 'exec'
+        ? `This workstream remained active across the month and looks likely to influence what matters next, even if the signal is not yet fully validated.`
+        : `This workstream remained active across multiple weekly updates.`,
+      mentions: row.count,
+      source_refs: collectGroupRows(windowedWeeks, 'in_process')
+        .filter((r) => r.label === row.label)
+        .slice(0, 3)
+        .map((r) => traceRef(r.week_date, r.deck_id, r.record_id)),
+      source_label: row.identifier || null
+    });
+  });
 }
 
 function buildLeadershipImplications(strategicThemes, validatedFindings, workstreamsToWatch, audience) {
@@ -888,10 +919,10 @@ function buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strateg
   const validatedLead = validatedFindings[0] ? validatedFindings[0].headline : null;
   const watchLead = workstreamsToWatch[0] ? workstreamsToWatch[0].workstream : null;
   const sentences = [];
-  sentences.push(`The last ${pack.overview.week_count} weekly updates point to a small number of repeating research signals rather than disconnected one-off studies.`);
+  sentences.push(`The last ${pack.overview.week_count} weekly updates point to a handful of repeating user and content signals rather than disconnected one-off studies.`);
   if (themeLead) sentences.push(`${themeLead} is the clearest cross-week pattern in the current monthly window.`);
-  if (validatedLead) sentences.push(`${validatedLead} stands out as one of the strongest confirmed findings to carry into the issue.`);
-  if (watchLead) sentences.push(`${watchLead} remains active and should be framed as a workstream to watch rather than a concluded result.`);
+  if (validatedLead) sentences.push(`${validatedLead} is one of the strongest validated signals to carry into leadership discussion.`);
+  if (watchLead) sentences.push(`${watchLead} should stay visible as an active watch item rather than be framed as a completed result.`);
   if (tone === 'brief') return truncate(sentences.join(' '), 260);
   if (emergingSignals[0]) sentences.push(`Exploratory work is still active as well, with ${emergingSignals[0].signal} representing one of the stronger emerging signals.`);
   return sentences.join(' ');
