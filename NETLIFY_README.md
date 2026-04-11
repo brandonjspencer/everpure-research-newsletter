@@ -37,3 +37,17 @@ Newsletter endpoints:
 Freshness check:
 - /api/status?ts=<unique-value>
 - use a unique query string when validating fresh deploy data
+
+
+## Newsletter controls
+
+The newsletter endpoints support optional query parameters:
+
+- `audience=exec|ux|marketing|product`
+- `tone=brief|strategic|detailed`
+- `window=30d|60d|90d`
+
+Examples:
+
+- `/api/newsletter?window=90d&audience=exec&tone=brief&ts=1`
+- `/api/newsletter.md?window=30d&audience=marketing&tone=strategic&ts=2`
