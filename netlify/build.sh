@@ -55,3 +55,5 @@ fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
 touch "$ROOT/publish/.nojekyll"
+
+node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
