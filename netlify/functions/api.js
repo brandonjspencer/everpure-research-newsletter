@@ -283,7 +283,7 @@ function deriveWindowBounds(params, weeks) {
   if (!DATE_RE.test(until)) until = latestWeekDate(weeks) || objToDateString(new Date());
 
   let since = params.since || null;
-  const rawWindow = String(params.window || '90d').toLowerCase();
+  const rawWindow = String(params.window || '30d').toLowerCase();
   let days = 90;
   const match = rawWindow.match(/^(\d{1,3})d$/);
   if (match) days = Number(match[1]);
@@ -591,45 +591,384 @@ function buildAudienceHeadline(audience, bounds) {
   return `${map[audience] || map.marketing} (${bounds.window_label})`;
 }
 
-function buildAudienceSummary(audience, tone, windowedWeeks, pack, deckContentIndex, recurringThemes, inProgress) {
-  const base = buildExecutiveSummary(windowedWeeks, pack, deckContentIndex);
-  const themeLead = recurringThemes[0] ? recurringThemes[0].theme : null;
-  const progressLead = inProgress[0] ? inProgress[0].workstream : null;
-  if (tone === 'brief') return truncate(base, 220);
-  if (audience === 'exec') return `${base} ${themeLead ? `The clearest cross-week signal is ${themeLead}.` : ''} ${progressLead ? `${progressLead} remains active and should stay visible.` : ''}`.trim();
-  if (audience === 'product') return `${base} ${themeLead ? `${themeLead} stands out as the strongest repeated signal for product-facing follow-up.` : ''}`.trim();
-  if (audience === 'ux') return `${base} ${themeLead ? `${themeLead} appears repeatedly enough to merit explicit synthesis in the next issue.` : ''}`.trim();
-  return `${base} ${themeLead ? `${themeLead} is the most reusable story thread for a stakeholder-facing newsletter.` : ''}`.trim();
+
+function resolveNewsletterOptions(params = {}) {
+  const preset = safeLower(params.preset || params.variant || '');
+  const options = {
+    preset: preset || null,
+    audience: normalizeAudience(params.audience || 'exec'),
+    tone: normalizeTone(params.tone || 'strategic'),
+    mode: safeLower(params.mode || 'strategic_digest') || 'strategic_digest',
+    window: params.window || '30d'
+  };
+
+  if (!params.window) options.window = '30d';
+  if (!params.audience) options.audience = 'exec';
+  if (!params.tone) options.tone = 'strategic';
+
+  if (preset === 'default_exec_monthly' || preset === 'exec_monthly') {
+    options.audience = 'exec';
+    options.tone = 'strategic';
+    options.window = '30d';
+    options.mode = 'strategic_digest';
+  }
+  if (preset === 'marketing_activity_30d' || preset === 'marketing_log') {
+    options.audience = 'marketing';
+    options.tone = 'detailed';
+    options.window = '30d';
+    options.mode = 'activity_log';
+  }
+  if (options.audience === 'marketing' && !params.mode && options.tone === 'detailed') {
+    options.mode = 'activity_log';
+  }
+  return options;
+}
+
+function inferThemeBucket(label) {
+  const low = safeLower(label);
+  const buckets = [
+    ['navigation_and_cta_clarity', ['navigation', 'nav', 'cta', 'label', 'menu', 'pathfinder', 'journey']],
+    ['homepage_and_message_clarity', ['homepage', 'headline', 'messaging', 'message', 'reader', 'search page', 'header', 'landing page']],
+    ['knowledge_portal_and_platform_structure', ['knowledge portal', 'platform', 'taxonomy', 'support', 'flow', 'search', 'reader']],
+    ['event_and_launch_experiences', ['event', 'launch', 'webinar', 'accelerate']],
+    ['brand_and_rebrand_signals', ['brand', 'rebrand', 'evergreen', 'score', 'inspiration']],
+    ['comparison_and_evaluation_behavior', ['comparison', 'compare', 'baseline', 'competitive', 'assessment', 'review']],
+    ['ai_and_personalization', ['ai', 'personalization', 'summary']]
+  ];
+  for (const [bucket, terms] of buckets) {
+    if (terms.some((term) => low.includes(term))) return bucket;
+  }
+  return 'general_research_signal';
+}
+
+function themeBucketLabel(bucket) {
+  const labels = {
+    navigation_and_cta_clarity: 'Navigation and CTA clarity',
+    homepage_and_message_clarity: 'Homepage and message clarity',
+    knowledge_portal_and_platform_structure: 'Knowledge portal and platform structure',
+    event_and_launch_experiences: 'Event and launch experiences',
+    brand_and_rebrand_signals: 'Brand and rebrand signals',
+    comparison_and_evaluation_behavior: 'Comparison and evaluation behavior',
+    ai_and_personalization: 'AI and personalization',
+    general_research_signal: 'General research signals'
+  };
+  return labels[bucket] || sentenceCase(bucket.replace(/_/g, ' '));
+}
+
+function collectNonFillerRows(windowedWeeks, groups = GROUP_KEYS) {
+  return extractFindings(windowedWeeks, null, null)
+    .filter((row) => groups.includes(row.group) && row.level <= 1 && row.label && !isFillerLabel(row.label));
+}
+
+function buildStrategicThemeClusters(windowedWeeks, audience, limit = 5) {
+  const rows = collectNonFillerRows(windowedWeeks, ['findings', 'testing_concepts', 'in_process']);
+  const clusters = new Map();
+  for (const row of rows) {
+    const bucket = inferThemeBucket(row.label);
+    if (!clusters.has(bucket)) {
+      clusters.set(bucket, {
+        bucket,
+        theme: themeBucketLabel(bucket),
+        mentions: 0,
+        finding_mentions: 0,
+        testing_mentions: 0,
+        in_progress_mentions: 0,
+        examples: [],
+        refs: []
+      });
+    }
+    const current = clusters.get(bucket);
+    current.mentions += 1;
+    if (row.group === 'findings') current.finding_mentions += 1;
+    if (row.group === 'testing_concepts') current.testing_mentions += 1;
+    if (row.group === 'in_process') current.in_progress_mentions += 1;
+    if (!current.examples.includes(sentenceCase(row.label)) && current.examples.length < 4) current.examples.push(sentenceCase(row.label));
+    if (current.refs.length < 4) current.refs.push(traceRef(row.week_date, ((row.deck || {}).file_id) || null, row.record_id));
+  }
+  return [...clusters.values()]
+    .sort((a, b) => b.mentions - a.mentions || b.finding_mentions - a.finding_mentions)
+    .slice(0, limit)
+    .map((cluster) => ({
+      theme: cluster.theme,
+      mentions: cluster.mentions,
+      implication: formatClusterImplication(audience, cluster),
+      supporting_examples: cluster.examples,
+      source_refs: cluster.refs
+    }));
+}
+
+function formatClusterImplication(audience, cluster) {
+  if (audience === 'exec') {
+    if (cluster.finding_mentions > 0 && cluster.in_progress_mentions > 0) {
+      return `This theme shows both confirmed evidence and active follow-up, making it a live priority rather than a one-off observation.`;
+    }
+    if (cluster.finding_mentions > 1) {
+      return `This theme appears in validated findings across the month and is strong enough to shape leadership-level prioritization.`;
+    }
+    return `This theme is emerging repeatedly enough to warrant leadership attention in the next planning cycle.`;
+  }
+  if (audience === 'marketing') {
+    return `This theme recurs across recent studies and can anchor how the team communicates research momentum and focus.`;
+  }
+  if (audience === 'product') {
+    return `This theme appears often enough to suggest a decision, taxonomy, or flow issue worth product follow-up.`;
+  }
+  return `This theme appears repeatedly enough to merit explicit synthesis in the issue.`;
+}
+
+function buildValidatedFindings(windowedWeeks, audience, limit = 5) {
+  const rows = collectNonFillerRows(windowedWeeks, ['findings']);
+  const out = [];
+  const seen = new Set();
+  for (const row of rows) {
+    const key = `${row.identifier || ''}|${row.label}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const bucket = themeBucketLabel(inferThemeBucket(row.label));
+    out.push({
+      headline: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
+      summary: audience === 'exec'
+        ? `${sentenceCase(row.label)} surfaced as a validated finding in the ${row.week_date} reporting cycle and maps most closely to ${bucket.toLowerCase()}.`
+        : `${sentenceCase(row.label)} appeared as a validated finding in ${row.week_date}.`,
+      implication: audience === 'exec'
+        ? `Treat this as a confirmed signal rather than an exploratory concept.`
+        : `Use this as a confirmed finding in the issue rather than a work-in-progress mention.`,
+      source_refs: [traceRef(row.week_date, ((row.deck || {}).file_id) || null, row.record_id)]
+    });
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
+function buildEmergingSignals(windowedWeeks, audience, limit = 5) {
+  return topGroupRows(windowedWeeks, 'testing_concepts', limit).map((row) => ({
+    signal: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
+    summary: audience === 'exec'
+      ? `This topic is still in active exploration and should be interpreted as an emerging signal rather than a settled conclusion.`
+      : `This topic is active in testing and shows where the research stream is concentrating next.`,
+    mentions: row.count,
+    source_refs: collectGroupRows(windowedWeeks, 'testing_concepts')
+      .filter((r) => r.label === row.label)
+      .slice(0, 3)
+      .map((r) => traceRef(r.week_date, r.deck_id, r.record_id))
+  }));
+}
+
+function buildWorkstreamsToWatch(windowedWeeks, audience, limit = 5) {
+  return topGroupRows(windowedWeeks, 'in_process', limit).map((row) => ({
+    workstream: row.identifier ? `${row.identifier} — ${sentenceCase(row.label)}` : sentenceCase(row.label),
+    summary: audience === 'exec'
+      ? `This workstream remained active across the month, which makes it a likely carry-forward item for the next issue.`
+      : `This workstream remained active across multiple weekly updates.`,
+    mentions: row.count,
+    source_refs: collectGroupRows(windowedWeeks, 'in_process')
+      .filter((r) => r.label === row.label)
+      .slice(0, 3)
+      .map((r) => traceRef(r.week_date, r.deck_id, r.record_id))
+  }));
+}
+
+function buildLeadershipImplications(strategicThemes, validatedFindings, workstreamsToWatch, audience) {
+  const out = [];
+  if (strategicThemes[0]) {
+    out.push({
+      statement: `${strategicThemes[0].theme} is the clearest repeating signal in this month’s research stream.`,
+      rationale: strategicThemes[0].implication,
+      source_refs: strategicThemes[0].source_refs || []
+    });
+  }
+  if (validatedFindings.length >= 2) {
+    out.push({
+      statement: `The current issue should distinguish confirmed findings from exploratory work.`,
+      rationale: `Recent records contain both validated findings and active concepts; leaders should be able to tell the difference immediately.`,
+      source_refs: validatedFindings.slice(0, 2).flatMap((row) => row.source_refs || [])
+    });
+  }
+  if (workstreamsToWatch[0]) {
+    out.push({
+      statement: `At least one active workstream should stay visible between issues.`,
+      rationale: audience === 'exec'
+        ? `Ongoing activity is concentrated enough that leadership should track what is maturing next, not just what is already validated.`
+        : `The issue should show what is gaining momentum, not just what is complete.`,
+      source_refs: workstreamsToWatch[0].source_refs || []
+    });
+  }
+  return out;
+}
+
+function buildIssueHighlights(validatedFindings, strategicThemes, workstreamsToWatch, audience, limit = 4) {
+  const rows = [];
+  for (const row of validatedFindings.slice(0, 2)) {
+    rows.push({
+      title: row.headline,
+      angle: audience === 'exec'
+        ? 'Use this as a confirmed insight in the opening half of the issue.'
+        : 'Use this as a major findings highlight.',
+      source_refs: row.source_refs || []
+    });
+  }
+  for (const row of strategicThemes.slice(0, 1)) {
+    rows.push({
+      title: row.theme,
+      angle: 'Use this as the cross-study pattern that ties multiple weeks together.',
+      source_refs: row.source_refs || []
+    });
+  }
+  for (const row of workstreamsToWatch.slice(0, 1)) {
+    rows.push({
+      title: row.workstream,
+      angle: 'Use this as the “watch next” item that points to upcoming movement.',
+      source_refs: row.source_refs || []
+    });
+  }
+  return rows.slice(0, limit);
+}
+
+function buildVolumeSnapshot(windowedWeeks) {
+  const perWeek = (windowedWeeks || []).map((week) => {
+    const counts = {};
+    let total = 0;
+    for (const g of GROUP_KEYS) {
+      const count = flattenItems((((week || {}).content_groups || {})[g]) || []).length;
+      counts[g] = count;
+      total += count;
+    }
+    return {
+      week_date: week.week_date,
+      total_items: total,
+      findings: counts.findings || 0,
+      testing_concepts: counts.testing_concepts || 0,
+      in_process: counts.in_process || 0,
+      weekly_progress: counts.weekly_progress || 0,
+      deck_id: ((week.deck || {}).file_id) || null
+    };
+  });
+  const totals = perWeek.reduce((acc, row) => {
+    acc.total_items += row.total_items;
+    acc.findings += row.findings;
+    acc.testing_concepts += row.testing_concepts;
+    acc.in_process += row.in_process;
+    acc.weekly_progress += row.weekly_progress;
+    return acc;
+  }, { total_items: 0, findings: 0, testing_concepts: 0, in_process: 0, weekly_progress: 0 });
+  return {
+    week_count: perWeek.length,
+    average_items_per_week: perWeek.length ? Number((totals.total_items / perWeek.length).toFixed(1)) : 0,
+    totals,
+    weeks: perWeek
+  };
+}
+
+function buildCadenceSummary(windowedWeeks, volumeSnapshot) {
+  const activeWeeks = (volumeSnapshot.weeks || []).filter((row) => row.total_items > 0).length;
+  const deckWeeks = (windowedWeeks || []).filter((week) => ((week.deck || {}).file_id)).length;
+  return {
+    summary: `Over the last ${windowedWeeks.length} weekly entries, the research stream logged ${volumeSnapshot.totals.total_items} tracked items across findings, testing concepts, active work, and progress notes.`,
+    active_weeks: activeWeeks,
+    deck_linked_weeks: deckWeeks,
+    average_items_per_week: volumeSnapshot.average_items_per_week
+  };
+}
+
+function buildActivityLogEntries(windowedWeeks, limit = 6) {
+  return chooseWeeklyHighlights(windowedWeeks).slice(0, limit).map((week) => ({
+    week_date: week.week_date,
+    summary: (week.highlights || []).length
+      ? (week.highlights || []).map((h) => sentenceCase(h.label)).join('; ')
+      : 'Activity recorded without a concise highlight.',
+    source_refs: [traceRef(week.week_date, week.deck_id, week.record_id)]
+  }));
+}
+
+function buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot) {
+  if (mode === 'activity_log') {
+    return `This 30-day view captures the cadence and volume of the research program: ${pack.overview.week_count} weekly updates, ${volumeSnapshot.totals.total_items} tracked items, and repeated motion across findings, concepts, and active workstreams.`;
+  }
+  const themeLead = strategicThemes[0] ? strategicThemes[0].theme : null;
+  const validatedLead = validatedFindings[0] ? validatedFindings[0].headline : null;
+  const watchLead = workstreamsToWatch[0] ? workstreamsToWatch[0].workstream : null;
+  const sentences = [];
+  sentences.push(`The last ${pack.overview.week_count} weekly updates point to a small number of repeating research signals rather than disconnected one-off studies.`);
+  if (themeLead) sentences.push(`${themeLead} is the clearest cross-week pattern in the current monthly window.`);
+  if (validatedLead) sentences.push(`${validatedLead} stands out as one of the strongest confirmed findings to carry into the issue.`);
+  if (watchLead) sentences.push(`${watchLead} remains active and should be framed as a workstream to watch rather than a concluded result.`);
+  if (tone === 'brief') return truncate(sentences.join(' '), 260);
+  if (emergingSignals[0]) sentences.push(`Exploratory work is still active as well, with ${emergingSignals[0].signal} representing one of the stronger emerging signals.`);
+  return sentences.join(' ');
+}
+
+function buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode) {
+  const recommendations = [];
+  if (mode === 'activity_log') {
+    recommendations.push('Lead with cadence and volume first so stakeholders can see how consistently the research program is operating.');
+    recommendations.push('Use a week-by-week log after the opening summary to make the monthly research rhythm visible.');
+    recommendations.push('Keep concept IDs in the marketing activity view where they help show throughput and testing volume.');
+    return recommendations;
+  }
+  if (strategicThemes.length) recommendations.push(`Lead with ${strategicThemes.slice(0, 2).map((row) => row.theme).join(' and ')} because those are the clearest repeated patterns across the month.`);
+  if (validatedFindings.length) recommendations.push('Keep confirmed findings separate from exploratory concepts so the issue reads as a leadership brief, not a raw research log.');
+  if (workstreamsToWatch.length) recommendations.push(`Reserve a short “watch next” section for ${workstreamsToWatch.slice(0, 2).map((row) => row.workstream).join(' and ')}.`);
+  if (deckBackedInsights.length) recommendations.push('Use at least one deck-backed excerpt to anchor a major insight in evidence rather than summary language alone.');
+  if (audience === 'exec') recommendations.push('Minimize internal concept IDs in the narrative and elevate business implications instead.');
+  return recommendations;
+}
+
+function buildAudienceHeadline(audience, bounds, mode) {
+  if (mode === 'activity_log') return `Everpure research activity log (${bounds.window_label})`;
+  const map = {
+    exec: 'Everpure monthly leadership brief',
+    ux: 'Everpure UX research digest',
+    product: 'Everpure product insight digest',
+    marketing: 'Everpure research newsletter draft'
+  };
+  return `${map[audience] || map.marketing} (${bounds.window_label})`;
 }
 
 function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) {
-  const audience = normalizeAudience(options.audience);
-  const tone = normalizeTone(options.tone);
+  const audience = normalizeAudience(options.audience || 'exec');
+  const tone = normalizeTone(options.tone || 'strategic');
+  const mode = safeLower(options.mode || 'strategic_digest') || 'strategic_digest';
   const pack = buildPack(windowedWeeks, deckContentIndex, bounds.since, bounds.until);
   const deckBackedInsights = buildDeckBackedInsights(windowedWeeks, deckContentIndex, tone === 'brief' ? 3 : 6);
-  const topFindings = buildTopFindings(windowedWeeks, tone === 'brief' ? 4 : 6);
-  const recurringThemes = buildRecurringThemes(windowedWeeks, audience, tone === 'brief' ? 4 : 6);
-  const inProgress = buildInProgress(windowedWeeks, audience, tone === 'brief' ? 4 : 6);
-  const recommendedHighlights = buildRecommendedHighlights(windowedWeeks, audience, tone === 'brief' ? 4 : 6);
-  const recommendations = buildEditorialRecommendations(recurringThemes, inProgress, deckBackedInsights, audience);
+  const validatedFindings = buildValidatedFindings(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const emergingSignals = buildEmergingSignals(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const workstreamsToWatch = buildWorkstreamsToWatch(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const strategicThemes = buildStrategicThemeClusters(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const leadershipImplications = buildLeadershipImplications(strategicThemes, validatedFindings, workstreamsToWatch, audience);
+  const volumeSnapshot = buildVolumeSnapshot(windowedWeeks);
+  const cadenceSummary = buildCadenceSummary(windowedWeeks, volumeSnapshot);
+  const activityLog = buildActivityLogEntries(windowedWeeks, tone === 'brief' ? 4 : 6);
+  const issueHighlights = buildIssueHighlights(validatedFindings, strategicThemes, workstreamsToWatch, audience, tone === 'brief' ? 3 : 4);
+  const recommendations = buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode);
   const sectionTitles = audienceSectionTitles(audience);
 
   const newsletter = {
     generated_at: new Date().toISOString(),
-    title: buildAudienceHeadline(audience, bounds),
+    title: buildAudienceHeadline(audience, bounds, mode),
     audience,
     tone,
+    mode,
+    preset: options.preset || null,
+    defaults: { window: '30d', audience: 'exec', tone: 'strategic' },
     window: { since: bounds.since, until: bounds.until, label: bounds.window_label, days: bounds.days },
     overview: pack.overview,
-    executive_summary: buildAudienceSummary(audience, tone, windowedWeeks, pack, deckContentIndex, recurringThemes, inProgress),
+    executive_summary: buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot),
     section_counts: pack.group_counts,
     section_titles: sectionTitles,
     sections: {
-      top_findings: topFindings,
-      recurring_themes: recurringThemes,
-      in_progress: inProgress,
-      recommended_highlights: recommendedHighlights,
-      deck_backed_insights: deckBackedInsights
+      top_findings: validatedFindings,
+      recurring_themes: strategicThemes,
+      in_progress: workstreamsToWatch,
+      recommended_highlights: issueHighlights,
+      deck_backed_insights: deckBackedInsights,
+      validated_findings: validatedFindings,
+      emerging_signals: emergingSignals,
+      strategic_themes: strategicThemes,
+      workstreams_to_watch: workstreamsToWatch,
+      leadership_implications: leadershipImplications,
+      cadence_summary: cadenceSummary,
+      volume_snapshot: volumeSnapshot,
+      activity_log: activityLog
     },
     recommendations,
     source_traceability: {
@@ -647,7 +986,7 @@ function renderNewsletterMarkdown(newsletter) {
   lines.push('');
   lines.push(`_Generated: ${newsletter.generated_at}_`);
   lines.push(`_Window: ${newsletter.window.since} to ${newsletter.window.until}_`);
-  lines.push(`_Audience: ${newsletter.audience} | Tone: ${newsletter.tone}_`);
+  lines.push(`_Audience: ${newsletter.audience} | Tone: ${newsletter.tone} | Mode: ${newsletter.mode}_`);
   lines.push('');
   lines.push('## Executive summary');
   lines.push(newsletter.executive_summary || 'No summary available.');
@@ -658,46 +997,54 @@ function renderNewsletterMarkdown(newsletter) {
   lines.push(`- Decks linked: ${newsletter.overview.deck_count}`);
   lines.push(`- Decks with ingested text: ${newsletter.overview.decks_with_content_count}`);
   lines.push('');
-  lines.push(`## ${newsletter.section_titles.top_findings}`);
-  if ((newsletter.sections.top_findings || []).length) {
-    for (const row of newsletter.sections.top_findings) {
-      const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.headline}** — ${row.summary}${refs ? ` Source weeks: ${refs}.` : ''}`);
+
+  if (newsletter.mode === 'activity_log') {
+    const cadence = newsletter.sections.cadence_summary || {};
+    const volume = newsletter.sections.volume_snapshot || {};
+    lines.push('## Research cadence and volume');
+    lines.push(cadence.summary || 'No cadence summary available.');
+    lines.push(`- Active weeks: ${cadence.active_weeks || 0}`);
+    lines.push(`- Deck-linked weeks: ${cadence.deck_linked_weeks || 0}`);
+    lines.push(`- Average items per week: ${cadence.average_items_per_week || 0}`);
+    lines.push('');
+    lines.push('## Monthly activity log');
+    for (const row of (newsletter.sections.activity_log || [])) {
+      lines.push(`- **${row.week_date}** — ${row.summary}`);
     }
+    lines.push('');
+    lines.push('## What we tested and tracked');
+    lines.push(`- Findings captured: ${(volume.totals || {}).findings || 0}`);
+    lines.push(`- Testing concepts captured: ${(volume.totals || {}).testing_concepts || 0}`);
+    lines.push(`- In-progress items tracked: ${(volume.totals || {}).in_process || 0}`);
+    lines.push(`- Weekly progress notes: ${(volume.totals || {}).weekly_progress || 0}`);
+    lines.push('');
   } else {
-    lines.push('- No top findings identified in this window.');
-  }
-  lines.push('');
-  lines.push(`## ${newsletter.section_titles.recurring_themes}`);
-  if ((newsletter.sections.recurring_themes || []).length) {
-    for (const row of newsletter.sections.recurring_themes) {
+    lines.push('## What leadership should know');
+    for (const row of (newsletter.sections.validated_findings || [])) {
       const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.theme}** — ${row.implication}${refs ? ` Source weeks: ${refs}.` : ''}`);
+      lines.push(`- **${row.headline}** — ${row.summary} ${row.implication}${refs ? ` Source weeks: ${refs}.` : ''}`);
     }
-  } else {
-    lines.push('- No recurring themes identified in this window.');
-  }
-  lines.push('');
-  lines.push(`## ${newsletter.section_titles.in_progress}`);
-  if ((newsletter.sections.in_progress || []).length) {
-    for (const row of newsletter.sections.in_progress) {
+    lines.push('');
+    lines.push('## Cross-study signals');
+    for (const row of (newsletter.sections.strategic_themes || [])) {
       const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.workstream}** — ${row.note}${refs ? ` Source weeks: ${refs}.` : ''}`);
+      const examples = (row.supporting_examples || []).join('; ');
+      lines.push(`- **${row.theme}** — ${row.implication}${examples ? ` Examples: ${examples}.` : ''}${refs ? ` Source weeks: ${refs}.` : ''}`);
     }
-  } else {
-    lines.push('- No in-progress items surfaced.');
-  }
-  lines.push('');
-  lines.push(`## ${newsletter.section_titles.recommended_highlights}`);
-  if ((newsletter.sections.recommended_highlights || []).length) {
-    for (const row of newsletter.sections.recommended_highlights) {
+    lines.push('');
+    lines.push('## Workstreams to watch');
+    for (const row of (newsletter.sections.workstreams_to_watch || [])) {
       const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.title}** — ${row.angle} Support: ${row.support}.${refs ? ` Source weeks: ${refs}.` : ''}`);
+      lines.push(`- **${row.workstream}** — ${row.summary}${refs ? ` Source weeks: ${refs}.` : ''}`);
     }
-  } else {
-    lines.push('- No recommended highlights available.');
+    lines.push('');
+    lines.push('## Leadership implications');
+    for (const row of (newsletter.sections.leadership_implications || [])) {
+      lines.push(`- **${row.statement}** — ${row.rationale}`);
+    }
+    lines.push('');
   }
-  lines.push('');
+
   lines.push('## Deck-backed evidence');
   if ((newsletter.sections.deck_backed_insights || []).length) {
     for (const row of newsletter.sections.deck_backed_insights) {
@@ -732,9 +1079,9 @@ exports.handler = async (event, context) => {
   const freshness = buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent);
 
   if (!route || route === 'health') {
-    return ok({ ok: true, route }, freshness);
+    return ok({ ok: true, route, defaults: { window: '30d', audience: 'exec', tone: 'strategic' } }, freshness);
   }
-  if (route === 'status') return ok({ ok: true, route: 'status' }, freshness);
+  if (route === 'status') return ok({ ok: true, route: 'status', defaults: { window: '30d', audience: 'exec', tone: 'strategic' } }, freshness);
   if (route === 'metadata') return ok(metadata, freshness);
   if (route === 'decks') return ok(decks, freshness);
   if (route === 'deck-summary') return ok({ deck_summary: deckSummary, deck_content_summary: deckContentSummary }, freshness);
@@ -762,9 +1109,10 @@ exports.handler = async (event, context) => {
     return ok(buildPack(filteredWeeks, deckContentIndex, params.since || null, params.until || null), freshness);
   }
   if (route === 'newsletter' || route === 'newsletter.md') {
-    const bounds = deriveWindowBounds(params, weeks);
+    const newsletterOptions = resolveNewsletterOptions(params);
+    const bounds = deriveWindowBounds({ ...params, window: newsletterOptions.window }, weeks);
     const filteredWeeks = filterWeeks(weeks, { ...params, since: bounds.since, until: bounds.until });
-    const newsletter = buildNewsletter(filteredWeeks, deckContentIndex, bounds, { audience: params.audience, tone: params.tone });
+    const newsletter = buildNewsletter(filteredWeeks, deckContentIndex, bounds, newsletterOptions);
     if (route === 'newsletter.md' || safeLower(params.format) === 'markdown' || safeLower(params.output) === 'markdown') {
       return okText(renderNewsletterMarkdown(newsletter), freshness, 'text/markdown; charset=utf-8');
     }

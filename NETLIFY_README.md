@@ -1,53 +1,32 @@
-# Netlify freshness patch
+# Everpure Netlify patch: newsletter quality defaults
 
-This patch updates the API function to:
-- send explicit no-store headers on every `/api/*` response
-- expose freshness details in response headers
-- add a `/api/status` endpoint for quick verification of the latest dataset
-- include `_meta` freshness info on object-shaped responses like `/api/health` and `/api/summary`
+This patch upgrades the newsletter synthesis layer in two ways:
 
-## New response headers
-- `Cache-Control: no-store, max-age=0, must-revalidate`
-- `CDN-Cache-Control: no-store`
-- `Netlify-CDN-Cache-Control: no-store`
-- `Netlify-Vary: query`
-- `X-Generated-At`
-- `X-Source-Fetched-At`
-- `X-Latest-Week-Date`
-- `X-Week-Count`
-- `X-Deck-Content-Count`
-- `X-Build-Id`
-- `X-Deploy-Id`
+1. Sets the practical default issue to:
+   - `window=30d`
+   - `audience=exec`
+   - `tone=strategic`
 
-## Quick verification
-Open:
-- `/api/status`
-- `/api/summary?ts=<unique-value>`
-- `/api/weeks?ts=<unique-value>`
+2. Adds a marketing-friendly activity-log preset:
+   - `preset=marketing_activity_30d`
 
-Using a unique `ts` query string is a convenient cache-busting check.
+## Primary endpoints
 
+### Default monthly leadership brief
+- `/api/newsletter?ts=<unique>`
+- `/api/newsletter.md?ts=<unique>`
 
-Newsletter endpoints:
-- /api/newsletter?window=30d
-- /api/newsletter?window=90d
-- /api/newsletter.md?window=90d
-- /api/newsletter?window=90d&format=markdown
+These now default to a 30-day executive strategic issue if window/audience/tone are omitted.
 
-Freshness check:
-- /api/status?ts=<unique-value>
-- use a unique query string when validating fresh deploy data
+### Explicit executive monthly combination
+- `/api/newsletter?window=30d&audience=exec&tone=strategic&ts=<unique>`
 
+### Marketing activity log preset
+- `/api/newsletter?preset=marketing_activity_30d&ts=<unique>`
+- `/api/newsletter.md?preset=marketing_activity_30d&ts=<unique>`
 
-## Newsletter controls
+This variant emphasizes cadence, weekly activity, and volume of testing over strategic compression.
 
-The newsletter endpoints support optional query parameters:
+## Important
 
-- `audience=exec|ux|marketing|product`
-- `tone=brief|strategic|detailed`
-- `window=30d|60d|90d`
-
-Examples:
-
-- `/api/newsletter?window=90d&audience=exec&tone=brief&ts=1`
-- `/api/newsletter.md?window=30d&audience=marketing&tone=strategic&ts=2`
+Always use a unique `ts` query string when checking the deployed API.
