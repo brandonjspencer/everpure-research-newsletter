@@ -4,7 +4,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/publish/data"
 RAW="$ROOT/raw"
 ARTIFACTS="$ROOT/deck_artifacts"
-mkdir -p "$OUT" "$RAW" "$ARTIFACTS" "$ROOT/publish/newsletter"
+mkdir -p "$OUT" "$RAW" "$ARTIFACTS" "$ROOT/publish/newsletter" "$ROOT/publish/api"
 
 python3 -m pip install --disable-pip-version-check -r "$ROOT/requirements.txt"
 
@@ -54,3 +54,4 @@ if compgen -G "$ARTIFACTS/*.pdf" > /dev/null; then
 fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
+touch "$ROOT/publish/.nojekyll"
