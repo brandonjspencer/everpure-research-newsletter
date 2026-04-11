@@ -26,3 +26,14 @@ Open:
 - `/api/weeks?ts=<unique-value>`
 
 Using a unique `ts` query string is a convenient cache-busting check.
+
+
+Newsletter endpoints:
+- /api/newsletter?window=30d
+- /api/newsletter?window=90d
+- /api/newsletter.md?window=90d
+- /api/newsletter?window=90d&format=markdown
+
+Freshness check:
+- /api/status?ts=<unique-value>
+- use a unique query string when validating fresh deploy data

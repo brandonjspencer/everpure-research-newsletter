@@ -13,10 +13,11 @@ const GROUP_KEYS = [
   'other'
 ];
 const ITEM_ID_RE = /^(\d{2,4})\s*-\s*(.+)$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-function headers(meta = {}) {
+function headers(meta = {}, contentType = 'application/json; charset=utf-8') {
   return {
-    'content-type': 'application/json; charset=utf-8',
+    'content-type': contentType,
     'cache-control': 'no-store, max-age=0, must-revalidate',
     'cdn-cache-control': 'no-store',
     'netlify-cdn-cache-control': 'no-store',
@@ -59,6 +60,31 @@ function flattenItems(items, parent = null, out = []) {
     flattenItems(item.children || [], text, out);
   }
   return out;
+}
+
+function dateToObj(value) {
+  if (!value || !DATE_RE.test(value)) return null;
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
+function objToDateString(dateObj) {
+  if (!(dateObj instanceof Date) || Number.isNaN(dateObj.getTime())) return null;
+  return dateObj.toISOString().slice(0, 10);
+}
+
+function shiftDateString(dateString, days) {
+  const dt = dateToObj(dateString);
+  if (!dt) return null;
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return objToDateString(dt);
+}
+
+function latestWeekDate(weeks) {
+  return (weeks || []).reduce((acc, week) => {
+    const w = week.week_date || '';
+    return (!acc || w > acc) ? w : acc;
+  }, '');
 }
 
 function filterWeeks(weeks, params) {
@@ -179,7 +205,7 @@ function normalizeRoute(value) {
   route = route.replace(/^\.netlify\/functions\/api\/?/, '');
   route = route.replace(/^api\/?/, '');
   route = route.replace(/^\?path=/, '');
-  route = route.replace(/^\/+(?=.)/, '');
+  route = route.replace(/^\/+/, '');
   return route.replace(/\/+$/g, '');
 }
 
@@ -201,10 +227,7 @@ function resolveRoute(event, context) {
 }
 
 function buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent) {
-  const latestWeek = (weeks || []).reduce((acc, week) => {
-    if (!acc || (week.week_date || '') > acc) return week.week_date || '';
-    return acc;
-  }, '');
+  const latestWeek = latestWeekDate(weeks);
   return {
     generated_at: refreshManifest.generated_at || null,
     source_fetched_at: (((refreshManifest || {}).source || {}).fetched_at) || null,
@@ -238,12 +261,318 @@ function ok(body, meta) {
   };
 }
 
+function okText(text, meta, contentType = 'text/plain; charset=utf-8') {
+  return {
+    statusCode: 200,
+    headers: headers(meta, contentType),
+    body: text
+  };
+}
+
 function notFound(route, meta) {
   return {
     statusCode: 404,
     headers: headers(meta),
     body: JSON.stringify({ error: 'not_found', route, _meta: meta })
   };
+}
+
+function deriveWindowBounds(params, weeks) {
+  const latest = params.until || latestWeekDate(weeks) || objToDateString(new Date());
+  let until = latest;
+  if (!DATE_RE.test(until)) until = latestWeekDate(weeks) || objToDateString(new Date());
+
+  let since = params.since || null;
+  const rawWindow = String(params.window || '90d').toLowerCase();
+  let days = 90;
+  const match = rawWindow.match(/^(\d{1,3})d$/);
+  if (match) days = Number(match[1]);
+  else if (rawWindow === 'month' || rawWindow === '30') days = 30;
+  else if (rawWindow === 'quarter' || rawWindow === '90') days = 90;
+  else if (rawWindow === '60' || rawWindow === '60d') days = 60;
+  if (!since || !DATE_RE.test(since)) {
+    since = shiftDateString(until, -(days - 1));
+  }
+  return { since, until, window_label: `${days}d`, days };
+}
+
+function safeLower(text) {
+  return String(text || '').toLowerCase();
+}
+
+function isFillerLabel(label) {
+  const low = safeLower(label);
+  return [
+    '',
+    '🧠 view findings deck',
+    '👉 view google doc',
+    'view deck',
+    'view findings deck',
+    'weekly findings',
+    'test findings',
+    'recommendations:',
+    'concept build:',
+    'for next week:',
+    'next week’s agenda',
+    'next week\'s agenda',
+    'links',
+    'homework:'
+  ].includes(low);
+}
+
+function sentenceCase(text) {
+  const value = String(text || '').trim();
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function truncate(text, limit = 240) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= limit) return clean;
+  return `${clean.slice(0, limit - 1).trim()}…`;
+}
+
+function firstUsefulDeckSentence(deck) {
+  const text = String((deck || {}).text_excerpt || (deck || {}).full_text || '').replace(/\s+/g, ' ').trim();
+  if (!text) return null;
+  const parts = text.split(/(?<=[.!?])\s+/).map((p) => p.trim()).filter(Boolean);
+  for (const part of parts) {
+    if (part.length >= 40 && safeLower(part) !== 'google slides') return truncate(part, 220);
+  }
+  return truncate(text, 220);
+}
+
+function collectGroupRows(weeks, group) {
+  const rows = [];
+  for (const week of weeks || []) {
+    const items = (((week || {}).content_groups || {})[group]) || [];
+    for (const item of flattenItems(items)) {
+      rows.push({
+        week_date: week.week_date,
+        record_id: week.record_id,
+        deck_id: ((week.deck || {}).file_id) || null,
+        ...item
+      });
+    }
+  }
+  return rows;
+}
+
+function topGroupRows(weeks, group, limit = 8) {
+  const counts = new Map();
+  for (const row of collectGroupRows(weeks, group)) {
+    const key = row.identifier ? `${row.identifier}|${row.label}` : row.label;
+    if (!row.label || isFillerLabel(row.label)) continue;
+    if (!counts.has(key)) counts.set(key, { label: row.label, identifier: row.identifier, count: 0, latest_week_date: row.week_date });
+    const current = counts.get(key);
+    current.count += 1;
+    if ((row.week_date || '') > (current.latest_week_date || '')) current.latest_week_date = row.week_date;
+  }
+  return [...counts.values()]
+    .sort((a, b) => b.count - a.count || (b.latest_week_date || '').localeCompare(a.latest_week_date || ''))
+    .slice(0, limit);
+}
+
+function chooseWeeklyHighlights(weeks) {
+  const rows = [];
+  const priority = ['findings', 'testing_concepts', 'in_process', 'weekly_progress', 'initiatives_on_deck', 'next_steps', 'other'];
+  for (const week of weeks || []) {
+    let picked = [];
+    for (const group of priority) {
+      const items = flattenItems((((week || {}).content_groups || {})[group]) || [])
+        .filter((item) => item.level <= 1 && item.label && !isFillerLabel(item.label));
+      for (const item of items) {
+        picked.push({ group, text: item.text, label: item.label, identifier: item.identifier || null });
+        if (picked.length >= 2) break;
+      }
+      if (picked.length >= 2) break;
+    }
+    rows.push({
+      week_date: week.week_date,
+      record_id: week.record_id,
+      deck_id: ((week.deck || {}).file_id) || null,
+      highlights: picked
+    });
+  }
+  return rows;
+}
+
+function buildExecutiveSummary(windowedWeeks, pack, deckContentIndex) {
+  const topId = (pack.top_identifiers || []).slice(0, 3).map((row) => row.identifier).filter(Boolean);
+  const topTesting = topGroupRows(windowedWeeks, 'testing_concepts', 3).map((row) => row.label);
+  const topInProgress = topGroupRows(windowedWeeks, 'in_process', 3).map((row) => row.label);
+  const deckIds = [...new Set(windowedWeeks.map((week) => ((week.deck || {}).file_id)).filter(Boolean))];
+  const withDeckText = deckIds.filter((id) => deckContentIndex[id]);
+
+  const parts = [];
+  parts.push(`Across ${pack.overview.week_count} weekly updates, the strongest activity centered on ${Object.entries(pack.group_counts || {}).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([g]) => g.replace(/_/g, ' ')).join(' and ')}.`);
+  if (topId.length) parts.push(`Recurring concept IDs included ${topId.join(', ')}, suggesting repeated iteration rather than one-off studies.`);
+  if (topTesting.length) parts.push(`The most visible testing threads were ${topTesting.slice(0, 3).join('; ')}.`);
+  if (topInProgress.length) parts.push(`In-progress work emphasized ${topInProgress.slice(0, 3).join('; ')}.`);
+  if (withDeckText.length) parts.push(`${withDeckText.length} linked decks in this window currently have ingested text available for evidence-backed summarization.`);
+  return parts.join(' ');
+}
+
+function buildDeckBackedInsights(windowedWeeks, deckContentIndex, limit = 6) {
+  const seen = new Set();
+  const insights = [];
+  for (const week of windowedWeeks) {
+    const fileId = ((week.deck || {}).file_id) || null;
+    if (!fileId || seen.has(fileId) || !deckContentIndex[fileId]) continue;
+    seen.add(fileId);
+    const deck = deckContentIndex[fileId];
+    insights.push({
+      week_date: week.week_date,
+      file_id: fileId,
+      page_count: deck.page_count || null,
+      total_chars: deck.total_chars || null,
+      excerpt: firstUsefulDeckSentence(deck),
+      canonical_url: deck.canonical_url || ((week.deck || {}).url) || null
+    });
+    if (insights.length >= limit) break;
+  }
+  return insights;
+}
+
+function buildNewsletter(windowedWeeks, deckContentIndex, bounds) {
+  const pack = buildPack(windowedWeeks, deckContentIndex, bounds.since, bounds.until);
+  const recurringThemes = topGroupRows(windowedWeeks, 'testing_concepts', 6).map((row) => ({
+    type: 'testing_concept',
+    label: row.label,
+    identifier: row.identifier || null,
+    mentions: row.count,
+    latest_week_date: row.latest_week_date
+  })).concat(topGroupRows(windowedWeeks, 'findings', 4).map((row) => ({
+    type: 'finding',
+    label: row.label,
+    identifier: row.identifier || null,
+    mentions: row.count,
+    latest_week_date: row.latest_week_date
+  })));
+
+  const inProgress = topGroupRows(windowedWeeks, 'in_process', 6).map((row) => ({
+    label: row.label,
+    identifier: row.identifier || null,
+    mentions: row.count,
+    latest_week_date: row.latest_week_date
+  }));
+
+  const weeklyHighlights = chooseWeeklyHighlights(windowedWeeks);
+  const deckBackedInsights = buildDeckBackedInsights(windowedWeeks, deckContentIndex, 6);
+  const recommendations = [];
+  if (recurringThemes.length) recommendations.push(`Prioritize follow-up synthesis around ${recurringThemes.slice(0, 3).map((row) => row.label).join(', ')} since they recur across multiple weeks.`);
+  if (inProgress.length) recommendations.push(`Call out ${inProgress.slice(0, 2).map((row) => row.label).join(' and ')} as active workstreams to watch in the next issue.`);
+  if (deckBackedInsights.length < recurringThemes.length) recommendations.push('Increase deck coverage or export completeness so repeated themes can be backed by deck text more consistently.');
+
+  const topFindings = extractFindings(windowedWeeks, null, null)
+    .filter((row) => row.level <= 1 && row.label && !isFillerLabel(row.label))
+    .slice(0, 20);
+
+  const keyFindings = [];
+  const seenFindings = new Set();
+  for (const row of topFindings) {
+    const key = `${row.group}|${row.identifier || ''}|${row.label}`;
+    if (seenFindings.has(key)) continue;
+    seenFindings.add(key);
+    keyFindings.push({
+      week_date: row.week_date,
+      group: row.group,
+      identifier: row.identifier || null,
+      label: row.label,
+      deck_id: ((row.deck || {}).file_id) || null
+    });
+    if (keyFindings.length >= 8) break;
+  }
+
+  return {
+    generated_at: new Date().toISOString(),
+    window: { since: bounds.since, until: bounds.until, label: bounds.window_label, days: bounds.days },
+    overview: pack.overview,
+    executive_summary: buildExecutiveSummary(windowedWeeks, pack, deckContentIndex),
+    section_counts: pack.group_counts,
+    recurring_themes: recurringThemes,
+    key_findings: keyFindings,
+    in_progress: inProgress,
+    deck_backed_insights: deckBackedInsights,
+    weekly_highlights: weeklyHighlights,
+    recommendations,
+    source_record_ids: windowedWeeks.map((week) => week.record_id),
+    source_deck_ids: [...new Set(windowedWeeks.map((week) => ((week.deck || {}).file_id)).filter(Boolean))]
+  };
+}
+
+function renderNewsletterMarkdown(newsletter) {
+  const lines = [];
+  lines.push(`# Everpure Research Newsletter (${newsletter.window.label})`);
+  lines.push('');
+  lines.push(`_Generated: ${newsletter.generated_at}_`);
+  lines.push(`_Window: ${newsletter.window.since} to ${newsletter.window.until}_`);
+  lines.push('');
+  lines.push('## Executive summary');
+  lines.push(newsletter.executive_summary || 'No summary available.');
+  lines.push('');
+  lines.push('## Snapshot');
+  lines.push(`- Weeks covered: ${newsletter.overview.week_count}`);
+  lines.push(`- Items surfaced: ${newsletter.overview.item_count}`);
+  lines.push(`- Decks linked: ${newsletter.overview.deck_count}`);
+  lines.push(`- Decks with ingested text: ${newsletter.overview.decks_with_content_count}`);
+  lines.push('');
+  lines.push('## Recurring themes');
+  if ((newsletter.recurring_themes || []).length) {
+    for (const row of newsletter.recurring_themes) {
+      const ident = row.identifier ? ` (${row.identifier})` : '';
+      lines.push(`- ${row.label}${ident} — mentioned ${row.mentions} time(s), latest ${row.latest_week_date}`);
+    }
+  } else {
+    lines.push('- No recurring themes identified in this window.');
+  }
+  lines.push('');
+  lines.push('## Key findings and notable work');
+  if ((newsletter.key_findings || []).length) {
+    for (const row of newsletter.key_findings) {
+      const ident = row.identifier ? ` (${row.identifier})` : '';
+      lines.push(`- ${row.week_date}: ${row.label}${ident} [${row.group}]`);
+    }
+  } else {
+    lines.push('- No key findings captured.');
+  }
+  lines.push('');
+  lines.push('## In progress');
+  if ((newsletter.in_progress || []).length) {
+    for (const row of newsletter.in_progress) {
+      const ident = row.identifier ? ` (${row.identifier})` : '';
+      lines.push(`- ${row.label}${ident} — mentioned ${row.mentions} time(s)`);
+    }
+  } else {
+    lines.push('- No in-progress items surfaced.');
+  }
+  lines.push('');
+  lines.push('## Deck-backed evidence');
+  if ((newsletter.deck_backed_insights || []).length) {
+    for (const row of newsletter.deck_backed_insights) {
+      lines.push(`- ${row.week_date} / ${row.file_id}: ${row.excerpt || 'Deck text available.'}`);
+    }
+  } else {
+    lines.push('- No ingested deck text available for this window.');
+  }
+  lines.push('');
+  lines.push('## Weekly highlights');
+  if ((newsletter.weekly_highlights || []).length) {
+    for (const week of newsletter.weekly_highlights) {
+      const items = (week.highlights || []).map((row) => sentenceCase(row.label)).filter(Boolean);
+      lines.push(`- ${week.week_date}: ${items.join('; ') || 'No clear highlight extracted.'}`);
+    }
+  } else {
+    lines.push('- No weekly highlights available.');
+  }
+  lines.push('');
+  lines.push('## Editorial recommendations');
+  if ((newsletter.recommendations || []).length) {
+    for (const row of newsletter.recommendations) lines.push(`- ${row}`);
+  } else {
+    lines.push('- No recommendations generated.');
+  }
+  return lines.join('\n');
 }
 
 exports.handler = async (event, context) => {
@@ -258,7 +587,7 @@ exports.handler = async (event, context) => {
   const deckContent = loadJson('deck_content.json', []);
   const deckContentSummary = loadJson('deck_content_summary.json', {});
   const refreshManifest = loadJson('refresh_manifest.json', {});
-  const deckContentIndex = Object.fromEntries((deckContent || []).filter((d) => d.file_id).map((d) => [d.file_id, d]));
+  const deckContentIndex = Object.fromEntries((deckContent || []).filter((d) => d && d.file_id).map((d) => [d.file_id, d]));
   const freshness = buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent);
 
   if (!route || route === 'health') {
@@ -290,6 +619,15 @@ exports.handler = async (event, context) => {
   if (route === 'summary') {
     const filteredWeeks = filterWeeks(weeks, params);
     return ok(buildPack(filteredWeeks, deckContentIndex, params.since || null, params.until || null), freshness);
+  }
+  if (route === 'newsletter' || route === 'newsletter.md') {
+    const bounds = deriveWindowBounds(params, weeks);
+    const filteredWeeks = filterWeeks(weeks, { ...params, since: bounds.since, until: bounds.until });
+    const newsletter = buildNewsletter(filteredWeeks, deckContentIndex, bounds);
+    if (route === 'newsletter.md' || safeLower(params.format) === 'markdown' || safeLower(params.output) === 'markdown') {
+      return okText(renderNewsletterMarkdown(newsletter), freshness, 'text/markdown; charset=utf-8');
+    }
+    return ok(newsletter, freshness);
   }
   if (route === 'static-summary') return ok(summary, freshness);
   return notFound(route, freshness);
