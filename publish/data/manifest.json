@@ -1,0 +1,9 @@
+{
+  "html_source": "/mnt/data/everpure_build_package/data/Everpure.html",
+  "outputs": {
+    "metadata": "/mnt/data/everpure_build_package/output/metadata.json",
+    "weeks": "/mnt/data/everpure_build_package/output/weeks.json",
+    "decks": "/mnt/data/everpure_build_package/output/decks.json",
+    "summary": "/mnt/data/everpure_build_package/output/summary.json"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-04-11T04:16:10Z",
+  "source": {
+    "source_url": null,
+    "source_html_path": "/mnt/data/everpure_build_package/data/Everpure.html",
+    "fetch_method": "local_html",
+    "fetched_at": "2026-04-11T04:16:09Z"
+  },
+  "outputs": {
+    "metadata": "/mnt/data/everpure_build_package/output/metadata.json",
+    "weeks": "/mnt/data/everpure_build_package/output/weeks.json",
+    "decks": "/mnt/data/everpure_build_package/output/decks.json",
+    "summary": "/mnt/data/everpure_build_package/output/summary.json"
+  },
+  "newsletter_pack_90d": "/mnt/data/everpure_build_package/output/newsletter_pack_90d.json",
+  "record_count": 48,
+  "deck_count": 22,
+  "date_range": {
+    "min": "2024-11-21",
+    "max": "2026-04-09"
+  }
+}

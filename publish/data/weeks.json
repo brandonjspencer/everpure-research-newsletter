@@ -1,0 +1,2952 @@
+[
+  {
+    "record_id": "everpure_2026_04_09",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-04-09",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 9, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit?slide=id.g3dd732287ab_0_0#slide=id.g3dd732287ab_0_0",
+      "file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-04-09_at_9.49.11_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "151 - Events Page Baseline",
+          "level": 1,
+          "children": [
+            {
+              "text": "Events V1",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Events V2",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [
+        {
+          "text": "186 - Homepage AI Messaging",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "187 - Pathfinder CTA Labels",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_04_02",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-04-02",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 2, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit?slide=id.g3bd013973b4_0_158#slide=id.g3bd013973b4_0_158",
+      "file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Everpure_Executive_Brief_(April).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "182 - AI Summary - Three Variations",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "184 - Design & UX Feedback:",
+          "level": 1,
+          "children": [
+            {
+              "text": "Homepage",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Landing Page",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Reader Page (in process)",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Search Page",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Header",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [
+        {
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_03_26",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-03-26",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 26, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit?slide=id.g37136068a40_0_0#slide=id.g37136068a40_0_0",
+      "file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Everpure_Executive_Brief_(March_2026)(2).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "178 - Evergreen Rebrand R3",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "181 - Knowledge Portal Domain",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "183 - Infinite Scroll",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [
+        {
+          "text": "173 - Knowledge Portal Landing Page (in process)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "173 - Knowledge Portal Homepage (in process)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_03_19",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-03-19",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 19, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit?slide=id.g37136068a40_0_0#slide=id.g37136068a40_0_0",
+      "file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Everpure_Executive_Brief_(March_2026)(1).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "178 - Evergreen Rebrand R3 (in process)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "180 - Pathfinder Journey Analysis",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_03_12",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-03-12",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 12, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit?slide=id.g37136068a40_0_0#slide=id.g37136068a40_0_0",
+      "file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Everpure_Executive_Brief_(March_2026).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "176 - baselines: Platform Redesign",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "178 - Evergreen Rebrand R2",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_03_05",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-03-05",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 5, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit?slide=id.g37136068a40_0_0#slide=id.g37136068a40_0_0",
+      "file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/541bb134-a50a-46bb-bf20-01efd989db2d.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "176 - baselines: Homepage Redesign R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "178 - Evergreen Rebrand",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "179 - EDC",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_02_26",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-02-26",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 February 26, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU/edit?slide=id.g3a32497e40a_0_61#slide=id.g3a32497e40a_0_61",
+      "file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-02-26_at_09-20-00_The_Data_Platform_Everpure_(formerly_Pure_Storage).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(February_2026)).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "175 - Navigation Menu Updates (received)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "176 - Homepage Redesign",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "ReBrand Launch Debrief",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’re excited to review the ReBrand launch with the team!",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_02_19",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-02-19",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 February 19, 2026",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU/edit?slide=id.g3a32497e40a_0_61#slide=id.g3a32497e40a_0_61",
+      "file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(February_2026))(1).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2026-02-05_at_9.48.31_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "175 - Navigation Menu Updates (received)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "👉 View Customer Outreach Plan",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Last week of PureStorage",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Last week of PureStorage",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Customer Outreach Plan",
+        "url": "https://www.figma.com/board/DSQkPFH69IPcYbN8tD0SQD/Workflows?node-id=1201-44&t=z4RbnWwilXbzv1eG-1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_02_12",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-02-12",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 February 12, 2026",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-02-05_at_9.48(1).31_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "176 - Homepage Competitive Review",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "176 - Platform Competitive Review",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [
+        {
+          "text": "Customer Outreach Survey Built",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "175 - Navigation Menu Updates (received)",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Customer Outreach Plan",
+        "url": "https://www.figma.com/board/DSQkPFH69IPcYbN8tD0SQD/Workflows?node-id=1201-44&t=z4RbnWwilXbzv1eG-1"
+      }
+    ],
+    "toggles": [
+      {
+        "title": "Helio DNS Whitelist",
+        "expanded": false,
+        "children_present": false
+      }
+    ]
+  },
+  {
+    "record_id": "everpure_2026_02_05",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-02-05",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 February 5, 2026",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-02-05_at_9.48(2).31_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "176 - Homepage Competitive Review",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "176 - Platform Competitive Review",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [
+        {
+          "text": "Baseline Plan",
+          "level": 1,
+          "children": [
+            {
+              "text": "Homepage Gravity Score (SUS)",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Solutions: AI Competitor Review",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Solutions: Healthcare Competitor Review",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Product: Cloud Storage Competitor Review",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Customer Outreach Plan",
+        "url": "https://www.figma.com/board/DSQkPFH69IPcYbN8tD0SQD/Workflows?node-id=1201-44&t=z4RbnWwilXbzv1eG-1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_01_29",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-01-29",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 29, 2026",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-01-29_at_9.17.10_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "176 - Homepage Competitive Review",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "176 - Platform Competitive Review",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [
+        {
+          "text": "Baseline Plan",
+          "level": 1,
+          "children": [
+            {
+              "text": "Homepage Gravity Score (SUS)",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Solutions: AI Competitor Review",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Solutions: Healthcare Competitor Review",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Product: Cloud Storage Competitor Review",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "text": "175 - Navigation Menu Updates",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_01_22",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-01-22",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 22, 2026",
+    "deck": null,
+    "images": [],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "175 - Navigation Menu Updates",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Baseline Planning",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [
+        {
+          "text": "Brand Roll-out",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_01_15",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-01-15",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 15, 2026",
+    "deck": null,
+    "images": [],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [
+        {
+          "text": "175 - Navigation Menu Updates",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Homepage Gravity Score",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Trust Center Updates",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Pathfinder Journey Analysis",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "in_process": [],
+      "initiatives_on_deck": [
+        {
+          "text": "Accelerate '26",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Brand Roll-out",
+          "level": 1,
+          "children": [
+            {
+              "text": "Engineering Specs for website",
+              "level": 2,
+              "children": [
+                {
+                  "text": "Component library",
+                  "level": 3,
+                  "children": []
+                },
+                {
+                  "text": "Styling",
+                  "level": 3,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Trust Center Update",
+          "level": 1,
+          "children": [
+            {
+              "text": "1/22 launch",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "text": "Support Platform Migration",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Internal Sales Tools",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Transitioning from Adobe Experience Manager to Cloud version. - Q2 2026 - Q1 2027",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2026_01_08",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2026-01-08",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 8, 2026",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2026-01-08_at_9.56.22_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "New Year Kickoff",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Retrospective",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Design Initiatives",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "What’s Next",
+          "level": 1,
+          "children": [
+            {
+              "text": "Menu Testing",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_12_11",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-12-11",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 December 11, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU/edit?slide=id.g3a32497e40a_0_61#slide=id.g3a32497e40a_0_61",
+      "file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(November).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 173 - Support Taxonomy Flow",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "🧠 View Findings Deck",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_11_20",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-11-20",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 November 20, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU/edit?slide=id.g3a32497e40a_0_61#slide=id.g3a32497e40a_0_61",
+      "file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2025-11-20_at_12.10.02_PM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 172 - Customer Stories Comparison",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "🧠 View Findings Deck",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_11_13",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-11-13",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 November 13, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU/edit?slide=id.g3a32497e40a_0_0#slide=id.g3a32497e40a_0_0",
+      "file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(November).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 171 - Infographics",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concepts in Process:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "169 - 2026 Navigation Updates R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "170 - Federal - Cost Efficiency R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Brand Initiative",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_09_25",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-09-25",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 September 25, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU/edit?slide=id.g3838aafb3e3_0_0#slide=id.g3838aafb3e3_0_0",
+      "file_id": "1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(September).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 164 - CPQ Assessment",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "View CPQ Flow Assessment",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View CPQ Flow Assessment",
+        "url": "https://staging.helio.app/assessment/01K60WPNHS8HDVN3ZPRPBBF8WV"
+      }
+    ],
+    "toggles": [
+      {
+        "title": "Step by Step",
+        "expanded": false,
+        "children_present": false
+      }
+    ]
+  },
+  {
+    "record_id": "everpure_2025_09_18",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-09-18",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 September 18, 2025",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2025-09-18_at_9.38.22_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Flow User Needs Assessments",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We tested out how the Helio Assessment addresses flows, with promising results! Let’s align on how we can address the Pure Pathfinder flows to learn before putting them into testing.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Platform Configurator Flow Assessment",
+        "url": "https://staging.helio.app/assessment/01K5ER59MGSHASJKNQQG6597TT"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_09_11",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-09-11",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 September 11, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU/edit?slide=id.g37df6ce0174_1_10#slide=id.g37df6ce0174_1_10",
+      "file_id": "1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(September).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 162: Platform Configurator",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 163: Pure Realize",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "🧠 View Findings Deck",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": [
+      {
+        "title": "Pure Realize AI Assessments",
+        "expanded": false,
+        "children_present": false
+      }
+    ]
+  },
+  {
+    "record_id": "everpure_2025_09_04",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-09-04",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 September 4, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms/edit?slide=id.g388395de063_0_0#slide=id.g388395de063_0_0",
+      "file_id": "14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(May_2025)(2).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 155: Evergreen//One R3",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Signal: The bento box module doesn't attract engagement on the Evergreen//One page.",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_08_28",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-08-28",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 August 28, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y/edit?slide=id.g367df6d1470_0_90#slide=id.g367df6d1470_0_90",
+      "file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(August_2025)(1).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2025-08-28_at_9.37.44_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 156: Contact Us Page (Mobile)",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 161: Trust and Security Hub R2",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "🧠 View Findings Deck",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "View Assessment V1",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "View Assessment V2",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Platform Configurator: Wireframe Assessments",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ve run an initial assessment using our Helio Ai tool. We’ll review and align on our hunches for testing.",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Assessment V1",
+        "url": "https://staging.helio.app/assessment/01K3RPNPR1PH4PW0DQ612EZK70"
+      },
+      {
+        "label": "View Assessment V2",
+        "url": "https://staging.helio.app/assessment/01K3RRCQ3FGE31SHKQR51K4QNZ"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_08_21",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-08-21",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 August 21, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y/edit?slide=id.g367df6d1470_0_90#slide=id.g367df6d1470_0_90",
+      "file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(August_2025).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2025-08-21_at_9.43.27_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 156: Contact Us Page",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 161: Trust and Security Hub",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "👉 View Google Doc",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Journey Map & Brand Implementation",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "This document outlines the interconnected dependencies and implementation phases required to deliver Pure’s journey mapping recommendation engine and brand refresh. It incorporates CTA orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. Each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration.",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "We’re back after our On-Demand break, and will be walking through the team’s design initiatives and aligning on our testing agenda.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Google Doc",
+        "url": "https://docs.google.com/document/d/1jcsW38ZRmpg_OlMI6US5vhWZe78QbR9ALF2Z9PjwBNU/edit?tab=t.0"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_06_26",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-06-26",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 June 26, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w/edit?slide=id.g177e822a741_0_0#slide=id.g177e822a741_0_0",
+      "file_id": "1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(June_2025)(1).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 155: Evergreen//One R3",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 157: Brand Inspiration (Follow-up)",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 159: Future of Storage",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 160: Enterprise Data Cloud",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_06_19",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-06-19",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 June 19, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w/edit?slide=id.g177e822a741_0_0#slide=id.g177e822a741_0_0",
+      "file_id": "1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(June_2025).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 155: Evergreen//One",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 157: Brand Inspiration",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_06_12",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-06-12",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 June 12, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w/edit?slide=id.g177e822a741_0_0#slide=id.g177e822a741_0_0",
+      "file_id": "1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2025-06-12_at_8.38.06_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 144: Partner Overview",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 147: Partner Ecosystem",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 148: Partners Tech Alliance",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 157: Brand Score",
+          "level": 0,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_06_05",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-06-05",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 June 5, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w/edit?slide=id.g177e822a741_0_0#slide=id.g177e822a741_0_0",
+      "file_id": "1V-eGk09rHEYI0e9W2RGqviDYDCi5V29IWpcUI-nQT_w"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(June_2025).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 157: Brand Score",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Pure Storage",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Starlink",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Salesforce",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_05_29",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-05-29",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 May 29, 2025",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2025-05-29_at_9.54.30_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Brand Score Testing Plan",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ll walk through our testing plan including:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Brand sites to test",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Positive attributes",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Scope of learnings",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Concepts in Figma",
+        "url": "https://www.figma.com/design/lUJEJBZBHIPGsgXOdRujgX/PureStorage-Test-Concepts?node-id=12856-53951&t=HKTDmo97WpiNCLr2-1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_05_22",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-05-22",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 May 22, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms/edit#slide=id.g3590ce2b332_0_56",
+      "file_id": "14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(May_2025).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 154 - Event Email R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Design Needs",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 151 - Event Pages",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concept 152 - Customer Nav Dynamics",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concept 153 - Form-field Density",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concept 156 - Contact Us",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_05_15",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-05-15",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 May 15, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms/edit#slide=id.g3590ce2b332_0_56",
+      "file_id": "14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(May_2025)(1).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [
+        {
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concept 155 - Evergreen//One Page Assessment",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_05_08",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-05-08",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 May 8, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw/edit#slide=id.g34d2c848ce8_0_0",
+      "file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(May_2025).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Concept Build:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Concept 154 - Accelerate Email Content",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_05_01",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-05-01",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 May 1, 2025",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Concept_Board_v2(2).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Concept Build:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "150 - Demo Label Needfinding",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "151 - Event Pages",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "152 - Nav Dynamics",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Concepts in Figma",
+        "url": "https://www.figma.com/design/lUJEJBZBHIPGsgXOdRujgX/PureStorage-Test-Concepts?node-id=12744-44&t=CI7IgJzgTnuvcvqU-0"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_04_24",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-04-24",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 24, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw/edit#slide=id.g34d2c848ce8_0_0",
+      "file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(April_2025).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Concept_Board_v2(1).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Weekly Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "149 - “Company” in nav",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Demo Label Needfinding",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Previous A/B testing has revealed a 375% increase in conversion by shifting CTA labels from Test Drive to “Try Now”.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "The team would like to outline key terms for needfinding and understanding the current market perception of common ‘demo’ terms.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Findings Deck",
+        "url": "https://www.figma.com/design/lUJEJBZBHIPGsgXOdRujgX/PureStorage-Test-Concepts?node-id=12717-44&t=dO7FKI8nZm8FrOUl-1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_04_17",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-04-17",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 17, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw/edit#slide=id.g34d2c848ce8_0_0",
+      "file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(April_2025)(1).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Weekly Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ve got the goods on how we can elevate Test Drive content and validates our hunches around placing Customer content in the nav.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "115 - Demo Hub Concepts",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "148 - Customer Stories Menu",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_04_10",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-04-10",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 10, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw/edit#slide=id.g343cc2ddec0_0_273",
+      "file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Helio___Pure_Storage_Executive_Brief_(April_2025).jpg",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Weekly Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ll review the results of our Partner page updates and",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "144 - Partners Overview",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "147 - Partner Ecosystem",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Next Week’s Agenda",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ll align on our Pure360 hunches and testing for the week ahead.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_04_03",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-04-03",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 April 3, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI/edit#slide=id.g20c6d74ab19_0_1",
+      "file_id": "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/HELIO___Pure_Storage_Executive_Brief_(04.02.25)(1).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Weekly Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "145 - File Services Needfinding",
+          "level": 1,
+          "children": [
+            {
+              "text": "Next Steps",
+              "level": 2,
+              "children": [
+                {
+                  "text": "Define how File Services fits in importance to platform systems.",
+                  "level": 3,
+                  "children": []
+                },
+                {
+                  "text": "Clarify naming",
+                  "level": 3,
+                  "children": []
+                },
+                {
+                  "text": "Address searchability",
+                  "level": 3,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "146 - Webinar Comparison",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Next Testing Agenda",
+          "level": 1,
+          "children": [
+            {
+              "text": "Decision: Pursue the following Testing:",
+              "level": 2,
+              "children": [
+                {
+                  "text": "Partners Page Updates",
+                  "level": 3,
+                  "children": []
+                },
+                {
+                  "text": "Pure360",
+                  "level": 3,
+                  "children": []
+                },
+                {
+                  "text": "View of Customers menu",
+                  "level": 3,
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_03_27",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-03-27",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 27, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc/edit#slide=id.g343cc2ddec0_0_396",
+      "file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/HELIO___Pure_Storage_Executive_Brief_(03.26.25)(2).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/HELIO___Pure_Storage_Executive_Brief_(03.26.25)(1).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/HELIO___Pure_Storage_Executive_Brief_(03.26.25).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Weekly Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "143 - Wireframe Landing Pages",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "144 - Partners Overview",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "145 - File Services Needfinding",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "For Next Week:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Added: Concept 146 - Webinar Landing Comparison",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "143 Gated Landing Pages",
+          "level": 1,
+          "children": [
+            {
+              "text": "Decision: Retest with visuals. Compare against broader testing of landing page form best practices.",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "text": "Report out C145 to Heather, gather feedback on next steps",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "144 Partners Overview",
+          "level": 1,
+          "children": [
+            {
+              "text": "Decision: Test new Page layout",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Decision: Loop in partner contacts in next round of testing.",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_03_20",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-03-20",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 20, 2025",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2025-03-19_at_9.40.02_PM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Accelerate Retrospective",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ll review previous year’s testing and insights into the Accelerate web promotions. This will gives us an overarching perspective to identify areas to highlight this year.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_03_13",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-03-13",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 March 13, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ/edit#slide=id.g33f9ae056c3_0_0",
+      "file_id": "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Calculator_(03.12.25).jpg",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2025-03-05_at_2.20.33_PM.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/image.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2025-02-21_at_5.04.12_PM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Test Findings",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Concept 142: Pure.ai Teaser",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Takeaways - A teaser that tells users what you’ll be telling them upon release will build more anticipation. They’re already curious about the details of the release, specs, what will be communicated, and making these promises up front will build excitement.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Calculator Results",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "→ Removing information reduced comprehension (9%) but boosted sentiment (+5%) and encouraged more user actions (+3%).",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Feedback : Build-out for stakeholder presentations would be greatly helped by legends and clarifications of how to interpret data presentation.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Intercepts → working with the team to get some answers",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Next Steps → ZURB owes PS a response.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Pure Events",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "→ Page was seen as a product and services overview for Pure Storage.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "→ Pure//Launch and Pure//Updates labels both match the page’s content.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "→ Most participants (63%) would look under Products to find Pure//Launch.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Recommendations:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Dive in deeper with naming , with only ~30% affinity to Pure//launch or Pure//Updates labeling how can we improve the association to all updates of Pure?",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Place page within Products since this is a product launch page.",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Market Pure//Launch similar to product pages, since this is page is seen as a overview page for all products.",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "Pure.ai",
+        "url": "http://pure.ai/"
+      },
+      {
+        "label": "Deck",
+        "url": "https://docs.google.com/presentation/d/10qdPNDW7TTjOtbcZowYANRMoyRVb6qhwh6BV6tOcU9w/edit#slide=id.g330f2e73377_0_11"
+      },
+      {
+        "label": "Check out our findings here",
+        "url": "https://docs.google.com/presentation/d/10-oJyERAilsUtQhLtJE2GRHkdSHVyq4e9sKpJeS0GRc/edit#slide=id.g32c933b17ad_0_157"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_01_31",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-01-31",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 31, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M/edit#slide=id.g177e822a741_0_0",
+      "file_id": "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(1.31.25).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Concepts on deck :",
+          "level": 1,
+          "children": [
+            {
+              "text": "136 - TCO Calculator - We identified quite a few areas to improve the design of the TCO calculators, including clarifying the savings calculation, pulling the total calculations more closely to the charts, and ensuring interactive elements are consistently and clearly outlined.",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "137 - NVIDIA GTC Event - We walked through various insights from our testing of the NVIDIA flow, including opportunities to clarify \"Add to Calendar\" functionality and ideal headlines.",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "138 - Events Center - We see that the Series module is rated least valuable on the page. We'll run follow up testing to see what affects we might expect from removing it.",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "139 - Marquee Messaging - The team saw a disconnect between the visual imagery, which presented as symbolic and negative, and the purpose behind the messaging in the modules. The darker modules also saw a higher engagement rate.",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_01_23",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-01-23",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 23, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/10-oJyERAilsUtQhLtJE2GRHkdSHVyq4e9sKpJeS0GRc/edit?usp=sharing",
+      "file_id": "10-oJyERAilsUtQhLtJE2GRHkdSHVyq4e9sKpJeS0GRc"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Video_Paused.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/ZURB___Pure_Storage_Executive_Brief_(1.23.25).jpg",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2025-01-23_at_10.09.27_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Demo Hub Intercept",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We’ve mapped out the intercept flow and triggers for refinement",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "💜 View the Draft Survey",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Pure// Launch Innovations",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Layout of the page reduces comprehension and sentiment of the page.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "📈 View Deck",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Customers in Main Navigation",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "📈 View Deck",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View Intercept Flow",
+        "url": "https://www.figma.com/design/lUJEJBZBHIPGsgXOdRujgX/PureStorage-Test-Concepts?node-id=12191-43&t=KNI8FYK05H1Zq4AE-1"
+      },
+      {
+        "label": "View the Draft Survey",
+        "url": "https://my.helio.app/report/01JHKMRSPP505HHFBE12JEVM1F"
+      },
+      {
+        "label": "View Deck",
+        "url": "https://docs.google.com/presentation/d/1-NGLzzuCmA0MWXyF3b_0o1EkDEEcXkIVLN-V2rPn31I/edit#slide=id.g20c6d74ab19_0_1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_01_16",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-01-16",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 16, 2025",
+    "deck": null,
+    "images": [
+      {
+        "src": "./Everpure_files/f1d51351-85d6-41cd-b086-2feff72ab66d.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/27d184c0-0477-493e-be7b-9c9ed1c83df2.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Demo Hub Intercept",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "💜 View the Draft Survey",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "2024 Performance Updates",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "📈 View Performance Metrics in Figma",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [
+      {
+        "label": "View the Draft Survey",
+        "url": "https://my.helio.app/report/01JHKMRSPP505HHFBE12JEVM1F"
+      },
+      {
+        "label": "View Performance Metrics in Figma",
+        "url": "https://www.figma.com/design/lUJEJBZBHIPGsgXOdRujgX/PureStorage-Test-Concepts?node-id=12017-135&t=UAhE6IpUrZcomhWM-1"
+      }
+    ],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_01_09",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-01-09",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 9, 2025",
+    "deck": null,
+    "images": [],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "Agenda Sync Takeaways:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Testing Incoming - We have a range of testing incoming across Marketing, Events, Branding, and internal efforts.",
+          "level": 1,
+          "children": [
+            {
+              "text": "Gated Landing Page variations",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Video Cover Testing",
+              "level": 2,
+              "children": []
+            },
+            {
+              "text": "Customer in Nav",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "text": "Performance Metrics - We’re breaking down the performance metrics across our 2024 page updates to map the improvements.",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2025_01_02",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2025-01-02",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 January 2, 2025",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1EL8jUy90TQwXti6BPc8xx92B4LQiuEmF3CPjfFCJcU4/edit#slide=id.g320771e852e_0_77",
+      "file_id": "1EL8jUy90TQwXti6BPc8xx92B4LQiuEmF3CPjfFCJcU4"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/notion-cover(2).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/notion-cover.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/notion-cover(1).png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": []
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2024_12_12",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2024-12-12",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 December 12, 2024",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1i4TgXLd90f-E6cvtp20W2hWaKMv4PJqRxEZJ3OK-08k/edit#slide=id.g177e822a741_0_0",
+      "file_id": "1i4TgXLd90f-E6cvtp20W2hWaKMv4PJqRxEZJ3OK-08k"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/d5b55c3f-0e09-4f4f-98c2-d7ef628303fb.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2024-12-12_at_9.36.06_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [
+        {
+          "text": "Company in Navigation : B to provide a couple variations",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Careers. Test flow with Form to understand likeness to complete.",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Blog Testing. Time to read, In-content Banners, Categories, and Filtering testing",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "other": [
+        {
+          "text": "The video was educational but could use alternate visuals to clarify complex parts.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Redesign improved engagement as it provided content on PS within the page. We also saw a noticeable improvement in participants successfully finding available positions. (+34%). Brand Score testing won’t be ready until tonight.",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2024_12_05",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2024-12-05",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 December 5, 2024",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI/edit#slide=id.g31c80abfa68_0_187",
+      "file_id": "1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/Screenshot_2024-12-05_at_11.03.45_AM.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screenshot_2024-12-05_at_11.03.17_AM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "We've pushed a bunch of fresh updates this year, and it would be awesome to get some side-by-side performance metrics to understand how our improvements have affected user interaction.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "—> Check out our mapping here",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "We outlined different opportunities with Jacob and Carrie on the blog team. We will be diving into the following areas for our meeting on 12/19.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "—> Check out the results",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Links",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "Staging Environment: www-stage.purestorage.com ​",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Homework:",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "ZURB to set up a call with Marissa about performance metrics, include Matt (Canada)",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Company Page, baseline sent today by B",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Solution Page, Variation to be sent",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "ZURB to send over designs for filtering and blog details.",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Baseline testing with CTA on Blog article pages",
+          "level": 1,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [
+      {
+        "title": "here",
+        "url": "https://majestic-carbon-753.notion.site/15310dbba51a80189e1cfc44c9baa2c9?pvs=25"
+      }
+    ],
+    "linked_files": [],
+    "toggles": [
+      {
+        "title": "Blog Redesign Notes:",
+        "expanded": false,
+        "children_present": false
+      }
+    ]
+  },
+  {
+    "record_id": "everpure_2024_11_28",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2024-11-28",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 November 28, 2024",
+    "deck": null,
+    "images": [],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [],
+      "other": [
+        {
+          "text": "No meeting this week. Happy Turkey Day!",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": []
+  },
+  {
+    "record_id": "everpure_2024_11_21",
+    "source_page_title": "Everpure",
+    "source_type": "notion_html",
+    "week_date": "2024-11-21",
+    "section_family": "weekly_rundown",
+    "week_label_raw": "📌 November 21, 2024",
+    "deck": {
+      "url": "https://docs.google.com/presentation/d/1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0/edit#slide=id.g312a90cdc64_0_77",
+      "file_id": "1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0"
+    },
+    "images": [
+      {
+        "src": "./Everpure_files/image(1).png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Untitled.png",
+        "alt": ""
+      },
+      {
+        "src": "./Everpure_files/Screen_Shot_2022-01-10_at_12.49.13_PM.png",
+        "alt": ""
+      }
+    ],
+    "content_groups": {
+      "findings": [],
+      "testing_concepts": [],
+      "in_process": [],
+      "initiatives_on_deck": [],
+      "weekly_progress": [],
+      "needs": [],
+      "next_steps": [
+        {
+          "text": "Brandon , drop Solution page variations for our C104 testing",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Brandon , Send over the the video for further Demo Hub testing",
+          "level": 1,
+          "children": []
+        }
+      ],
+      "other": [
+        {
+          "text": "Comprehension : Changing the story slightly improved comprehension by 2% compared to the previous version but still fell short of the clarity achieved with the side navigation. Resource sections, such as competitor pages, company details, and blogs, were found to be more helpful in improving understanding.",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "Sentiment : The story change negatively impacted sentiment. 22% of participants described the page as complicated, and 10% found it confusing. Positive impressions—such as being transparent, approachable, trustworthy, and confident—also dropped noticeably.",
+          "level": 1,
+          "children": []
+        },
+        {
+          "text": "ZURB provides weekly concept testing, additional feature support for the experience and functionality, and web analysis.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "There are three areas of consideration and work.",
+          "level": 0,
+          "children": []
+        },
+        {
+          "text": "The weekly cadence will look like this:",
+          "level": 0,
+          "children": []
+        }
+      ]
+    },
+    "linked_pages": [],
+    "linked_files": [],
+    "toggles": [
+      {
+        "title": "📌 November 21, 2024",
+        "expanded": false,
+        "children_present": false
+      },
+      {
+        "title": "Kickoff Question",
+        "expanded": false,
+        "children_present": false
+      },
+      {
+        "title": "Archives",
+        "expanded": false,
+        "children_present": false
+      }
+    ]
+  }
+]

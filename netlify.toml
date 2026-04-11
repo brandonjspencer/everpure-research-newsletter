@@ -1,0 +1,20 @@
+[build]
+  command = "bash netlify/build.sh"
+  publish = "publish"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  included_files = ["publish/data/**"]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api?path=:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/admin/trigger-build"
+  to = "/.netlify/functions/trigger-build"
+  status = 200
+  force = true

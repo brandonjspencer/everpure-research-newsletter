@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Everpure Research API</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.5; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+    a { text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Everpure Research API</h1>
+  <p>This site serves normalized research outputs and API endpoints generated from the Everpure Notion pipeline.</p>
+  <h2>Useful endpoints</h2>
+  <ul>
+    <li><a href="/api/health">/api/health</a></li>
+    <li><a href="/api/metadata">/api/metadata</a></li>
+    <li><a href="/api/weeks">/api/weeks</a></li>
+    <li><a href="/api/findings">/api/findings</a></li>
+    <li><a href="/api/summary">/api/summary</a></li>
+    <li><a href="/api/decks">/api/decks</a></li>
+    <li><a href="/api/deck-summary">/api/deck-summary</a></li>
+    <li><a href="/api/deck-details">/api/deck-details</a></li>
+    <li><a href="/api/deck-content">/api/deck-content</a></li>
+  </ul>
+  <p>To rebuild the site automatically, configure a Netlify build hook and set <code>NETLIFY_BUILD_HOOK_URL</code> plus <code>REFRESH_TRIGGER_SECRET</code>.</p>
+</body>
+</html>

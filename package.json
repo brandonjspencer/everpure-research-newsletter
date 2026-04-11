@@ -1,0 +1,13 @@
+{
+  "name": "everpure-netlify-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netlify deployment bundle for the Everpure research parser and API",
+  "scripts": {
+    "build": "bash netlify/build.sh",
+    "dev": "netlify dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
