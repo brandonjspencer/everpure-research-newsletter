@@ -9,8 +9,14 @@ What this package does
 Core environment variables
 - SOURCE_URL
   Public Notion URL. If omitted, the build falls back to data/Everpure.html.
+- GOOGLE_CLIENT_ID
+  Preferred for stable Google auth. OAuth client ID used with refresh-token flow.
+- GOOGLE_CLIENT_SECRET
+  Preferred for stable Google auth. OAuth client secret used with refresh-token flow.
+- GOOGLE_REFRESH_TOKEN
+  Preferred for stable Google auth. OAuth refresh token used to mint a fresh access token during each build.
 - GOOGLE_ACCESS_TOKEN
-  Optional Google OAuth bearer token for deck PDF and metadata fetches.
+  Legacy fallback only. Short-lived bearer token.
 - GOOGLE_FETCH_LIMIT
   Optional integer to limit deck fetch count during testing.
 - NETLIFY_BUILD_HOOK_URL
@@ -43,4 +49,5 @@ Manual build trigger
 
 Local notes
 - The build step installs Python dependencies from requirements.txt.
-- If GOOGLE_ACCESS_TOKEN is omitted, the site still builds from the Notion HTML snapshot or live SOURCE_URL.
+- If Google refresh-token credentials are present, the build exchanges them for a fresh access token automatically.
+- If GOOGLE_ACCESS_TOKEN is omitted and refresh-token credentials are absent, the site still builds from the Notion HTML snapshot or live SOURCE_URL.

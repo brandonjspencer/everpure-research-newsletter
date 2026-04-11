@@ -23,11 +23,21 @@ python3 "$ROOT/everpure_deck_ingest.py" \
   --data-dir "$OUT" \
   --local-artifact-dir "$ARTIFACTS"
 
+FETCH_ARGS=()
 if [ -n "${GOOGLE_ACCESS_TOKEN:-}" ]; then
-  FETCH_ARGS=(
+  FETCH_ARGS+=(--access-token "$GOOGLE_ACCESS_TOKEN")
+elif [ -n "${GOOGLE_CLIENT_ID:-}" ] && [ -n "${GOOGLE_CLIENT_SECRET:-}" ] && [ -n "${GOOGLE_REFRESH_TOKEN:-}" ]; then
+  FETCH_ARGS+=(
+    --client-id "$GOOGLE_CLIENT_ID"
+    --client-secret "$GOOGLE_CLIENT_SECRET"
+    --refresh-token "$GOOGLE_REFRESH_TOKEN"
+  )
+fi
+
+if [ ${#FETCH_ARGS[@]} -gt 0 ]; then
+  FETCH_ARGS+=(
     --data-dir "$OUT"
     --artifact-dir "$ARTIFACTS"
-    --access-token "$GOOGLE_ACCESS_TOKEN"
   )
   if [ -n "${GOOGLE_FETCH_LIMIT:-}" ]; then
     FETCH_ARGS+=(--limit "$GOOGLE_FETCH_LIMIT")

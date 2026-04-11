@@ -74,12 +74,35 @@ def issue_service_account_token(service_account_json: Path, subject: Optional[st
     return access_token
 
 
+def issue_refresh_token_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
+    resp = requests.post(
+        TOKEN_URL,
+        data={
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'refresh_token': refresh_token,
+            'grant_type': 'refresh_token',
+        },
+        timeout=60,
+    )
+    resp.raise_for_status()
+    body = resp.json()
+    access_token = body.get('access_token')
+    if not access_token:
+        raise GoogleAuthError(f'No access_token in refresh-token response: {body}')
+    return access_token
+
+
 def resolve_access_token(args: argparse.Namespace) -> str:
     if args.access_token:
         return args.access_token
+    if args.client_id and args.client_secret and args.refresh_token:
+        return issue_refresh_token_access_token(args.client_id, args.client_secret, args.refresh_token)
     if args.service_account_json:
         return issue_service_account_token(Path(args.service_account_json), subject=args.subject)
-    raise GoogleAuthError('Provide either --access-token or --service-account-json')
+    raise GoogleAuthError(
+        'Provide one of: --access-token, all of --client-id/--client-secret/--refresh-token, or --service-account-json'
+    )
 
 
 def selected_file_ids(args: argparse.Namespace, deck_details: List[Dict[str, Any]]) -> List[str]:
@@ -166,7 +189,7 @@ def fetch_and_save(
 
 
 def cli() -> None:
-    ap = argparse.ArgumentParser(description='Fetch Google Slides deck artifacts using OAuth access token or service account')
+    ap = argparse.ArgumentParser(description='Fetch Google Slides deck artifacts using OAuth access token, refresh token, or service account')
     ap.add_argument('--data-dir', default='/mnt/data/everpure_parsed', help='Directory containing deck_details.json and weeks.json')
     ap.add_argument('--artifact-dir', default='/mnt/data/everpure_raw/decks', help='Directory to store downloaded artifacts named <file_id>.<ext>')
     ap.add_argument('--file-id', action='append', help='Specific Google file ID to fetch. Repeat flag to fetch multiple.')
@@ -175,6 +198,9 @@ def cli() -> None:
     ap.add_argument('--pptx-only', action='store_true', help='Fetch PPTX export only')
     ap.add_argument('--skip-meta', action='store_true', help='Skip Slides metadata fetch')
     ap.add_argument('--access-token', default=None, help='OAuth bearer token with Drive/Slides read scopes')
+    ap.add_argument('--client-id', default=None, help='OAuth client ID used with refresh-token flow')
+    ap.add_argument('--client-secret', default=None, help='OAuth client secret used with refresh-token flow')
+    ap.add_argument('--refresh-token', default=None, help='OAuth refresh token used to mint a fresh access token')
     ap.add_argument('--service-account-json', default=None, help='Path to service account JSON for server-to-server auth')
     ap.add_argument('--subject', default=None, help='Optional user email for domain-wide delegation impersonation')
     args = ap.parse_args()

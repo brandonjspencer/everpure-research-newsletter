@@ -8,19 +8,26 @@ LIMIT="${LIMIT:-0}"
 MODE="${MODE:-pdf}"
 SKIP_META="${SKIP_META:-0}"
 
-if [[ -z "${ACCESS_TOKEN:-}" ]]; then
-  echo "ACCESS_TOKEN is required"
-  exit 1
-fi
-
-mkdir -p "$ARTIFACT_DIR"
-
 ARGS=(
   "$ROOT_DIR/everpure_google_fetch.py"
   --data-dir "$DATA_DIR"
   --artifact-dir "$ARTIFACT_DIR"
-  --access-token "$ACCESS_TOKEN"
 )
+
+if [[ -n "${ACCESS_TOKEN:-}" ]]; then
+  ARGS+=(--access-token "$ACCESS_TOKEN")
+elif [[ -n "${GOOGLE_CLIENT_ID:-}" && -n "${GOOGLE_CLIENT_SECRET:-}" && -n "${GOOGLE_REFRESH_TOKEN:-}" ]]; then
+  ARGS+=(
+    --client-id "$GOOGLE_CLIENT_ID"
+    --client-secret "$GOOGLE_CLIENT_SECRET"
+    --refresh-token "$GOOGLE_REFRESH_TOKEN"
+  )
+else
+  echo "Provide either ACCESS_TOKEN or GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN"
+  exit 1
+fi
+
+mkdir -p "$ARTIFACT_DIR"
 
 if [[ "$MODE" == "pdf" ]]; then
   ARGS+=(--pdf-only)
@@ -36,12 +43,12 @@ if [[ "$LIMIT" != "0" ]]; then
   ARGS+=(--limit "$LIMIT")
 fi
 
-python "${ARGS[@]}"
+python3 "${ARGS[@]}"
 
 if [[ -f "$ROOT_DIR/everpure_deck_content_ingest.py" ]]; then
-  python "$ROOT_DIR/everpure_deck_content_ingest.py" \
+  python3 "$ROOT_DIR/everpure_deck_content_ingest.py" \
     --data-dir "$DATA_DIR" \
-    --artifact-dir "$ARTIFACT_DIR"
+    --pdf-dir "$ARTIFACT_DIR"
 fi
 
 echo "Done. Check:"
