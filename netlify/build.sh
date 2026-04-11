@@ -56,6 +56,7 @@ fi
 node "$ROOT/netlify/generate_static_newsletters.js"
 node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
 node "$ROOT/netlify/clean_evidence_signals.js" "$ROOT/publish"
+node "$ROOT/netlify/build_concept_evidence.js" "$ROOT/publish"
 touch "$ROOT/publish/.nojekyll"
 
 node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
