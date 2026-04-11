@@ -246,6 +246,47 @@ function buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent)
   };
 }
 
+
+function buildBaseUrl(event) {
+  try {
+    if (event && event.rawUrl) {
+      const u = new URL(event.rawUrl);
+      return `${u.protocol}//${u.host}`;
+    }
+  } catch {}
+  const headers = (event && event.headers) || {};
+  const proto = headers['x-forwarded-proto'] || headers['X-Forwarded-Proto'] || 'https';
+  const host = headers['host'] || headers['Host'] || null;
+  if (host) return `${proto}://${host}`;
+  return process.env.URL || process.env.DEPLOY_URL || '';
+}
+
+function buildDiscovery(baseUrl) {
+  const rel = {
+    status: '/api/status',
+    health: '/api/health',
+    weeks: '/api/weeks',
+    summary: '/api/summary',
+    newsletter_default: '/api/newsletter-default',
+    newsletter_default_markdown: '/api/newsletter-default.md',
+    newsletter_marketing_activity_30d: '/api/newsletter-marketing-activity-30d',
+    newsletter_marketing_activity_30d_markdown: '/api/newsletter-marketing-activity-30d.md',
+    newsletter_static_index: '/newsletter/',
+    newsletter_static_default_json: '/newsletter/default.json',
+    newsletter_static_default_markdown: '/newsletter/default.md',
+    newsletter_static_default_html: '/newsletter/default.html',
+    newsletter_static_marketing_json: '/newsletter/marketing-activity-30d.json',
+    newsletter_static_marketing_markdown: '/newsletter/marketing-activity-30d.md',
+    newsletter_static_marketing_html: '/newsletter/marketing-activity-30d.html'
+  };
+  const abs = {};
+  const root = String(baseUrl || '').replace(/\/$/, '');
+  for (const [k, v] of Object.entries(rel)) {
+    abs[k] = root ? `${root}${v}` : v;
+  }
+  return { relative: rel, absolute: abs };
+}
+
 function attachMeta(body, meta) {
   if (body && typeof body === 'object' && !Array.isArray(body)) {
     return { ...body, _meta: meta };
@@ -1097,6 +1138,8 @@ function renderNewsletterMarkdown(newsletter) {
 exports.handler = async (event, context) => {
   const params = event.queryStringParameters || {};
   const route = resolveRoute(event, context);
+  const baseUrl = buildBaseUrl(event);
+  const discovery = buildDiscovery(baseUrl);
   const metadata = loadJson('metadata.json', {});
   const weeks = loadJson('weeks.json', []);
   const decks = loadJson('decks.json', []);
@@ -1110,9 +1153,9 @@ exports.handler = async (event, context) => {
   const freshness = buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent);
 
   if (!route || route === 'health') {
-    return ok({ ok: true, route, defaults: { window: '30d', audience: 'exec', tone: 'strategic' } }, freshness);
+    return ok({ ok: true, route, defaults: { window: '30d', audience: 'exec', tone: 'strategic' }, discovery }, freshness);
   }
-  if (route === 'status') return ok({ ok: true, route: 'status', defaults: { window: '30d', audience: 'exec', tone: 'strategic' } }, freshness);
+  if (route === 'status') return ok({ ok: true, route: 'status', defaults: { window: '30d', audience: 'exec', tone: 'strategic' }, discovery }, freshness);
   if (route === 'metadata') return ok(metadata, freshness);
   if (route === 'decks') return ok(decks, freshness);
   if (route === 'deck-summary') return ok({ deck_summary: deckSummary, deck_content_summary: deckContentSummary }, freshness);
@@ -1138,6 +1181,23 @@ exports.handler = async (event, context) => {
   if (route === 'summary') {
     const filteredWeeks = filterWeeks(weeks, params);
     return ok(buildPack(filteredWeeks, deckContentIndex, params.since || null, params.until || null), freshness);
+  }
+  const newsletterAliases = {
+    'newsletter-default': { preset: 'default_exec_monthly' },
+    'newsletter-default.md': { preset: 'default_exec_monthly' },
+    'newsletter-marketing-activity-30d': { preset: 'marketing_activity_30d' },
+    'newsletter-marketing-activity-30d.md': { preset: 'marketing_activity_30d' }
+  };
+  if (newsletterAliases[route]) {
+    const mergedParams = { ...params, ...newsletterAliases[route] };
+    const newsletterOptions = resolveNewsletterOptions(mergedParams);
+    const bounds = deriveWindowBounds({ ...mergedParams, window: newsletterOptions.window }, weeks);
+    const filteredWeeks = filterWeeks(weeks, { ...mergedParams, since: bounds.since, until: bounds.until });
+    const newsletter = buildNewsletter(filteredWeeks, deckContentIndex, bounds, newsletterOptions);
+    if (route.endsWith('.md') || safeLower(params.format) === 'markdown' || safeLower(params.output) === 'markdown') {
+      return okText(renderNewsletterMarkdown(newsletter), freshness, 'text/markdown; charset=utf-8');
+    }
+    return ok(newsletter, freshness);
   }
   if (route === 'newsletter' || route === 'newsletter.md') {
     const newsletterOptions = resolveNewsletterOptions(params);
