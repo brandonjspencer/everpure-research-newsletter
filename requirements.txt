@@ -4,3 +4,4 @@ flask
 pypdf
 pdfplumber
 PyJWT
+playwright

@@ -51,3 +51,8 @@ Local notes
 - The build step installs Python dependencies from requirements.txt.
 - If Google refresh-token credentials are present, the build exchanges them for a fresh access token automatically.
 - If GOOGLE_ACCESS_TOKEN is omitted and refresh-token credentials are absent, the site still builds from the Notion HTML snapshot or live SOURCE_URL.
+
+
+Live Notion fetch notes
+- For SOURCE_URL builds, the package installs Playwright Chromium during the build and defaults NOTION_FETCH_METHOD to playwright.
+- Optional: set NOTION_FETCH_METHOD=requests if you want to test direct HTTP fetches instead.

@@ -2,7 +2,6 @@
 import argparse
 import json
 import os
-import re
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -10,7 +9,6 @@ from typing import Any, Dict, Optional
 
 import requests
 
-# Local imports from previously generated scripts.
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
@@ -42,28 +40,38 @@ class NotionFetcher:
         method = method.lower()
         attempts = []
 
-        if method in {'auto', 'requests'}:
-            try:
-                html = self._fetch_requests(url)
-                attempts.append('requests')
-                if self._looks_like_rendered_notion(html):
-                    return {'html': html, 'method': 'requests', 'attempts': attempts}
-            except Exception as exc:
-                attempts.append(f'requests_failed:{exc.__class__.__name__}')
-                if method == 'requests':
-                    raise
+        # For hosted environments, browser rendering is usually the reliable path.
+        ordered_methods = []
+        if method == 'auto':
+            ordered_methods = ['playwright', 'requests']
+        else:
+            ordered_methods = [method]
 
-        if method in {'auto', 'playwright'}:
-            try:
-                html = self._fetch_playwright(url)
-                attempts.append('playwright')
-                if self._looks_like_rendered_notion(html):
-                    return {'html': html, 'method': 'playwright', 'attempts': attempts}
-                raise FetchError('playwright_render_missing_notion_blocks')
-            except Exception as exc:
-                attempts.append(f'playwright_failed:{exc.__class__.__name__}')
-                if method == 'playwright':
-                    raise
+        for candidate in ordered_methods:
+            if candidate == 'requests':
+                try:
+                    html = self._fetch_requests(url)
+                    attempts.append('requests')
+                    if self._looks_like_rendered_notion(html):
+                        return {'html': html, 'method': 'requests', 'attempts': attempts}
+                    attempts.append('requests_unrendered')
+                except Exception as exc:
+                    attempts.append(f'requests_failed:{exc.__class__.__name__}:{exc}')
+                    if method == 'requests':
+                        raise
+            elif candidate == 'playwright':
+                try:
+                    html = self._fetch_playwright(url)
+                    attempts.append('playwright')
+                    if self._looks_like_rendered_notion(html):
+                        return {'html': html, 'method': 'playwright', 'attempts': attempts}
+                    attempts.append('playwright_unrendered')
+                except Exception as exc:
+                    attempts.append(f'playwright_failed:{exc.__class__.__name__}:{exc}')
+                    if method == 'playwright':
+                        raise
+            else:
+                raise FetchError(f'Unsupported fetch method: {candidate}')
 
         raise FetchError('Unable to fetch a rendered Notion page. Attempts: ' + ', '.join(attempts))
 
@@ -83,25 +91,34 @@ class NotionFetcher:
         try:
             from playwright.sync_api import sync_playwright  # type: ignore
         except Exception as exc:
-            raise FetchError('Playwright is not installed. Install with: pip install playwright && playwright install chromium') from exc
+            raise FetchError('Playwright is not installed. Install with: pip install playwright && python -m playwright install chromium') from exc
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page(user_agent=DEFAULT_UA)
-            page.goto(url, wait_until='networkidle', timeout=self.timeout * 1000)
+            context = browser.new_context(
+                user_agent=DEFAULT_UA,
+                viewport={'width': 1440, 'height': 2200},
+                java_script_enabled=True,
+                locale='en-US',
+            )
+            page = context.new_page()
+            page.goto(url, wait_until='domcontentloaded', timeout=self.timeout * 1000)
+            page.wait_for_timeout(4000)
             try:
-                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=15000)
+                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=25000)
             except Exception:
-                # Give it one more beat in case the page is slow.
-                page.wait_for_timeout(3000)
+                page.wait_for_timeout(5000)
+            page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+            page.wait_for_timeout(2000)
             html = page.content()
+            context.close()
             browser.close()
             return html
 
     @staticmethod
     def _looks_like_rendered_notion(html: str) -> bool:
         block_count = html.count(NOTION_BLOCK_HINT)
-        return block_count >= 20 and ('Weekly Rundown' in html or '📌' in html)
+        return block_count >= 20 and ('Weekly Rundown' in html or '📌' in html or 'View Findings Deck' in html)
 
 
 def write_json(path: Path, data: Any) -> None:
@@ -152,7 +169,6 @@ def refresh_pipeline(
     for key in ('metadata', 'weeks', 'decks', 'summary'):
         write_json(output_dir / f'{key}.json', parsed[key])
 
-    # Default 90-day pack if no explicit window.
     if until is None:
         until = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     if since is None:
@@ -186,7 +202,7 @@ def cli() -> None:
     ap.add_argument('--raw-dir', default='/mnt/data/everpure_raw', help='Directory for fetched HTML snapshots')
     ap.add_argument('--since', default=None, help='Newsletter pack start date (YYYY-MM-DD)')
     ap.add_argument('--until', default=None, help='Newsletter pack end date (YYYY-MM-DD)')
-    ap.add_argument('--fetch-method', default='auto', choices=['auto', 'requests', 'playwright'], help='Fetcher backend')
+    ap.add_argument('--fetch-method', default=os.environ.get('NOTION_FETCH_METHOD', 'auto'), choices=['auto', 'requests', 'playwright'], help='Fetcher backend')
     args = ap.parse_args()
 
     manifest = refresh_pipeline(

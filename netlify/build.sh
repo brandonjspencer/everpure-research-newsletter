@@ -9,19 +9,13 @@ mkdir -p "$OUT" "$RAW" "$ARTIFACTS"
 python3 -m pip install --disable-pip-version-check -r "$ROOT/requirements.txt"
 
 if [ -n "${SOURCE_URL:-}" ]; then
-  python3 "$ROOT/everpure_refresh.py" \
-    --source-url "$SOURCE_URL" \
-    --output-dir "$OUT" \
-    --raw-dir "$RAW"
+  python3 -m playwright install chromium
+  NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-playwright}"   python3 "$ROOT/everpure_refresh.py"     --source-url "$SOURCE_URL"     --output-dir "$OUT"     --raw-dir "$RAW"
 else
-  python3 "$ROOT/everpure_refresh.py" \
-    --html-path "$ROOT/data/Everpure.html" \
-    --output-dir "$OUT"
+  python3 "$ROOT/everpure_refresh.py"     --html-path "$ROOT/data/Everpure.html"     --output-dir "$OUT"
 fi
 
-python3 "$ROOT/everpure_deck_ingest.py" \
-  --data-dir "$OUT" \
-  --local-artifact-dir "$ARTIFACTS"
+python3 "$ROOT/everpure_deck_ingest.py"   --data-dir "$OUT"   --local-artifact-dir "$ARTIFACTS"
 
 FETCH_ARGS=()
 if [ -n "${GOOGLE_ACCESS_TOKEN:-}" ]; then
@@ -46,7 +40,5 @@ if [ ${#FETCH_ARGS[@]} -gt 0 ]; then
 fi
 
 if compgen -G "$ARTIFACTS/*.pdf" > /dev/null; then
-  python3 "$ROOT/everpure_deck_content_ingest.py" \
-    --data-dir "$OUT" \
-    --pdf-dir "$ARTIFACTS"
+  python3 "$ROOT/everpure_deck_content_ingest.py"     --data-dir "$OUT"     --pdf-dir "$ARTIFACTS"
 fi
