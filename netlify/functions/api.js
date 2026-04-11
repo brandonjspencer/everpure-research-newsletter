@@ -14,11 +14,23 @@ const GROUP_KEYS = [
 ];
 const ITEM_ID_RE = /^(\d{2,4})\s*-\s*(.+)$/;
 
-function headers() {
+function headers(meta = {}) {
   return {
     'content-type': 'application/json; charset=utf-8',
-    'cache-control': 'public, max-age=60',
-    'access-control-allow-origin': '*'
+    'cache-control': 'no-store, max-age=0, must-revalidate',
+    'cdn-cache-control': 'no-store',
+    'netlify-cdn-cache-control': 'no-store',
+    'pragma': 'no-cache',
+    'expires': '0',
+    'netlify-vary': 'query',
+    'access-control-allow-origin': '*',
+    'x-generated-at': meta.generated_at || '',
+    'x-source-fetched-at': meta.source_fetched_at || '',
+    'x-latest-week-date': meta.latest_week_date || '',
+    'x-week-count': String(meta.week_count || 0),
+    'x-deck-content-count': String(meta.deck_content_count || 0),
+    'x-build-id': meta.build_id || '',
+    'x-deploy-id': meta.deploy_id || ''
   };
 }
 
@@ -149,14 +161,6 @@ function buildPack(weeks, deckContentIndex, since, until) {
   };
 }
 
-function ok(body) {
-  return { statusCode: 200, headers: headers(), body: JSON.stringify(body) };
-}
-
-function notFound(route) {
-  return { statusCode: 404, headers: headers(), body: JSON.stringify({ error: 'not_found', route }) };
-}
-
 function parseUrlPath(value) {
   if (!value) return '';
   try {
@@ -196,6 +200,52 @@ function resolveRoute(event, context) {
   return '';
 }
 
+function buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent) {
+  const latestWeek = (weeks || []).reduce((acc, week) => {
+    if (!acc || (week.week_date || '') > acc) return week.week_date || '';
+    return acc;
+  }, '');
+  return {
+    generated_at: refreshManifest.generated_at || null,
+    source_fetched_at: (((refreshManifest || {}).source || {}).fetched_at) || null,
+    source_fetch_method: (((refreshManifest || {}).source || {}).fetch_method) || null,
+    source_url_present: Boolean((((refreshManifest || {}).source || {}).source_url)),
+    latest_week_date: latestWeek || null,
+    week_count: (weeks || []).length,
+    deck_count: (decks || []).length,
+    deck_detail_count: (deckDetails || []).length,
+    deck_content_count: (deckContent || []).length,
+    build_id: process.env.BUILD_ID || null,
+    deploy_id: process.env.DEPLOY_ID || null,
+    commit_ref: process.env.COMMIT_REF || null,
+    context: process.env.CONTEXT || null,
+    site_url: process.env.URL || null
+  };
+}
+
+function attachMeta(body, meta) {
+  if (body && typeof body === 'object' && !Array.isArray(body)) {
+    return { ...body, _meta: meta };
+  }
+  return body;
+}
+
+function ok(body, meta) {
+  return {
+    statusCode: 200,
+    headers: headers(meta),
+    body: JSON.stringify(attachMeta(body, meta))
+  };
+}
+
+function notFound(route, meta) {
+  return {
+    statusCode: 404,
+    headers: headers(meta),
+    body: JSON.stringify({ error: 'not_found', route, _meta: meta })
+  };
+}
+
 exports.handler = async (event, context) => {
   const params = event.queryStringParameters || {};
   const route = resolveRoute(event, context);
@@ -207,44 +257,40 @@ exports.handler = async (event, context) => {
   const deckDetails = loadJson('deck_details.json', []);
   const deckContent = loadJson('deck_content.json', []);
   const deckContentSummary = loadJson('deck_content_summary.json', {});
+  const refreshManifest = loadJson('refresh_manifest.json', {});
   const deckContentIndex = Object.fromEntries((deckContent || []).filter((d) => d.file_id).map((d) => [d.file_id, d]));
+  const freshness = buildFreshness(refreshManifest, weeks, decks, deckDetails, deckContent);
 
   if (!route || route === 'health') {
-    return ok({
-      ok: true,
-      route,
-      week_count: weeks.length,
-      deck_count: decks.length,
-      deck_detail_count: deckDetails.length,
-      deck_content_count: deckContent.length
-    });
+    return ok({ ok: true, route }, freshness);
   }
-  if (route === 'metadata') return ok(metadata);
-  if (route === 'decks') return ok(decks);
-  if (route === 'deck-summary') return ok({ deck_summary: deckSummary, deck_content_summary: deckContentSummary });
-  if (route === 'deck-details') return ok(deckDetails);
+  if (route === 'status') return ok({ ok: true, route: 'status' }, freshness);
+  if (route === 'metadata') return ok(metadata, freshness);
+  if (route === 'decks') return ok(decks, freshness);
+  if (route === 'deck-summary') return ok({ deck_summary: deckSummary, deck_content_summary: deckContentSummary }, freshness);
+  if (route === 'deck-details') return ok(deckDetails, freshness);
   if (route.startsWith('deck-details/')) {
     const fileId = route.split('/')[1] || '';
     const row = deckDetails.find((d) => d.file_id === fileId);
-    return row ? ok(row) : notFound(route);
+    return row ? ok(row, freshness) : notFound(route, freshness);
   }
   if (route === 'deck-content') {
     if (params.file_id) {
-      return ok(deckContentIndex[params.file_id] || null);
+      return ok(deckContentIndex[params.file_id] || null, freshness);
     }
-    return ok(deckContent);
+    return ok(deckContent, freshness);
   }
   if (route === 'weeks') {
-    return ok(filterWeeks(weeks, params));
+    return ok(filterWeeks(weeks, params), freshness);
   }
   if (route === 'findings') {
     const filteredWeeks = filterWeeks(weeks, params);
-    return ok(extractFindings(filteredWeeks, params.group || null, params.q || null));
+    return ok(extractFindings(filteredWeeks, params.group || null, params.q || null), freshness);
   }
   if (route === 'summary') {
     const filteredWeeks = filterWeeks(weeks, params);
-    return ok(buildPack(filteredWeeks, deckContentIndex, params.since || null, params.until || null));
+    return ok(buildPack(filteredWeeks, deckContentIndex, params.since || null, params.until || null), freshness);
   }
-  if (route === 'static-summary') return ok(summary);
-  return notFound(route);
+  if (route === 'static-summary') return ok(summary, freshness);
+  return notFound(route, freshness);
 };
