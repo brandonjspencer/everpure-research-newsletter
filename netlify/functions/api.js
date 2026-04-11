@@ -417,6 +417,7 @@ function collectGroupRows(weeks, group) {
 function topGroupRows(weeks, group, limit = 8) {
   const counts = new Map();
   for (const row of collectGroupRows(weeks, group)) {
+    if ((row.level || 0) > 1) continue;
     const key = row.identifier ? `${row.identifier}|${row.label}` : row.label;
     if (!row.label || isFillerLabel(row.label)) continue;
     if (!counts.has(key)) counts.set(key, { label: row.label, identifier: row.identifier, count: 0, latest_week_date: row.week_date });
@@ -627,7 +628,7 @@ function buildRecommendedHighlights(windowedWeeks, audience, limit = 6) {
   return out;
 }
 
-function buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode) {
+function buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode, comparisonTests, shipRecommendations) {
   const recommendations = [];
   if (mode === 'activity_log') {
     recommendations.push('Lead with cadence and volume first so stakeholders can see how consistently the research program is operating.');
@@ -635,13 +636,16 @@ function buildEditorialRecommendations(strategicThemes, validatedFindings, works
     recommendations.push('Keep concept IDs in the marketing activity view where they help show throughput and testing volume.');
     return recommendations;
   }
-  if (strategicThemes.length) recommendations.push(`Lead with ${strategicThemes.slice(0, 2).map((row) => row.theme).join(' and ')} because those are the clearest repeated patterns across the month.`);
-  if (validatedFindings.length) recommendations.push('Keep confirmed findings separate from exploratory concepts so the issue reads as a leadership brief rather than a weekly activity log.');
+  if (!shipRecommendations.length) recommendations.push('Say explicitly that the strongest evidence supports iteration, not an immediate ship decision, when that is the truth of the month.');
+  if (comparisonTests.length) recommendations.push('Give comparison-style work its own section so baseline and variation results are easier to interpret.');
+  if (validatedFindings.length) recommendations.push('Keep confirmed findings separate from exploratory concepts so the issue reads as a decision brief instead of a raw activity log.');
   if (workstreamsToWatch.length) recommendations.push(`Reserve a short “watch next” section for ${workstreamsToWatch.slice(0, 2).map((row) => row.workstream).join(' and ')}.`);
   if (deckBackedInsights.length) recommendations.push('Use deck-backed evidence only when the excerpt adds a concrete insight, not when it repeats document boilerplate.');
   if (audience === 'exec') recommendations.push('Keep internal concept IDs in source references, but remove them from the main narrative wherever possible.');
   return recommendations;
 }
+
+
 
 function buildAudienceHeadline(audience, bounds) {
   const map = {
@@ -722,6 +726,139 @@ function collectNonFillerRows(windowedWeeks, groups = GROUP_KEYS) {
     .filter((row) => groups.includes(row.group) && row.level <= 1 && row.label && !isFillerLabel(row.label));
 }
 
+function cleanNarrativeLabel(label) {
+  let text = String(label || '').trim();
+  text = text.replace(/^baselines?:\s*/i, '');
+  text = text.replace(/\((?:in process|internal|received)\)/ig, '');
+  text = text.replace(/\bCTA\b/g, 'call-to-action');
+  text = text.replace(/\s*:\s*$/g, '');
+  text = text.replace(/\s+/g, ' ').trim();
+  return sentenceCase(text);
+}
+
+function comparisonLike(text) {
+  const low = safeLower(text);
+  return /(\bv\d+\b|\br\d+\b|\bvariation\b|\bvariations\b|\bbaseline\b|\bcomparison\b|\bcompare\b|\breview\b|\banalysis\b|\bcompetitive\b)/.test(low);
+}
+
+function decisionStatusFor(group, label, count) {
+  const low = safeLower(label);
+  if (group === 'in_process') return 'watch';
+  if (group === 'testing_concepts') return comparisonLike(low) ? 'watch' : 'iterate';
+  if (group === 'findings') {
+    if (/(baseline|variation|variations|review|analysis|feedback|summary)/.test(low)) return 'iterate';
+    if (count >= 2 && !comparisonLike(low)) return 'ship';
+    return 'iterate';
+  }
+  return 'watch';
+}
+
+function confidenceLevelFor(group, label, count, hasDeckEvidence = false) {
+  const low = safeLower(label);
+  if (group === 'findings') {
+    if (count >= 2 && hasDeckEvidence && !comparisonLike(low)) return 'high';
+    if (count >= 1) return 'medium';
+  }
+  if (group === 'testing_concepts') return count >= 2 ? 'medium' : 'low';
+  if (group === 'in_process') return count >= 2 ? 'medium' : 'low';
+  return 'low';
+}
+
+function bucketFocusSentence(bucket) {
+  const map = {
+    navigation_and_cta_clarity: 'Users still appear to need clearer navigation and next-step cues.',
+    homepage_and_message_clarity: 'Homepage and messaging comprehension remain active decision areas.',
+    knowledge_portal_and_platform_structure: 'Information architecture and discoverability are still being worked through.',
+    event_and_launch_experiences: 'Event and launch experiences are producing concrete directional signal.',
+    brand_and_rebrand_signals: 'Brand and rebrand work is producing clearer directional feedback.',
+    comparison_and_evaluation_behavior: 'Comparative work is beginning to show which variants are stronger.',
+    ai_and_personalization: 'AI-related messaging is surfacing as a clarity and positioning issue.',
+    general_research_signal: 'This adds signal, but not yet enough for a broad decision.'
+  };
+  return map[bucket] || map.general_research_signal;
+}
+
+function decisionMessage(decision) {
+  const map = {
+    ship: 'Confidence is strong enough to ship the change without another round of validation.',
+    iterate: 'The signal is useful, but it points to another iteration rather than an immediate ship call.',
+    hold: 'Hold this area until stronger evidence is available.',
+    watch: 'Keep this visible as an emerging area, but do not treat it as decision-ready yet.'
+  };
+  return map[decision] || map.watch;
+}
+
+function confidenceMessage(level) {
+  const map = {
+    high: 'High confidence',
+    medium: 'Moderate confidence',
+    low: 'Directional signal only'
+  };
+  return map[level] || 'Directional signal only';
+}
+
+function buildSourceRefsForLabel(windowedWeeks, group, label, limit = 3) {
+  return collectGroupRows(windowedWeeks, group)
+    .filter((r) => r.label === label)
+    .slice(0, limit)
+    .map((r) => traceRef(r.week_date, r.deck_id, r.record_id));
+}
+
+function collectComparisonCandidates(windowedWeeks, limit = 5) {
+  const rows = [];
+  for (const week of windowedWeeks || []) {
+    for (const group of ['findings', 'testing_concepts']) {
+      for (const item of ((((week || {}).content_groups || {})[group]) || [])) {
+        const baseMatch = ITEM_ID_RE.exec(item.text || '');
+        const baseLabel = cleanNarrativeLabel(baseMatch ? baseMatch[2] : item.text || '');
+        const childLabels = flattenItems(item.children || []).map((child) => cleanNarrativeLabel(child.label || child.text || ''));
+        const joinedChildren = childLabels.join(' ');
+        if (!comparisonLike(baseLabel) && !comparisonLike(joinedChildren)) continue;
+        rows.push({
+          group,
+          week_date: week.week_date,
+          record_id: week.record_id,
+          deck_id: ((week.deck || {}).file_id) || null,
+          label: baseLabel,
+          identifier: baseMatch ? baseMatch[1] : null,
+          child_labels: childLabels
+        });
+      }
+    }
+  }
+  const grouped = new Map();
+  for (const row of rows) {
+    const key = `${row.group}|${row.label}`;
+    if (!grouped.has(key)) grouped.set(key, { ...row, mentions: 0, source_refs: [] });
+    const current = grouped.get(key);
+    current.mentions += 1;
+    if (row.child_labels.length && !current.child_labels.length) current.child_labels = row.child_labels;
+    if (current.source_refs.length < 3) current.source_refs.push(traceRef(row.week_date, row.deck_id, row.record_id));
+    if ((row.week_date || '') > (current.week_date || '')) current.week_date = row.week_date;
+  }
+  return [...grouped.values()]
+    .sort((a, b) => b.mentions - a.mentions || (b.week_date || '').localeCompare(a.week_date || ''))
+    .slice(0, limit)
+    .map((row) => {
+      const decision_status = row.group === 'findings' ? 'iterate' : 'watch';
+      const confidence_level = row.group === 'findings' ? 'medium' : (row.mentions >= 2 ? 'medium' : 'low');
+      const comparison_basis = row.child_labels.length
+        ? `Compared ${row.child_labels.slice(0, 3).join(' vs ')}.`
+        : comparisonLike(row.label)
+          ? 'This item explicitly references a baseline, review, variation, or comparison.'
+          : 'This item behaves like a comparison thread.';
+      return {
+        test_name: row.label,
+        summary: `${row.label} is one of the clearer comparison-style threads in the current window. ${comparison_basis}`,
+        decision_status,
+        confidence_level,
+        recommendation: decisionMessage(decision_status),
+        source_refs: row.source_refs,
+        source_label: row.identifier || null
+      };
+    });
+}
+
 function buildStrategicThemeClusters(windowedWeeks, audience, limit = 5) {
   const rows = collectNonFillerRows(windowedWeeks, ['findings', 'testing_concepts', 'in_process']);
   const clusters = new Map();
@@ -778,25 +915,30 @@ function formatClusterImplication(audience, cluster) {
   return `This theme appears repeatedly enough to merit explicit synthesis in the issue.`;
 }
 
-function buildValidatedFindings(windowedWeeks, audience, limit = 5) {
-  const rows = collectNonFillerRows(windowedWeeks, ['findings']);
+function buildValidatedFindings(windowedWeeks, audience, limit = 5, deckContentIndex = {}) {
+  const ranked = topGroupRows(windowedWeeks, 'findings', limit * 3);
   const out = [];
-  const seen = new Set();
-  for (const row of rows) {
-    const key = `${row.identifier || ''}|${row.label}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const bucket = themeBucketLabel(inferThemeBucket(row.label));
-    const plain = sentenceCase(row.label);
+  for (const row of ranked) {
+    const plain = cleanNarrativeLabel(row.label);
+    const bucket = inferThemeBucket(plain);
+    const refs = buildSourceRefsForLabel(windowedWeeks, 'findings', row.label, 3);
+    const sampleDeckId = (refs[0] || {}).deck_id || null;
+    const hasDeckEvidence = Boolean(sampleDeckId && deckContentIndex[sampleDeckId]);
+    const decision_status = decisionStatusFor('findings', plain, row.count);
+    const confidence_level = confidenceLevelFor('findings', plain, row.count, hasDeckEvidence);
+    const evidence_basis = [];
+    evidence_basis.push('validated finding');
+    if (row.count > 1) evidence_basis.push(`repeated in ${row.count} updates`);
+    if (hasDeckEvidence) evidence_basis.push('deck-backed evidence available');
+    if (comparisonLike(plain)) evidence_basis.push('comparison-style result');
     out.push({
-      headline: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
-      summary: audience === 'exec'
-        ? `${plain} emerged as a confirmed signal in the ${row.week_date} update and reinforces the broader theme of ${bucket.toLowerCase()}.`
-        : `${plain} appeared as a validated finding in ${row.week_date}.`,
-      implication: audience === 'exec'
-        ? `Treat this as a validated takeaway that can inform messaging, prioritization, or follow-up decisions now.`
-        : `Use this as a confirmed finding in the issue rather than a work-in-progress mention.`,
-      source_refs: [traceRef(row.week_date, ((row.deck || {}).file_id) || null, row.record_id)],
+      headline: plain,
+      summary: `${plain} surfaced as a validated signal in the current 30-day window. ${bucketFocusSentence(bucket)}`,
+      implication: decisionMessage(decision_status),
+      decision_status,
+      confidence_level,
+      evidence_basis,
+      source_refs: refs,
       source_label: row.identifier || null
     });
     if (out.length >= limit) break;
@@ -804,97 +946,100 @@ function buildValidatedFindings(windowedWeeks, audience, limit = 5) {
   return out;
 }
 
+
+
 function buildEmergingSignals(windowedWeeks, audience, limit = 5) {
   return topGroupRows(windowedWeeks, 'testing_concepts', limit).map((row) => {
-    const plain = sentenceCase(row.label);
+    const plain = cleanNarrativeLabel(row.label);
     return ({
-      signal: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
-      summary: audience === 'exec'
-        ? `This is still exploratory work, but it is showing up often enough to signal where the team is concentrating next.`
-        : `This topic is active in testing and shows where the research stream is concentrating next.`,
+      signal: plain,
+      summary: `${plain} is still exploratory, but it is recurring often enough to show where the next research pressure is building.`,
       mentions: row.count,
-      source_refs: collectGroupRows(windowedWeeks, 'testing_concepts')
-        .filter((r) => r.label === row.label)
-        .slice(0, 3)
-        .map((r) => traceRef(r.week_date, r.deck_id, r.record_id)),
+      decision_status: decisionStatusFor('testing_concepts', plain, row.count),
+      confidence_level: confidenceLevelFor('testing_concepts', plain, row.count),
+      source_refs: buildSourceRefsForLabel(windowedWeeks, 'testing_concepts', row.label, 3),
       source_label: row.identifier || null
     });
   });
 }
+
+
 
 function buildWorkstreamsToWatch(windowedWeeks, audience, limit = 5) {
   return topGroupRows(windowedWeeks, 'in_process', limit).map((row) => {
-    const plain = sentenceCase(row.label);
+    const plain = cleanNarrativeLabel(row.label);
     return ({
-      workstream: audience === 'exec' ? plain : (row.identifier ? `${row.identifier} — ${plain}` : plain),
-      summary: audience === 'exec'
-        ? `This workstream remained active across the month and looks likely to influence what matters next, even if the signal is not yet fully validated.`
-        : `This workstream remained active across multiple weekly updates.`,
+      workstream: plain,
+      summary: `${plain} remained active across the month and should stay visible as a watch item rather than a finished result.`,
       mentions: row.count,
-      source_refs: collectGroupRows(windowedWeeks, 'in_process')
-        .filter((r) => r.label === row.label)
-        .slice(0, 3)
-        .map((r) => traceRef(r.week_date, r.deck_id, r.record_id)),
+      decision_status: 'watch',
+      confidence_level: confidenceLevelFor('in_process', plain, row.count),
+      source_refs: buildSourceRefsForLabel(windowedWeeks, 'in_process', row.label, 3),
       source_label: row.identifier || null
     });
   });
 }
 
+
+
 function buildLeadershipImplications(strategicThemes, validatedFindings, workstreamsToWatch, audience) {
   const out = [];
+  const shipReady = validatedFindings.filter((row) => row.decision_status === 'ship');
+  if (!shipReady.length) {
+    out.push({
+      statement: 'No item in the current 30-day window rises to a clean high-confidence ship call yet.',
+      rationale: 'The strongest evidence supports iteration and prioritization decisions, but not a blanket “ship now” recommendation.',
+      source_refs: validatedFindings.slice(0, 2).flatMap((row) => row.source_refs || [])
+    });
+  }
   if (strategicThemes[0]) {
     out.push({
-      statement: `${strategicThemes[0].theme} is the clearest repeating signal in this month’s research stream.`,
+      statement: `${strategicThemes[0].theme} is the clearest repeating signal in the current monthly window.`,
       rationale: strategicThemes[0].implication,
       source_refs: strategicThemes[0].source_refs || []
     });
   }
-  if (validatedFindings.length >= 2) {
-    out.push({
-      statement: `The current issue should distinguish confirmed findings from exploratory work.`,
-      rationale: `Recent records contain both validated findings and active concepts; leaders should be able to tell the difference immediately.`,
-      source_refs: validatedFindings.slice(0, 2).flatMap((row) => row.source_refs || [])
-    });
-  }
   if (workstreamsToWatch[0]) {
     out.push({
-      statement: `At least one active workstream should stay visible between issues.`,
-      rationale: audience === 'exec'
-        ? `Ongoing activity is concentrated enough that leadership should track what is maturing next, not just what is already validated.`
-        : `The issue should show what is gaining momentum, not just what is complete.`,
+      statement: `Leaders should keep ${workstreamsToWatch[0].workstream} visible as an active follow-through area.`,
+      rationale: 'The monthly issue should not stop at validated findings; it should also show what is maturing next.',
       source_refs: workstreamsToWatch[0].source_refs || []
     });
   }
   return out;
 }
 
+
+
 function buildIssueHighlights(validatedFindings, strategicThemes, workstreamsToWatch, audience, limit = 4) {
   const rows = [];
   for (const row of validatedFindings.slice(0, 2)) {
     rows.push({
       title: row.headline,
-      angle: audience === 'exec'
-        ? 'Use this as a confirmed insight in the opening half of the issue.'
-        : 'Use this as a major findings highlight.',
+      angle: row.decision_status === 'ship'
+        ? 'Use this as a ship-ready callout in the opening section.'
+        : 'Use this as a validated finding with a clear next-step recommendation.',
       source_refs: row.source_refs || []
     });
   }
-  for (const row of strategicThemes.slice(0, 1)) {
+  if (strategicThemes[0]) {
     rows.push({
-      title: row.theme,
-      angle: 'Use this as the cross-study pattern that ties multiple weeks together.',
-      source_refs: row.source_refs || []
+      title: strategicThemes[0].theme,
+      angle: 'Use this as the cross-study pattern that ties the month together.',
+      source_refs: strategicThemes[0].source_refs || []
     });
   }
-  for (const row of workstreamsToWatch.slice(0, 1)) {
+  if (workstreamsToWatch[0]) {
     rows.push({
-      title: row.workstream,
-      angle: 'Use this as the “watch next” item that points to upcoming movement.',
-      source_refs: row.source_refs || []
+      title: workstreamsToWatch[0].workstream,
+      angle: 'Use this as the “watch next” item that points to what may matter in the next issue.',
+      source_refs: workstreamsToWatch[0].source_refs || []
     });
   }
   return rows.slice(0, limit);
 }
+
+
 
 function buildVolumeSnapshot(windowedWeeks) {
   const perWeek = (windowedWeeks || []).map((week) => {
@@ -952,22 +1097,28 @@ function buildActivityLogEntries(windowedWeeks, limit = 6) {
   }));
 }
 
-function buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot) {
+function buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot, comparisonTests, shipRecommendations, iterateRecommendations) {
   if (mode === 'activity_log') {
     return `This 30-day view captures the cadence and volume of the research program: ${pack.overview.week_count} weekly updates, ${volumeSnapshot.totals.total_items} tracked items, and repeated motion across findings, concepts, and active workstreams.`;
   }
-  const themeLead = strategicThemes[0] ? strategicThemes[0].theme : null;
-  const validatedLead = validatedFindings[0] ? validatedFindings[0].headline : null;
+  const topTheme = strategicThemes[0] ? strategicThemes[0].theme : 'recent research activity';
+  const topValidated = validatedFindings[0] ? validatedFindings[0].headline : null;
+  const topComparison = comparisonTests[0] ? comparisonTests[0].test_name : null;
   const watchLead = workstreamsToWatch[0] ? workstreamsToWatch[0].workstream : null;
+  const shipCount = shipRecommendations.length;
+  const iterateCount = iterateRecommendations.length;
   const sentences = [];
-  sentences.push(`The last ${pack.overview.week_count} weekly updates point to a handful of repeating user and content signals rather than disconnected one-off studies.`);
-  if (themeLead) sentences.push(`${themeLead} is the clearest cross-week pattern in the current monthly window.`);
-  if (validatedLead) sentences.push(`${validatedLead} is one of the strongest validated signals to carry into leadership discussion.`);
-  if (watchLead) sentences.push(`${watchLead} should stay visible as an active watch item rather than be framed as a completed result.`);
-  if (tone === 'brief') return truncate(sentences.join(' '), 260);
-  if (emergingSignals[0]) sentences.push(`Exploratory work is still active as well, with ${emergingSignals[0].signal} representing one of the stronger emerging signals.`);
+  sentences.push(`Across ${pack.overview.week_count} weekly updates, the strongest monthly signal is ${topTheme.toLowerCase()}, not a scattered set of one-off studies.`);
+  if (topValidated) sentences.push(`${topValidated} is the clearest validated finding in the current window.`);
+  if (topComparison) sentences.push(`${topComparison} is one of the more meaningful comparison-style threads because it helps separate baseline signal from next-step iteration.`);
+  if (!shipCount) sentences.push('The current corpus supports iteration and prioritization decisions more strongly than an immediate ship call.');
+  if (watchLead) sentences.push(`${watchLead} should remain visible as an active watch item rather than be treated as resolved.`);
+  if (tone === 'brief') return truncate(sentences.join(' '), 320);
+  if (iterateCount) sentences.push(`${iterateCount} validated items look useful enough to iterate immediately.`);
   return sentences.join(' ');
 }
+
+
 
 function buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode) {
   const recommendations = [];
@@ -1002,17 +1153,31 @@ function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) 
   const mode = safeLower(options.mode || 'strategic_digest') || 'strategic_digest';
   const pack = buildPack(windowedWeeks, deckContentIndex, bounds.since, bounds.until);
   const deckBackedInsights = buildDeckBackedInsights(windowedWeeks, deckContentIndex, tone === 'brief' ? 3 : 6);
-  const validatedFindings = buildValidatedFindings(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const validatedFindings = buildValidatedFindings(windowedWeeks, audience, tone === 'brief' ? 3 : 5, deckContentIndex);
+  const comparisonTests = collectComparisonCandidates(windowedWeeks, tone === 'brief' ? 3 : 5);
   const emergingSignals = buildEmergingSignals(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
   const workstreamsToWatch = buildWorkstreamsToWatch(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
   const strategicThemes = buildStrategicThemeClusters(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const shipRecommendations = validatedFindings.filter((row) => row.decision_status === 'ship');
+  const iterateRecommendations = validatedFindings.filter((row) => row.decision_status === 'iterate');
+  const watchItems = [...workstreamsToWatch.slice(0, 3), ...emergingSignals.slice(0, 2)].slice(0, tone === 'brief' ? 3 : 5);
+  const confidenceNotes = {
+    ship_ready_count: shipRecommendations.length,
+    iterate_count: iterateRecommendations.length,
+    watch_count: watchItems.length,
+    comparison_test_count: comparisonTests.length,
+    note: shipRecommendations.length
+      ? 'At least one item appears strong enough for a ship recommendation in this window.'
+      : 'This month’s evidence is more useful for deciding what to iterate next than for issuing a blanket ship call.'
+  };
   const leadershipImplications = buildLeadershipImplications(strategicThemes, validatedFindings, workstreamsToWatch, audience);
   const volumeSnapshot = buildVolumeSnapshot(windowedWeeks);
   const cadenceSummary = buildCadenceSummary(windowedWeeks, volumeSnapshot);
   const activityLog = buildActivityLogEntries(windowedWeeks, tone === 'brief' ? 4 : 6);
   const issueHighlights = buildIssueHighlights(validatedFindings, strategicThemes, workstreamsToWatch, audience, tone === 'brief' ? 3 : 4);
-  const recommendations = buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode);
+  const recommendations = buildEditorialRecommendations(strategicThemes, validatedFindings, workstreamsToWatch, deckBackedInsights, audience, mode, comparisonTests, shipRecommendations);
   const sectionTitles = audienceSectionTitles(audience);
+  const topFindings = mode === 'activity_log' ? issueHighlights : validatedFindings;
 
   const newsletter = {
     generated_at: new Date().toISOString(),
@@ -1024,24 +1189,38 @@ function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) 
     defaults: { window: '30d', audience: 'exec', tone: 'strategic' },
     window: { since: bounds.since, until: bounds.until, label: bounds.window_label, days: bounds.days },
     overview: pack.overview,
-    executive_summary: buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot),
+    executive_summary: buildAudienceSummary(audience, tone, mode, windowedWeeks, pack, strategicThemes, validatedFindings, emergingSignals, workstreamsToWatch, volumeSnapshot, comparisonTests, shipRecommendations, iterateRecommendations),
     section_counts: pack.group_counts,
     section_titles: sectionTitles,
+    decision_summary: confidenceNotes,
     sections: {
-      top_findings: validatedFindings,
+      top_findings: topFindings,
       recurring_themes: strategicThemes,
       in_progress: workstreamsToWatch,
       recommended_highlights: issueHighlights,
       deck_backed_insights: deckBackedInsights,
       validated_findings: validatedFindings,
+      comparison_tests: comparisonTests,
+      ship_recommendations: shipRecommendations,
+      iterate_recommendations: iterateRecommendations,
+      watch_items: watchItems,
+      confidence_notes: confidenceNotes,
       emerging_signals: emergingSignals,
       strategic_themes: strategicThemes,
       workstreams_to_watch: workstreamsToWatch,
       leadership_implications: leadershipImplications,
       cadence_summary: cadenceSummary,
       volume_snapshot: volumeSnapshot,
-      activity_log: activityLog
+      activity_log: activityLog,
+      activity_counts: volumeSnapshot.totals,
+      weekly_cadence: cadenceSummary,
+      active_workstreams: workstreamsToWatch.map((row) => ({ workstream: row.workstream, mentions: row.mentions, source_refs: row.source_refs }))
     },
+    ship_recommendations: shipRecommendations,
+    iterate_recommendations: iterateRecommendations,
+    watch_items: watchItems,
+    comparison_tests: comparisonTests,
+    confidence_notes: confidenceNotes,
     recommendations,
     source_traceability: {
       record_ids: windowedWeeks.map((week) => week.record_id),
@@ -1051,6 +1230,8 @@ function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) 
   newsletter.draft_markdown = renderNewsletterMarkdown(newsletter);
   return newsletter;
 }
+
+
 
 function renderNewsletterMarkdown(newsletter) {
   const lines = [];
@@ -1073,58 +1254,86 @@ function renderNewsletterMarkdown(newsletter) {
   if (newsletter.mode === 'activity_log') {
     const cadence = newsletter.sections.cadence_summary || {};
     const volume = newsletter.sections.volume_snapshot || {};
-    lines.push('## Research cadence and volume');
+    lines.push('## Activity summary');
     lines.push(cadence.summary || 'No cadence summary available.');
-    lines.push(`- Active weeks: ${cadence.active_weeks || 0}`);
-    lines.push(`- Deck-linked weeks: ${cadence.deck_linked_weeks || 0}`);
-    lines.push(`- Average items per week: ${cadence.average_items_per_week || 0}`);
     lines.push('');
-    lines.push('## Monthly activity log');
+    lines.push('## Volume snapshot');
+    lines.push(`- Total tracked items: ${(volume.totals || {}).total_items || 0}`);
+    lines.push(`- Findings: ${(volume.totals || {}).findings || 0}`);
+    lines.push(`- Testing concepts: ${(volume.totals || {}).testing_concepts || 0}`);
+    lines.push(`- In progress: ${(volume.totals || {}).in_process || 0}`);
+    lines.push(`- Average items per week: ${volume.average_items_per_week || 0}`);
+    lines.push('');
+    lines.push('## Weekly activity log');
     for (const row of (newsletter.sections.activity_log || [])) {
       lines.push(`- **${row.week_date}** — ${row.summary}`);
     }
     lines.push('');
-    lines.push('## What we tested and tracked');
-    lines.push(`- Findings captured: ${(volume.totals || {}).findings || 0}`);
-    lines.push(`- Testing concepts captured: ${(volume.totals || {}).testing_concepts || 0}`);
-    lines.push(`- In-progress items tracked: ${(volume.totals || {}).in_process || 0}`);
-    lines.push(`- Weekly progress notes: ${(volume.totals || {}).weekly_progress || 0}`);
-    lines.push('');
+    lines.push('## Active workstreams');
+    for (const row of (newsletter.sections.active_workstreams || [])) {
+      lines.push(`- **${row.workstream}** — Mentioned ${row.mentions} time(s).`);
+    }
   } else {
-    lines.push('## What leadership should know');
+    lines.push('## What we learned this month');
     for (const row of (newsletter.sections.validated_findings || [])) {
-      const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.headline}** — ${row.summary} ${row.implication}${refs ? ` Source weeks: ${refs}.` : ''}`);
+      lines.push(`- **${row.headline}** — ${row.summary} ${row.implication}`);
+    }
+    lines.push('');
+    lines.push('## What looks ready to ship');
+    if ((newsletter.sections.ship_recommendations || []).length) {
+      for (const row of newsletter.sections.ship_recommendations) {
+        lines.push(`- **${row.headline}** — ${confidenceMessage(row.confidence_level)}. ${row.implication}`);
+      }
+    } else {
+      lines.push('- No item currently reaches a clean high-confidence ship threshold from the last 30 days.');
+    }
+    lines.push('');
+    lines.push('## What needs another iteration');
+    if ((newsletter.sections.iterate_recommendations || []).length) {
+      for (const row of newsletter.sections.iterate_recommendations) {
+        lines.push(`- **${row.headline}** — ${confidenceMessage(row.confidence_level)}. ${row.implication}`);
+      }
+    } else {
+      lines.push('- No immediate iterate recommendations were generated.');
+    }
+    lines.push('');
+    lines.push('## Meaningful comparison tests');
+    if ((newsletter.sections.comparison_tests || []).length) {
+      for (const row of newsletter.sections.comparison_tests) {
+        lines.push(`- **${row.test_name}** — ${row.summary} ${row.recommendation}`);
+      }
+    } else {
+      lines.push('- No comparison-style tests surfaced strongly enough in this window.');
+    }
+    lines.push('');
+    lines.push('## What leadership should focus on next');
+    for (const row of (newsletter.sections.watch_items || [])) {
+      const label = row.workstream || row.signal || row.headline || row.title || 'Watch item';
+      const summary = row.summary || row.implication || 'Keep this visible in the next decision cycle.';
+      lines.push(`- **${label}** — ${summary}`);
     }
     lines.push('');
     lines.push('## Cross-study signals');
     for (const row of (newsletter.sections.strategic_themes || [])) {
-      const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      const examples = (row.supporting_examples || []).join('; ');
-      lines.push(`- **${row.theme}** — ${row.implication}${examples ? ` Examples: ${examples}.` : ''}${refs ? ` Source weeks: ${refs}.` : ''}`);
-    }
-    lines.push('');
-    lines.push('## Workstreams to watch');
-    for (const row of (newsletter.sections.workstreams_to_watch || [])) {
-      const refs = (row.source_refs || []).map((r) => r.week_date).filter(Boolean).join(', ');
-      lines.push(`- **${row.workstream}** — ${row.summary}${refs ? ` Source weeks: ${refs}.` : ''}`);
+      lines.push(`- **${row.theme}** — ${row.implication}`);
     }
     lines.push('');
     lines.push('## Leadership implications');
     for (const row of (newsletter.sections.leadership_implications || [])) {
       lines.push(`- **${row.statement}** — ${row.rationale}`);
     }
-    lines.push('');
   }
 
+  lines.push('');
   lines.push('## Deck-backed evidence');
   if ((newsletter.sections.deck_backed_insights || []).length) {
     for (const row of newsletter.sections.deck_backed_insights) {
-      lines.push(`- ${row.week_date} / ${row.file_id}: ${row.excerpt || 'Deck text available.'}`);
+      lines.push(`- **${row.week_date} / ${row.file_id}** — ${row.excerpt}`);
     }
   } else {
-    lines.push('- No ingested deck text available for this window.');
+    lines.push('- No deck-backed excerpts available in the current output.');
   }
+
   lines.push('');
   lines.push('## Editorial recommendations');
   if ((newsletter.recommendations || []).length) {
@@ -1134,6 +1343,8 @@ function renderNewsletterMarkdown(newsletter) {
   }
   return lines.join('\n');
 }
+
+
 
 exports.handler = async (event, context) => {
   const params = event.queryStringParameters || {};
