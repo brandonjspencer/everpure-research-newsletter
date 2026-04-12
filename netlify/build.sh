@@ -66,6 +66,7 @@ if [ -f "$ROOT/netlify/build_concept_evidence.js" ]; then
 fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
+node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
 
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
   node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
