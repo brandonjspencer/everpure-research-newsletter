@@ -292,10 +292,13 @@ function renderHtml(data) {
   html.push('<meta charset="utf-8" />');
   html.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
   html.push(`<title>${escapeHtml(data.title)}</title>`);
+  html.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
+  html.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
+  html.push('<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">');
   html.push(`
 <style>
 :root {
-  --font-family-primary: 'Pure Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-primary: 'Familjen Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --text-h1: 43px;
   --text-h2: 30px;
   --text-h3: 24px;
