@@ -283,8 +283,8 @@ function renderFinding(item, idx, isLast) {
       <div class="finding-title">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence)}
     </div>
-    ${sourceLink(item.source_label, item.source_href)}
     <p class="finding-copy">${escapeHtml(item.finding_statement)}</p>
+    ${sourceLink(item.source_label, item.source_href)}
     <div class="finding-columns">
       <div class="finding-col evidence-col">
         <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
@@ -306,8 +306,8 @@ function renderComparison(item, idx, isLast) {
       <div class="finding-title finding-title--dark">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence, true)}
     </div>
-    ${sourceLink(item.source_label, item.source_href, true)}
     <p class="finding-copy finding-copy--dark">${escapeHtml(item.finding_statement)}</p>
+    ${sourceLink(item.source_label, item.source_href, true)}
     <div class="finding-columns finding-columns--dark">
       <div class="finding-col evidence-col evidence-col--dark">
         <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
@@ -404,8 +404,8 @@ a { color: inherit; }
 .finding-title--dark { color: var(--sidebar-fg); }
 .confidence { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:4px; font-size:var(--text-label); font-weight:700; }
 .dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
-.source-row { margin:0 0 22px 30px; }
-.source-row--dark { margin-left:30px; }
+.source-row { margin:-10px 0 28px; }
+.source-row--dark { margin-left:0; }
 .source-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted-fg); text-decoration:none; border-bottom:1px solid rgba(90,99,89,0.35); padding-bottom:2px; }
 .source-link:hover { color:var(--primary); border-bottom-color:var(--primary); }
 .source-link--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
