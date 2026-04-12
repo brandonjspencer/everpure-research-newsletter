@@ -74,7 +74,7 @@ const brief = {
       finding_statement:
         'The platform redesign is strongest when the page is easier to scan at first glance. Reducing upper-page noise improves sentiment, while dense infographic treatment too early makes the page read as meant for advanced technical leads and lowers comprehension.',
       proof_point:
-        'Concept 176 evidence ties the cleaner direction to stronger positive reaction and flags the top-of-page infographic as the main comprehension risk.',
+        'Findings suggest the cleaner direction produces a stronger positive reaction and that the top-of-page infographic is the main comprehension risk.',
       next_step:
         'Run one confirmation round that compares the simpler low-noise version against the current redesign, using comprehension plus sentiment together as the release gate.',
       confidence: 'medium',
@@ -96,7 +96,7 @@ const brief = {
       finding_statement:
         'The Evergreen rebrand is strongest when it increases appeal without adding cognitive load too early. Clearer visual pacing helps, while dense infographic treatment near the top hurts both understanding and sentiment.',
       proof_point:
-        'Concept 178 says a color break after the hero increases appeal and sentiment, while adding more infographic content at the top reduces comprehension.',
+        'Evidence suggests a color break after the hero increases appeal and sentiment, while adding more infographic content at the top reduces comprehension.',
       next_step:
         'Continue with the higher-appeal direction, keep the upper page simpler, and delay denser explanatory content until after the offer is understood.',
       confidence: 'medium',
