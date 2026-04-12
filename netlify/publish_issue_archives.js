@@ -164,7 +164,7 @@ function main() {
   console.log(JSON.stringify({
     published_issue_archive: exists(repoIssuesDir),
     published_history: exists(repoHistoryDir),
-    issue_count,
+    issue_count: issueCount,
     outputs: [
       path.join(publishDir, 'issues', 'index.html'),
       path.join(publishDir, 'data', 'issues.json')
