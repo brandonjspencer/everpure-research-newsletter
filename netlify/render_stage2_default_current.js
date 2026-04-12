@@ -270,9 +270,9 @@ function confidenceBadge(level, dark = false) {
   return `<div class="confidence" style="background:${c.bg};color:${c.fg};"><span class="dot" style="background:${c.dot};"></span>${escapeHtml(c.label)}</div>`;
 }
 
-function sourceLink(label, href, dark = false) {
+function sourceLinkInline(label, href, dark = false) {
   if (!href) return '';
-  return `<div class="source-row ${dark ? 'source-row--dark' : ''}"><a class="source-link ${dark ? 'source-link--dark' : ''}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || 'Source deck')} ↗</a></div>`;
+  return `<a class="source-link-inline ${dark ? 'source-link-inline--dark' : ''}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || 'Source deck')} ↗</a>`;
 }
 
 function renderFinding(item, idx, isLast) {
@@ -283,8 +283,7 @@ function renderFinding(item, idx, isLast) {
       <div class="finding-title">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence)}
     </div>
-    <p class="finding-copy">${escapeHtml(item.finding_statement)}</p>
-    ${sourceLink(item.source_label, item.source_href)}
+    <p class="finding-copy">${escapeHtml(item.finding_statement)} ${sourceLinkInline(item.source_label, item.source_href)}</p>
     <div class="finding-columns">
       <div class="finding-col evidence-col">
         <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
@@ -306,8 +305,7 @@ function renderComparison(item, idx, isLast) {
       <div class="finding-title finding-title--dark">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence, true)}
     </div>
-    <p class="finding-copy finding-copy--dark">${escapeHtml(item.finding_statement)}</p>
-    ${sourceLink(item.source_label, item.source_href, true)}
+    <p class="finding-copy finding-copy--dark">${escapeHtml(item.finding_statement)} ${sourceLinkInline(item.source_label, item.source_href, true)}</p>
     <div class="finding-columns finding-columns--dark">
       <div class="finding-col evidence-col evidence-col--dark">
         <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
@@ -404,12 +402,10 @@ a { color: inherit; }
 .finding-title--dark { color: var(--sidebar-fg); }
 .confidence { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:4px; font-size:var(--text-label); font-weight:700; }
 .dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
-.source-row { margin:-10px 0 28px; }
-.source-row--dark { margin-left:0; }
-.source-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted-fg); text-decoration:none; border-bottom:1px solid rgba(90,99,89,0.35); padding-bottom:2px; }
-.source-link:hover { color:var(--primary); border-bottom-color:var(--primary); }
-.source-link--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
-.source-link--dark:hover { color:var(--orange-100); border-bottom-color:var(--orange-100); }
+.source-link-inline { display:inline; white-space:nowrap; font-size:0.72em; font-weight:600; color:var(--muted-fg); text-decoration:none; border-bottom:1px solid rgba(90,99,89,0.35); padding-bottom:1px; margin-left:8px; vertical-align:baseline; }
+.source-link-inline:hover { color:var(--primary); border-bottom-color:var(--primary); }
+.source-link-inline--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
+.source-link-inline--dark:hover { color:var(--orange-100); border-bottom-color:var(--orange-100); }
 .finding-copy { margin:0 0 36px; font-size:var(--text-h4); line-height:1.82; }
 .finding-copy--dark { color: var(--sidebar-fg); }
 .finding-columns { display:grid; grid-template-columns:1fr 1fr; gap:0; }
@@ -453,7 +449,6 @@ a { color: inherit; }
   .stats-grid { width:auto; border-top:1px solid rgba(255,245,227,0.08); }
   .brief-sidebar { border-right:none; padding-right:0; padding-bottom:0; }
   .brief-copy { padding:24px 0 48px; }
-  .source-row, .source-row--dark { margin-left:0; }
   .evidence-col { padding-right:0; border-right:none; margin-bottom:24px; }
   .direction-col { padding-left:0; }
   .question + .question { padding-left:0; border-left:none; padding-top:0; }
