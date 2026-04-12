@@ -16,15 +16,22 @@ function writeText(filePath, text) {
   fs.writeFileSync(filePath, text, 'utf8');
 }
 
-function slugify(input) {
-  return String(input || '')
-    .toLowerCase()
-    .replace(/\([^)]*\)/g, ' ')
-    .replace(/\b(v|r)\d+\b/g, ' ')
-    .replace(/\bbaseline\b/g, ' ')
-    .replace(/[^a-z0-9]+/g, ' ')
+function loadFirstExisting(paths) {
+  for (const p of paths) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
+function stripConceptId(text) {
+  return String(text || '')
+    .replace(/^\s*\d+\s*[-–:]\s*/, '')
+    .replace(/^\s*Concept\s*\d+\s*[-–:]\s*/i, '')
+    .replace(/\(in process\)/ig, '')
+    .replace(/\s+/g, ' ')
     .trim()
-    .replace(/\s+/g, '-');
+    .replace(/[:\-–]+$/, '')
+    .trim();
 }
 
 function titleCase(text) {
@@ -36,213 +43,299 @@ function titleCase(text) {
     .join(' ');
 }
 
-function loadFirstExisting(paths) {
-  for (const p of paths) {
-    if (fs.existsSync(p)) return p;
-  }
-  return null;
-}
+function pickWorkstream(label, parentLabel) {
+  const raw = stripConceptId(label).toLowerCase();
+  const parent = stripConceptId(parentLabel || '').toLowerCase();
 
-function stripEditorialRecommendations(obj) {
-  if (!obj || typeof obj !== 'object') return obj;
-  delete obj.editorial_recommendations;
-  delete obj.editorialRecommendations;
-  delete obj.recommendations;
-  if (obj.sections && typeof obj.sections === 'object') {
-    delete obj.sections.editorial_recommendations;
-    delete obj.sections.editorialRecommendations;
-    delete obj.sections.recommendations;
+  if (/event/.test(raw) || /event/.test(parent)) {
+    return {
+      key: 'events',
+      name: 'Events',
+      unresolved_question: 'Which event-page structure and content framing should move forward after the baseline / V1 / V2 comparison?',
+    };
   }
-  return obj;
-}
-
-function normalizeDefaults(payload) {
-  payload.audience = 'marketing';
-  payload.tone = 'detailed';
-  payload.preset = 'marketing_activity_30d';
-  payload.defaults = {
-    ...(payload.defaults || {}),
-    audience: 'marketing',
-    tone: 'detailed',
-    preset: 'marketing_activity_30d',
-    window: '30d',
+  if (/ai summary/.test(raw) || /homepage ai messaging/.test(raw)) {
+    return {
+      key: 'ai-summary',
+      name: 'AI Summary & Messaging',
+      unresolved_question: 'Which one or two AI framings are strongest enough to take into the next comparison round?',
+    };
+  }
+  if (/evergreen rebrand/.test(raw)) {
+    return {
+      key: 'evergreen-rebrand',
+      name: 'Evergreen Rebrand',
+      unresolved_question: 'Which visual pacing choices improve appeal without hurting comprehension?',
+    };
+  }
+  if (/knowledge portal/.test(raw) || /knowledge portal/.test(parent)) {
+    return {
+      key: 'knowledge-portal',
+      name: 'Knowledge Portal',
+      unresolved_question: 'Which naming and domain framing makes the portal feel most intuitive and support-led?',
+    };
+  }
+  if (/support taxonomy/.test(raw)) {
+    return {
+      key: 'support-taxonomy',
+      name: 'Support Taxonomy',
+      unresolved_question: 'Which labels and navigation paths still break support expectations and need refinement?',
+    };
+  }
+  if (/design\s*&\s*ux feedback/.test(raw)) {
+    return {
+      key: 'design-ux-feedback',
+      name: 'Design & UX Feedback',
+      unresolved_question: 'Which page-level fixes should be prioritized across the reviewed surfaces?',
+    };
+  }
+  if (/pathfinder/.test(raw)) {
+    return {
+      key: 'pathfinder',
+      name: 'Pathfinder',
+      unresolved_question: 'Which labels or journey cues need to become clearer before the next validation round?',
+    };
+  }
+  if (/platform redesign/.test(raw) || /baselines?/.test(raw)) {
+    return {
+      key: 'platform-redesign',
+      name: 'Platform Redesign',
+      unresolved_question: 'Which simplified structure improves comprehension and sentiment enough to justify the next design move?',
+    };
+  }
+  if (/infinite scroll/.test(raw)) {
+    return {
+      key: 'infinite-scroll',
+      name: 'Infinite Scroll',
+      unresolved_question: 'Does infinite scroll improve content discovery enough to warrant more testing?',
+    };
+  }
+  return {
+    key: raw.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'misc',
+    name: titleCase(raw),
+    unresolved_question: 'What does this line of work need to prove in the next round of research?',
   };
-  return payload;
 }
 
-function extractWeeklyRecords(payload) {
-  const candidates = [
-    payload.weekly_activity_log,
-    payload.weeklyActivityLog,
-    payload.sections && payload.sections.weekly_activity_log,
-    payload.sections && payload.sections.weeklyActivityLog,
-    payload.sections && payload.sections.weekly_log,
-    payload.sections && payload.sections.weeklyLog,
-    payload.weeks,
-    payload.weekly,
-    payload.activity_log,
-    payload.activityLog,
-  ];
-  for (const candidate of candidates) {
-    if (Array.isArray(candidate) && candidate.length) return candidate;
-  }
-  return [];
-}
-
-function collectConceptNamesFromWeek(week) {
-  const names = [];
-  const groups = week.content_groups || week.contentGroups || week.groups || {};
+function parseWeeklyRecords(weeks) {
+  const records = [];
   const groupKeys = [
     'findings',
     'testing_concepts',
-    'testingConcepts',
     'in_process',
-    'inProcess',
     'weekly_progress',
-    'weeklyProgress',
     'next_steps',
-    'nextSteps',
   ];
-  for (const key of groupKeys) {
-    const items = groups[key];
-    if (!Array.isArray(items)) continue;
-    for (const item of items) {
-      if (!item) continue;
-      if (typeof item === 'string') {
-        names.push(item);
-      } else if (typeof item.text === 'string') {
-        names.push(item.text);
-      } else if (typeof item.title === 'string') {
-        names.push(item.title);
-      }
-      if (Array.isArray(item.children)) {
-        for (const child of item.children) {
-          if (child && typeof child.text === 'string') names.push(child.text);
-        }
-      }
-    }
-  }
-  return names
-    .map((s) => String(s || '').trim())
-    .filter(Boolean)
-    .filter((s) => !/^view\b/i.test(s))
-    .filter((s) => !/^\p{Emoji}/u.test(s));
-}
 
-function summarizeWeek(week) {
-  const weekDate = week.week_date || week.weekDate || week.date || '';
-  const label = week.week_label_raw || week.weekLabelRaw || weekDate;
-  const names = collectConceptNamesFromWeek(week);
-  const grouped = new Map();
-  for (const name of names) {
-    const base = slugify(name);
-    if (!base) continue;
-    if (!grouped.has(base)) grouped.set(base, new Set());
-    grouped.get(base).add(name);
-  }
-  const groups = [];
-  for (const [, set] of grouped.entries()) {
-    const variants = Array.from(set);
-    variants.sort((a, b) => a.length - b.length || a.localeCompare(b));
-    const canonical = variants[0];
-    groups.push({
-      label: canonical,
-      variants,
-    });
-  }
-  groups.sort((a, b) => a.label.localeCompare(b.label));
-
-  return {
-    week_date: weekDate,
-    week_label: label,
-    concept_count: groups.length,
-    concepts: groups,
-  };
-}
-
-function buildRepeatedThreads(weeks) {
-  const threadMap = new Map();
   for (const week of weeks) {
-    const summary = summarizeWeek(week);
-    for (const concept of summary.concepts) {
-      const key = slugify(concept.label);
-      if (!key) continue;
-      if (!threadMap.has(key)) {
-        threadMap.set(key, {
-          key,
-          name: titleCase(key.replace(/-/g, ' ')),
-          weeks_seen: new Set(),
-          variants: new Set(),
+    const weekLabel = week.week_label_raw || week.weekLabelRaw || week.week_date || week.weekDate || '';
+    const groups = week.content_groups || week.contentGroups || {};
+
+    for (const key of groupKeys) {
+      const items = groups[key];
+      if (!Array.isArray(items)) continue;
+      for (const item of items) {
+        if (!item) continue;
+        const text = typeof item === 'string' ? item : (item.text || item.title || '');
+        const cleanText = stripConceptId(text);
+        if (!cleanText) continue;
+        if (/^view\b/i.test(cleanText)) continue;
+        const parentWs = pickWorkstream(cleanText);
+        const children = Array.isArray(item.children)
+          ? item.children
+              .map((child) => stripConceptId(child && child.text))
+              .filter(Boolean)
+              .filter((name) => !/^view\b/i.test(name))
+          : [];
+
+        if (children.length && parentWs.key === 'design-ux-feedback') {
+          records.push({
+            week_label: weekLabel,
+            week_date: week.week_date || week.weekDate || '',
+            key: parentWs.key,
+            name: parentWs.name,
+            examples: children,
+            source_label: cleanText,
+            group_key: key,
+          });
+          continue;
+        }
+
+        const ws = pickWorkstream(cleanText, cleanText);
+        records.push({
+          week_label: weekLabel,
+          week_date: week.week_date || week.weekDate || '',
+          key: ws.key,
+          name: ws.name,
+          examples: children.length ? children : [cleanText],
+          source_label: cleanText,
+          group_key: key,
         });
       }
-      const entry = threadMap.get(key);
-      entry.weeks_seen.add(summary.week_label || summary.week_date);
-      concept.variants.forEach((v) => entry.variants.add(v));
     }
   }
-  return Array.from(threadMap.values())
-    .map((entry) => ({
-      name: entry.name,
-      weeks_seen_count: entry.weeks_seen.size,
-      examples: Array.from(entry.variants).slice(0, 3),
-    }))
-    .sort((a, b) => b.weeks_seen_count - a.weeks_seen_count || a.name.localeCompare(b.name))
-    .slice(0, 8);
+
+  return records;
 }
 
-function deriveSnapshot(payload, weeks, deckSummary) {
-  const linkedDecks = payload.deck_count || payload.linked_deck_count || payload.linkedDeckCount || (payload.snapshot && payload.snapshot.linked_decks_in_window) || 0;
-  const ingestedDecks = (deckSummary && (deckSummary.ingested_pdf_count || deckSummary.deck_content_count || deckSummary.ingestedDeckCount))
-    || payload.deck_content_count
-    || payload.decks_with_ingested_text
-    || (payload.snapshot && payload.snapshot.decks_with_ingested_text_available)
-    || 0;
-  const trackedItems = payload.record_count || payload.item_count || payload.tracked_item_count || payload.trackedItems || 0;
+function unique(arr) {
+  return Array.from(new Set(arr.filter(Boolean)));
+}
+
+function groupByWeek(records) {
+  const weekMap = new Map();
+  for (const record of records) {
+    if (!weekMap.has(record.week_label)) {
+      weekMap.set(record.week_label, {
+        week_label: record.week_label,
+        week_date: record.week_date,
+        workstreams: new Map(),
+      });
+    }
+    const week = weekMap.get(record.week_label);
+    if (!week.workstreams.has(record.key)) {
+      week.workstreams.set(record.key, {
+        key: record.key,
+        name: record.name,
+        examples: new Set(),
+        labels: new Set(),
+      });
+    }
+    const ws = week.workstreams.get(record.key);
+    record.examples.forEach((ex) => ws.examples.add(ex));
+    ws.labels.add(record.source_label);
+  }
+
+  return Array.from(weekMap.values())
+    .sort((a, b) => String(b.week_date).localeCompare(String(a.week_date)))
+    .map((week) => ({
+      week_label: week.week_label,
+      week_date: week.week_date,
+      workstreams: Array.from(week.workstreams.values())
+        .map((ws) => ({
+          key: ws.key,
+          name: ws.name,
+          examples: Array.from(ws.examples),
+          labels: Array.from(ws.labels),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    }));
+}
+
+function buildThreadSummary(records) {
+  const map = new Map();
+  for (const record of records) {
+    if (!map.has(record.key)) {
+      map.set(record.key, {
+        key: record.key,
+        name: record.name,
+        unresolved_question: pickWorkstream(record.name).unresolved_question,
+        weeks: new Set(),
+        examples: new Set(),
+        labels: new Set(),
+      });
+    }
+    const entry = map.get(record.key);
+    entry.weeks.add(record.week_label);
+    record.examples.forEach((ex) => entry.examples.add(ex));
+    entry.labels.add(record.source_label);
+  }
+
+  return Array.from(map.values())
+    .map((entry) => ({
+      key: entry.key,
+      name: entry.name,
+      unresolved_question: entry.unresolved_question,
+      weeks_seen_count: entry.weeks.size,
+      examples: Array.from(entry.examples),
+      labels: Array.from(entry.labels),
+      weeks_seen: Array.from(entry.weeks),
+    }))
+    .sort((a, b) => b.weeks_seen_count - a.weeks_seen_count || a.name.localeCompare(b.name));
+}
+
+function deriveSnapshot(summaryData, weeklyLog, deckSummary) {
   return {
     window: '30d',
-    weekly_updates: weeks.length,
-    tracked_items: trackedItems,
-    linked_decks_in_window: linkedDecks,
-    decks_with_ingested_text_available: ingestedDecks,
+    weekly_updates: weeklyLog.length,
+    tracked_items: summaryData.record_count || summaryData.item_count || summaryData.tracked_item_count || 0,
+    linked_decks_in_window: summaryData.deck_count || summaryData.linked_deck_count || 0,
+    decks_with_ingested_text_available:
+      deckSummary.ingested_pdf_count || deckSummary.deck_content_count || summaryData.deck_content_count || 0,
   };
 }
 
-function pickActiveWorkstreams(threads) {
-  return threads.slice(0, 6).map((thread) => ({
-    name: thread.name,
-    unresolved_question: thread.weeks_seen_count > 1
-      ? `How should this thread be narrowed into a clearer next experiment or rollout decision?`
-      : `What does this line of work need to prove in the next round of research?`,
-    recent_examples: thread.examples,
-  }));
+function buildActiveWorkstreams(threads) {
+  const priority = [
+    'events',
+    'evergreen-rebrand',
+    'knowledge-portal',
+    'support-taxonomy',
+    'design-ux-feedback',
+    'ai-summary',
+    'platform-redesign',
+    'pathfinder',
+  ];
+  const priorityMap = new Map(priority.map((k, i) => [k, i]));
+  return threads
+    .slice()
+    .sort((a, b) => {
+      const pa = priorityMap.has(a.key) ? priorityMap.get(a.key) : 99;
+      const pb = priorityMap.has(b.key) ? priorityMap.get(b.key) : 99;
+      return pa - pb || b.weeks_seen_count - a.weeks_seen_count || a.name.localeCompare(b.name);
+    })
+    .slice(0, 5)
+    .map((thread) => ({
+      name: thread.name,
+      unresolved_question: thread.unresolved_question,
+      recent_examples: thread.examples.slice(0, 5),
+    }));
 }
 
-function pickComparisonWork(weeks) {
+function buildRepeatedThreads(threads) {
+  return threads
+    .filter((thread) => thread.weeks_seen_count >= 2)
+    .map((thread) => ({
+      name: thread.name,
+      weeks_seen_count: thread.weeks_seen_count,
+      examples: thread.examples.slice(0, 4),
+    }));
+}
+
+function buildComparisonWork(threads) {
   const items = [];
-  for (const week of weeks) {
-    for (const name of collectConceptNamesFromWeek(week)) {
-      if (/\b(v\d+|r\d+|baseline|variation|compare|comparison)\b/i.test(name)) {
-        items.push({ week: week.week_label_raw || week.week_date, label: name });
-      }
-    }
+  const add = (key, name, criteria, examples, weeks) => {
+    if (!examples || !examples.length) return;
+    items.push({ name, decision_criteria: criteria, examples, weeks_seen: weeks.slice(0, 4) });
+  };
+
+  const byKey = new Map(threads.map((t) => [t.key, t]));
+
+  const events = byKey.get('events');
+  if (events) {
+    const ex = unique(events.labels.concat(events.examples)).filter((x) => /baseline|v\d+/i.test(x) || /event/i.test(x));
+    add('events', 'Events', 'Pick the version that gives the clearest event-page direction with the fewest comprehension tradeoffs.', ex, events.weeks_seen);
   }
-  const dedup = new Map();
-  for (const item of items) {
-    const key = slugify(item.label);
-    if (!dedup.has(key)) dedup.set(key, { name: item.label, weeks: new Set() });
-    dedup.get(key).weeks.add(item.week);
+
+  const ai = byKey.get('ai-summary');
+  if (ai) {
+    const ex = unique(ai.labels.concat(ai.examples));
+    add('ai-summary', 'AI Summary & Messaging', 'Reduce to the strongest one or two framings, then choose the version that is clearest and easiest to act on.', ex, ai.weeks_seen);
   }
-  return Array.from(dedup.values()).map((v) => ({
-    name: v.name,
-    weeks_seen: Array.from(v.weeks),
-  })).slice(0, 8);
+
+  const evergreen = byKey.get('evergreen-rebrand');
+  if (evergreen && evergreen.labels.some((x) => /r\d+/i.test(x))) {
+    add('evergreen-rebrand', 'Evergreen Rebrand', 'Keep the pacing and layout moves that improve appeal without making the page feel too technical too early.', unique(evergreen.labels), evergreen.weeks_seen);
+  }
+
+  return items;
 }
 
 function buildHowToUseThisLog() {
   return [
-    'Use this page to show cadence and volume across the last 30 days, not to make ship / hold calls.',
-    'Treat repeated threads as signs of where research capacity is concentrating.',
-    'Use linked decks and ingested text to drill into individual findings when a workstream needs more detail.',
+    'Use this page to show research cadence and volume across the last 30 days, not to make final ship / hold calls.',
+    'Treat repeated threads as signs of where research capacity is concentrating over multiple weekly updates.',
+    'Use comparison work in flight to understand which decisions are narrowing, even when a final winner is not chosen yet.',
   ];
 }
 
@@ -257,18 +350,17 @@ function buildMarkdown(payload) {
   lines.push(`- Weekly updates: ${payload.snapshot.weekly_updates}`);
   lines.push(`- Tracked items: ${payload.snapshot.tracked_items}`);
   lines.push(`- Linked decks in 30d window: ${payload.snapshot.linked_decks_in_window}`);
-  lines.push(`- Decks with ingested text available: ${payload.snapshot.decks_with_ingested_text_available}`);
+  lines.push(`- Decks with ingested text in site corpus: ${payload.snapshot.decks_with_ingested_text_available}`);
   lines.push('');
   lines.push('## Weekly activity log');
   lines.push('');
   for (const week of payload.weekly_activity_log) {
     lines.push(`### ${week.week_label}`);
-    lines.push(`- Concepts touched: ${week.concept_count}`);
-    for (const concept of week.concepts) {
-      if (concept.variants.length > 1) {
-        lines.push(`- ${concept.label}: ${concept.variants.join('; ')}`);
+    for (const ws of week.workstreams) {
+      if (ws.examples.length) {
+        lines.push(`- **${ws.name}** — ${ws.examples.join('; ')}`);
       } else {
-        lines.push(`- ${concept.label}`);
+        lines.push(`- **${ws.name}**`);
       }
     }
     lines.push('');
@@ -277,18 +369,24 @@ function buildMarkdown(payload) {
   lines.push('');
   for (const item of payload.active_workstreams) {
     lines.push(`- **${item.name}** — ${item.unresolved_question}`);
+    if (item.recent_examples.length) {
+      lines.push(`  - Recent examples: ${item.recent_examples.join('; ')}`);
+    }
   }
   lines.push('');
   lines.push('## Repeated research threads');
   lines.push('');
-  for (const thread of payload.repeated_research_threads) {
-    lines.push(`- **${thread.name}** — seen in ${thread.weeks_seen_count} weekly updates`);
+  for (const item of payload.repeated_research_threads) {
+    lines.push(`- **${item.name}** — seen in ${item.weeks_seen_count} weekly updates`);
   }
   lines.push('');
   lines.push('## Comparison work in flight');
   lines.push('');
-  for (const comp of payload.comparison_work_in_flight) {
-    lines.push(`- **${comp.name}** — weeks: ${comp.weeks_seen.join(', ')}`);
+  for (const item of payload.comparison_work_in_flight) {
+    lines.push(`- **${item.name}** — ${item.decision_criteria}`);
+    if (item.examples.length) {
+      lines.push(`  - Variants / examples: ${item.examples.join('; ')}`);
+    }
   }
   lines.push('');
   lines.push('## How to use this log');
@@ -311,32 +409,30 @@ function escapeHtml(text) {
 
 function buildHtml(payload) {
   const weekSections = payload.weekly_activity_log.map((week) => {
-    const concepts = week.concepts.map((concept) => {
-      const body = concept.variants.length > 1
-        ? `<div class="variant-note">Variants / related labels: ${escapeHtml(concept.variants.join(' · '))}</div>`
-        : '';
-      return `<li><strong>${escapeHtml(concept.label)}</strong>${body}</li>`;
+    const items = week.workstreams.map((ws) => {
+      const examples = ws.examples.length ? `<div class="subtle">Examples: ${escapeHtml(ws.examples.join(' · '))}</div>` : '';
+      return `<li><strong>${escapeHtml(ws.name)}</strong>${examples}</li>`;
     }).join('');
     return `
       <section class="card">
         <h3>${escapeHtml(week.week_label)}</h3>
-        <p class="meta">Concepts touched: ${week.concept_count}</p>
-        <ul>${concepts}</ul>
+        <ul>${items}</ul>
       </section>`;
   }).join('');
 
-  const workstreams = payload.active_workstreams.map((item) => `
-    <li>
-      <strong>${escapeHtml(item.name)}</strong>
-      <div>${escapeHtml(item.unresolved_question)}</div>
-      ${item.recent_examples && item.recent_examples.length ? `<div class="variant-note">Examples: ${escapeHtml(item.recent_examples.join(' · '))}</div>` : ''}
-    </li>`).join('');
+  const workstreams = payload.active_workstreams.map((item) => {
+    const examples = item.recent_examples.length ? `<div class="subtle">Recent examples: ${escapeHtml(item.recent_examples.join(' · '))}</div>` : '';
+    return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.unresolved_question)}</div>${examples}</li>`;
+  }).join('');
 
-  const threads = payload.repeated_research_threads.map((item) => `
-    <li><strong>${escapeHtml(item.name)}</strong> — seen in ${item.weeks_seen_count} weekly updates</li>`).join('');
+  const threads = payload.repeated_research_threads.map((item) =>
+    `<li><strong>${escapeHtml(item.name)}</strong> — seen in ${item.weeks_seen_count} weekly updates</li>`
+  ).join('');
 
-  const comparisons = payload.comparison_work_in_flight.map((item) => `
-    <li><strong>${escapeHtml(item.name)}</strong> — weeks: ${escapeHtml(item.weeks_seen.join(', '))}</li>`).join('');
+  const comparisons = payload.comparison_work_in_flight.map((item) => {
+    const examples = item.examples.length ? `<div class="subtle">Variants / examples: ${escapeHtml(item.examples.join(' · '))}</div>` : '';
+    return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.decision_criteria)}</div>${examples}</li>`;
+  }).join('');
 
   const tips = payload.how_to_use_this_log.map((tip) => `<li>${escapeHtml(tip)}</li>`).join('');
 
@@ -362,9 +458,8 @@ function buildHtml(payload) {
     .cards { display: grid; gap: 14px; }
     .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; }
     ul { margin: 10px 0 0 18px; padding: 0; }
-    li { margin: 6px 0; line-height: 1.5; }
-    .meta { color: #6b7280; font-size: 0.9rem; }
-    .variant-note { color: #6b7280; font-size: 0.9rem; margin-top: 4px; }
+    li { margin: 10px 0; line-height: 1.5; }
+    .subtle { color: #6b7280; font-size: 0.95rem; margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -376,7 +471,7 @@ function buildHtml(payload) {
       <div class="stat"><div class="label">Weekly updates</div><div class="value">${payload.snapshot.weekly_updates}</div></div>
       <div class="stat"><div class="label">Tracked items</div><div class="value">${payload.snapshot.tracked_items}</div></div>
       <div class="stat"><div class="label">Linked decks in 30d window</div><div class="value">${payload.snapshot.linked_decks_in_window}</div></div>
-      <div class="stat"><div class="label">Decks with ingested text available</div><div class="value">${payload.snapshot.decks_with_ingested_text_available}</div></div>
+      <div class="stat"><div class="label">Decks with ingested text in site corpus</div><div class="value">${payload.snapshot.decks_with_ingested_text_available}</div></div>
     </section>
 
     <section class="section">
@@ -389,15 +484,17 @@ function buildHtml(payload) {
       <ul>${workstreams}</ul>
     </section>
 
+    ${payload.repeated_research_threads.length ? `
     <section class="section card">
       <h2>Repeated research threads</h2>
       <ul>${threads}</ul>
-    </section>
+    </section>` : ''}
 
+    ${payload.comparison_work_in_flight.length ? `
     <section class="section card">
       <h2>Comparison work in flight</h2>
       <ul>${comparisons}</ul>
-    </section>
+    </section>` : ''}
 
     <section class="section card">
       <h2>How to use this log</h2>
@@ -420,42 +517,37 @@ function main() {
   const apiDir = path.join(root, 'api');
   const dataDir = path.join(root, 'data');
 
-  const sourceJsonPath = loadFirstExisting([
-    path.join(newsletterDir, 'marketing-activity-30d.json'),
-    path.join(apiDir, 'newsletter-marketing-activity-30d.json'),
-  ]);
-  if (!sourceJsonPath) {
-    console.error('Could not find existing marketing activity JSON output.');
-    process.exit(1);
-  }
-
-  const payload = stripEditorialRecommendations(normalizeDefaults(readJson(sourceJsonPath)));
-  const weeksPath = loadFirstExisting([
-    path.join(dataDir, 'weeks.json'),
-  ]);
-  const summaryPath = loadFirstExisting([
-    path.join(dataDir, 'summary.json'),
-  ]);
+  const weeksPath = loadFirstExisting([path.join(dataDir, 'weeks.json')]);
+  const summaryPath = loadFirstExisting([path.join(dataDir, 'summary.json')]);
   const deckSummaryPath = loadFirstExisting([
     path.join(dataDir, 'deck_summary.json'),
     path.join(dataDir, 'deck-summary.json'),
   ]);
 
-  const weeks = weeksPath ? readJson(weeksPath) : [];
-  const summaryData = summaryPath ? readJson(summaryPath) : {};
+  if (!weeksPath || !summaryPath) {
+    console.error('Could not find required source data for marketing stage-2 writer.');
+    process.exit(1);
+  }
+
+  const weeks = readJson(weeksPath);
+  const summaryData = readJson(summaryPath);
   const deckSummary = deckSummaryPath ? readJson(deckSummaryPath) : {};
 
-  const defaultWindowWeeks = Array.isArray(weeks)
-    ? weeks.filter((w) => String(w.week_date || '') >= '2026-03-11').slice(0, 5)
+  const latestWeekDate = Array.isArray(weeks) && weeks.length ? String(weeks[0].week_date || '') : '';
+  const latest = latestWeekDate ? new Date(latestWeekDate + 'T00:00:00Z') : null;
+  const cutoff = latest ? new Date(latest.getTime() - 29 * 24 * 60 * 60 * 1000) : null;
+  const windowWeeks = Array.isArray(weeks)
+    ? weeks.filter((week) => {
+        if (!cutoff) return true;
+        const d = new Date(String(week.week_date || '') + 'T00:00:00Z');
+        return !Number.isNaN(d.getTime()) && d >= cutoff && d <= latest;
+      })
     : [];
 
-  const weeklyActivityLog = defaultWindowWeeks.map(summarizeWeek);
-  const repeatedResearchThreads = buildRepeatedThreads(defaultWindowWeeks);
-  const comparisonWorkInFlight = pickComparisonWork(defaultWindowWeeks);
-  const activeWorkstreams = pickActiveWorkstreams(repeatedResearchThreads);
-  const snapshot = deriveSnapshot(summaryData, defaultWindowWeeks, deckSummary);
-
-  const cleaned = {
+  const records = parseWeeklyRecords(windowWeeks);
+  const weeklyActivityLog = groupByWeek(records);
+  const threads = buildThreadSummary(records);
+  const payload = {
     title: 'Everpure research activity log (30d)',
     summary: 'A 30-day operations view of research cadence, volume, and active workstreams. Use this log to show what moved this month, where research effort is concentrating, and which comparisons are still in flight.',
     window: '30d',
@@ -469,22 +561,21 @@ function main() {
       preset: 'marketing_activity_30d',
     },
     generated_at: new Date().toISOString(),
-    snapshot,
+    snapshot: deriveSnapshot(summaryData, weeklyActivityLog, deckSummary),
     weekly_activity_log: weeklyActivityLog,
-    active_workstreams: activeWorkstreams,
-    repeated_research_threads: repeatedResearchThreads,
-    comparison_work_in_flight: comparisonWorkInFlight,
+    active_workstreams: buildActiveWorkstreams(threads),
+    repeated_research_threads: buildRepeatedThreads(threads),
+    comparison_work_in_flight: buildComparisonWork(threads),
     how_to_use_this_log: buildHowToUseThisLog(),
   };
 
-  const md = buildMarkdown(cleaned);
-  const html = buildHtml(cleaned);
+  const md = buildMarkdown(payload);
+  const html = buildHtml(payload);
 
-  writeJson(path.join(newsletterDir, 'marketing-activity-30d.json'), cleaned);
+  writeJson(path.join(newsletterDir, 'marketing-activity-30d.json'), payload);
   writeText(path.join(newsletterDir, 'marketing-activity-30d.md'), md + '\n');
   writeText(path.join(newsletterDir, 'marketing-activity-30d.html'), html + '\n');
-
-  writeJson(path.join(apiDir, 'newsletter-marketing-activity-30d.json'), cleaned);
+  writeJson(path.join(apiDir, 'newsletter-marketing-activity-30d.json'), payload);
   writeText(path.join(apiDir, 'newsletter-marketing-activity-30d.md'), md + '\n');
 
   console.log(JSON.stringify({
@@ -495,8 +586,9 @@ function main() {
       path.join(apiDir, 'newsletter-marketing-activity-30d.json'),
       path.join(apiDir, 'newsletter-marketing-activity-30d.md'),
     ],
-    weekly_updates: cleaned.snapshot.weekly_updates,
-    tracked_items: cleaned.snapshot.tracked_items,
+    weekly_updates: payload.snapshot.weekly_updates,
+    repeated_threads: payload.repeated_research_threads.length,
+    comparison_tracks: payload.comparison_work_in_flight.length,
   }, null, 2));
 }
 
