@@ -10,6 +10,14 @@ function cleanLine(line) {
   if (!line) return '';
   return String(line).replace(/\s+/g, ' ').replace(/[●•]+/g, ' • ').trim();
 }
+function normalizeText(s) {
+  return cleanLine(s)
+    .toLowerCase()
+    .replace(/[^a-z0-9% ]+/g, ' ')
+    .replace(/\b(the|a|an|and|or|to|for|of|in|on|with|from|by|this|that|one|round|pass)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 function esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -82,6 +90,14 @@ function conceptTitle(item) {
 function sourceRefs(item) {
   return item.source_refs || item.sourceRefs || [];
 }
+function collapseTitle(title) {
+  let t = cleanLine(title);
+  t = t.replace(/\b(page|pages)\b/ig, '');
+  t = t.replace(/\b(homepage|landing page|landing|pathfinder|internal)\b/ig, '$&');
+  if (/knowledge portal/i.test(t)) return 'Knowledge Portal';
+  if (/events/i.test(t)) return 'Events Page';
+  return t.replace(/\s+/g, ' ').trim();
+}
 function buildConcept(item) {
   const title = conceptTitle(item);
   const refs = sourceRefs(item);
@@ -100,6 +116,7 @@ function buildConcept(item) {
   if (weeks.length) support.push(`Seen in ${weeks.length} weekly update${weeks.length === 1 ? '' : 's'} (${weeks.join(', ')}).`);
   return {
     headline: title,
+    collapsed_headline: collapseTitle(title),
     finding_statement: finding,
     proof_point: proof && proof.score >= 5 ? proof.line : '',
     evidence_snapshot: support.join(' '),
@@ -116,10 +133,48 @@ function dedupeActions(items) {
   const seen = new Set();
   const out = [];
   for (const item of items || []) {
-    const key = cleanLine(item).toLowerCase();
+    const key = normalizeText(item);
     if (!key || seen.has(key)) continue;
     seen.add(key);
     out.push(cleanLine(item));
+  }
+  return out;
+}
+function mergeInMotion(items) {
+  const out = [];
+  const seen = new Map();
+  for (const item of items || []) {
+    const titleKey = normalizeText(item.collapsed_headline || item.workstream || item.headline || item.title);
+    const actionKey = normalizeText(item.next_step || '');
+    const proofKey = normalizeText(item.proof_point || item.finding_statement || '');
+    const mergedKey = `${titleKey}||${actionKey || proofKey}`;
+    if (seen.has(mergedKey)) continue;
+    if (/knowledge portal/.test(titleKey)) {
+      const existingIdx = out.findIndex(x => /knowledge portal/i.test(x.workstream || x.headline || ''));
+      if (existingIdx >= 0) {
+        const existing = out[existingIdx];
+        existing.workstream = 'Knowledge Portal';
+        existing.finding_statement = existing.finding_statement || item.finding_statement;
+        existing.evidence_snapshot = uniq([existing.evidence_snapshot, item.evidence_snapshot]).join(' ');
+        existing.supporting_signals = uniq([...(existing.supporting_signals || []), ...(item.supporting_signals || [])]);
+        existing.key_numbers = uniq([...(existing.key_numbers || []), ...(item.key_numbers || [])]);
+        existing.source_refs = [...(existing.source_refs || []), ...(item.source_refs || [])];
+        continue;
+      }
+    }
+    seen.set(mergedKey, true);
+    out.push({
+      workstream: item.collapsed_headline || item.workstream || item.headline || item.title,
+      finding_statement: item.finding_statement,
+      evidence_snapshot: item.evidence_snapshot,
+      supporting_signals: item.supporting_signals,
+      key_numbers: item.key_numbers,
+      next_step: item.next_step,
+      mentions: item.source_refs?.length || item.mentions || 0,
+      decision_status: item.decision_status || 'watch',
+      confidence_level: item.confidence_level || 'low',
+      source_refs: item.source_refs || [],
+    });
   }
   return out;
 }
@@ -207,23 +262,13 @@ function main() {
   const current = readJson(defaultJsonPath);
   const concepts = asArray(readJson(conceptPath)).map(buildConcept);
   const strong = concepts.filter(c => c._score >= 5).sort((a,b)=>b._score-a._score).slice(0, 3);
-  const watch = concepts.filter(c => c._score < 5).sort((a,b)=>(b.source_refs?.length||0)-(a.source_refs?.length||0)).slice(0, 6).map(c => ({
-    workstream: c.headline,
-    finding_statement: c.finding_statement,
-    evidence_snapshot: c.evidence_snapshot,
-    supporting_signals: c.supporting_signals,
-    key_numbers: c.key_numbers,
-    next_step: c.next_step,
-    mentions: c.source_refs?.length || 0,
-    decision_status: c.decision_status || 'watch',
-    confidence_level: c.confidence_level || 'low',
-    source_refs: c.source_refs,
-  }));
+  const watchRaw = concepts.filter(c => c._score < 5).sort((a,b)=>(b.source_refs?.length||0)-(a.source_refs?.length||0)).slice(0, 8);
+  const watch = mergeInMotion(watchRaw).slice(0, 5);
   const comparison = concepts.filter(c => /v1|v2|v3|r2|r3|baseline|comparison|variant/i.test(`${c.headline} ${c.finding_statement} ${c.evidence_snapshot}`)).sort((a,b)=>b._score-a._score).slice(0, 4).map(c => ({
     headline: c.headline, finding_statement: c.finding_statement, proof_point: c.proof_point, next_step: c.next_step,
     decision_status: c.decision_status, confidence_level: c.confidence_level, source_refs: c.source_refs,
   }));
-  const nextActions = dedupeActions(strong.map(x => x.next_step));
+  const nextActions = dedupeActions(strong.map(x => x.next_step).concat(comparison.map(x => x.next_step)));
   current.executive_summary = strong.length
     ? `The clearest month-to-date proof points are clustered around ${strong.map(t => t.headline.toLowerCase()).join(', ')}, and the strongest recommendation is still to iterate deliberately rather than ship broadly.`
     : 'The current 30-day window is more useful for prioritizing what to test next than for making a broad rollout decision.';
