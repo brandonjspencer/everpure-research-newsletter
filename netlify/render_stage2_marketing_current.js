@@ -1,445 +1,372 @@
 #!/usr/bin/env node
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
-function readJson(filePath, fallback = null) {
+function readJson(filePath, fallback) {
   try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   } catch (err) {
     return fallback;
   }
 }
 
-function writeFile(filePath, content) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, content);
+function ensureDir(dir) {
+  fs.mkdirSync(dir, { recursive: true });
 }
 
-function maxDate(dates) {
-  return dates.reduce((a, b) => (a > b ? a : b));
+function writeText(filePath, text) {
+  ensureDir(path.dirname(filePath));
+  fs.writeFileSync(filePath, text, 'utf8');
 }
 
-function addDays(dateStr, deltaDays) {
-  const dt = new Date(dateStr + "T00:00:00Z");
-  dt.setUTCDate(dt.getUTCDate() + deltaDays);
-  return dt.toISOString().slice(0, 10);
+function isoDate(d) {
+  return new Date(d).toISOString().slice(0, 10);
 }
 
-function unique(arr) {
-  return Array.from(new Set(arr.filter(Boolean)));
+function parseDate(s) {
+  return new Date(`${s}T00:00:00Z`);
 }
 
-function topLevelTexts(items) {
-  if (!Array.isArray(items)) return [];
-  return items
-    .map((item) => (item && typeof item.text === "string" ? item.text.trim() : ""))
-    .filter(Boolean);
+function htmlEscape(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
-function sentenceCase(str) {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function slugify(s) {
+  return String(s)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'item';
 }
 
-function canonicalKey(title) {
-  const raw = (title || "").trim();
-  const lower = raw.toLowerCase();
-  if (!lower) return "";
-  if (lower.includes("knowledge portal") || lower.includes("support taxonomy") || lower.includes("platform redesign") || lower.includes("knowledge portal domain")) {
-    return "knowledge-portal-platform";
+function titleCase(s) {
+  return String(s)
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (m) => m.toUpperCase());
+}
+
+function flattenTexts(nodes, out = []) {
+  if (!Array.isArray(nodes)) return out;
+  for (const n of nodes) {
+    const text = (n && typeof n.text === 'string') ? n.text.trim() : '';
+    if (text) out.push(text);
+    if (n && Array.isArray(n.children)) flattenTexts(n.children, out);
   }
-  if (lower.includes("homepage ai messaging") || lower.includes("ai summary")) {
-    return "ai-messaging";
-  }
-  if (lower.includes("evergreen rebrand")) {
-    return "evergreen-rebrand";
-  }
-  if (lower.includes("pathfinder")) {
-    return "pathfinder";
-  }
-  if (lower.includes("events page") || lower.includes("events v1") || lower.includes("events v2")) {
-    return "events-page";
-  }
-  if (lower.includes("design & ux feedback") || lower.includes("design and ux feedback") || lower.includes("reader page") || lower.includes("search page") || lower.includes("header")) {
-    return "design-feedback";
-  }
-  return lower
-    .replace(/^\d+\s*[-–:]\s*/, "")
-    .replace(/\(in process\)/gi, "")
-    .replace(/\bbaseline\b/gi, "")
-    .replace(/\bvariations?\b/gi, "")
-    .replace(/\br\d+\b/gi, "")
-    .replace(/\bv\d+\b/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return out;
 }
 
-function displayForKey(key, samples = []) {
-  switch (key) {
-    case "knowledge-portal-platform":
-      return "Knowledge portal and platform structure";
-    case "ai-messaging":
-      return "AI messaging and summary framing";
-    case "evergreen-rebrand":
-      return "Evergreen rebrand";
-    case "pathfinder":
-      return "Pathfinder journey and CTA clarity";
-    case "events-page":
-      return "Events page work";
-    case "design-feedback":
-      return "Cross-page design and UX feedback";
-    default:
-      return sentenceCase(samples[0] || key);
+function cleanConceptLabel(text) {
+  let t = String(text || '').trim();
+  if (!t) return '';
+  t = t.replace(/^\d+\s*[-–:]\s*/, '');
+  t = t.replace(/^concept\s*\d+\s*[-–:]\s*/i, '');
+  t = t.replace(/\s*\((?:in process|received|internal)\)\s*/ig, '');
+  t = t.replace(/^👉\s*/,'').replace(/^🧠\s*/,'').replace(/^📈\s*/,'').replace(/^💜\s*/,'');
+  t = t.replace(/^view\s+/i, '');
+  return t.trim();
+}
+
+function isMeaningfulText(text) {
+  const t = String(text || '').trim();
+  if (!t) return false;
+  if (t.length < 4) return false;
+  if (/^view\b/i.test(t)) return false;
+  if (/^we('?re| will| owe| outlined| excited| back)/i.test(t)) return false;
+  if (/^ux metrics/i.test(t)) return false;
+  if (/^success\b/i.test(t)) return false;
+  if (/^frequency\b/i.test(t)) return false;
+  if (/^editorial recommendations$/i.test(t)) return false;
+  return true;
+}
+
+function collectWeeklyItems(week) {
+  const groups = week.content_groups || {};
+  const buckets = [
+    ['findings', 'findings'],
+    ['testing_concepts', 'testing concepts'],
+    ['in_process', 'in process'],
+    ['weekly_progress', 'weekly progress'],
+    ['next_steps', 'next steps'],
+    ['other', 'other']
+  ];
+  const items = [];
+  for (const [key, label] of buckets) {
+    const texts = flattenTexts(groups[key] || [])
+      .map(cleanConceptLabel)
+      .filter(isMeaningfulText);
+    for (const text of texts) {
+      items.push({ bucket: label, text });
+    }
+  }
+  return items;
+}
+
+function aggregateThreads(weeks) {
+  const map = new Map();
+  const comparison = new Map();
+  for (const week of weeks) {
+    const items = collectWeeklyItems(week);
+    for (const item of items) {
+      const label = item.text;
+      const key = slugify(label);
+      if (!map.has(key)) {
+        map.set(key, {
+          label,
+          weeks: new Set(),
+          buckets: new Set(),
+          count: 0,
+          latest_week: week.week_date,
+        });
+      }
+      const entry = map.get(key);
+      entry.weeks.add(week.week_date);
+      entry.buckets.add(item.bucket);
+      entry.count += 1;
+      if (week.week_date > entry.latest_week) entry.latest_week = week.week_date;
+
+      if (/(\bv1\b|\bv2\b|\br2\b|\br3\b|variation|baseline|comparison|three variations)/i.test(label)) {
+        if (!comparison.has(key)) comparison.set(key, { label, weeks: new Set(), latest_week: week.week_date });
+        comparison.get(key).weeks.add(week.week_date);
+        if (week.week_date > comparison.get(key).latest_week) comparison.get(key).latest_week = week.week_date;
+      }
+    }
+  }
+  const threads = [...map.values()]
+    .map((v) => ({
+      label: v.label,
+      weeks_seen: [...v.weeks].sort(),
+      bucket_types: [...v.buckets],
+      mentions: v.count,
+      latest_week: v.latest_week,
+    }))
+    .sort((a, b) => b.weeks_seen.length - a.weeks_seen.length || b.mentions - a.mentions || a.label.localeCompare(b.label));
+  const comparisons = [...comparison.values()]
+    .map((v) => ({ label: v.label, weeks_seen: [...v.weeks].sort(), latest_week: v.latest_week }))
+    .sort((a, b) => b.weeks_seen.length - a.weeks_seen.length || a.label.localeCompare(b.label));
+  return { threads, comparisons };
+}
+
+function formatDateHuman(s) {
+  try {
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(parseDate(s));
+  } catch {
+    return s;
   }
 }
 
-function findComparisonCue(title) {
-  const lower = (title || "").toLowerCase();
-  return ["baseline", "variation", "variations", "compare", "comparison", "review", "r2", "r3", "v1", "v2"].some((cue) => lower.includes(cue));
-}
-
-function comparisonNextQuestion(key, samples) {
-  switch (key) {
-    case "events-page":
-      return "What specific page element or content treatment will define the winner between the remaining Events variants?";
-    case "ai-messaging":
-      return "Which one or two summary framings are strongest enough to carry into the next deciding round?";
-    case "evergreen-rebrand":
-      return "Which visual pacing treatment improves appeal without lowering comprehension?";
-    case "knowledge-portal-platform":
-      return "Which naming and entry-point framing makes the portal feel most discoverable and useful?";
-    default:
-      return `What should the next deciding comparison prove for ${displayForKey(key, samples)}?`;
+function renderMarkdown(model) {
+  const lines = [];
+  lines.push(`# ${model.title}`);
+  lines.push('');
+  lines.push(model.summary);
+  lines.push('');
+  lines.push(`- Window: ${model.window_label}`);
+  lines.push(`- Weekly updates: ${model.snapshot.weekly_updates}`);
+  lines.push(`- Tracked items: ${model.snapshot.tracked_items}`);
+  lines.push(`- Linked decks: ${model.snapshot.linked_decks}`);
+  lines.push(`- Decks with ingested text: ${model.snapshot.ingested_decks}`);
+  lines.push('');
+  lines.push('## Weekly activity log');
+  lines.push('');
+  for (const w of model.weekly_log) {
+    lines.push(`### ${w.week_label}`);
+    lines.push('');
+    if (w.highlights.length) {
+      for (const h of w.highlights) lines.push(`- ${h}`);
+    } else {
+      lines.push('- No major highlights captured.');
+    }
+    lines.push('');
   }
+  lines.push('## Active workstreams');
+  lines.push('');
+  for (const item of model.active_workstreams) {
+    lines.push(`- **${item.label}** — seen in ${item.weeks_seen.length} week(s); latest ${formatDateHuman(item.latest_week)}.`);
+  }
+  lines.push('');
+  lines.push('## Repeated research threads');
+  lines.push('');
+  for (const item of model.repeated_threads) {
+    lines.push(`- **${item.label}** — ${item.mentions} mentions across ${item.weeks_seen.length} week(s).`);
+  }
+  lines.push('');
+  lines.push('## Comparison work in flight');
+  lines.push('');
+  if (model.comparison_work.length) {
+    for (const item of model.comparison_work) {
+      lines.push(`- **${item.label}** — active across ${item.weeks_seen.length} week(s).`);
+    }
+  } else {
+    lines.push('- No active comparison threads identified in the current 30-day window.');
+  }
+  lines.push('');
+  lines.push('## How to use this log');
+  lines.push('');
+  for (const tip of model.how_to_use) lines.push(`- ${tip}`);
+  lines.push('');
+  return lines.join('\n');
 }
 
-function bulletList(items) {
-  return items.map((item) => `- ${item}`).join("\n");
-}
-
-function esc(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function renderHtml(doc) {
-  const weeklyRows = doc.weekly_activity_log
-    .map((item) => `<li><strong>${esc(item.week_date)}</strong> — ${esc(item.summary)}</li>`)
-    .join("\n");
-
-  const activeRows = doc.active_workstreams
-    .map((item) => `<li><strong>${esc(item.title)}</strong> — Mentioned ${esc(String(item.mentions))} time(s). ${esc(item.readout)}</li>`)
-    .join("\n");
-
-  const threadRows = doc.repeated_threads
-    .map((item) => `<li><strong>${esc(item.theme)}</strong> — ${esc(item.readout)}</li>`)
-    .join("\n");
-
-  const comparisonRows = doc.comparison_work_in_flight
-    .map((item) => `<li><strong>${esc(item.title)}</strong> — ${esc(item.readout)} <em>Next question:</em> ${esc(item.next_question)}</li>`)
-    .join("\n");
-
-  const howRows = doc.how_to_use_log.map((item) => `<li>${esc(item)}</li>`).join("\n");
-
+function renderHtml(model) {
+  const section = (title, body) => `\n<section><h2>${htmlEscape(title)}</h2>${body}</section>`;
+  const list = (items, renderItem) => `<ul>${items.map((item) => `<li>${renderItem(item)}</li>`).join('')}</ul>`;
   return `<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${esc(doc.title)}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${htmlEscape(model.title)}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 40px auto; max-width: 860px; padding: 0 20px; line-height: 1.55; color: #1f2937; }
-    h1, h2 { line-height: 1.2; }
-    h1 { margin-bottom: 8px; }
-    .meta { color: #4b5563; font-size: 0.95rem; margin-bottom: 24px; }
-    .panel { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px 18px; margin: 18px 0 24px; }
-    ul { padding-left: 22px; }
-    li { margin: 8px 0; }
-    .small { color: #6b7280; font-size: 0.92rem; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f8; color: #111; }
+    main { max-width: 960px; margin: 0 auto; padding: 40px 20px 60px; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    h2 { margin-top: 2rem; font-size: 1.25rem; }
+    h3 { margin-bottom: 0.4rem; }
+    .meta, .note { color: #555; }
+    .card { background: white; border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin: 12px 0; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 20px 0; }
+    .stat { background: white; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .stat strong { display:block; font-size:1.4rem; }
+    ul { padding-left: 1.2rem; }
+    li { margin: 0.35rem 0; }
+    .muted { color: #666; font-size: 0.95rem; }
+    code { background:#f0f0f2; padding:0.1rem 0.35rem; border-radius:4px; }
   </style>
 </head>
 <body>
-  <h1>${esc(doc.title)}</h1>
-  <div class="meta">Generated: ${esc(doc.generated_at)} • Window: ${esc(doc.window.since)} to ${esc(doc.window.until)} • Audience: ${esc(doc.audience)} • Tone: ${esc(doc.tone)} • Mode: ${esc(doc.mode)}</div>
+  <main>
+    <h1>${htmlEscape(model.title)}</h1>
+    <p class="meta">${htmlEscape(model.summary)}</p>
+    <p class="note">Window: ${htmlEscape(model.window_label)}</p>
 
-  <div class="panel">
-    <strong>Executive summary</strong>
-    <p>${esc(doc.executive_summary)}</p>
-  </div>
+    <div class="stats">
+      <div class="stat"><span class="muted">Weekly updates</span><strong>${model.snapshot.weekly_updates}</strong></div>
+      <div class="stat"><span class="muted">Tracked items</span><strong>${model.snapshot.tracked_items}</strong></div>
+      <div class="stat"><span class="muted">Linked decks</span><strong>${model.snapshot.linked_decks}</strong></div>
+      <div class="stat"><span class="muted">Decks with ingested text</span><strong>${model.snapshot.ingested_decks}</strong></div>
+    </div>
 
-  <h2>Snapshot</h2>
-  <ul>
-    <li>Weeks covered: ${esc(String(doc.overview.week_count))}</li>
-    <li>Items surfaced: ${esc(String(doc.overview.item_count))}</li>
-    <li>Decks linked: ${esc(String(doc.overview.deck_count))}</li>
-    <li>Decks with ingested text: ${esc(String(doc.overview.decks_with_content_count))}</li>
-  </ul>
+    ${section('Weekly activity log', model.weekly_log.map((w) => `<div class="card"><h3>${htmlEscape(w.week_label)}</h3>${list(w.highlights.length ? w.highlights : ['No major highlights captured.'], (h) => htmlEscape(h))}</div>`).join(''))}
 
-  <h2>Volume snapshot</h2>
-  <ul>
-    <li>Total tracked items: ${esc(String(doc.volume_snapshot.total_tracked_items))}</li>
-    <li>Findings: ${esc(String(doc.volume_snapshot.findings))}</li>
-    <li>Testing concepts: ${esc(String(doc.volume_snapshot.testing_concepts))}</li>
-    <li>In progress: ${esc(String(doc.volume_snapshot.in_progress))}</li>
-    <li>Average items per week: ${esc(String(doc.volume_snapshot.average_items_per_week))}</li>
-  </ul>
+    ${section('Active workstreams', list(model.active_workstreams, (item) => `<strong>${htmlEscape(item.label)}</strong> — seen in ${item.weeks_seen.length} week(s); latest ${htmlEscape(formatDateHuman(item.latest_week))}.`))}
 
-  <h2>Weekly activity log</h2>
-  <ul>
-    ${weeklyRows}
-  </ul>
+    ${section('Repeated research threads', list(model.repeated_threads, (item) => `<strong>${htmlEscape(item.label)}</strong> — ${item.mentions} mentions across ${item.weeks_seen.length} week(s).`))}
 
-  <h2>Active workstreams</h2>
-  <ul>
-    ${activeRows}
-  </ul>
+    ${section('Comparison work in flight', model.comparison_work.length ? list(model.comparison_work, (item) => `<strong>${htmlEscape(item.label)}</strong> — active across ${item.weeks_seen.length} week(s).`) : '<p>No active comparison threads identified in the current 30-day window.</p>')}
 
-  <h2>Repeated research threads</h2>
-  <ul>
-    ${threadRows}
-  </ul>
-
-  <h2>Comparison work in flight</h2>
-  <ul>
-    ${comparisonRows}
-  </ul>
-
-  <h2>How to use this log</h2>
-  <ul>
-    ${howRows}
-  </ul>
-
-  <p class="small">This artifact is optimized for cadence, throughput, and research visibility. It is not intended to be a ship-readiness brief.</p>
+    ${section('How to use this log', list(model.how_to_use, (tip) => htmlEscape(tip)))}
+  </main>
 </body>
 </html>`;
 }
 
-function renderMarkdown(doc) {
-  return [
-    `# ${doc.title}`,
-    "",
-    `_Generated: ${doc.generated_at}_`,
-    `_Window: ${doc.window.since} to ${doc.window.until}_`,
-    `_Audience: ${doc.audience} | Tone: ${doc.tone} | Mode: ${doc.mode}_`,
-    "",
-    "## Executive summary",
-    doc.executive_summary,
-    "",
-    "## Snapshot",
-    bulletList([
-      `Weeks covered: ${doc.overview.week_count}`,
-      `Items surfaced: ${doc.overview.item_count}`,
-      `Decks linked: ${doc.overview.deck_count}`,
-      `Decks with ingested text: ${doc.overview.decks_with_content_count}`,
-    ]),
-    "",
-    "## Volume snapshot",
-    bulletList([
-      `Total tracked items: ${doc.volume_snapshot.total_tracked_items}`,
-      `Findings: ${doc.volume_snapshot.findings}`,
-      `Testing concepts: ${doc.volume_snapshot.testing_concepts}`,
-      `In progress: ${doc.volume_snapshot.in_progress}`,
-      `Average items per week: ${doc.volume_snapshot.average_items_per_week}`,
-    ]),
-    "",
-    "## Weekly activity log",
-    bulletList(doc.weekly_activity_log.map((item) => `**${item.week_date}** — ${item.summary}`)),
-    "",
-    "## Active workstreams",
-    bulletList(doc.active_workstreams.map((item) => `**${item.title}** — Mentioned ${item.mentions} time(s). ${item.readout}`)),
-    "",
-    "## Repeated research threads",
-    bulletList(doc.repeated_threads.map((item) => `**${item.theme}** — ${item.readout}`)),
-    "",
-    "## Comparison work in flight",
-    bulletList(doc.comparison_work_in_flight.map((item) => `**${item.title}** — ${item.readout} Next question: ${item.next_question}`)),
-    "",
-    "## How to use this log",
-    bulletList(doc.how_to_use_log),
-    "",
-    "This artifact is optimized for cadence, throughput, and research visibility. It is not intended to be a ship-readiness brief.",
-    "",
-  ].join("\n");
-}
-
 function main() {
-  const publishDir = process.argv[2] ? path.resolve(process.argv[2]) : path.resolve("publish");
-  const dataDir = path.join(publishDir, "data");
-  const weeks = readJson(path.join(dataDir, "weeks.json"), []);
-  const deckContent = readJson(path.join(dataDir, "deck_content.json"), readJson(path.join(dataDir, "deck-content.json"), []));
+  const publishRoot = process.argv[2] || 'publish';
+  const newsletterDir = path.join(publishRoot, 'newsletter');
+  const apiDir = path.join(publishRoot, 'api');
+  const dataDir = path.join(publishRoot, 'data');
 
-  if (!Array.isArray(weeks) || weeks.length === 0) {
-    throw new Error("No weeks.json records available for marketing stage-2 writer.");
-  }
+  const weeks = readJson(path.join(dataDir, 'weeks.json'), []);
+  const deckSummary = readJson(path.join(dataDir, 'deck_summary.json'), {});
+  const deckContentSummary = readJson(path.join(dataDir, 'deck_content_summary.json'), {});
 
-  const latestWeek = maxDate(weeks.map((r) => r.week_date).filter(Boolean));
-  const since = addDays(latestWeek, -29);
-  const windowRecords = weeks
-    .filter((r) => r.week_date && r.week_date >= since && r.week_date <= latestWeek)
-    .sort((a, b) => (a.week_date < b.week_date ? 1 : -1));
+  const datedWeeks = weeks.filter((w) => w && w.week_date).sort((a, b) => a.week_date.localeCompare(b.week_date));
+  const latestWeekDate = datedWeeks.length ? datedWeeks[datedWeeks.length - 1].week_date : isoDate(new Date());
+  const cutoff = parseDate(latestWeekDate);
+  cutoff.setUTCDate(cutoff.getUTCDate() - 29);
 
-  const deckIds = unique(windowRecords.map((r) => (r.deck && r.deck.file_id) || null));
-  const deckIdsWithContent = unique((Array.isArray(deckContent) ? deckContent : []).map((d) => d.deck_id || d.file_id || null)).filter((id) => deckIds.includes(id));
+  const windowWeeks = datedWeeks.filter((w) => parseDate(w.week_date) >= cutoff);
+  const windowLabel = `${formatDateHuman(isoDate(cutoff))} to ${formatDateHuman(latestWeekDate)}`;
 
-  let findings = 0;
-  let testingConcepts = 0;
-  let inProgress = 0;
-  const workstreamMap = new Map();
-  const threadMap = new Map();
-  const comparisonMap = new Map();
+  const trackedItems = windowWeeks.reduce((sum, week) => sum + collectWeeklyItems(week).length, 0);
+  const linkedDeckIds = new Set(windowWeeks.map((w) => w.deck && w.deck.file_id).filter(Boolean));
+  const ingestedDecks = (() => {
+    if (typeof deckContentSummary.deck_count === 'number') return deckContentSummary.deck_count;
+    if (typeof deckContentSummary.ingested_pdf_count === 'number') return deckContentSummary.ingested_pdf_count;
+    return 0;
+  })();
 
-  const weeklyActivity = windowRecords.map((record) => {
-    const groups = record.content_groups || {};
-    const findingTitles = topLevelTexts(groups.findings);
-    const testingTitles = topLevelTexts(groups.testing_concepts);
-    const progressTitles = topLevelTexts(groups.in_process);
+  const weeklyLog = windowWeeks
+    .slice()
+    .sort((a, b) => b.week_date.localeCompare(a.week_date))
+    .map((week) => {
+      const items = collectWeeklyItems(week)
+        .map((i) => i.text)
+        .filter(isMeaningfulText);
+      const unique = [...new Set(items)].slice(0, 6);
+      return {
+        week_date: week.week_date,
+        week_label: formatDateHuman(week.week_date),
+        highlights: unique,
+      };
+    });
 
-    findings += findingTitles.length;
-    testingConcepts += testingTitles.length;
-    inProgress += progressTitles.length;
+  const { threads, comparisons } = aggregateThreads(windowWeeks);
+  const activeWorkstreams = threads.filter((t) => t.weeks_seen.length >= 2).slice(0, 8);
+  const repeatedThreads = threads.slice(0, 8);
+  const comparisonWork = comparisons.slice(0, 6);
 
-    const visibleTitles = unique([...findingTitles, ...testingTitles, ...progressTitles]).slice(0, 3);
-
-    for (const title of progressTitles) {
-      const key = canonicalKey(title);
-      if (!key) continue;
-      if (!workstreamMap.has(key)) workstreamMap.set(key, { samples: [], mentions: 0 });
-      const entry = workstreamMap.get(key);
-      entry.mentions += 1;
-      entry.samples.push(title);
-    }
-
-    for (const title of unique([...findingTitles, ...testingTitles, ...progressTitles])) {
-      const key = canonicalKey(title);
-      if (!key) continue;
-      if (!threadMap.has(key)) threadMap.set(key, { samples: [], mentions: 0, weeks: new Set() });
-      const entry = threadMap.get(key);
-      entry.mentions += 1;
-      entry.samples.push(title);
-      entry.weeks.add(record.week_date);
-      if (findComparisonCue(title)) {
-        if (!comparisonMap.has(key)) comparisonMap.set(key, { samples: [], mentions: 0, weeks: new Set() });
-        const comp = comparisonMap.get(key);
-        comp.mentions += 1;
-        comp.samples.push(title);
-        comp.weeks.add(record.week_date);
-      }
-    }
-
-    return {
-      week_date: record.week_date,
-      summary: visibleTitles.join("; ") || "No named concepts surfaced in the weekly note.",
-      source_refs: [{ week_date: record.week_date, record_id: record.record_id || null, deck_id: (record.deck && record.deck.file_id) || null }],
-    };
-  });
-
-  const activeWorkstreams = Array.from(workstreamMap.entries())
-    .sort((a, b) => b[1].mentions - a[1].mentions || displayForKey(a[0], a[1].samples).localeCompare(displayForKey(b[0], b[1].samples)))
-    .slice(0, 6)
-    .map(([key, value]) => ({
-      title: displayForKey(key, value.samples),
-      mentions: value.mentions,
-      readout: `${displayForKey(key, value.samples)} remained active across the month and is best read as an ongoing workstream rather than a closed finding.`,
-    }));
-
-  const repeatedThreads = Array.from(threadMap.entries())
-    .filter(([, value]) => value.weeks.size >= 2)
-    .sort((a, b) => b[1].weeks.size - a[1].weeks.size || b[1].mentions - a[1].mentions)
-    .slice(0, 5)
-    .map(([key, value]) => ({
-      theme: displayForKey(key, value.samples),
-      mentions: value.mentions,
-      weeks_seen: value.weeks.size,
-      readout: `${displayForKey(key, value.samples)} appeared in ${value.weeks.size} of the last ${windowRecords.length} weekly updates, making it one of the clearest repeated research threads in the month.`,
-    }));
-
-  const comparisonWork = Array.from(comparisonMap.entries())
-    .sort((a, b) => b[1].weeks.size - a[1].weeks.size || b[1].mentions - a[1].mentions)
-    .slice(0, 5)
-    .map(([key, value]) => ({
-      title: displayForKey(key, value.samples),
-      mentions: value.mentions,
-      readout: `${displayForKey(key, value.samples)} is no longer broad exploration work; it is in a narrower comparison phase with clearer decision pressure.`,
-      next_question: comparisonNextQuestion(key, value.samples),
-    }));
-
-  const totalItems = findings + testingConcepts + inProgress;
-  const avgPerWeek = windowRecords.length ? (totalItems / windowRecords.length).toFixed(1) : "0.0";
-
-  const doc = {
-    generated_at: new Date().toISOString(),
-    title: "Everpure research activity log (30d)",
-    audience: "marketing",
-    tone: "detailed",
-    mode: "activity_log",
-    preset: "marketing_activity_30d",
+  const model = {
+    kind: 'marketing_activity_log',
+    preset: 'marketing_activity_30d',
+    audience: 'marketing',
+    tone: 'detailed',
     defaults: {
-      window: "30d",
-      audience: "marketing",
-      tone: "detailed",
+      window: '30d',
+      audience: 'marketing',
+      tone: 'detailed',
+      preset: 'marketing_activity_30d'
     },
-    window: {
-      since,
-      until: latestWeek,
-      label: "30d",
-      days: 30,
+    title: 'Everpure Research Activity Log (30d)',
+    summary: 'A 30-day view of research cadence, active testing volume, and the workstreams currently moving through the Everpure pipeline.',
+    generated_at: new Date().toISOString(),
+    window_label: windowLabel,
+    latest_week_date: latestWeekDate,
+    snapshot: {
+      weekly_updates: windowWeeks.length,
+      tracked_items: trackedItems,
+      linked_decks: linkedDeckIds.size,
+      ingested_decks: ingestedDecks,
     },
-    overview: {
-      week_count: windowRecords.length,
-      item_count: totalItems,
-      deck_count: deckIds.length,
-      deck_ids: deckIds,
-      decks_with_content_count: deckIdsWithContent.length,
-      decks_with_content: deckIdsWithContent,
-      date_range: { min: since, max: latestWeek },
-    },
-    executive_summary: `This 30-day view captures the cadence and volume of the research program: ${windowRecords.length} weekly updates, ${totalItems} tracked items, and repeated motion across findings, comparison work, and active workstreams.`,
-    volume_snapshot: {
-      total_tracked_items: totalItems,
-      findings,
-      testing_concepts: testingConcepts,
-      in_progress: inProgress,
-      average_items_per_week: Number(avgPerWeek),
-    },
-    weekly_activity_log: weeklyActivity,
+    weekly_log: weeklyLog,
     active_workstreams: activeWorkstreams,
     repeated_threads: repeatedThreads,
-    comparison_work_in_flight: comparisonWork,
-    how_to_use_log: [
-      "Use this view to show consistency of research activity over the month, not to make ship decisions.",
-      "Lead with cadence and volume, then show the repeated workstreams that are absorbing the most research attention.",
-      "Use the comparison section to show where the team is moving from broad exploration into narrower decision-making.",
-    ],
+    comparison_work: comparisonWork,
+    how_to_use: [
+      'Use this log to show research cadence and throughput, not to make shipping decisions.',
+      'Start with the weekly activity log to understand what moved each week, then scan repeated research threads to see where effort is clustering.',
+      'Use the comparison section to identify tests that are still narrowing options and may need one more round before becoming decision-ready.'
+    ]
   };
 
-  const markdown = renderMarkdown(doc);
-  const html = renderHtml(doc);
-  const json = JSON.stringify(doc, null, 2) + "\n";
+  const markdown = renderMarkdown(model);
+  const html = renderHtml(model);
+  const json = JSON.stringify(model, null, 2) + '\n';
 
-  const newsletterDir = path.join(publishDir, "newsletter");
-  const apiDir = path.join(publishDir, "api");
-  writeFile(path.join(newsletterDir, "marketing-activity-30d.json"), json);
-  writeFile(path.join(newsletterDir, "marketing-activity-30d.md"), markdown);
-  writeFile(path.join(newsletterDir, "marketing-activity-30d.html"), html);
-  writeFile(path.join(apiDir, "newsletter-marketing-activity-30d.json"), json);
-  writeFile(path.join(apiDir, "newsletter-marketing-activity-30d.md"), markdown);
+  writeText(path.join(newsletterDir, 'marketing-activity-30d.json'), json);
+  writeText(path.join(newsletterDir, 'marketing-activity-30d.md'), markdown);
+  writeText(path.join(newsletterDir, 'marketing-activity-30d.html'), html);
+
+  writeText(path.join(apiDir, 'newsletter-marketing-activity-30d.json'), json);
+  writeText(path.join(apiDir, 'newsletter-marketing-activity-30d.md'), markdown);
 
   console.log(JSON.stringify({
-    generated_at: doc.generated_at,
-    outputs: [
-      path.join(newsletterDir, "marketing-activity-30d.json"),
-      path.join(newsletterDir, "marketing-activity-30d.md"),
-      path.join(newsletterDir, "marketing-activity-30d.html"),
-      path.join(apiDir, "newsletter-marketing-activity-30d.json"),
-      path.join(apiDir, "newsletter-marketing-activity-30d.md"),
+    written: [
+      path.join(newsletterDir, 'marketing-activity-30d.json'),
+      path.join(newsletterDir, 'marketing-activity-30d.md'),
+      path.join(newsletterDir, 'marketing-activity-30d.html'),
+      path.join(apiDir, 'newsletter-marketing-activity-30d.json'),
+      path.join(apiDir, 'newsletter-marketing-activity-30d.md')
     ],
-    week_count: doc.overview.week_count,
-    item_count: doc.overview.item_count,
-    deck_count: doc.overview.deck_count,
+    latest_week_date: latestWeekDate,
+    weekly_updates: windowWeeks.length,
+    tracked_items: trackedItems,
+    linked_decks: linkedDeckIds.size,
+    ingested_decks: ingestedDecks
   }, null, 2));
 }
 
