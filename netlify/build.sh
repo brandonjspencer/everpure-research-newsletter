@@ -67,7 +67,6 @@ fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
 node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
-node "$ROOT/netlify/fix_default_repetition.js" "$ROOT/publish"
 node "$ROOT/netlify/fix_default_bottom.js" "$ROOT/publish"
 
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
