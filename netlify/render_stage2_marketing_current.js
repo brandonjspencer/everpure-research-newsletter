@@ -1,290 +1,446 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-function readJson(p) {
-  return JSON.parse(fs.readFileSync(p, 'utf8'));
+function readJson(filePath, fallback = null) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (err) {
+    return fallback;
+  }
 }
 
-function writeFile(p, content) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, content);
+function writeFile(filePath, content) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content);
 }
 
-function fmtDate(d) {
-  return d.toISOString().slice(0, 10);
+function maxDate(dates) {
+  return dates.reduce((a, b) => (a > b ? a : b));
 }
 
-function safeText(text) {
-  return String(text || '')
-    .replace(/\s+/g, ' ')
-    .replace(/\s+:/g, ':')
+function addDays(dateStr, deltaDays) {
+  const dt = new Date(dateStr + "T00:00:00Z");
+  dt.setUTCDate(dt.getUTCDate() + deltaDays);
+  return dt.toISOString().slice(0, 10);
+}
+
+function unique(arr) {
+  return Array.from(new Set(arr.filter(Boolean)));
+}
+
+function topLevelTexts(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => (item && typeof item.text === "string" ? item.text.trim() : ""))
+    .filter(Boolean);
+}
+
+function sentenceCase(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function canonicalKey(title) {
+  const raw = (title || "").trim();
+  const lower = raw.toLowerCase();
+  if (!lower) return "";
+  if (lower.includes("knowledge portal") || lower.includes("support taxonomy") || lower.includes("platform redesign") || lower.includes("knowledge portal domain")) {
+    return "knowledge-portal-platform";
+  }
+  if (lower.includes("homepage ai messaging") || lower.includes("ai summary")) {
+    return "ai-messaging";
+  }
+  if (lower.includes("evergreen rebrand")) {
+    return "evergreen-rebrand";
+  }
+  if (lower.includes("pathfinder")) {
+    return "pathfinder";
+  }
+  if (lower.includes("events page") || lower.includes("events v1") || lower.includes("events v2")) {
+    return "events-page";
+  }
+  if (lower.includes("design & ux feedback") || lower.includes("design and ux feedback") || lower.includes("reader page") || lower.includes("search page") || lower.includes("header")) {
+    return "design-feedback";
+  }
+  return lower
+    .replace(/^\d+\s*[-–:]\s*/, "")
+    .replace(/\(in process\)/gi, "")
+    .replace(/\bbaseline\b/gi, "")
+    .replace(/\bvariations?\b/gi, "")
+    .replace(/\br\d+\b/gi, "")
+    .replace(/\bv\d+\b/gi, "")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
-function normTitle(text) {
-  let t = safeText(text)
-    .replace(/^\d+\s*-\s*/, '')
-    .replace(/^Concept\s*\d+\s*[:-]\s*/i, '')
-    .replace(/\(in process\)/ig, '')
-    .replace(/\bR\d+\b/ig, '')
-    .replace(/\bV\d+\b/ig, '')
-    .replace(/\bThree Variations\b/ig, '')
-    .replace(/\bBaseline\b/ig, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (/^knowledge portal/i.test(t)) return 'Knowledge Portal structure';
-  if (/^support taxonomy flow/i.test(t)) return 'Support Taxonomy Flow';
-  if (/^pathfinder cta labels/i.test(t)) return 'Pathfinder CTA labels';
-  if (/^homepage ai messaging/i.test(t)) return 'Homepage AI messaging';
-  if (/^design & ux feedback/i.test(t)) return 'Design and UX feedback';
-  if (/^events page/i.test(t)) return 'Events page';
-  if (/^ai summary/i.test(t)) return 'AI summary';
-  if (/^evergreen rebrand/i.test(t)) return 'Evergreen rebrand';
-  if (/^baselines?: platform redesign/i.test(t)) return 'Platform redesign';
-  return t;
-}
-
-function flattenTopLevelItems(record) {
-  const groups = record.content_groups || {};
-  const out = [];
-  for (const [group, arr] of Object.entries(groups)) {
-    for (const item of Array.isArray(arr) ? arr : []) {
-      const text = safeText(item && item.text);
-      if (!text) continue;
-      out.push({ group, text });
-    }
+function displayForKey(key, samples = []) {
+  switch (key) {
+    case "knowledge-portal-platform":
+      return "Knowledge portal and platform structure";
+    case "ai-messaging":
+      return "AI messaging and summary framing";
+    case "evergreen-rebrand":
+      return "Evergreen rebrand";
+    case "pathfinder":
+      return "Pathfinder journey and CTA clarity";
+    case "events-page":
+      return "Events page work";
+    case "design-feedback":
+      return "Cross-page design and UX feedback";
+    default:
+      return sentenceCase(samples[0] || key);
   }
-  return out;
 }
 
-function pickWeeklyHighlights(items) {
-  const priority = ['findings', 'testing_concepts', 'in_process', 'weekly_progress', 'next_steps', 'other'];
-  const seen = new Set();
-  const sorted = items
-    .filter((x) => x.text)
-    .sort((a, b) => priority.indexOf(a.group) - priority.indexOf(b.group));
-  const result = [];
-  for (const item of sorted) {
-    const key = normTitle(item.text).toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-    result.push(normTitle(item.text));
-    if (result.length >= 2) break;
+function findComparisonCue(title) {
+  const lower = (title || "").toLowerCase();
+  return ["baseline", "variation", "variations", "compare", "comparison", "review", "r2", "r3", "v1", "v2"].some((cue) => lower.includes(cue));
+}
+
+function comparisonNextQuestion(key, samples) {
+  switch (key) {
+    case "events-page":
+      return "What specific page element or content treatment will define the winner between the remaining Events variants?";
+    case "ai-messaging":
+      return "Which one or two summary framings are strongest enough to carry into the next deciding round?";
+    case "evergreen-rebrand":
+      return "Which visual pacing treatment improves appeal without lowering comprehension?";
+    case "knowledge-portal-platform":
+      return "Which naming and entry-point framing makes the portal feel most discoverable and useful?";
+    default:
+      return `What should the next deciding comparison prove for ${displayForKey(key, samples)}?`;
   }
-  return result;
 }
 
-function topCountsFrom(records, groups) {
-  const counts = new Map();
-  for (const r of records) {
-    for (const item of flattenTopLevelItems(r)) {
-      if (!groups.includes(item.group)) continue;
-      const key = normTitle(item.text);
-      if (!key) continue;
-      counts.set(key, (counts.get(key) || 0) + 1);
-    }
-  }
-  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+function bulletList(items) {
+  return items.map((item) => `- ${item}`).join("\n");
 }
 
-function isComparison(text) {
-  return /baseline|variation|compare|comparison|\bV\d\b|\bR\d\b/i.test(text || '');
+function esc(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-function htmlEscape(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+function renderHtml(doc) {
+  const weeklyRows = doc.weekly_activity_log
+    .map((item) => `<li><strong>${esc(item.week_date)}</strong> — ${esc(item.summary)}</li>`)
+    .join("\n");
 
-function mdList(items, render) {
-  return items.map(render).join('\n');
-}
+  const activeRows = doc.active_workstreams
+    .map((item) => `<li><strong>${esc(item.title)}</strong> — Mentioned ${esc(String(item.mentions))} time(s). ${esc(item.readout)}</li>`)
+    .join("\n");
 
-function build(publishRoot) {
-  const dataDir = path.join(publishRoot, 'data');
-  const weeksPath = path.join(dataDir, 'weeks.json');
-  const weeks = readJson(weeksPath);
+  const threadRows = doc.repeated_threads
+    .map((item) => `<li><strong>${esc(item.theme)}</strong> — ${esc(item.readout)}</li>`)
+    .join("\n");
 
-  const latest = weeks.reduce((m, r) => (!m || r.week_date > m ? r.week_date : m), null);
-  const latestDate = new Date(`${latest}T00:00:00Z`);
-  const sinceDate = new Date(latestDate);
-  sinceDate.setUTCDate(sinceDate.getUTCDate() - 29);
-  const since = fmtDate(sinceDate);
+  const comparisonRows = doc.comparison_work_in_flight
+    .map((item) => `<li><strong>${esc(item.title)}</strong> — ${esc(item.readout)} <em>Next question:</em> ${esc(item.next_question)}</li>`)
+    .join("\n");
 
-  const windowRecords = weeks
-    .filter((r) => r.week_date >= since && r.week_date <= latest)
-    .sort((a, b) => b.week_date.localeCompare(a.week_date));
+  const howRows = doc.how_to_use_log.map((item) => `<li>${esc(item)}</li>`).join("\n");
 
-  const allItems = windowRecords.flatMap(flattenTopLevelItems);
-  const countByGroup = (group) => allItems.filter((x) => x.group === group).length;
-  const deckIds = [...new Set(windowRecords.map((r) => r.deck && r.deck.file_id).filter(Boolean))];
-  const decksWithContent = deckIds.length; // current build has ingested coverage for window decks
-
-  const weeklyLog = windowRecords.map((r) => ({
-    week_date: r.week_date,
-    highlights: pickWeeklyHighlights(flattenTopLevelItems(r)),
-    item_count: flattenTopLevelItems(r).length,
-  }));
-
-  const activeWorkstreams = topCountsFrom(windowRecords, ['in_process']).slice(0, 6).map(([title, mentions]) => ({ title, mentions }));
-  const repeatedThemes = topCountsFrom(windowRecords, ['findings', 'testing_concepts', 'in_process']).slice(0, 5).map(([title, mentions]) => ({ title, mentions }));
-  const comparisonWork = topCountsFrom(windowRecords, ['findings', 'testing_concepts'])
-    .filter(([title]) => isComparison(title))
-    .slice(0, 5)
-    .map(([title, mentions]) => ({ title, mentions }));
-
-  const uniqueConceptsTouched = new Set(allItems.map((x) => normTitle(x.text).toLowerCase())).size;
-  const weeklyWithDeck = windowRecords.filter((r) => r.deck && r.deck.file_id).length;
-
-  const json = {
-    generated_at: new Date().toISOString(),
-    title: 'Everpure research activity log (30d)',
-    audience: 'marketing',
-    tone: 'detailed',
-    mode: 'activity_log',
-    preset: 'marketing_activity_30d',
-    defaults: { window: '30d', audience: 'marketing', tone: 'detailed' },
-    window: { since, until: latest, label: '30d', days: 30 },
-    overview: {
-      week_count: windowRecords.length,
-      item_count: allItems.length,
-      unique_concepts_touched: uniqueConceptsTouched,
-      deck_count: deckIds.length,
-      decks_with_content_count: decksWithContent,
-      weeks_with_linked_deck: weeklyWithDeck,
-    },
-    executive_summary: `This 30-day view shows a steady weekly research cadence across ${windowRecords.length} updates, ${allItems.length} tracked items, and ${uniqueConceptsTouched} distinct concepts. Activity clustered most heavily around platform and knowledge-portal work, homepage and AI-message refinement, and comparison-style work on events and brand directions.`,
-    sections: {
-      snapshot: {
-        week_count: windowRecords.length,
-        item_count: allItems.length,
-        findings: countByGroup('findings'),
-        testing_concepts: countByGroup('testing_concepts'),
-        in_progress: countByGroup('in_process'),
-        average_items_per_week: Number((allItems.length / Math.max(windowRecords.length, 1)).toFixed(1)),
-        unique_concepts_touched: uniqueConceptsTouched,
-        deck_count: deckIds.length,
-        decks_with_content_count: decksWithContent,
-      },
-      weekly_activity_log: weeklyLog,
-      active_workstreams: activeWorkstreams,
-      repeated_research_threads: repeatedThemes,
-      comparison_work_in_flight: comparisonWork,
-      how_to_use_this_log: [
-        'Use the weekly log to show research cadence and consistency over the month.',
-        'Use active workstreams to show where studies are still progressing rather than already resolved.',
-        'Use comparison work in flight to highlight where the team is narrowing toward decision-ready tests.'
-      ]
-    }
-  };
-
-  const md = `# ${json.title}\n\n_Generated: ${json.generated_at}_  \n_Window: ${since} to ${latest}_  \n_Audience: marketing | Tone: detailed | Mode: activity_log_\n\n## Executive summary\n${json.executive_summary}\n\n## Snapshot\n- Weeks covered: ${json.sections.snapshot.week_count}\n- Items surfaced: ${json.sections.snapshot.item_count}\n- Unique concepts touched: ${json.sections.snapshot.unique_concepts_touched}\n- Findings: ${json.sections.snapshot.findings}\n- Testing concepts: ${json.sections.snapshot.testing_concepts}\n- In progress: ${json.sections.snapshot.in_progress}\n- Average items per week: ${json.sections.snapshot.average_items_per_week}\n- Linked decks: ${json.sections.snapshot.deck_count}\n- Decks with ingested text: ${json.sections.snapshot.decks_with_content_count}\n\n## Weekly activity log\n${mdList(json.sections.weekly_activity_log, (w) => `- **${w.week_date}** — ${w.highlights.join('; ')}`)}\n\n## Active workstreams\n${mdList(json.sections.active_workstreams, (w) => `- **${w.title}** — Mentioned ${w.mentions} time(s).`)}\n\n## Repeated research threads\n${mdList(json.sections.repeated_research_threads, (t) => `- **${t.title}** — Appeared ${t.mentions} time(s) across findings, concepts, or in-progress work.`)}\n\n## Comparison work in flight\n${mdList(json.sections.comparison_work_in_flight, (t) => `- **${t.title}** — Appeared ${t.mentions} time(s) and is functioning as a comparison-style or narrowing test.`)}\n\n## How to use this log\n${mdList(json.sections.how_to_use_this_log, (x) => `- ${x}`)}\n`;
-
-  const html = `<!doctype html>
+  return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${htmlEscape(json.title)}</title>
+  <title>${esc(doc.title)}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 40px auto; max-width: 900px; line-height: 1.55; padding: 0 20px; color: #111; }
-    h1, h2, h3 { line-height: 1.2; }
-    .meta { color: #555; margin-bottom: 24px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 40px auto; max-width: 860px; padding: 0 20px; line-height: 1.55; color: #1f2937; }
+    h1, h2 { line-height: 1.2; }
+    h1 { margin-bottom: 8px; }
+    .meta { color: #4b5563; font-size: 0.95rem; margin-bottom: 24px; }
+    .panel { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px 18px; margin: 18px 0 24px; }
     ul { padding-left: 22px; }
     li { margin: 8px 0; }
-    .section { margin-top: 28px; }
-    a { color: #0a58ca; text-decoration: none; }
+    .small { color: #6b7280; font-size: 0.92rem; }
   </style>
 </head>
 <body>
-  <p><a href="../">Back to homepage</a></p>
-  <h1>${htmlEscape(json.title)}</h1>
-  <div class="meta">Generated ${htmlEscape(json.generated_at)} · marketing · detailed · activity_log</div>
+  <h1>${esc(doc.title)}</h1>
+  <div class="meta">Generated: ${esc(doc.generated_at)} • Window: ${esc(doc.window.since)} to ${esc(doc.window.until)} • Audience: ${esc(doc.audience)} • Tone: ${esc(doc.tone)} • Mode: ${esc(doc.mode)}</div>
 
-  <div class="section">
-    <h2>Executive summary</h2>
-    <p>${htmlEscape(json.executive_summary)}</p>
+  <div class="panel">
+    <strong>Executive summary</strong>
+    <p>${esc(doc.executive_summary)}</p>
   </div>
 
-  <div class="section">
-    <h2>Snapshot</h2>
-    <ul>
-      <li>Weeks covered: ${json.sections.snapshot.week_count}</li>
-      <li>Items surfaced: ${json.sections.snapshot.item_count}</li>
-      <li>Unique concepts touched: ${json.sections.snapshot.unique_concepts_touched}</li>
-      <li>Findings: ${json.sections.snapshot.findings}</li>
-      <li>Testing concepts: ${json.sections.snapshot.testing_concepts}</li>
-      <li>In progress: ${json.sections.snapshot.in_progress}</li>
-      <li>Average items per week: ${json.sections.snapshot.average_items_per_week}</li>
-      <li>Linked decks: ${json.sections.snapshot.deck_count}</li>
-      <li>Decks with ingested text: ${json.sections.snapshot.decks_with_content_count}</li>
-    </ul>
-  </div>
+  <h2>Snapshot</h2>
+  <ul>
+    <li>Weeks covered: ${esc(String(doc.overview.week_count))}</li>
+    <li>Items surfaced: ${esc(String(doc.overview.item_count))}</li>
+    <li>Decks linked: ${esc(String(doc.overview.deck_count))}</li>
+    <li>Decks with ingested text: ${esc(String(doc.overview.decks_with_content_count))}</li>
+  </ul>
 
-  <div class="section">
-    <h2>Weekly activity log</h2>
-    <ul>
-      ${json.sections.weekly_activity_log.map((w) => `<li><strong>${htmlEscape(w.week_date)}</strong> — ${htmlEscape(w.highlights.join('; '))}</li>`).join('\n      ')}
-    </ul>
-  </div>
+  <h2>Volume snapshot</h2>
+  <ul>
+    <li>Total tracked items: ${esc(String(doc.volume_snapshot.total_tracked_items))}</li>
+    <li>Findings: ${esc(String(doc.volume_snapshot.findings))}</li>
+    <li>Testing concepts: ${esc(String(doc.volume_snapshot.testing_concepts))}</li>
+    <li>In progress: ${esc(String(doc.volume_snapshot.in_progress))}</li>
+    <li>Average items per week: ${esc(String(doc.volume_snapshot.average_items_per_week))}</li>
+  </ul>
 
-  <div class="section">
-    <h2>Active workstreams</h2>
-    <ul>
-      ${json.sections.active_workstreams.map((w) => `<li><strong>${htmlEscape(w.title)}</strong> — Mentioned ${w.mentions} time(s).</li>`).join('\n      ')}
-    </ul>
-  </div>
+  <h2>Weekly activity log</h2>
+  <ul>
+    ${weeklyRows}
+  </ul>
 
-  <div class="section">
-    <h2>Repeated research threads</h2>
-    <ul>
-      ${json.sections.repeated_research_threads.map((t) => `<li><strong>${htmlEscape(t.title)}</strong> — Appeared ${t.mentions} time(s) across findings, concepts, or in-progress work.</li>`).join('\n      ')}
-    </ul>
-  </div>
+  <h2>Active workstreams</h2>
+  <ul>
+    ${activeRows}
+  </ul>
 
-  <div class="section">
-    <h2>Comparison work in flight</h2>
-    <ul>
-      ${json.sections.comparison_work_in_flight.map((t) => `<li><strong>${htmlEscape(t.title)}</strong> — Appeared ${t.mentions} time(s) and is functioning as a comparison-style or narrowing test.</li>`).join('\n      ')}
-    </ul>
-  </div>
+  <h2>Repeated research threads</h2>
+  <ul>
+    ${threadRows}
+  </ul>
 
-  <div class="section">
-    <h2>How to use this log</h2>
-    <ul>
-      ${json.sections.how_to_use_this_log.map((x) => `<li>${htmlEscape(x)}</li>`).join('\n      ')}
-    </ul>
-  </div>
+  <h2>Comparison work in flight</h2>
+  <ul>
+    ${comparisonRows}
+  </ul>
+
+  <h2>How to use this log</h2>
+  <ul>
+    ${howRows}
+  </ul>
+
+  <p class="small">This artifact is optimized for cadence, throughput, and research visibility. It is not intended to be a ship-readiness brief.</p>
 </body>
-</html>
-`;
+</html>`;
+}
 
-  const outNewsletter = path.join(publishRoot, 'newsletter');
-  const outApi = path.join(publishRoot, 'api');
+function renderMarkdown(doc) {
+  return [
+    `# ${doc.title}`,
+    "",
+    `_Generated: ${doc.generated_at}_`,
+    `_Window: ${doc.window.since} to ${doc.window.until}_`,
+    `_Audience: ${doc.audience} | Tone: ${doc.tone} | Mode: ${doc.mode}_`,
+    "",
+    "## Executive summary",
+    doc.executive_summary,
+    "",
+    "## Snapshot",
+    bulletList([
+      `Weeks covered: ${doc.overview.week_count}`,
+      `Items surfaced: ${doc.overview.item_count}`,
+      `Decks linked: ${doc.overview.deck_count}`,
+      `Decks with ingested text: ${doc.overview.decks_with_content_count}`,
+    ]),
+    "",
+    "## Volume snapshot",
+    bulletList([
+      `Total tracked items: ${doc.volume_snapshot.total_tracked_items}`,
+      `Findings: ${doc.volume_snapshot.findings}`,
+      `Testing concepts: ${doc.volume_snapshot.testing_concepts}`,
+      `In progress: ${doc.volume_snapshot.in_progress}`,
+      `Average items per week: ${doc.volume_snapshot.average_items_per_week}`,
+    ]),
+    "",
+    "## Weekly activity log",
+    bulletList(doc.weekly_activity_log.map((item) => `**${item.week_date}** — ${item.summary}`)),
+    "",
+    "## Active workstreams",
+    bulletList(doc.active_workstreams.map((item) => `**${item.title}** — Mentioned ${item.mentions} time(s). ${item.readout}`)),
+    "",
+    "## Repeated research threads",
+    bulletList(doc.repeated_threads.map((item) => `**${item.theme}** — ${item.readout}`)),
+    "",
+    "## Comparison work in flight",
+    bulletList(doc.comparison_work_in_flight.map((item) => `**${item.title}** — ${item.readout} Next question: ${item.next_question}`)),
+    "",
+    "## How to use this log",
+    bulletList(doc.how_to_use_log),
+    "",
+    "This artifact is optimized for cadence, throughput, and research visibility. It is not intended to be a ship-readiness brief.",
+    "",
+  ].join("\n");
+}
 
-  writeFile(path.join(outNewsletter, 'marketing-activity-30d.json'), JSON.stringify(json, null, 2));
-  writeFile(path.join(outNewsletter, 'marketing-activity-30d.md'), md);
-  writeFile(path.join(outNewsletter, 'marketing-activity-30d.html'), html);
-  writeFile(path.join(outApi, 'newsletter-marketing-activity-30d.json'), JSON.stringify(json, null, 2));
-  writeFile(path.join(outApi, 'newsletter-marketing-activity-30d.md'), md);
+function main() {
+  const publishDir = process.argv[2] ? path.resolve(process.argv[2]) : path.resolve("publish");
+  const dataDir = path.join(publishDir, "data");
+  const weeks = readJson(path.join(dataDir, "weeks.json"), []);
+  const deckContent = readJson(path.join(dataDir, "deck_content.json"), readJson(path.join(dataDir, "deck-content.json"), []));
+
+  if (!Array.isArray(weeks) || weeks.length === 0) {
+    throw new Error("No weeks.json records available for marketing stage-2 writer.");
+  }
+
+  const latestWeek = maxDate(weeks.map((r) => r.week_date).filter(Boolean));
+  const since = addDays(latestWeek, -29);
+  const windowRecords = weeks
+    .filter((r) => r.week_date && r.week_date >= since && r.week_date <= latestWeek)
+    .sort((a, b) => (a.week_date < b.week_date ? 1 : -1));
+
+  const deckIds = unique(windowRecords.map((r) => (r.deck && r.deck.file_id) || null));
+  const deckIdsWithContent = unique((Array.isArray(deckContent) ? deckContent : []).map((d) => d.deck_id || d.file_id || null)).filter((id) => deckIds.includes(id));
+
+  let findings = 0;
+  let testingConcepts = 0;
+  let inProgress = 0;
+  const workstreamMap = new Map();
+  const threadMap = new Map();
+  const comparisonMap = new Map();
+
+  const weeklyActivity = windowRecords.map((record) => {
+    const groups = record.content_groups || {};
+    const findingTitles = topLevelTexts(groups.findings);
+    const testingTitles = topLevelTexts(groups.testing_concepts);
+    const progressTitles = topLevelTexts(groups.in_process);
+
+    findings += findingTitles.length;
+    testingConcepts += testingTitles.length;
+    inProgress += progressTitles.length;
+
+    const visibleTitles = unique([...findingTitles, ...testingTitles, ...progressTitles]).slice(0, 3);
+
+    for (const title of progressTitles) {
+      const key = canonicalKey(title);
+      if (!key) continue;
+      if (!workstreamMap.has(key)) workstreamMap.set(key, { samples: [], mentions: 0 });
+      const entry = workstreamMap.get(key);
+      entry.mentions += 1;
+      entry.samples.push(title);
+    }
+
+    for (const title of unique([...findingTitles, ...testingTitles, ...progressTitles])) {
+      const key = canonicalKey(title);
+      if (!key) continue;
+      if (!threadMap.has(key)) threadMap.set(key, { samples: [], mentions: 0, weeks: new Set() });
+      const entry = threadMap.get(key);
+      entry.mentions += 1;
+      entry.samples.push(title);
+      entry.weeks.add(record.week_date);
+      if (findComparisonCue(title)) {
+        if (!comparisonMap.has(key)) comparisonMap.set(key, { samples: [], mentions: 0, weeks: new Set() });
+        const comp = comparisonMap.get(key);
+        comp.mentions += 1;
+        comp.samples.push(title);
+        comp.weeks.add(record.week_date);
+      }
+    }
+
+    return {
+      week_date: record.week_date,
+      summary: visibleTitles.join("; ") || "No named concepts surfaced in the weekly note.",
+      source_refs: [{ week_date: record.week_date, record_id: record.record_id || null, deck_id: (record.deck && record.deck.file_id) || null }],
+    };
+  });
+
+  const activeWorkstreams = Array.from(workstreamMap.entries())
+    .sort((a, b) => b[1].mentions - a[1].mentions || displayForKey(a[0], a[1].samples).localeCompare(displayForKey(b[0], b[1].samples)))
+    .slice(0, 6)
+    .map(([key, value]) => ({
+      title: displayForKey(key, value.samples),
+      mentions: value.mentions,
+      readout: `${displayForKey(key, value.samples)} remained active across the month and is best read as an ongoing workstream rather than a closed finding.`,
+    }));
+
+  const repeatedThreads = Array.from(threadMap.entries())
+    .filter(([, value]) => value.weeks.size >= 2)
+    .sort((a, b) => b[1].weeks.size - a[1].weeks.size || b[1].mentions - a[1].mentions)
+    .slice(0, 5)
+    .map(([key, value]) => ({
+      theme: displayForKey(key, value.samples),
+      mentions: value.mentions,
+      weeks_seen: value.weeks.size,
+      readout: `${displayForKey(key, value.samples)} appeared in ${value.weeks.size} of the last ${windowRecords.length} weekly updates, making it one of the clearest repeated research threads in the month.`,
+    }));
+
+  const comparisonWork = Array.from(comparisonMap.entries())
+    .sort((a, b) => b[1].weeks.size - a[1].weeks.size || b[1].mentions - a[1].mentions)
+    .slice(0, 5)
+    .map(([key, value]) => ({
+      title: displayForKey(key, value.samples),
+      mentions: value.mentions,
+      readout: `${displayForKey(key, value.samples)} is no longer broad exploration work; it is in a narrower comparison phase with clearer decision pressure.`,
+      next_question: comparisonNextQuestion(key, value.samples),
+    }));
+
+  const totalItems = findings + testingConcepts + inProgress;
+  const avgPerWeek = windowRecords.length ? (totalItems / windowRecords.length).toFixed(1) : "0.0";
+
+  const doc = {
+    generated_at: new Date().toISOString(),
+    title: "Everpure research activity log (30d)",
+    audience: "marketing",
+    tone: "detailed",
+    mode: "activity_log",
+    preset: "marketing_activity_30d",
+    defaults: {
+      window: "30d",
+      audience: "marketing",
+      tone: "detailed",
+    },
+    window: {
+      since,
+      until: latestWeek,
+      label: "30d",
+      days: 30,
+    },
+    overview: {
+      week_count: windowRecords.length,
+      item_count: totalItems,
+      deck_count: deckIds.length,
+      deck_ids: deckIds,
+      decks_with_content_count: deckIdsWithContent.length,
+      decks_with_content: deckIdsWithContent,
+      date_range: { min: since, max: latestWeek },
+    },
+    executive_summary: `This 30-day view captures the cadence and volume of the research program: ${windowRecords.length} weekly updates, ${totalItems} tracked items, and repeated motion across findings, comparison work, and active workstreams.`,
+    volume_snapshot: {
+      total_tracked_items: totalItems,
+      findings,
+      testing_concepts: testingConcepts,
+      in_progress: inProgress,
+      average_items_per_week: Number(avgPerWeek),
+    },
+    weekly_activity_log: weeklyActivity,
+    active_workstreams: activeWorkstreams,
+    repeated_threads: repeatedThreads,
+    comparison_work_in_flight: comparisonWork,
+    how_to_use_log: [
+      "Use this view to show consistency of research activity over the month, not to make ship decisions.",
+      "Lead with cadence and volume, then show the repeated workstreams that are absorbing the most research attention.",
+      "Use the comparison section to show where the team is moving from broad exploration into narrower decision-making.",
+    ],
+  };
+
+  const markdown = renderMarkdown(doc);
+  const html = renderHtml(doc);
+  const json = JSON.stringify(doc, null, 2) + "\n";
+
+  const newsletterDir = path.join(publishDir, "newsletter");
+  const apiDir = path.join(publishDir, "api");
+  writeFile(path.join(newsletterDir, "marketing-activity-30d.json"), json);
+  writeFile(path.join(newsletterDir, "marketing-activity-30d.md"), markdown);
+  writeFile(path.join(newsletterDir, "marketing-activity-30d.html"), html);
+  writeFile(path.join(apiDir, "newsletter-marketing-activity-30d.json"), json);
+  writeFile(path.join(apiDir, "newsletter-marketing-activity-30d.md"), markdown);
 
   console.log(JSON.stringify({
-    rewritten: [
-      path.join(outNewsletter, 'marketing-activity-30d.json'),
-      path.join(outNewsletter, 'marketing-activity-30d.md'),
-      path.join(outNewsletter, 'marketing-activity-30d.html'),
-      path.join(outApi, 'newsletter-marketing-activity-30d.json'),
-      path.join(outApi, 'newsletter-marketing-activity-30d.md')
+    generated_at: doc.generated_at,
+    outputs: [
+      path.join(newsletterDir, "marketing-activity-30d.json"),
+      path.join(newsletterDir, "marketing-activity-30d.md"),
+      path.join(newsletterDir, "marketing-activity-30d.html"),
+      path.join(apiDir, "newsletter-marketing-activity-30d.json"),
+      path.join(apiDir, "newsletter-marketing-activity-30d.md"),
     ],
-    week_count: windowRecords.length,
-    item_count: allItems.length,
-    unique_concepts_touched: uniqueConceptsTouched
+    week_count: doc.overview.week_count,
+    item_count: doc.overview.item_count,
+    deck_count: doc.overview.deck_count,
   }, null, 2));
 }
 
-const publishRoot = process.argv[2] || path.resolve(process.cwd(), 'publish');
-build(publishRoot);
+main();
