@@ -59,6 +59,15 @@ const issueDate = (() => {
   }
 })();
 
+const marchDeck = {
+  label: 'Source deck',
+  href: 'https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit'
+};
+const aprilDeck = {
+  label: 'Source deck',
+  href: 'https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit'
+};
+
 const brief = {
   title: 'Everpure monthly leadership brief (30d)',
   generated_at: generatedAt,
@@ -79,6 +88,8 @@ const brief = {
         'Run one confirmation round that compares the simpler low-noise version against the current redesign, using comprehension plus sentiment together as the release gate.',
       confidence: 'medium',
       decision_status: 'iterate',
+      source_label: marchDeck.label,
+      source_href: marchDeck.href,
     },
     {
       title: 'Knowledge portal naming & structure',
@@ -90,6 +101,8 @@ const brief = {
         'Keep the next pass anchored in support-led naming and search expectations, then test whether the broader portal model can expand without losing that clarity advantage.',
       confidence: 'medium',
       decision_status: 'iterate',
+      source_label: marchDeck.label,
+      source_href: marchDeck.href,
     },
     {
       title: 'Evergreen rebrand direction',
@@ -101,6 +114,8 @@ const brief = {
         'Continue with the higher-appeal direction, keep the upper page simpler, and delay denser explanatory content until after the offer is understood.',
       confidence: 'medium',
       decision_status: 'iterate',
+      source_label: marchDeck.label,
+      source_href: marchDeck.href,
     },
   ],
   comparison_tests: [
@@ -112,8 +127,10 @@ const brief = {
         'Choose on first-glance comprehension of the page offer and clarity of the primary next step — not stylistic preference alone.',
       next_step:
         'Reduce to one decisive V1-versus-V2 comparison and agree on comprehension and progression criteria before the test starts.',
-      confidence: 'moderate',
+      confidence: 'medium',
       decision_status: 'watch',
+      source_label: aprilDeck.label,
+      source_href: aprilDeck.href,
     },
     {
       title: 'AI summary variations',
@@ -123,21 +140,24 @@ const brief = {
         'Pick the winning framing based on which version is clearest and most credible at first read, and which makes people most confident about what the AI summary is doing.',
       next_step:
         'Collapse to the two strongest framings and use the next round to choose one on comprehension and confidence — not novelty.',
-      confidence: 'moderate',
+      confidence: 'medium',
       decision_status: 'watch',
+      source_label: aprilDeck.label,
+      source_href: aprilDeck.href,
     },
   ],
   unresolved_questions: [
     {
-      area: 'Homepage · Landing · Reader · Search · Header',
+      title: 'Design & UX feedback',
+      scope: 'Homepage · Landing · Reader · Search · Header',
       question: 'Which changes materially improve clarity and progression, rather than simply making the design feel cleaner in review?',
     },
     {
-      area: 'Support taxonomy',
+      title: 'Support taxonomy',
       question: 'Which label and path model makes support intent obvious without expanding IA complexity or fragmenting the navigation model?',
     },
     {
-      area: 'Pathfinder CTA labels',
+      title: 'Pathfinder CTA labels',
       question: 'Which label set is clearest at the moment of commitment and least likely to add friction at the point of action?',
     },
   ],
@@ -155,7 +175,6 @@ function labelConfidence(level) {
   switch (String(level || '').toLowerCase()) {
     case 'high': return 'High confidence';
     case 'low': return 'Low confidence';
-    case 'moderate': return 'Moderate confidence';
     default: return 'Medium confidence';
   }
 }
@@ -181,6 +200,10 @@ function renderMarkdown(data) {
     out.push('');
     out.push(item.proof_point);
     out.push('');
+    if (item.source_href) {
+      out.push(`[${item.source_label || 'Source deck'}](${item.source_href})`);
+      out.push('');
+    }
     out.push('#### Direction');
     out.push('');
     out.push(item.next_step);
@@ -201,6 +224,10 @@ function renderMarkdown(data) {
     out.push('');
     out.push(item.decision_criteria);
     out.push('');
+    if (item.source_href) {
+      out.push(`[${item.source_label || 'Source deck'}](${item.source_href})`);
+      out.push('');
+    }
     out.push('#### Direction');
     out.push('');
     out.push(item.next_step);
@@ -213,7 +240,8 @@ function renderMarkdown(data) {
   out.push('## What Is Still Unresolved');
   out.push('');
   for (const item of data.unresolved_questions) {
-    out.push(`- **${item.area}** — ${item.question}`);
+    const head = item.scope ? `**${item.title}** — ${item.scope}` : `**${item.title}**`;
+    out.push(`- ${head}: ${item.question}`);
   }
   out.push('');
   out.push('## Recommended Actions');
@@ -236,11 +264,15 @@ function confidenceBadge(level, dark = false) {
   const map = {
     high: { bg: dark ? 'rgba(207,232,212,0.15)' : 'rgba(90,99,89,0.12)', fg: dark ? 'var(--mint-400)' : 'var(--secondary)', dot: dark ? 'var(--mint-400)' : 'var(--secondary)', label: 'High confidence' },
     medium: { bg: dark ? 'rgba(213,93,29,0.14)' : 'rgba(213,93,29,0.12)', fg: 'var(--primary)', dot: 'var(--primary)', label: 'Medium confidence' },
-    moderate: { bg: dark ? 'rgba(189,103,61,0.18)' : 'rgba(189,103,61,0.14)', fg: 'var(--chart-4)', dot: 'var(--chart-4)', label: 'Moderate confidence' },
     low: { bg: dark ? 'rgba(255,245,227,0.12)' : 'rgba(143,165,150,0.18)', fg: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted-fg)', dot: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted)', label: 'Low confidence' },
   };
   const c = map[key] || map.medium;
   return `<div class="confidence" style="background:${c.bg};color:${c.fg};"><span class="dot" style="background:${c.dot};"></span>${escapeHtml(c.label)}</div>`;
+}
+
+function sourceLink(label, href, dark = false) {
+  if (!href) return '';
+  return `<div class="source-row ${dark ? 'source-row--dark' : ''}"><a class="source-link ${dark ? 'source-link--dark' : ''}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || 'Source deck')} ↗</a></div>`;
 }
 
 function renderFinding(item, idx, isLast) {
@@ -251,6 +283,7 @@ function renderFinding(item, idx, isLast) {
       <div class="finding-title">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence)}
     </div>
+    ${sourceLink(item.source_label, item.source_href)}
     <p class="finding-copy">${escapeHtml(item.finding_statement)}</p>
     <div class="finding-columns">
       <div class="finding-col evidence-col">
@@ -273,6 +306,7 @@ function renderComparison(item, idx, isLast) {
       <div class="finding-title finding-title--dark">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence, true)}
     </div>
+    ${sourceLink(item.source_label, item.source_href, true)}
     <p class="finding-copy finding-copy--dark">${escapeHtml(item.finding_statement)}</p>
     <div class="finding-columns finding-columns--dark">
       <div class="finding-col evidence-col evidence-col--dark">
@@ -363,13 +397,19 @@ a { color: inherit; }
 .dispatch-finding { padding-bottom:52px; margin-bottom:52px; border-bottom:2px solid var(--orange-100); }
 .dispatch-finding.is-last { margin-bottom:0; border-bottom:none; }
 .dispatch-finding--dark { border-bottom-color: rgba(255,245,227,0.18); }
-.finding-row { display:flex; align-items:center; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+.finding-row { display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
 .finding-index { font-size:var(--text-label); font-weight:700; color:var(--primary); opacity:0.7; letter-spacing:.16em; }
 .finding-index--dark { color: rgba(255,224,194,0.72); }
 .finding-title { flex:1; font-size:var(--text-base); font-weight:700; color:var(--foreground); letter-spacing:.06em; text-transform:uppercase; }
 .finding-title--dark { color: var(--sidebar-fg); }
 .confidence { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:4px; font-size:var(--text-label); font-weight:700; }
 .dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
+.source-row { margin:0 0 22px 30px; }
+.source-row--dark { margin-left:30px; }
+.source-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--muted-fg); text-decoration:none; border-bottom:1px solid rgba(90,99,89,0.35); padding-bottom:2px; }
+.source-link:hover { color:var(--primary); border-bottom-color:var(--primary); }
+.source-link--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
+.source-link--dark:hover { color:var(--orange-100); border-bottom-color:var(--orange-100); }
 .finding-copy { margin:0 0 36px; font-size:var(--text-h4); line-height:1.82; }
 .finding-copy--dark { color: var(--sidebar-fg); }
 .finding-columns { display:grid; grid-template-columns:1fr 1fr; gap:0; }
@@ -391,7 +431,9 @@ a { color: inherit; }
 .question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
 .question + .question { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
 .question-num { font-size:72px; font-weight:700; color:var(--primary); opacity:0.45; line-height:1; letter-spacing:-.04em; }
-.question-area { font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.07em; text-transform:uppercase; line-height:1.4; }
+.question-head { display:flex; flex-direction:column; gap:8px; }
+.question-title { font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.07em; text-transform:uppercase; line-height:1.4; }
+.question-scope { font-size:13px; font-weight:600; color:rgba(90,99,89,0.78); line-height:1.55; }
 .question p { margin:0; font-size:var(--text-base); line-height:1.75; }
 .actions { display:flex; flex-direction:column; gap:0; margin-top:40px; }
 .action-row { display:grid; grid-template-columns:72px 1fr; gap:24px; align-items:start; padding:28px 0; border-bottom:2px solid var(--orange-100); }
@@ -411,6 +453,7 @@ a { color: inherit; }
   .stats-grid { width:auto; border-top:1px solid rgba(255,245,227,0.08); }
   .brief-sidebar { border-right:none; padding-right:0; padding-bottom:0; }
   .brief-copy { padding:24px 0 48px; }
+  .source-row, .source-row--dark { margin-left:0; }
   .evidence-col { padding-right:0; border-right:none; margin-bottom:24px; }
   .direction-col { padding-left:0; }
   .question + .question { padding-left:0; border-left:none; padding-top:0; }
@@ -465,7 +508,7 @@ a { color: inherit; }
   html.push(sectionLabel('What Is Still Unresolved'));
   html.push('<div class="questions">');
   data.unresolved_questions.forEach((item, idx) => {
-    html.push(`<div class="question"><span class="question-num">${String(idx + 1).padStart(2, '0')}</span><div><div class="question-area">${escapeHtml(item.area)}</div><p>${escapeHtml(item.question)}</p></div></div>`);
+    html.push(`<div class="question"><span class="question-num">${String(idx + 1).padStart(2, '0')}</span><div><div class="question-head"><div class="question-title">${escapeHtml(item.title)}</div>${item.scope ? `<div class="question-scope">${escapeHtml(item.scope)}</div>` : ''}</div><p>${escapeHtml(item.question)}</p></div></div>`);
   });
   html.push('</div></div></section>');
 
