@@ -85,7 +85,7 @@ const brief = {
       finding_statement:
         'This is primarily a naming and discoverability choice, not a broad structural rewrite. People are not strongly confused by either knowledge or support framing, but the support-led version is producing the clearer positive reaction.',
       proof_point:
-        'Expectations were roughly even between knowledge and support URL options, while sentiment ran about 10 points higher for the support version.',
+        'Evidence suggests expectations were roughly even between knowledge and support URL options, while sentiment ran about 10 points higher for the support version.',
       next_step:
         'Keep the next pass anchored in support-led naming and search expectations, then test whether the broader portal model can expand without losing that clarity advantage.',
       confidence: 'medium',
@@ -197,7 +197,7 @@ function renderMarkdown(data) {
     out.push('');
     out.push(item.finding_statement);
     out.push('');
-    out.push('#### Decision criteria');
+    out.push('#### Criteria');
     out.push('');
     out.push(item.decision_criteria);
     out.push('');
@@ -231,13 +231,13 @@ function sectionLabel(title) {
   return `<div class="section-label"><span class="section-title">${escapeHtml(title)}</span></div>`;
 }
 
-function confidenceBadge(level) {
+function confidenceBadge(level, dark = false) {
   const key = String(level || '').toLowerCase();
   const map = {
-    high: { bg: 'rgba(90,99,89,0.12)', fg: 'var(--secondary)', dot: 'var(--secondary)', label: 'High confidence' },
-    medium: { bg: 'rgba(213,93,29,0.12)', fg: 'var(--primary)', dot: 'var(--primary)', label: 'Medium confidence' },
-    moderate: { bg: 'rgba(189,103,61,0.14)', fg: 'var(--chart-4)', dot: 'var(--chart-4)', label: 'Moderate confidence' },
-    low: { bg: 'rgba(143,165,150,0.18)', fg: 'var(--muted-fg)', dot: 'var(--muted)', label: 'Low confidence' },
+    high: { bg: dark ? 'rgba(207,232,212,0.15)' : 'rgba(90,99,89,0.12)', fg: dark ? 'var(--mint-400)' : 'var(--secondary)', dot: dark ? 'var(--mint-400)' : 'var(--secondary)', label: 'High confidence' },
+    medium: { bg: dark ? 'rgba(213,93,29,0.14)' : 'rgba(213,93,29,0.12)', fg: 'var(--primary)', dot: 'var(--primary)', label: 'Medium confidence' },
+    moderate: { bg: dark ? 'rgba(189,103,61,0.18)' : 'rgba(189,103,61,0.14)', fg: 'var(--chart-4)', dot: 'var(--chart-4)', label: 'Moderate confidence' },
+    low: { bg: dark ? 'rgba(255,245,227,0.12)' : 'rgba(143,165,150,0.18)', fg: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted-fg)', dot: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted)', label: 'Low confidence' },
   };
   const c = map[key] || map.medium;
   return `<div class="confidence" style="background:${c.bg};color:${c.fg};"><span class="dot" style="background:${c.dot};"></span>${escapeHtml(c.label)}</div>`;
@@ -265,21 +265,24 @@ function renderFinding(item, idx, isLast) {
   </div>`;
 }
 
-function renderComparison(item) {
+function renderComparison(item, idx, isLast) {
   return `
-  <div class="comparison-card">
-    <div class="comparison-header">
-      <div class="comparison-title">${escapeHtml(item.title)}</div>
-      ${confidenceBadge(item.confidence)}
+  <div class="dispatch-finding dispatch-finding--dark ${isLast ? 'is-last' : ''}">
+    <div class="finding-row">
+      <span class="finding-index finding-index--dark">${String(idx + 1).padStart(2, '0')}</span>
+      <div class="finding-title finding-title--dark">${escapeHtml(item.title).toUpperCase()}</div>
+      ${confidenceBadge(item.confidence, true)}
     </div>
-    <p class="comparison-copy">${escapeHtml(item.finding_statement)}</p>
-    <div class="comparison-block">
-      <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line"></div></div>
-      <p>${escapeHtml(item.decision_criteria)}</p>
-    </div>
-    <div class="comparison-block">
-      <div class="mini-head mini-head--accent-dark"><span>DIRECTION</span><div class="mini-line"></div></div>
-      <p>${escapeHtml(item.next_step)}</p>
+    <p class="finding-copy finding-copy--dark">${escapeHtml(item.finding_statement)}</p>
+    <div class="finding-columns finding-columns--dark">
+      <div class="finding-col evidence-col evidence-col--dark">
+        <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">${escapeHtml(item.decision_criteria)}</p>
+      </div>
+      <div class="finding-col direction-col direction-col--dark">
+        <div class="mini-head mini-head--accent-dark"><span>DIRECTION</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">${escapeHtml(item.next_step)}</p>
+      </div>
     </div>
   </div>`;
 }
@@ -317,8 +320,6 @@ function renderHtml(data) {
   --muted: rgba(143,165,150,1);
   --muted-fg: rgba(90,99,89,1);
   --chart-4: rgba(189,103,61,1);
-  --radius: 4px;
-  --radius-card: 16px;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--background); color: var(--foreground); }
@@ -361,15 +362,23 @@ a { color: inherit; }
 .findings { display:flex; flex-direction:column; gap:0; margin-top:40px; }
 .dispatch-finding { padding-bottom:52px; margin-bottom:52px; border-bottom:2px solid var(--orange-100); }
 .dispatch-finding.is-last { margin-bottom:0; border-bottom:none; }
+.dispatch-finding--dark { border-bottom-color: rgba(255,245,227,0.18); }
 .finding-row { display:flex; align-items:center; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
 .finding-index { font-size:var(--text-label); font-weight:700; color:var(--primary); opacity:0.7; letter-spacing:.16em; }
+.finding-index--dark { color: rgba(255,224,194,0.72); }
 .finding-title { flex:1; font-size:var(--text-base); font-weight:700; color:var(--foreground); letter-spacing:.06em; text-transform:uppercase; }
+.finding-title--dark { color: var(--sidebar-fg); }
 .confidence { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:4px; font-size:var(--text-label); font-weight:700; }
 .dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
 .finding-copy { margin:0 0 36px; font-size:var(--text-h4); line-height:1.82; }
+.finding-copy--dark { color: var(--sidebar-fg); }
 .finding-columns { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.finding-columns--dark { column-gap:0; }
 .finding-col p { margin:0; font-size:var(--text-base); line-height:1.7; }
+.finding-copy-sub { margin:0; font-size:var(--text-base); line-height:1.7; }
+.finding-copy-sub--dark { color: var(--sidebar-fg); }
 .evidence-col { padding-right:32px; border-right:2px solid var(--orange-100); }
+.evidence-col--dark { border-right-color: rgba(255,245,227,0.18); }
 .direction-col { padding-left:32px; }
 .mini-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
 .mini-head span { flex-shrink:0; font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.1em; text-transform:uppercase; }
@@ -377,14 +386,7 @@ a { color: inherit; }
 .mini-head--dark span { color: rgba(255,245,227,0.58); }
 .mini-head--accent-dark span { color: var(--primary); }
 .mini-line { flex:1; height:1px; background:var(--orange-100); }
-.comparisons { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:40px; }
-.comparison-card { background: rgba(255,245,227,0.04); border:1px solid rgba(255,245,227,0.1); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; }
-.comparison-header { padding:20px 24px; border-bottom:1px solid rgba(255,245,227,0.08); display:flex; flex-direction:column; gap:10px; }
-.comparison-title { font-size:var(--text-label); font-weight:700; color:var(--sidebar-fg); letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
-.comparison-copy { margin:0; padding:24px 24px 0; font-size:var(--text-h4); line-height:1.82; }
-.comparison-block { padding:18px 24px 0; margin-top:18px; border-top:1px solid rgba(255,245,227,0.08); }
-.comparison-block:last-child { padding-bottom:24px; }
-.comparison-block p { margin:0; font-size:var(--text-base); line-height:1.7; color:var(--sidebar-fg); }
+.mini-line--dark { background: rgba(255,245,227,0.18); }
 .questions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-top:40px; }
 .question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
 .question + .question { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
@@ -404,7 +406,7 @@ a { color: inherit; }
 .back-link:hover { text-decoration:underline; }
 @media (max-width: 900px) {
   .wrapper { padding: 0 24px; }
-  .masthead-grid, .comparisons, .questions, .brief-grid, .finding-columns, .action-row { grid-template-columns:1fr; }
+  .masthead-grid, .questions, .brief-grid, .finding-columns, .action-row { grid-template-columns:1fr; }
   .title-pane { padding-right:0; border-right:none; }
   .stats-grid { width:auto; border-top:1px solid rgba(255,245,227,0.08); }
   .brief-sidebar { border-right:none; padding-right:0; padding-bottom:0; }
@@ -455,8 +457,8 @@ a { color: inherit; }
 
   html.push('<section class="section section-dark"><div class="wrapper">');
   html.push(sectionLabel('Meaningful Comparisons'));
-  html.push('<div class="comparisons">');
-  data.comparison_tests.forEach((item) => html.push(renderComparison(item)));
+  html.push('<div class="findings">');
+  data.comparison_tests.forEach((item, idx) => html.push(renderComparison(item, idx, idx === data.comparison_tests.length - 1)));
   html.push('</div></div></section>');
 
   html.push('<section class="section section-mint"><div class="wrapper">');
