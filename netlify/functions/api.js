@@ -1380,18 +1380,11 @@ function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) 
   const mode = safeLower(options.mode || 'strategic_digest') || 'strategic_digest';
   const pack = buildPack(windowedWeeks, deckContentIndex, bounds.since, bounds.until);
   const deckBackedInsights = buildDeckBackedInsights(windowedWeeks, deckContentIndex, tone === 'brief' ? 3 : 6);
-  let validatedFindings = buildValidatedFindings(windowedWeeks, audience, tone === 'brief' ? 3 : 5, deckContentIndex);
-  let comparisonTests = collectComparisonCandidates(windowedWeeks, tone === 'brief' ? 3 : 5, deckContentIndex);
+  const validatedFindings = buildValidatedFindings(windowedWeeks, audience, tone === 'brief' ? 3 : 5, deckContentIndex);
+  const comparisonTests = collectComparisonCandidates(windowedWeeks, tone === 'brief' ? 3 : 5, deckContentIndex);
   const emergingSignals = buildEmergingSignals(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
-  let workstreamsToWatch = buildWorkstreamsToWatch(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
+  const workstreamsToWatch = buildWorkstreamsToWatch(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
   const strategicThemes = buildStrategicThemeClusters(windowedWeeks, audience, tone === 'brief' ? 3 : 5);
-  if (mode !== 'activity_log' && bounds.days === 30) {
-    const conceptPayload = loadConceptEvidenceDefault30d();
-    const strictSections = buildStrictConceptSections(conceptPayload, tone);
-    if ((strictSections.validated_findings || []).length) validatedFindings = strictSections.validated_findings;
-    if ((strictSections.comparison_tests || []).length) comparisonTests = strictSections.comparison_tests;
-    if ((strictSections.workstreams_to_watch || []).length) workstreamsToWatch = strictSections.workstreams_to_watch;
-  }
   const shipRecommendations = validatedFindings.filter((row) => row.decision_status === 'ship');
   const iterateRecommendations = validatedFindings.filter((row) => row.decision_status === 'iterate');
   const watchItems = [...workstreamsToWatch.slice(0, 3), ...emergingSignals.slice(0, 2)].slice(0, tone === 'brief' ? 3 : 5);
