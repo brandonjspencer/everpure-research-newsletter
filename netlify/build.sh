@@ -53,10 +53,22 @@ if compgen -G "$ARTIFACTS/*.pdf" > /dev/null; then
     --pdf-dir "$ARTIFACTS"
 fi
 
-node "$ROOT/netlify/generate_static_newsletters.js"
-node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
-node "$ROOT/netlify/clean_evidence_signals.js" "$ROOT/publish"
-node "$ROOT/netlify/build_concept_evidence.js" "$ROOT/publish"
-touch "$ROOT/publish/.nojekyll"
+if [ -f "$ROOT/netlify/build_evidence_packs.js" ]; then
+  node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
+fi
 
-node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
+if [ -f "$ROOT/netlify/clean_evidence_signals.js" ]; then
+  node "$ROOT/netlify/clean_evidence_signals.js" "$ROOT/publish"
+fi
+
+if [ -f "$ROOT/netlify/build_concept_evidence.js" ]; then
+  node "$ROOT/netlify/build_concept_evidence.js" "$ROOT/publish"
+fi
+
+node "$ROOT/netlify/generate_static_newsletters.js"
+
+if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
+  node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
+fi
+
+touch "$ROOT/publish/.nojekyll"
