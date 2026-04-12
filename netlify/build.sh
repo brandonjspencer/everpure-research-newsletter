@@ -70,6 +70,7 @@ node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
 node "$ROOT/netlify/fix_default_bottom.js" "$ROOT/publish"
 
 node "$ROOT/netlify/render_stage2_default_current.js" "$ROOT/publish"
+node "$ROOT/netlify/render_stage2_marketing_current.js" "$ROOT/publish"
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
   node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
 fi
