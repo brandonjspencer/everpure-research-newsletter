@@ -1,0 +1,2139 @@
+{
+  "generated_at": "2026-04-13T00:28:54.972Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 20,
+  "with_evidence_count": 20,
+  "concepts": [
+    {
+      "concept_key": "176__baselines: platform redesign",
+      "concept_id": "176",
+      "concept_title": "baselines: Platform Redesign",
+      "concept_display": "176 - baselines: Platform Redesign",
+      "weeks_seen": [
+        "2026-03-12"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-12",
+          "record_id": "everpure_2026_03_12",
+          "group": "testing_concepts",
+          "text": "176 - baselines: Platform Redesign",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 29,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention.",
+          "score": 26,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Platform Redesign\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand R2\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "176",
+            "1",
+            "178"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Removing the pop-ups and banners from the new homepage increases positive sentiment.",
+          "score": 23,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "176 - baselines: Platform Redesign",
+          "score": 21,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework The homepage redesign is polarizing for visitors who understand the oﬀer but don’t feel the messaging is friendly or conversational.",
+          "score": 19,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Rebrand Redesigns Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 176 Test Iteration Change hero copy.",
+          "score": 19,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Hunch Concept 176 Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page.",
+          "score": 19,
+          "numbers": [
+            "176"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+        "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention.",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Platform Redesign\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand R2\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Removing the pop-ups and banners from the new homepage increases positive sentiment.",
+        "176 - baselines: Platform Redesign"
+      ],
+      "clean_key_numbers": [
+        "176",
+        "1",
+        "178"
+      ],
+      "matched_summary": "176 - baselines: Platform Redesign appears to be surfacing a negative signal in the current evidence, which points to another iteration rather than a ship decision.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 29,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "184__design & ux feedback:",
+      "concept_id": "184",
+      "concept_title": "Design & UX Feedback:",
+      "concept_display": "184 - Design & UX Feedback:",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "184 - Design & UX Feedback:",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 26,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 19,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet The jump-to menu saves up to 15 seconds for the half of participants who take action there.",
+          "score": 19,
+          "numbers": [
+            "184",
+            "15"
+          ]
+        },
+        {
+          "text": "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet Users appreciate the Browse by Category label for the product support information.",
+          "score": 19,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test “I love the eﬃcient way that every option is laid out in order, but there is a lot to take in; but I guess this is unavoidable.” “There is a lot going on with this page; you should have buttons that launch diﬀerent parts of the website with the corresponding options on the respective pages.” “it's also overwhelming because there are just too many categories, so maybe this format is not the right one for this kind of page.” “there's too much to look at or everything is spread out so much it would be easier to look at a list” Landing Page Users expect to save a search criteria under the Saved Searches menu.",
+          "score": 16,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 15,
+          "numbers": [
+            "182",
+            "1",
+            "184",
+            "2",
+            "177"
+          ]
+        },
+        {
+          "text": "UX Feedback - Reader Page Signal Concept 184 Source: Helio Test “I would not say it is hard, but I would have to hover the icons to see which one is what I looking for/trying to do.” “Not simple to locate actions.” “Some of the buttons were not familiar to me to know which one was the correct one to press.",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test The new knowledge portal landing page feels overwhelming for users looking for speciﬁc information.",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+        "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet The jump-to menu saves up to 15 seconds for the half of participants who take action there.",
+        "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet Users appreciate the Browse by Category label for the product support information.",
+        "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test “I love the eﬃcient way that every option is laid out in order, but there is a lot to take in; but I guess this is unavoidable.” “There is a lot going on with this page; you should have buttons that launch diﬀerent parts of the website with the corresponding options on the respective pages.” “it's also overwhelming because there are just too many categories, so maybe this format is not the right one for this kind of page.” “there's too much to look at or everything is spread out so much it would be easier to look at a list” Landing Page Users expect to save a search criteria under the Saved Searches menu."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "15",
+        "182",
+        "1",
+        "2",
+        "177"
+      ],
+      "matched_summary": "184 - Design & UX Feedback: shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 26,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "177__support taxonomy flow (internal)",
+      "concept_id": "177",
+      "concept_title": "Support Taxonomy Flow (Internal)",
+      "concept_display": "177 - Support Taxonomy Flow (Internal)",
+      "weeks_seen": [
+        "2026-02-05",
+        "2026-03-26",
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY",
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "in_process",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": null
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - Homepage Competitive Review\",\"level\":1,\"children\":[]},{\"text\":\"176 - Platform Competitive Review\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[{\"text\":\"Baseline Plan\",\"level\":1,\"children\":[{\"text\":\"Homepage Gravity Score (SUS)\",\"level\":2,\"children\":[]},{\"text\":\"Solutions: AI Competitor Review\",\"level\":2,\"children\":[]},{\"text\":\"Solutions: Healthcare Competitor Review\",\"level\":2,\"children\":[]},{\"text\":\"Product: Cloud Storage Competitor Review\",\"level\":2,\"children\":[]}]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "176",
+            "1",
+            "2",
+            "177"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 21,
+          "numbers": [
+            "182",
+            "1",
+            "184",
+            "2",
+            "177"
+          ]
+        },
+        {
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "score": 21,
+          "numbers": [
+            "177"
+          ]
+        },
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+          "score": 14,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "This variation of the support home URL produced a spike in negative impressions of being confusing and a signiﬁcant drop in positive impressions of clarity.",
+          "score": 14,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - Homepage Competitive Review\",\"level\":1,\"children\":[]},{\"text\":\"176 - Platform Competitive Review\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[{\"text\":\"Baseline Plan\",\"level\":1,\"children\":[{\"text\":\"Homepage Gravity Score (SUS)\",\"level\":2,\"children\":[]},{\"text\":\"Solutions: AI Competitor Review\",\"level\":2,\"children\":[]},{\"text\":\"Solutions: Healthcare Competitor Review\",\"level\":2,\"children\":[]},{\"text\":\"Product: Cloud Storage Competitor Review\",\"level\":2,\"children\":[]}]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"other\":[]}",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "177 - Support Taxonomy Flow (Internal)",
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?"
+      ],
+      "clean_key_numbers": [
+        "176",
+        "1",
+        "2",
+        "177",
+        "178",
+        "181"
+      ],
+      "matched_summary": "177 - Support Taxonomy Flow (Internal) is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "173__knowledge portal homepage",
+      "concept_id": "173",
+      "concept_title": "Knowledge Portal Homepage",
+      "concept_display": "173 - Knowledge Portal Homepage",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "173 - Knowledge Portal Homepage (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "173 - Knowledge Portal Homepage (in process)",
+          "score": 21,
+          "numbers": [
+            "173"
+          ]
+        },
+        {
+          "text": "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+          "score": 17,
+          "numbers": [
+            "181",
+            "10%"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+          "score": 17,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Removing the pop-ups and banners from the new homepage increases positive sentiment.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "EDC Redesign Signal Concept 179 EDC Redesign Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 179 Test Iteration Try moving the EDC infographic further up the page to increase comprehension and sentiment Can visitors ﬁnd the pathﬁnder ﬂow on the homepage?",
+          "score": 14,
+          "numbers": [
+            "179"
+          ]
+        },
+        {
+          "text": "Sometimes I need to go back and read something twice” “Single topic view because it allows you to ﬁnd exactly what you need instantly without the frustration of hunting through a massive Wall of text” “Single topic scroll seems to be more eﬃcient with less scrolling needed.” “Single topic because it's easy to ﬁnd my place again” Inﬁnite Scroll Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 183 Reﬁne Design Quelyn and team to implement single-topic view as the default scrolling mode in the Knowledge Portal.",
+          "score": 13,
+          "numbers": [
+            "183"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "173 - Knowledge Portal Homepage (in process)",
+        "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+        "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "181",
+        "183",
+        "173",
+        "177"
+      ],
+      "matched_summary": "173 - Knowledge Portal Homepage is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "173__knowledge portal landing page",
+      "concept_id": "173",
+      "concept_title": "Knowledge Portal Landing Page",
+      "concept_display": "173 - Knowledge Portal Landing Page",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "173 - Knowledge Portal Landing Page (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "173 - Knowledge Portal Landing Page (in process)",
+          "score": 21,
+          "numbers": [
+            "173"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+          "score": 14,
+          "numbers": [
+            "181",
+            "10%"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+          "score": 14,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "Sometimes I need to go back and read something twice” “Single topic view because it allows you to ﬁnd exactly what you need instantly without the frustration of hunting through a massive Wall of text” “Single topic scroll seems to be more eﬃcient with less scrolling needed.” “Single topic because it's easy to ﬁnd my place again” Inﬁnite Scroll Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 183 Reﬁne Design Quelyn and team to implement single-topic view as the default scrolling mode in the Knowledge Portal.",
+          "score": 13,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention.",
+          "score": 12,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "EDC Redesign Recommendation Concept 179 Source: Data Comparison Framework The new EDC page improves comprehension and sentiment over the old version before the redesign.",
+          "score": 12,
+          "numbers": [
+            "179"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "173 - Knowledge Portal Landing Page (in process)",
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+        "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+        "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "181",
+        "183",
+        "173",
+        "177"
+      ],
+      "matched_summary": "173 - Knowledge Portal Landing Page is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "181__knowledge portal domain",
+      "concept_id": "181",
+      "concept_title": "Knowledge Portal Domain",
+      "concept_display": "181 - Knowledge Portal Domain",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "181 - Knowledge Portal Domain",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+          "score": 22,
+          "numbers": [
+            "181",
+            "10%"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+          "score": 22,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "181 - Knowledge Portal Domain",
+          "score": 21,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Knowledge Test & Support Test Homepage Pathﬁnder Flow Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 181 Do Not Pursue Quelyn to work with IT team to shift knowledge portal from https://support.purestorage.com/ to https://support.everpuredata.com.",
+          "score": 18,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Recommendation Concept 181 Source: Support Test & Knowledge Test https://support.everpuredata.com Users are comfortable with the URL choice regardless of the expectations they establish for how they would search.",
+          "score": 15,
+          "numbers": [
+            "181"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "We saw a positive 15% shift in Clarity and a 4% shift in Confusion when participants expressed their sentiment about the Support domain when compared against the knowledge.everpuredata.com domain.",
+          "score": 14,
+          "numbers": [
+            "15%",
+            "4%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "Assumption ● The URL matters ● The URL aﬀects how users search for this information Homepage Pathﬁnder Flow Hunch Concept 181 https://knowledge.everpuredata.com https://support.everpuredata.com Maintain ‘support’ URL for Knowledge Portal: Expectations were even for both versions of the URL, though sentiment was 10% higher for the ‘support’ version compared to the ‘knowledge’ version.",
+        "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Support Test & Knowledge Test Knowledge in the URL provides less clarity for users searching for Everpure support information.",
+        "181 - Knowledge Portal Domain",
+        "Homepage Pathﬁnder Flow Signal Concept 181 ‘Support’ URL‘Knowledge’ URL Source: Knowledge Test & Support Test Homepage Pathﬁnder Flow Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 181 Do Not Pursue Quelyn to work with IT team to shift knowledge portal from https://support.purestorage.com/ to https://support.everpuredata.com."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "181",
+        "183",
+        "173",
+        "177"
+      ],
+      "matched_summary": "181 - Knowledge Portal Domain is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "187__pathfinder cta labels",
+      "concept_id": "187",
+      "concept_title": "Pathfinder CTA Labels",
+      "concept_display": "187 - Pathfinder CTA Labels",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "187 - Pathfinder CTA Labels",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "187 - Pathfinder CTA Labels",
+          "score": 21,
+          "numbers": [
+            "187"
+          ]
+        },
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 15,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 11,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Sheet {problem statement} UX Metrics ● Metric 1 ● Metric 2 ● Metric 3 Audiences ● Online Shoppers (US, CA) ● Graphic Designers (US, UK) ● Prosumer Business Content Creators (US) ● Creative Content Experts (US) Source: Figma File Pathﬁnder CTA Labels Concept 187 {This is a brief hunch} Assumption ● {assumptions are helpful} ● {assumptions are helpful} Pathﬁnder CTA Labels Hunch Concept 187 Source: Figma File Pathﬁnder CTA Labels Design Concept 187 Source: Figma File baseline v1 Pathﬁnder CTA Labels Design Concept 187 Source: Figma File baseline v2v1 v3 {recommendation 1}: {recommendation description} {recommendation 2}: {recommendation description} Pathﬁnder CTA Labels Recommendation Concept 187 Source: Data Comparison Sheet {signal 1}: {recommendation description} Pathﬁnder CTA Labels Signal Concept 187 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” [UX METRIC] {Design Name} Answer option 1 -% Answer option 2 -% Answer option 3 -% Answer option 4 -% Answer option 5 -% -% {signal 1}: {recommendation description} Pathﬁnder CTA Labels Signal Concept 187 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” {signal 1}: {recommendation description} Pathﬁnder CTA Labels Signal Concept 187 Source: Data Comparison Sheet v2v1 v3 Pathﬁnder CTA Labels Decisions Concept 187 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on {recommendation X}, {technical owner} will need to {XYZ} so that the company can {rationale}.",
+          "score": 10,
+          "numbers": [
+            "1",
+            "2",
+            "3",
+            "187",
+            "4",
+            "5"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "187 - Pathfinder CTA Labels",
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page."
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187",
+        "184"
+      ],
+      "matched_summary": "187 - Pathfinder CTA Labels is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "178__evergreen rebrand",
+      "concept_id": "178",
+      "concept_title": "Evergreen Rebrand",
+      "concept_display": "178 - Evergreen Rebrand",
+      "weeks_seen": [
+        "2026-03-05",
+        "2026-03-12",
+        "2026-03-26"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R3",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-03-12",
+          "record_id": "everpure_2026_03_12",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R2",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-03-05",
+          "record_id": "everpure_2026_03_05",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Providing a color-break after the hero increases appeal and sentiment of the Evergreen page.",
+          "score": 23,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Increasing infographic content at the top of the page reduces comprehension and sentiment.",
+          "score": 23,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Homepage Redesign R2\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand\",\"level\":1,\"children\":[]},{\"text\":\"179 - EDC\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "176",
+            "1",
+            "178",
+            "179"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Platform Redesign\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand R2\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "176",
+            "1",
+            "178"
+          ]
+        },
+        {
+          "text": "178 - Evergreen Rebrand R3",
+          "score": 22,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "178 - Evergreen Rebrand R2",
+          "score": 22,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Evergreen Redesign Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 178 Implement Move forward with Dark Mode V4 Source: Data Comparison Framework Test Iteration Apply principles to light mode.",
+          "score": 19,
+          "numbers": [
+            "178"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Providing a color-break after the hero increases appeal and sentiment of the Evergreen page.",
+        "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Increasing infographic content at the top of the page reduces comprehension and sentiment.",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Homepage Redesign R2\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand\",\"level\":1,\"children\":[]},{\"text\":\"179 - EDC\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"176 - baselines: Platform Redesign\",\"level\":1,\"children\":[]},{\"text\":\"178 - Evergreen Rebrand R2\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}"
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "181",
+        "183",
+        "173",
+        "177"
+      ],
+      "matched_summary": "178 - Evergreen Rebrand is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 23,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "178__evergreen rebrand r3",
+      "concept_id": "178",
+      "concept_title": "Evergreen Rebrand R3",
+      "concept_display": "178 - Evergreen Rebrand R3",
+      "weeks_seen": [
+        "2026-03-19"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-19",
+          "record_id": "everpure_2026_03_19",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R3 (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Providing a color-break after the hero increases appeal and sentiment of the Evergreen page.",
+          "score": 23,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Increasing infographic content at the top of the page reduces comprehension and sentiment.",
+          "score": 23,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3 (in process)\",\"level\":1,\"children\":[]},{\"text\":\"180 - Pathfinder Journey Analysis\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "178",
+            "1",
+            "180"
+          ]
+        },
+        {
+          "text": "178 - Evergreen Rebrand R3 (in process)",
+          "score": 22,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Evergreen Redesign Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 178 Implement Move forward with Dark Mode V4 Source: Data Comparison Framework Test Iteration Apply principles to light mode.",
+          "score": 19,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Recommendation Concept 178 Source: Data Comparison Framework The dark mode of the Evergreen page increases appeal towards the page while decreasing negative impressions of being stiﬀ and uncertain.",
+          "score": 19,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework SLAs content on the current Evergreen page is one of the most helpful pieces of content.",
+          "score": 19,
+          "numbers": [
+            "178"
+          ]
+        },
+        {
+          "text": "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Visitors aren't interested in ROI promises before they understand the platform oﬀering.",
+          "score": 19,
+          "numbers": [
+            "178"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Providing a color-break after the hero increases appeal and sentiment of the Evergreen page.",
+        "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Increasing infographic content at the top of the page reduces comprehension and sentiment.",
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3 (in process)\",\"level\":1,\"children\":[]},{\"text\":\"180 - Pathfinder Journey Analysis\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "178 - Evergreen Rebrand R3 (in process)",
+        "Evergreen Redesign Signal Concept 178 Source: Data Comparison Framework Evergreen Redesign Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 178 Implement Move forward with Dark Mode V4 Source: Data Comparison Framework Test Iteration Apply principles to light mode."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "180"
+      ],
+      "matched_summary": "178 - Evergreen Rebrand R3 is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 23,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "151__events page baseline",
+      "concept_id": "151",
+      "concept_title": "Events Page Baseline",
+      "concept_display": "151 - Events Page Baseline",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "151 - Events Page Baseline",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 22,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "151 - Events Page Baseline",
+          "score": 22,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "Simplify it to make it more user friendly.” Events Page Source: Helio Test Event Pages Decisions Concept 151 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on negative impressions with the current Events page, we need to test our updated variations to see if more consistent thumbnail images make users feel better about the page.",
+          "score": 18,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Event Pages Signal Concept 151 “I can see featured events, but I dont know if the event i want is featured, yet I have to scroll a long way down to get to all events.” “Because of the amount of elements it makes it hard to ﬁnd all elements.” “I ﬁnd this to be a hard on the eyes design and not easy to navigate.” “Again, there is so much to look at.",
+          "score": 15,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "Event Pages Recommendation Concept 151 Source: Helio Test The trade show module does a good job of attracting attention at the top of the events page.",
+          "score": 15,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "Event Pages Signal Concept 151 First click Source: Helio Test Competing shapes and elements on the events page result in an overwhelming layout.",
+          "score": 15,
+          "numbers": [
+            "151"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "151 - Events Page Baseline",
+        "Simplify it to make it more user friendly.” Events Page Source: Helio Test Event Pages Decisions Concept 151 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on negative impressions with the current Events page, we need to test our updated variations to see if more consistent thumbnail images make users feel better about the page.",
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187",
+        "184"
+      ],
+      "matched_summary": "151 - Events Page Baseline is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "180__pathfinder journey analysis",
+      "concept_id": "180",
+      "concept_title": "Pathfinder Journey Analysis",
+      "concept_display": "180 - Pathfinder Journey Analysis",
+      "weeks_seen": [
+        "2026-03-19"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-19",
+          "record_id": "everpure_2026_03_19",
+          "group": "testing_concepts",
+          "text": "180 - Pathfinder Journey Analysis",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3 (in process)\",\"level\":1,\"children\":[]},{\"text\":\"180 - Pathfinder Journey Analysis\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "178",
+            "1",
+            "180"
+          ]
+        },
+        {
+          "text": "180 - Pathfinder Journey Analysis",
+          "score": 18,
+          "numbers": [
+            "180"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 180 Source: Helio Survey Next steps Homepage Pathﬁnder Flow Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 180 Reﬁne Design Provide ‘request demo’ or ‘talk to rep’ options after pathﬁnder ﬂow.",
+          "score": 13,
+          "numbers": [
+            "180"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention.",
+          "score": 12,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 180 Source: Helio Survey The pathﬁnder ﬂow matches well with users' expectations for being asked questions that will help map to their business's needs.",
+          "score": 12,
+          "numbers": [
+            "180"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Signal Concept 180 Source: Helio Survey Pathﬁnder Start a Chat is not the most desirable action to take after users complete the pathﬁnder personalization ﬂow.",
+          "score": 12,
+          "numbers": [
+            "180"
+          ]
+        },
+        {
+          "text": "Homepage Pathﬁnder Flow Recommendation Concept 180 Source: Helio Survey The option to select cards in the homepage Personalize module is unclear when looking for custom oﬀers.",
+          "score": 12,
+          "numbers": [
+            "180"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3 (in process)\",\"level\":1,\"children\":[]},{\"text\":\"180 - Pathfinder Journey Analysis\",\"level\":1,\"children\":[]}],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "180 - Pathfinder Journey Analysis",
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+        "Homepage Pathﬁnder Flow Signal Concept 180 Source: Helio Survey Next steps Homepage Pathﬁnder Flow Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 180 Reﬁne Design Provide ‘request demo’ or ‘talk to rep’ options after pathﬁnder ﬂow.",
+        "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "180",
+        "176"
+      ],
+      "matched_summary": "180 - Pathfinder Journey Analysis is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "183__infinite scroll",
+      "concept_id": "183",
+      "concept_title": "Infinite Scroll",
+      "concept_display": "183 - Infinite Scroll",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "183 - Infinite Scroll",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "178",
+            "1",
+            "181",
+            "183",
+            "173",
+            "177"
+          ]
+        },
+        {
+          "text": "Sometimes I need to go back and read something twice” “Single topic view because it allows you to ﬁnd exactly what you need instantly without the frustration of hunting through a massive Wall of text” “Single topic scroll seems to be more eﬃcient with less scrolling needed.” “Single topic because it's easy to ﬁnd my place again” Inﬁnite Scroll Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 183 Reﬁne Design Quelyn and team to implement single-topic view as the default scrolling mode in the Knowledge Portal.",
+          "score": 18,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "183 - Infinite Scroll",
+          "score": 16,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+          "score": 15,
+          "numbers": [
+            "176"
+          ]
+        },
+        {
+          "text": "Inﬁnite Scroll Recommendation Concept 183 Source: Inﬁnite Scroll Test The single topic view allows users to concentrate on speciﬁc topics without getting lost in the content.",
+          "score": 15,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "Inﬁnite Scroll Signal Concept 183 Source: Inﬁnite Scroll Test “Single topic view because I don't want for the scroll to go too fast or to get away from me.",
+          "score": 15,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "Inﬁnite Scroll Signal Concept 183 Source: Inﬁnite Scroll Test “I prefer the single topic view.",
+          "score": 15,
+          "numbers": [
+            "183"
+          ]
+        },
+        {
+          "text": "Rebrand Redesigns Recommendation Concept 176 Source: Data Comparison Framework Low sentiment towards the new platform page stems from the content feeling overly technical and too much content competing for attention.",
+          "score": 12,
+          "numbers": [
+            "176"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[],\"testing_concepts\":[{\"text\":\"178 - Evergreen Rebrand R3\",\"level\":1,\"children\":[]},{\"text\":\"181 - Knowledge Portal Domain\",\"level\":1,\"children\":[]},{\"text\":\"183 - Infinite Scroll\",\"level\":1,\"children\":[]}],\"in_process\":[{\"text\":\"173 - Knowledge Portal Landing Page (in process)\",\"level\":1,\"children\":[]},{\"text\":\"173 - Knowledge Portal Homepage (in process)\",\"level\":1,\"children\":[]},{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "Sometimes I need to go back and read something twice” “Single topic view because it allows you to ﬁnd exactly what you need instantly without the frustration of hunting through a massive Wall of text” “Single topic scroll seems to be more eﬃcient with less scrolling needed.” “Single topic because it's easy to ﬁnd my place again” Inﬁnite Scroll Decisions Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Concept 183 Reﬁne Design Quelyn and team to implement single-topic view as the default scrolling mode in the Knowledge Portal.",
+        "183 - Infinite Scroll",
+        "Rebrand Redesigns Signal Concept 176 Source: Data Comparison Framework Comprehension of the platform page infographic is reduced by impressions that it is for advanced technical leads to understand.",
+        "Inﬁnite Scroll Recommendation Concept 183 Source: Inﬁnite Scroll Test The single topic view allows users to concentrate on speciﬁc topics without getting lost in the content."
+      ],
+      "clean_key_numbers": [
+        "178",
+        "1",
+        "181",
+        "183",
+        "173",
+        "177"
+      ],
+      "matched_summary": "183 - Infinite Scroll is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "186__homepage ai messaging",
+      "concept_id": "186",
+      "concept_title": "Homepage AI Messaging",
+      "concept_display": "186 - Homepage AI Messaging",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "186 - Homepage AI Messaging",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "186 - Homepage AI Messaging",
+          "score": 18,
+          "numbers": [
+            "186"
+          ]
+        },
+        {
+          "text": "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File Homepage AI Messaging Concept 186 {This is a brief hunch} Assumption ● {assumptions are helpful} ● {assumptions are helpful} Homepage AI Messaging Hunch Concept 186 Source: Figma File Homepage AI Messaging Design Concept 186 Source: Figma File baseline v1 Homepage AI Messaging Design Concept 186 Source: Figma File baseline v2v1 v3 {recommendation 1}: {recommendation description} {recommendation 2}: {recommendation description} Homepage AI Messaging Recommendation Concept 186 Source: Data Comparison Sheet {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” [UX METRIC] {Design Name} Answer option 1 -% Answer option 2 -% Answer option 3 -% Answer option 4 -% Answer option 5 -% -% {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet v2v1 v3 Homepage AI Messaging Decisions Concept 186 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on {recommendation X}, {technical owner} will need to {XYZ} so that the company can {rationale}.",
+          "score": 14,
+          "numbers": [
+            "186",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ]
+        },
+        {
+          "text": "Source: Helio Test Does adding more AI messaging to the homepage increase comprehension and sentiment?",
+          "score": 13,
+          "numbers": []
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 11,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet The jump-to menu saves up to 15 seconds for the half of participants who take action there.",
+          "score": 11,
+          "numbers": [
+            "184",
+            "15"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "186 - Homepage AI Messaging",
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File Homepage AI Messaging Concept 186 {This is a brief hunch} Assumption ● {assumptions are helpful} ● {assumptions are helpful} Homepage AI Messaging Hunch Concept 186 Source: Figma File Homepage AI Messaging Design Concept 186 Source: Figma File baseline v1 Homepage AI Messaging Design Concept 186 Source: Figma File baseline v2v1 v3 {recommendation 1}: {recommendation description} {recommendation 2}: {recommendation description} Homepage AI Messaging Recommendation Concept 186 Source: Data Comparison Sheet {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” [UX METRIC] {Design Name} Answer option 1 -% Answer option 2 -% Answer option 3 -% Answer option 4 -% Answer option 5 -% -% {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” “I thought it was going to let me edit.” “there is no option to change text.” “It wasn't very clear to me what exactly would the let's go button would lead to.” {signal 1}: {recommendation description} Homepage AI Messaging Signal Concept 186 Source: Data Comparison Sheet v2v1 v3 Homepage AI Messaging Decisions Concept 186 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on {recommendation X}, {technical owner} will need to {XYZ} so that the company can {rationale}.",
+        "Source: Helio Test Does adding more AI messaging to the homepage increase comprehension and sentiment?"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187",
+        "184"
+      ],
+      "matched_summary": "186 - Homepage AI Messaging is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "182__ai summary - three variations",
+      "concept_id": "182",
+      "concept_title": "AI Summary - Three Variations",
+      "concept_display": "182 - AI Summary - Three Variations",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "182 - AI Summary - Three Variations",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 21,
+          "numbers": [
+            "182",
+            "1",
+            "184",
+            "2",
+            "177"
+          ]
+        },
+        {
+          "text": "182 - AI Summary - Three Variations",
+          "score": 21,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 20,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 19,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "AI Summaries Recommendation Concept 182 Source: Data Comparison Sheet Users ﬁnd equal value in all of the AI summary implementations and would use them each frequently.",
+          "score": 19,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+          "score": 11,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "182 - AI Summary - Three Variations",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+        "AI Summaries Recommendation Concept 182 Source: Data Comparison Sheet Users ﬁnd equal value in all of the AI summary implementations and would use them each frequently."
+      ],
+      "clean_key_numbers": [
+        "182",
+        "1",
+        "184",
+        "2",
+        "177",
+        "50%"
+      ],
+      "matched_summary": "182 - AI Summary - Three Variations is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "header",
+      "concept_id": null,
+      "concept_title": "Header",
+      "concept_display": "Header",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Header",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 8,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Up to 33% of users indicated they would use Browse by Category in the baseline, compared to just 7% of participants who would browse by product in the new version, despite the fact that they show the same categories.",
+          "score": 8,
+          "numbers": [
+            "33%",
+            "7%"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 8,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Recommendation Concept 182 Source: Data Comparison Sheet Users ﬁnd equal value in all of the AI summary implementations and would use them each frequently.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "Each action showed less than 50% success, much lower than the expected 65%.",
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "50%",
+        "65%",
+        "151",
+        "33%"
+      ],
+      "matched_summary": "Header shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "homepage",
+      "concept_id": null,
+      "concept_title": "Homepage",
+      "concept_display": "Homepage",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Homepage",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 11,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet The jump-to menu saves up to 15 seconds for the half of participants who take action there.",
+          "score": 11,
+          "numbers": [
+            "184",
+            "15"
+          ]
+        },
+        {
+          "text": "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet Users appreciate the Browse by Category label for the product support information.",
+          "score": 11,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "Source: Helio Test Does adding more AI messaging to the homepage increase comprehension and sentiment?",
+          "score": 10,
+          "numbers": []
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 8,
+          "numbers": [
+            "151"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+        "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet The jump-to menu saves up to 15 seconds for the half of participants who take action there.",
+        "UX Feedback - Homepage Signal Concept 184 Source: Data Comparison Sheet Users appreciate the Browse by Category label for the product support information."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "15",
+        "50%",
+        "65%",
+        "151"
+      ],
+      "matched_summary": "Homepage shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "landing page",
+      "concept_id": null,
+      "concept_title": "Landing Page",
+      "concept_display": "Landing Page",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Landing Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test “I love the eﬃcient way that every option is laid out in order, but there is a lot to take in; but I guess this is unavoidable.” “There is a lot going on with this page; you should have buttons that launch diﬀerent parts of the website with the corresponding options on the respective pages.” “it's also overwhelming because there are just too many categories, so maybe this format is not the right one for this kind of page.” “there's too much to look at or everything is spread out so much it would be easier to look at a list” Landing Page Users expect to save a search criteria under the Saved Searches menu.",
+          "score": 8,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 8,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Up to 33% of users indicated they would use Browse by Category in the baseline, compared to just 7% of participants who would browse by product in the new version, despite the fact that they show the same categories.",
+          "score": 8,
+          "numbers": [
+            "33%",
+            "7%"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 8,
+          "numbers": [
+            "184"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "Each action showed less than 50% success, much lower than the expected 65%.",
+        "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test “I love the eﬃcient way that every option is laid out in order, but there is a lot to take in; but I guess this is unavoidable.” “There is a lot going on with this page; you should have buttons that launch diﬀerent parts of the website with the corresponding options on the respective pages.” “it's also overwhelming because there are just too many categories, so maybe this format is not the right one for this kind of page.” “there's too much to look at or everything is spread out so much it would be easier to look at a list” Landing Page Users expect to save a search criteria under the Saved Searches menu.",
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "50%",
+        "65%",
+        "151",
+        "33%"
+      ],
+      "matched_summary": "Landing Page shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "reader page (in process)",
+      "concept_id": null,
+      "concept_title": "Reader Page (in process)",
+      "concept_display": "Reader Page (in process)",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Reader Page (in process)",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 10,
+          "numbers": [
+            "182",
+            "1",
+            "184",
+            "2",
+            "177"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 8,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Up to 33% of users indicated they would use Browse by Category in the baseline, compared to just 7% of participants who would browse by product in the new version, despite the fact that they show the same categories.",
+          "score": 8,
+          "numbers": [
+            "33%",
+            "7%"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 8,
+          "numbers": [
+            "184"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "Each action showed less than 50% success, much lower than the expected 65%.",
+        "{\"findings\":[{\"text\":\"182 - AI Summary - Three Variations\",\"level\":1,\"children\":[]},{\"text\":\"184 - Design & UX Feedback:\",\"level\":1,\"children\":[{\"text\":\"Homepage\",\"level\":2,\"children\":[]},{\"text\":\"Landing Page\",\"level\":2,\"children\":[]},{\"text\":\"Reader Page (in process)\",\"level\":2,\"children\":[]},{\"text\":\"Search Page\",\"level\":2,\"children\":[]},{\"text\":\"Header\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"177 - Support Taxonomy Flow (Internal)\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "50%",
+        "65%",
+        "1",
+        "2"
+      ],
+      "matched_summary": "Reader Page (in process) shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "search page",
+      "concept_id": null,
+      "concept_title": "Search Page",
+      "concept_display": "Search Page",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Search Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 18,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+          "score": 11,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "Usability of the search page features was reduced by the 30% of participants who didn't notice the save feature in the top right of the article and instead tried to take that action under the Saved Searches tab.",
+          "score": 10,
+          "numbers": [
+            "30%"
+          ]
+        },
+        {
+          "text": "Sentiment of the search page was reduced to average levels due to negative impressions of being overwhelming and low positive impressions of the ﬁlters feeling quick to use.",
+          "score": 10,
+          "numbers": []
+        },
+        {
+          "text": "UX Feedback - Landing Page Signal Concept 184 Source: Helio Test “I love the eﬃcient way that every option is laid out in order, but there is a lot to take in; but I guess this is unavoidable.” “There is a lot going on with this page; you should have buttons that launch diﬀerent parts of the website with the corresponding options on the respective pages.” “it's also overwhelming because there are just too many categories, so maybe this format is not the right one for this kind of page.” “there's too much to look at or everything is spread out so much it would be easier to look at a list” Landing Page Users expect to save a search criteria under the Saved Searches menu.",
+          "score": 8,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 8,
+          "numbers": [
+            "151"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "UX Feedback Recommendation Concept 184 Source: Data Comparison Sheet The new Everpure Knowledge Portal homepage drives intent to engage with the search bar rather than choosing a product or technical release below.",
+        "Each action showed less than 50% success, much lower than the expected 65%.",
+        "Usability of the search page features was reduced by the 30% of participants who didn't notice the save feature in the top right of the article and instead tried to take that action under the Saved Searches tab."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "50%",
+        "65%",
+        "30%",
+        "151"
+      ],
+      "matched_summary": "Search Page shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "events",
+      "concept_id": null,
+      "concept_title": "Events",
+      "concept_display": "Events",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V1",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V2",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+          "score": 15,
+          "numbers": [
+            "184"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+          "score": 12,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+          "score": 11,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 11,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "Each action showed less than 50% success, much lower than the expected 65%.",
+          "score": 11,
+          "numbers": [
+            "50%",
+            "65%"
+          ]
+        },
+        {
+          "text": "Simplify it to make it more user friendly.” Events Page Source: Helio Test Event Pages Decisions Concept 151 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on negative impressions with the current Events page, we need to test our updated variations to see if more consistent thumbnail images make users feel better about the page.",
+          "score": 10,
+          "numbers": [
+            "151"
+          ]
+        },
+        {
+          "text": "AI Summaries Signal Concept 182 Source: Data Comparison Sheet “having an AI summary of a full help article allows me to quickly understand the key purpose, requirements, and steps without reading through the entire document.” “highlights important details, helping me grasp the overall message faster.",
+          "score": 8,
+          "numbers": [
+            "182"
+          ]
+        },
+        {
+          "text": "Up to 33% of users indicated they would use Browse by Category in the baseline, compared to just 7% of participants who would browse by product in the new version, despite the fact that they show the same categories.",
+          "score": 8,
+          "numbers": [
+            "33%",
+            "7%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "I think if they put the button names underneath they would be more eﬀective...” “It would be useful if the icons on the top right had the ability to 'hover over' with an explanation pop-up saying what the options function is” UX Feedback Decisions Concept 184 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Quelyn to take action refining these page designs in the following ways: Homepage - add Browse by Category label Landing Page - reduce text for increase scannability Search Page - group filters under accordions Headers - explore alternate labels for header menus Reader page - provide hover tooltips for icons and use buttons for important actions Source: Data Comparison Sheet Can we improve engagement and impressions towards the event page through more consistent visuals?",
+        "AI Summaries Signal Concept 182 Source: Data Comparison Sheet AI Summaries Decisions Concept 182 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration Based on low usability success of book summaries, we’ll need to update the visual presentation of the CTA to allow users to interact with this valuable tool.",
+        "Assumption ● Events thumbnails are inconsistent and reduce impressions of the page ● Ambiguous event labels reduce usability of accessing certain content on the page Event Pages Hunch Concept 151 Source: Figma File Event Pages Design Concept 151 Source: Figma File baseline v2v1 Reduce competing visual styles and shapes on the page Signiﬁcant negative impressions stem from the overwhelming blend of diﬀerent visual elements on the Events page.",
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "Each action showed less than 50% success, much lower than the expected 65%."
+      ],
+      "clean_key_numbers": [
+        "184",
+        "182",
+        "151",
+        "1",
+        "2",
+        "186"
+      ],
+      "matched_summary": "Events shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 15,
+      "evidence_found": true
+    }
+  ]
+}

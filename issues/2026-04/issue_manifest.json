@@ -1,0 +1,26 @@
+{
+  "issue_id": "everpure-2026-04",
+  "issue_month": "2026-04",
+  "generated_at": "2026-04-13T00:28:55.191Z",
+  "git_sha": null,
+  "latest_week_date": "2026-04-09",
+  "default_issue": {
+    "window": "30d",
+    "audience": "exec",
+    "tone": "strategic",
+    "path": "issues/2026-04/default.html"
+  },
+  "marketing_issue": {
+    "preset": "marketing_activity_30d",
+    "audience": "marketing",
+    "tone": "detailed",
+    "path": "issues/2026-04/marketing-activity-30d.html"
+  },
+  "source_refresh_manifest": "data/refresh_manifest.json",
+  "history_paths": {
+    "weeks": "history/weeks/2026-04.json",
+    "evidence_packs": "history/evidence_packs/2026-04.json",
+    "concept_evidence": "history/concept_evidence/2026-04.json",
+    "deck_content": "history/deck_content/2026-04.json"
+  }
+}

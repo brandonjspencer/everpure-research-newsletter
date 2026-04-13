@@ -1,0 +1,325 @@
+{
+  "title": "Everpure research activity log (30d)",
+  "summary": "A 30-day operations view of research cadence, volume, and active workstreams. Use this log to show what moved this month, where research effort is concentrating, and which comparisons are still in flight.",
+  "window": "30d",
+  "audience": "marketing",
+  "tone": "detailed",
+  "preset": "marketing_activity_30d",
+  "defaults": {
+    "window": "30d",
+    "audience": "marketing",
+    "tone": "detailed",
+    "preset": "marketing_activity_30d"
+  },
+  "generated_at": "2026-04-13T00:28:55.251Z",
+  "snapshot": {
+    "window": "30d",
+    "weekly_updates": 5,
+    "tracked_items": 0,
+    "linked_decks_in_window": 22,
+    "decks_with_ingested_text_available": 0
+  },
+  "weekly_activity_log": [
+    {
+      "week_label": "📌 April 9, 2026",
+      "week_date": "2026-04-09",
+      "workstreams": [
+        {
+          "key": "ai-summary",
+          "name": "AI Summary & Messaging",
+          "examples": [
+            "Homepage AI Messaging"
+          ],
+          "labels": [
+            "Homepage AI Messaging"
+          ]
+        },
+        {
+          "key": "events",
+          "name": "Events",
+          "examples": [
+            "Events V1",
+            "Events V2"
+          ],
+          "labels": [
+            "Events Page Baseline"
+          ]
+        },
+        {
+          "key": "pathfinder",
+          "name": "Pathfinder",
+          "examples": [
+            "Pathfinder CTA Labels"
+          ],
+          "labels": [
+            "Pathfinder CTA Labels"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 April 2, 2026",
+      "week_date": "2026-04-02",
+      "workstreams": [
+        {
+          "key": "ai-summary",
+          "name": "AI Summary & Messaging",
+          "examples": [
+            "AI Summary - Three Variations"
+          ],
+          "labels": [
+            "AI Summary - Three Variations"
+          ]
+        },
+        {
+          "key": "design-ux-feedback",
+          "name": "Design & UX Feedback",
+          "examples": [
+            "Homepage",
+            "Landing Page",
+            "Reader Page",
+            "Search Page",
+            "Header"
+          ],
+          "labels": [
+            "Design & UX Feedback"
+          ]
+        },
+        {
+          "key": "support-taxonomy",
+          "name": "Support Taxonomy",
+          "examples": [
+            "Support Taxonomy Flow (Internal)"
+          ],
+          "labels": [
+            "Support Taxonomy Flow (Internal)"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 March 26, 2026",
+      "week_date": "2026-03-26",
+      "workstreams": [
+        {
+          "key": "evergreen-rebrand",
+          "name": "Evergreen Rebrand",
+          "examples": [
+            "Evergreen Rebrand R3"
+          ],
+          "labels": [
+            "Evergreen Rebrand R3"
+          ]
+        },
+        {
+          "key": "infinite-scroll",
+          "name": "Infinite Scroll",
+          "examples": [
+            "Infinite Scroll"
+          ],
+          "labels": [
+            "Infinite Scroll"
+          ]
+        },
+        {
+          "key": "knowledge-portal",
+          "name": "Knowledge Portal",
+          "examples": [
+            "Knowledge Portal Domain",
+            "Knowledge Portal Landing Page",
+            "Knowledge Portal Homepage"
+          ],
+          "labels": [
+            "Knowledge Portal Domain",
+            "Knowledge Portal Landing Page",
+            "Knowledge Portal Homepage"
+          ]
+        },
+        {
+          "key": "support-taxonomy",
+          "name": "Support Taxonomy",
+          "examples": [
+            "Support Taxonomy Flow (Internal)"
+          ],
+          "labels": [
+            "Support Taxonomy Flow (Internal)"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 March 19, 2026",
+      "week_date": "2026-03-19",
+      "workstreams": [
+        {
+          "key": "evergreen-rebrand",
+          "name": "Evergreen Rebrand",
+          "examples": [
+            "Evergreen Rebrand R3"
+          ],
+          "labels": [
+            "Evergreen Rebrand R3"
+          ]
+        },
+        {
+          "key": "pathfinder",
+          "name": "Pathfinder",
+          "examples": [
+            "Pathfinder Journey Analysis"
+          ],
+          "labels": [
+            "Pathfinder Journey Analysis"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 March 12, 2026",
+      "week_date": "2026-03-12",
+      "workstreams": [
+        {
+          "key": "evergreen-rebrand",
+          "name": "Evergreen Rebrand",
+          "examples": [
+            "Evergreen Rebrand R2"
+          ],
+          "labels": [
+            "Evergreen Rebrand R2"
+          ]
+        },
+        {
+          "key": "platform-redesign",
+          "name": "Platform Redesign",
+          "examples": [
+            "baselines: Platform Redesign"
+          ],
+          "labels": [
+            "baselines: Platform Redesign"
+          ]
+        }
+      ]
+    }
+  ],
+  "active_workstreams": [
+    {
+      "name": "Events",
+      "unresolved_question": "Which event-page structure and content framing should move forward after the baseline / V1 / V2 comparison?",
+      "recent_examples": [
+        "Events V1",
+        "Events V2"
+      ]
+    },
+    {
+      "name": "Evergreen Rebrand",
+      "unresolved_question": "Which visual pacing choices improve appeal without hurting comprehension?",
+      "recent_examples": [
+        "Evergreen Rebrand R3",
+        "Evergreen Rebrand R2"
+      ]
+    },
+    {
+      "name": "Knowledge Portal",
+      "unresolved_question": "Which naming and domain framing makes the portal feel most intuitive and support-led?",
+      "recent_examples": [
+        "Knowledge Portal Domain",
+        "Knowledge Portal Landing Page",
+        "Knowledge Portal Homepage"
+      ]
+    },
+    {
+      "name": "Support Taxonomy",
+      "unresolved_question": "Which labels and navigation paths still break support expectations and need refinement?",
+      "recent_examples": [
+        "Support Taxonomy Flow (Internal)"
+      ]
+    },
+    {
+      "name": "Design & UX Feedback",
+      "unresolved_question": "Which page-level fixes should be prioritized across the reviewed surfaces?",
+      "recent_examples": [
+        "Homepage",
+        "Landing Page",
+        "Reader Page",
+        "Search Page",
+        "Header"
+      ]
+    }
+  ],
+  "repeated_research_threads": [
+    {
+      "name": "Evergreen Rebrand",
+      "weeks_seen_count": 3,
+      "examples": [
+        "Evergreen Rebrand R3",
+        "Evergreen Rebrand R2"
+      ]
+    },
+    {
+      "name": "AI Summary & Messaging",
+      "weeks_seen_count": 2,
+      "examples": [
+        "Homepage AI Messaging",
+        "AI Summary - Three Variations"
+      ]
+    },
+    {
+      "name": "Pathfinder",
+      "weeks_seen_count": 2,
+      "examples": [
+        "Pathfinder CTA Labels",
+        "Pathfinder Journey Analysis"
+      ]
+    },
+    {
+      "name": "Support Taxonomy",
+      "weeks_seen_count": 2,
+      "examples": [
+        "Support Taxonomy Flow (Internal)"
+      ]
+    }
+  ],
+  "comparison_work_in_flight": [
+    {
+      "name": "Events",
+      "decision_criteria": "Pick the version that gives the clearest event-page direction with the fewest comprehension tradeoffs.",
+      "examples": [
+        "Events Page Baseline",
+        "Events V1",
+        "Events V2"
+      ],
+      "weeks_seen": [
+        "📌 April 9, 2026"
+      ]
+    },
+    {
+      "name": "AI Summary & Messaging",
+      "decision_criteria": "Reduce to the strongest one or two framings, then choose the version that is clearest and easiest to act on.",
+      "examples": [
+        "Homepage AI Messaging",
+        "AI Summary - Three Variations"
+      ],
+      "weeks_seen": [
+        "📌 April 9, 2026",
+        "📌 April 2, 2026"
+      ]
+    },
+    {
+      "name": "Evergreen Rebrand",
+      "decision_criteria": "Keep the pacing and layout moves that improve appeal without making the page feel too technical too early.",
+      "examples": [
+        "Evergreen Rebrand R3",
+        "Evergreen Rebrand R2"
+      ],
+      "weeks_seen": [
+        "📌 March 26, 2026",
+        "📌 March 19, 2026",
+        "📌 March 12, 2026"
+      ]
+    }
+  ],
+  "how_to_use_this_log": [
+    "Use this page to show research cadence and volume across the last 30 days, not to make final ship / hold calls.",
+    "Treat repeated threads as signs of where research capacity is concentrating over multiple weekly updates.",
+    "Use comparison work in flight to understand which decisions are narrowing, even when a final winner is not chosen yet."
+  ]
+}

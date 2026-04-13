@@ -1,0 +1,3952 @@
+{
+  "generated_at": "2026-04-13T00:28:54.774Z",
+  "latest_week_date": "2026-04-09",
+  "pack_count": 82,
+  "source_counts": {
+    "weeks": 48,
+    "deck_items": 16
+  },
+  "packs": [
+    {
+      "concept_key": "175__navigation menu updates",
+      "concept_id": "175",
+      "concept_title": "Navigation Menu Updates",
+      "concept_display": "175 - Navigation Menu Updates",
+      "weeks_seen": [
+        "2026-01-15",
+        "2026-01-22",
+        "2026-01-29"
+      ],
+      "first_seen_week": "2026-01-15",
+      "last_seen_week": "2026-01-29",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "next_steps",
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "175 - Navigation Menu Updates",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-22",
+          "record_id": "everpure_2026_01_22",
+          "group": "testing_concepts",
+          "text": "175 - Navigation Menu Updates",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-15",
+          "record_id": "everpure_2026_01_15",
+          "group": "testing_concepts",
+          "text": "175 - Navigation Menu Updates",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "175"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "175__navigation menu updates (received)",
+      "concept_id": "175",
+      "concept_title": "Navigation Menu Updates (received)",
+      "concept_display": "175 - Navigation Menu Updates (received)",
+      "weeks_seen": [
+        "2026-02-12",
+        "2026-02-19",
+        "2026-02-26"
+      ],
+      "first_seen_week": "2026-02-12",
+      "last_seen_week": "2026-02-26",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "testing_concepts",
+        "weekly_progress"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-26",
+          "record_id": "everpure_2026_02_26",
+          "group": "testing_concepts",
+          "text": "175 - Navigation Menu Updates (received)",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        },
+        {
+          "week_date": "2026-02-19",
+          "record_id": "everpure_2026_02_19",
+          "group": "testing_concepts",
+          "text": "175 - Navigation Menu Updates (received)",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        },
+        {
+          "week_date": "2026-02-12",
+          "record_id": "everpure_2026_02_12",
+          "group": "weekly_progress",
+          "text": "175 - Navigation Menu Updates (received)",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "175",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "176__homepage competitive review",
+      "concept_id": "176",
+      "concept_title": "Homepage Competitive Review",
+      "concept_display": "176 - Homepage Competitive Review",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05",
+        "2026-02-12"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-12",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-12",
+          "record_id": "everpure_2026_02_12",
+          "group": "testing_concepts",
+          "text": "176 - Homepage Competitive Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "testing_concepts",
+          "text": "176 - Homepage Competitive Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "testing_concepts",
+          "text": "176 - Homepage Competitive Review",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "176"
+      ],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "176__platform competitive review",
+      "concept_id": "176",
+      "concept_title": "Platform Competitive Review",
+      "concept_display": "176 - Platform Competitive Review",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05",
+        "2026-02-12"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-12",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-12",
+          "record_id": "everpure_2026_02_12",
+          "group": "testing_concepts",
+          "text": "176 - Platform Competitive Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "testing_concepts",
+          "text": "176 - Platform Competitive Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "testing_concepts",
+          "text": "176 - Platform Competitive Review",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "176"
+      ],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "177__support taxonomy flow (internal)",
+      "concept_id": "177",
+      "concept_title": "Support Taxonomy Flow (Internal)",
+      "concept_display": "177 - Support Taxonomy Flow (Internal)",
+      "weeks_seen": [
+        "2026-02-05",
+        "2026-03-26",
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-02-05",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "in_process",
+        "next_steps"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY",
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "in_process",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "177 - Support Taxonomy Flow (Internal)",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "177",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "taxonomy"
+      ],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?",
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "178__evergreen rebrand",
+      "concept_id": "178",
+      "concept_title": "Evergreen Rebrand",
+      "concept_display": "178 - Evergreen Rebrand",
+      "weeks_seen": [
+        "2026-03-05",
+        "2026-03-12",
+        "2026-03-26"
+      ],
+      "first_seen_week": "2026-03-05",
+      "last_seen_week": "2026-03-26",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R3",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-03-12",
+          "record_id": "everpure_2026_03_12",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R2",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        },
+        {
+          "week_date": "2026-03-05",
+          "record_id": "everpure_2026_03_05",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "178",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [
+        "r3",
+        "r2"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "concept 143 - landing page wireframes",
+      "concept_id": null,
+      "concept_title": "Concept 143 - Landing Page Wireframes",
+      "concept_display": "Concept 143 - Landing Page Wireframes",
+      "weeks_seen": [
+        "2025-05-01",
+        "2025-05-08",
+        "2025-05-15"
+      ],
+      "first_seen_week": "2025-05-01",
+      "last_seen_week": "2025-05-15",
+      "occurrence_count": 3,
+      "groups_seen": [
+        "findings",
+        "other"
+      ],
+      "deck_refs": [
+        "14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms",
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [
+        "Concept 143 - Landing Page Wireframes R2"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-05-15",
+          "record_id": "everpure_2025_05_15",
+          "group": "findings",
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "deck_file_id": "14DaOCpGrarl5yvtGHDadiFjjguDuKEkQ0ZSrwTCeVms"
+        },
+        {
+          "week_date": "2025-05-08",
+          "record_id": "everpure_2025_05_08",
+          "group": "other",
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        },
+        {
+          "week_date": "2025-05-01",
+          "record_id": "everpure_2025_05_01",
+          "group": "other",
+          "text": "Concept 143 - Landing Page Wireframes R2",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "143",
+        "2025",
+        "09",
+        "04",
+        "05",
+        "22",
+        "15",
+        "1",
+        "08",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [
+        "r2"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | May 8th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, Comprehension, Success, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Gated Assets - Landing Page CONCEPT 143 SIGNALS ● Lack of context in the hero module removes a scannable piece of information that builds comprehension for visitors.",
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "144__partners overview",
+      "concept_id": "144",
+      "concept_title": "Partners Overview",
+      "concept_display": "144 - Partners Overview",
+      "weeks_seen": [
+        "2025-03-27",
+        "2025-04-10"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-04-10",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw",
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-10",
+          "record_id": "everpure_2025_04_10",
+          "group": "other",
+          "text": "144 - Partners Overview",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        },
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "144 - Partners Overview",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "144",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "03",
+        "27",
+        "143",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations.",
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "145__file services needfinding",
+      "concept_id": "145",
+      "concept_title": "File Services Needfinding",
+      "concept_display": "145 - File Services Needfinding",
+      "weeks_seen": [
+        "2025-03-27",
+        "2025-04-03"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-04-03",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI",
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-03",
+          "record_id": "everpure_2025_04_03",
+          "group": "other",
+          "text": "145 - File Services Needfinding",
+          "deck_file_id": "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+        },
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "145 - File Services Needfinding",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "145",
+        "2025",
+        "04",
+        "03",
+        "143",
+        "9%",
+        "146",
+        "48%",
+        "26%",
+        "27",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent.",
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "baseline plan",
+      "concept_id": null,
+      "concept_title": "Baseline Plan",
+      "concept_display": "Baseline Plan",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-05",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "Baseline Plan",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "Baseline Plan",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "baseline"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "events",
+      "concept_id": null,
+      "concept_title": "Events",
+      "concept_display": "Events",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "first_seen_week": "2026-04-09",
+      "last_seen_week": "2026-04-09",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Events V1",
+        "Events V2"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V1",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V2",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [
+        "v1",
+        "v2"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "homepage gravity score (sus)",
+      "concept_id": null,
+      "concept_title": "Homepage Gravity Score (SUS)",
+      "concept_display": "Homepage Gravity Score (SUS)",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-05",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "Homepage Gravity Score (SUS)",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "Homepage Gravity Score (SUS)",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "product: cloud storage competitor review",
+      "concept_id": null,
+      "concept_title": "Product: Cloud Storage Competitor Review",
+      "concept_display": "Product: Cloud Storage Competitor Review",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-05",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "Product: Cloud Storage Competitor Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "Product: Cloud Storage Competitor Review",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "solutions: ai competitor review",
+      "concept_id": null,
+      "concept_title": "Solutions: AI Competitor Review",
+      "concept_display": "Solutions: AI Competitor Review",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-05",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "Solutions: AI Competitor Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "Solutions: AI Competitor Review",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "solutions: healthcare competitor review",
+      "concept_id": null,
+      "concept_title": "Solutions: Healthcare Competitor Review",
+      "concept_display": "Solutions: Healthcare Competitor Review",
+      "weeks_seen": [
+        "2026-01-29",
+        "2026-02-05"
+      ],
+      "first_seen_week": "2026-01-29",
+      "last_seen_week": "2026-02-05",
+      "occurrence_count": 2,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-05",
+          "record_id": "everpure_2026_02_05",
+          "group": "next_steps",
+          "text": "Solutions: Healthcare Competitor Review",
+          "deck_file_id": null
+        },
+        {
+          "week_date": "2026-01-29",
+          "record_id": "everpure_2026_01_29",
+          "group": "next_steps",
+          "text": "Solutions: Healthcare Competitor Review",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "115__demo hub concepts",
+      "concept_id": "115",
+      "concept_title": "Demo Hub Concepts",
+      "concept_display": "115 - Demo Hub Concepts",
+      "weeks_seen": [
+        "2025-04-17"
+      ],
+      "first_seen_week": "2025-04-17",
+      "last_seen_week": "2025-04-17",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-17",
+          "record_id": "everpure_2025_04_17",
+          "group": "other",
+          "text": "115 - Demo Hub Concepts",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "115",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "136__tco calculator - we identified quite a few areas to improve the design of the tco calculators, including clarifying the savings calculation, pulling the total calculations more closely to the charts, and ensuring interactive elements are consistently and clearly outlined.",
+      "concept_id": "136",
+      "concept_title": "TCO Calculator - We identified quite a few areas to improve the design of the TCO calculators, including clarifying the savings calculation, pulling the total calculations more closely to the charts, and ensuring interactive elements are consistently and clearly outlined.",
+      "concept_display": "136 - TCO Calculator - We identified quite a few areas to improve the design of the TCO calculators, including clarifying the savings calculation, pulling the total calculations more closely to the charts, and ensuring interactive elements are consistently and clearly outlined.",
+      "weeks_seen": [
+        "2025-01-31"
+      ],
+      "first_seen_week": "2025-01-31",
+      "last_seen_week": "2025-01-31",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-31",
+          "record_id": "everpure_2025_01_31",
+          "group": "other",
+          "text": "136 - TCO Calculator - We identified quite a few areas to improve the design of the TCO calculators, including clarifying the savings calculation, pulling the total calculations more closely to the charts, and ensuring interactive elements are consistently and clearly outlined.",
+          "deck_file_id": "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+        }
+      ],
+      "supporting_numbers": [
+        "136"
+      ],
+      "comparison_cues": [
+        "improve"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "137__nvidia gtc event - we walked through various insights from our testing of the nvidia flow, including opportunities to clarify \"add to calendar\" functionality and ideal headlines.",
+      "concept_id": "137",
+      "concept_title": "NVIDIA GTC Event - We walked through various insights from our testing of the NVIDIA flow, including opportunities to clarify \"Add to Calendar\" functionality and ideal headlines.",
+      "concept_display": "137 - NVIDIA GTC Event - We walked through various insights from our testing of the NVIDIA flow, including opportunities to clarify \"Add to Calendar\" functionality and ideal headlines.",
+      "weeks_seen": [
+        "2025-01-31"
+      ],
+      "first_seen_week": "2025-01-31",
+      "last_seen_week": "2025-01-31",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-31",
+          "record_id": "everpure_2025_01_31",
+          "group": "other",
+          "text": "137 - NVIDIA GTC Event - We walked through various insights from our testing of the NVIDIA flow, including opportunities to clarify \"Add to Calendar\" functionality and ideal headlines.",
+          "deck_file_id": "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+        }
+      ],
+      "supporting_numbers": [
+        "137"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "138__events center - we see that the series module is rated least valuable on the page. we'll run follow up testing to see what affects we might expect from removing it.",
+      "concept_id": "138",
+      "concept_title": "Events Center - We see that the Series module is rated least valuable on the page. We'll run follow up testing to see what affects we might expect from removing it.",
+      "concept_display": "138 - Events Center - We see that the Series module is rated least valuable on the page. We'll run follow up testing to see what affects we might expect from removing it.",
+      "weeks_seen": [
+        "2025-01-31"
+      ],
+      "first_seen_week": "2025-01-31",
+      "last_seen_week": "2025-01-31",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-31",
+          "record_id": "everpure_2025_01_31",
+          "group": "other",
+          "text": "138 - Events Center - We see that the Series module is rated least valuable on the page. We'll run follow up testing to see what affects we might expect from removing it.",
+          "deck_file_id": "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+        }
+      ],
+      "supporting_numbers": [
+        "138"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "139__marquee messaging - the team saw a disconnect between the visual imagery, which presented as symbolic and negative, and the purpose behind the messaging in the modules. the darker modules also saw a higher engagement rate.",
+      "concept_id": "139",
+      "concept_title": "Marquee Messaging - The team saw a disconnect between the visual imagery, which presented as symbolic and negative, and the purpose behind the messaging in the modules. The darker modules also saw a higher engagement rate.",
+      "concept_display": "139 - Marquee Messaging - The team saw a disconnect between the visual imagery, which presented as symbolic and negative, and the purpose behind the messaging in the modules. The darker modules also saw a higher engagement rate.",
+      "weeks_seen": [
+        "2025-01-31"
+      ],
+      "first_seen_week": "2025-01-31",
+      "last_seen_week": "2025-01-31",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-31",
+          "record_id": "everpure_2025_01_31",
+          "group": "other",
+          "text": "139 - Marquee Messaging - The team saw a disconnect between the visual imagery, which presented as symbolic and negative, and the purpose behind the messaging in the modules. The darker modules also saw a higher engagement rate.",
+          "deck_file_id": "1iuB5EMmD7T0zJT7XjYiN3rPDKWRolBv2M4vEOci541M"
+        }
+      ],
+      "supporting_numbers": [
+        "139"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "messaging",
+        "engagement"
+      ],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "143__wireframe landing pages",
+      "concept_id": "143",
+      "concept_title": "Wireframe Landing Pages",
+      "concept_display": "143 - Wireframe Landing Pages",
+      "weeks_seen": [
+        "2025-03-27"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-03-27",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "143 - Wireframe Landing Pages",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "143",
+        "2025",
+        "03",
+        "27",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "143 gated landing pages",
+      "concept_id": null,
+      "concept_title": "143 Gated Landing Pages",
+      "concept_display": "143 Gated Landing Pages",
+      "weeks_seen": [
+        "2025-03-27"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-03-27",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "143 Gated Landing Pages",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "143",
+        "2025",
+        "03",
+        "27",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "146__webinar comparison",
+      "concept_id": "146",
+      "concept_title": "Webinar Comparison",
+      "concept_display": "146 - Webinar Comparison",
+      "weeks_seen": [
+        "2025-04-03"
+      ],
+      "first_seen_week": "2025-04-03",
+      "last_seen_week": "2025-04-03",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-03",
+          "record_id": "everpure_2025_04_03",
+          "group": "other",
+          "text": "146 - Webinar Comparison",
+          "deck_file_id": "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+        }
+      ],
+      "supporting_numbers": [
+        "146",
+        "2025",
+        "04",
+        "03",
+        "143",
+        "9%",
+        "48%",
+        "26%"
+      ],
+      "comparison_cues": [
+        "comparison"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "147__partner ecosystem",
+      "concept_id": "147",
+      "concept_title": "Partner Ecosystem",
+      "concept_display": "147 - Partner Ecosystem",
+      "weeks_seen": [
+        "2025-04-10"
+      ],
+      "first_seen_week": "2025-04-10",
+      "last_seen_week": "2025-04-10",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-10",
+          "record_id": "everpure_2025_04_10",
+          "group": "other",
+          "text": "147 - Partner Ecosystem",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "147",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "148__customer stories menu",
+      "concept_id": "148",
+      "concept_title": "Customer Stories Menu",
+      "concept_display": "148 - Customer Stories Menu",
+      "weeks_seen": [
+        "2025-04-17"
+      ],
+      "first_seen_week": "2025-04-17",
+      "last_seen_week": "2025-04-17",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-17",
+          "record_id": "everpure_2025_04_17",
+          "group": "other",
+          "text": "148 - Customer Stories Menu",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "148",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "149__“company” in nav",
+      "concept_id": "149",
+      "concept_title": "“Company” in nav",
+      "concept_display": "149 - “Company” in nav",
+      "weeks_seen": [
+        "2025-04-24"
+      ],
+      "first_seen_week": "2025-04-24",
+      "last_seen_week": "2025-04-24",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-24",
+          "record_id": "everpure_2025_04_24",
+          "group": "other",
+          "text": "149 - “Company” in nav",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "149",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "150__demo label needfinding",
+      "concept_id": "150",
+      "concept_title": "Demo Label Needfinding",
+      "concept_display": "150 - Demo Label Needfinding",
+      "weeks_seen": [
+        "2025-05-01"
+      ],
+      "first_seen_week": "2025-05-01",
+      "last_seen_week": "2025-05-01",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-05-01",
+          "record_id": "everpure_2025_05_01",
+          "group": "other",
+          "text": "150 - Demo Label Needfinding",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "150"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "151__event pages",
+      "concept_id": "151",
+      "concept_title": "Event Pages",
+      "concept_display": "151 - Event Pages",
+      "weeks_seen": [
+        "2025-05-01"
+      ],
+      "first_seen_week": "2025-05-01",
+      "last_seen_week": "2025-05-01",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-05-01",
+          "record_id": "everpure_2025_05_01",
+          "group": "other",
+          "text": "151 - Event Pages",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "151"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "151__events page baseline",
+      "concept_id": "151",
+      "concept_title": "Events Page Baseline",
+      "concept_display": "151 - Events Page Baseline",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "first_seen_week": "2026-04-09",
+      "last_seen_week": "2026-04-09",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "151 - Events Page Baseline"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "151 - Events Page Baseline",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "151",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [
+        "baseline"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "152__nav dynamics",
+      "concept_id": "152",
+      "concept_title": "Nav Dynamics",
+      "concept_display": "152 - Nav Dynamics",
+      "weeks_seen": [
+        "2025-05-01"
+      ],
+      "first_seen_week": "2025-05-01",
+      "last_seen_week": "2025-05-01",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-05-01",
+          "record_id": "everpure_2025_05_01",
+          "group": "other",
+          "text": "152 - Nav Dynamics",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [
+        "152"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "169__2026 navigation updates",
+      "concept_id": "169",
+      "concept_title": "2026 Navigation Updates",
+      "concept_display": "169 - 2026 Navigation Updates",
+      "weeks_seen": [
+        "2025-11-13"
+      ],
+      "first_seen_week": "2025-11-13",
+      "last_seen_week": "2025-11-13",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [
+        "169 - 2026 Navigation Updates R2"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-11-13",
+          "record_id": "everpure_2025_11_13",
+          "group": "findings",
+          "text": "169 - 2026 Navigation Updates R2",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "169",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [
+        "r2"
+      ],
+      "behavioral_signals": [
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "170__federal - cost efficiency",
+      "concept_id": "170",
+      "concept_title": "Federal - Cost Efficiency",
+      "concept_display": "170 - Federal - Cost Efficiency",
+      "weeks_seen": [
+        "2025-11-13"
+      ],
+      "first_seen_week": "2025-11-13",
+      "last_seen_week": "2025-11-13",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [
+        "170 - Federal - Cost Efficiency R2"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-11-13",
+          "record_id": "everpure_2025_11_13",
+          "group": "findings",
+          "text": "170 - Federal - Cost Efficiency R2",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "170",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [
+        "r2"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "173__knowledge portal homepage",
+      "concept_id": "173",
+      "concept_title": "Knowledge Portal Homepage",
+      "concept_display": "173 - Knowledge Portal Homepage",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "first_seen_week": "2026-03-26",
+      "last_seen_week": "2026-03-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "in_process"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "173 - Knowledge Portal Homepage (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "173",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "173__knowledge portal landing page",
+      "concept_id": "173",
+      "concept_title": "Knowledge Portal Landing Page",
+      "concept_display": "173 - Knowledge Portal Landing Page",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "first_seen_week": "2026-03-26",
+      "last_seen_week": "2026-03-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "in_process"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "in_process",
+          "text": "173 - Knowledge Portal Landing Page (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "173",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "176__baselines: homepage redesign",
+      "concept_id": "176",
+      "concept_title": "baselines: Homepage Redesign",
+      "concept_display": "176 - baselines: Homepage Redesign",
+      "weeks_seen": [
+        "2026-03-05"
+      ],
+      "first_seen_week": "2026-03-05",
+      "last_seen_week": "2026-03-05",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-05",
+          "record_id": "everpure_2026_03_05",
+          "group": "testing_concepts",
+          "text": "176 - baselines: Homepage Redesign R2",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "176",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "50%"
+      ],
+      "comparison_cues": [
+        "r2"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "176__baselines: platform redesign",
+      "concept_id": "176",
+      "concept_title": "baselines: Platform Redesign",
+      "concept_display": "176 - baselines: Platform Redesign",
+      "weeks_seen": [
+        "2026-03-12"
+      ],
+      "first_seen_week": "2026-03-12",
+      "last_seen_week": "2026-03-12",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-12",
+          "record_id": "everpure_2026_03_12",
+          "group": "testing_concepts",
+          "text": "176 - baselines: Platform Redesign",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "176",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "176__homepage redesign",
+      "concept_id": "176",
+      "concept_title": "Homepage Redesign",
+      "concept_display": "176 - Homepage Redesign",
+      "weeks_seen": [
+        "2026-02-26"
+      ],
+      "first_seen_week": "2026-02-26",
+      "last_seen_week": "2026-02-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-26",
+          "record_id": "everpure_2026_02_26",
+          "group": "testing_concepts",
+          "text": "176 - Homepage Redesign",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "176",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "178__evergreen rebrand r3",
+      "concept_id": "178",
+      "concept_title": "Evergreen Rebrand R3",
+      "concept_display": "178 - Evergreen Rebrand R3",
+      "weeks_seen": [
+        "2026-03-19"
+      ],
+      "first_seen_week": "2026-03-19",
+      "last_seen_week": "2026-03-19",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-19",
+          "record_id": "everpure_2026_03_19",
+          "group": "testing_concepts",
+          "text": "178 - Evergreen Rebrand R3 (in process)",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "178",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [
+        "r3"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "179__edc",
+      "concept_id": "179",
+      "concept_title": "EDC",
+      "concept_display": "179 - EDC",
+      "weeks_seen": [
+        "2026-03-05"
+      ],
+      "first_seen_week": "2026-03-05",
+      "last_seen_week": "2026-03-05",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-05",
+          "record_id": "everpure_2026_03_05",
+          "group": "testing_concepts",
+          "text": "179 - EDC",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "179",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "180__pathfinder journey analysis",
+      "concept_id": "180",
+      "concept_title": "Pathfinder Journey Analysis",
+      "concept_display": "180 - Pathfinder Journey Analysis",
+      "weeks_seen": [
+        "2026-03-19"
+      ],
+      "first_seen_week": "2026-03-19",
+      "last_seen_week": "2026-03-19",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-19",
+          "record_id": "everpure_2026_03_19",
+          "group": "testing_concepts",
+          "text": "180 - Pathfinder Journey Analysis",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "180",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [
+        "analysis"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "181__knowledge portal domain",
+      "concept_id": "181",
+      "concept_title": "Knowledge Portal Domain",
+      "concept_display": "181 - Knowledge Portal Domain",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "first_seen_week": "2026-03-26",
+      "last_seen_week": "2026-03-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "181 - Knowledge Portal Domain",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "181",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "182__ai summary - three variations",
+      "concept_id": "182",
+      "concept_title": "AI Summary - Three Variations",
+      "concept_display": "182 - AI Summary - Three Variations",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "182 - AI Summary - Three Variations"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "182 - AI Summary - Three Variations",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "182",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "183__infinite scroll",
+      "concept_id": "183",
+      "concept_title": "Infinite Scroll",
+      "concept_display": "183 - Infinite Scroll",
+      "weeks_seen": [
+        "2026-03-26"
+      ],
+      "first_seen_week": "2026-03-26",
+      "last_seen_week": "2026-03-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [
+        "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-03-26",
+          "record_id": "everpure_2026_03_26",
+          "group": "testing_concepts",
+          "text": "183 - Infinite Scroll",
+          "deck_file_id": "13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM"
+        }
+      ],
+      "supporting_numbers": [
+        "183",
+        "2026",
+        "03",
+        "26",
+        "19",
+        "12",
+        "05",
+        "176",
+        "50%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Comprehension ● Sentiment Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Rebrand: Homepage Concept 176 pypdf The homepage and platform pages outperform the old designs.",
+        "Rebrand Redesigns Hunch Concept 176 pypdf Experiment with new hero copy on the homepage: Low impressions of conversational and friendly bring down the overall sentiment, mostly due to the messaging on the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "184__design & ux feedback:",
+      "concept_id": "184",
+      "concept_title": "Design & UX Feedback:",
+      "concept_display": "184 - Design & UX Feedback:",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "184 - Design & UX Feedback:"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "184 - Design & UX Feedback:",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "184",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "186__homepage ai messaging",
+      "concept_id": "186",
+      "concept_title": "Homepage AI Messaging",
+      "concept_display": "186 - Homepage AI Messaging",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "first_seen_week": "2026-04-09",
+      "last_seen_week": "2026-04-09",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "in_process"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "186 - Homepage AI Messaging",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "186",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "messaging"
+      ],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "187__pathfinder cta labels",
+      "concept_id": "187",
+      "concept_title": "Pathfinder CTA Labels",
+      "concept_display": "187 - Pathfinder CTA Labels",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "first_seen_week": "2026-04-09",
+      "last_seen_week": "2026-04-09",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "in_process"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "187 - Pathfinder CTA Labels",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "187",
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "added: concept 146 - webinar landing comparison",
+      "concept_id": null,
+      "concept_title": "Added: Concept 146 - Webinar Landing Comparison",
+      "concept_display": "Added: Concept 146 - Webinar Landing Comparison",
+      "weeks_seen": [
+        "2025-03-27"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-03-27",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "Added: Concept 146 - Webinar Landing Comparison",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "146",
+        "2025",
+        "03",
+        "27",
+        "143",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [
+        "comparison"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "baseline planning",
+      "concept_id": null,
+      "concept_title": "Baseline Planning",
+      "concept_display": "Baseline Planning",
+      "weeks_seen": [
+        "2026-01-22"
+      ],
+      "first_seen_week": "2026-01-22",
+      "last_seen_week": "2026-01-22",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-01-22",
+          "record_id": "everpure_2026_01_22",
+          "group": "testing_concepts",
+          "text": "Baseline Planning",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "baseline"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "baseline testing with cta on blog article pages",
+      "concept_id": null,
+      "concept_title": "Baseline testing with CTA on Blog article pages",
+      "concept_display": "Baseline testing with CTA on Blog article pages",
+      "weeks_seen": [
+        "2024-12-05"
+      ],
+      "first_seen_week": "2024-12-05",
+      "last_seen_week": "2024-12-05",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2024-12-05",
+          "record_id": "everpure_2024_12_05",
+          "group": "other",
+          "text": "Baseline testing with CTA on Blog article pages",
+          "deck_file_id": "1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI"
+        }
+      ],
+      "supporting_numbers": [
+        "2024",
+        "12",
+        "05",
+        "127",
+        "111",
+        "71%",
+        "64%",
+        "56%"
+      ],
+      "comparison_cues": [
+        "baseline"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 14th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metric Comprehension, Engagement, Sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Blog Spacing CONCEPT 127 SIGNALS ●Increased spacing on the page increased interest on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "company in navigation : b to provide a couple variations",
+      "concept_id": null,
+      "concept_title": "Company in Navigation : B to provide a couple variations",
+      "concept_display": "Company in Navigation : B to provide a couple variations",
+      "weeks_seen": [
+        "2024-12-12"
+      ],
+      "first_seen_week": "2024-12-12",
+      "last_seen_week": "2024-12-12",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "next_steps"
+      ],
+      "deck_refs": [
+        "1i4TgXLd90f-E6cvtp20W2hWaKMv4PJqRxEZJ3OK-08k"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2024-12-12",
+          "record_id": "everpure_2024_12_12",
+          "group": "next_steps",
+          "text": "Company in Navigation : B to provide a couple variations",
+          "deck_file_id": "1i4TgXLd90f-E6cvtp20W2hWaKMv4PJqRxEZJ3OK-08k"
+        }
+      ],
+      "supporting_numbers": [
+        "2024",
+        "12",
+        "115",
+        "92%",
+        "12%",
+        "78%",
+        "24%",
+        "42%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [
+        "ZURB | December 12th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Demo Hub Video CONCEPT 115 SIGNALS ● The video was educational but could use alternate visuals to clarify complex parts."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "company page, baseline sent today by b",
+      "concept_id": null,
+      "concept_title": "Company Page, baseline sent today by B",
+      "concept_display": "Company Page, baseline sent today by B",
+      "weeks_seen": [
+        "2024-12-05"
+      ],
+      "first_seen_week": "2024-12-05",
+      "last_seen_week": "2024-12-05",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2024-12-05",
+          "record_id": "everpure_2024_12_05",
+          "group": "other",
+          "text": "Company Page, baseline sent today by B",
+          "deck_file_id": "1CutRYWvSWXenf25mxMHouiZN2goYWJ2ahEujursBLCI"
+        }
+      ],
+      "supporting_numbers": [
+        "2024",
+        "12",
+        "05",
+        "127",
+        "111",
+        "71%",
+        "64%",
+        "56%"
+      ],
+      "comparison_cues": [
+        "baseline"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 14th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metric Comprehension, Engagement, Sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Blog Spacing CONCEPT 127 SIGNALS ●Increased spacing on the page increased interest on the page."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "comprehension : changing the story slightly improved comprehension by 2% compared to the previous version but still fell short of the clarity achieved with the side navigation. resource sections, such as competitor pages, company details, and blogs, were found to be more helpful in improving understanding.",
+      "concept_id": null,
+      "concept_title": "Comprehension : Changing the story slightly improved comprehension by 2% compared to the previous version but still fell short of the clarity achieved with the side navigation. Resource sections, such as competitor pages, company details, and blogs, were found to be more helpful in improving understanding.",
+      "concept_display": "Comprehension : Changing the story slightly improved comprehension by 2% compared to the previous version but still fell short of the clarity achieved with the side navigation. Resource sections, such as competitor pages, company details, and blogs, were found to be more helpful in improving understanding.",
+      "weeks_seen": [
+        "2024-11-21"
+      ],
+      "first_seen_week": "2024-11-21",
+      "last_seen_week": "2024-11-21",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2024-11-21",
+          "record_id": "everpure_2024_11_21",
+          "group": "other",
+          "text": "Comprehension : Changing the story slightly improved comprehension by 2% compared to the previous version but still fell short of the clarity achieved with the side navigation. Resource sections, such as competitor pages, company details, and blogs, were found to be more helpful in improving understanding.",
+          "deck_file_id": "1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0"
+        }
+      ],
+      "supporting_numbers": [
+        "2%",
+        "2024",
+        "11",
+        "21",
+        "104",
+        "12%",
+        "72%",
+        "21%"
+      ],
+      "comparison_cues": [
+        "improved"
+      ],
+      "behavioral_signals": [
+        "comprehension",
+        "clarity",
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [
+        "ZURB | November 6th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Solutions Page R4 CONCEPT 104 SIGNALS ● The change in story and increase in orange reduced comprehension and sentiment."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "concept 162: platform configurator",
+      "concept_id": null,
+      "concept_title": "Concept 162: Platform Configurator",
+      "concept_display": "Concept 162: Platform Configurator",
+      "weeks_seen": [
+        "2025-09-11"
+      ],
+      "first_seen_week": "2025-09-11",
+      "last_seen_week": "2025-09-11",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU"
+      ],
+      "raw_finding_excerpts": [
+        "Concept 162: Platform Configurator"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-09-11",
+          "record_id": "everpure_2025_09_11",
+          "group": "findings",
+          "text": "Concept 162: Platform Configurator",
+          "deck_file_id": "1oVi4r1ewlwhoAFJ98Rjm1CBovXzafUwSU1Bp0G6cljU"
+        }
+      ],
+      "supporting_numbers": [
+        "162",
+        "2025",
+        "09",
+        "25",
+        "11",
+        "1",
+        "2",
+        "3"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Expectations ● Importance ● Comprehension Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Platform Conﬁgurator Concept 162 pypdf The platform conﬁgurator prototypes are a great start but may not present the right questions to users in the assessment.",
+        "Maintain workloads and move up in ﬂow: This was deemed as a very important piece of information to provide by technical participants."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "concept 172 - customer stories comparison",
+      "concept_id": null,
+      "concept_title": "Concept 172 - Customer Stories Comparison",
+      "concept_display": "Concept 172 - Customer Stories Comparison",
+      "weeks_seen": [
+        "2025-11-20"
+      ],
+      "first_seen_week": "2025-11-20",
+      "last_seen_week": "2025-11-20",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [
+        "Concept 172 - Customer Stories Comparison"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-11-20",
+          "record_id": "everpure_2025_11_20",
+          "group": "findings",
+          "text": "Concept 172 - Customer Stories Comparison",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "172",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [
+        "comparison"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "concept 173 - support taxonomy flow",
+      "concept_id": null,
+      "concept_title": "Concept 173 - Support Taxonomy Flow",
+      "concept_display": "Concept 173 - Support Taxonomy Flow",
+      "weeks_seen": [
+        "2025-12-11"
+      ],
+      "first_seen_week": "2025-12-11",
+      "last_seen_week": "2025-12-11",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [
+        "Concept 173 - Support Taxonomy Flow"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-12-11",
+          "record_id": "everpure_2025_12_11",
+          "group": "findings",
+          "text": "Concept 173 - Support Taxonomy Flow",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "173",
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "taxonomy"
+      ],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "customers in main navigation",
+      "concept_id": null,
+      "concept_title": "Customers in Main Navigation",
+      "concept_display": "Customers in Main Navigation",
+      "weeks_seen": [
+        "2025-01-23"
+      ],
+      "first_seen_week": "2025-01-23",
+      "last_seen_week": "2025-01-23",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "10-oJyERAilsUtQhLtJE2GRHkdSHVyq4e9sKpJeS0GRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-23",
+          "record_id": "everpure_2025_01_23",
+          "group": "other",
+          "text": "Customers in Main Navigation",
+          "deck_file_id": "10-oJyERAilsUtQhLtJE2GRHkdSHVyq4e9sKpJeS0GRc"
+        }
+      ],
+      "supporting_numbers": [
+        "10",
+        "2025",
+        "01",
+        "23",
+        "2024",
+        "135",
+        "48%",
+        "38%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "navigation"
+      ],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 14th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Sentiment, Comprehension, Reaction Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Pure Launch CONCEPT 135 SIGNALS ● Layout of the page reduces comprehension and sentiment of the page."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "decision: retest with visuals. compare against broader testing of landing page form best practices.",
+      "concept_id": null,
+      "concept_title": "Decision: Retest with visuals. Compare against broader testing of landing page form best practices.",
+      "concept_display": "Decision: Retest with visuals. Compare against broader testing of landing page form best practices.",
+      "weeks_seen": [
+        "2025-03-27"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-03-27",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "Decision: Retest with visuals. Compare against broader testing of landing page form best practices.",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "03",
+        "27",
+        "143",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "define how file services fits in importance to platform systems.",
+      "concept_id": null,
+      "concept_title": "Define how File Services fits in importance to platform systems.",
+      "concept_display": "Define how File Services fits in importance to platform systems.",
+      "weeks_seen": [
+        "2025-04-03"
+      ],
+      "first_seen_week": "2025-04-03",
+      "last_seen_week": "2025-04-03",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-03",
+          "record_id": "everpure_2025_04_03",
+          "group": "other",
+          "text": "Define how File Services fits in importance to platform systems.",
+          "deck_file_id": "1VmYH0rXkDVHC_vsy8BK0qA-eTG1Ax_zEo5BaW6le1xI"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "04",
+        "03",
+        "143",
+        "9%",
+        "146",
+        "48%",
+        "26%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "feedback : build-out for stakeholder presentations would be greatly helped by legends and clarifications of how to interpret data presentation.",
+      "concept_id": null,
+      "concept_title": "Feedback : Build-out for stakeholder presentations would be greatly helped by legends and clarifications of how to interpret data presentation.",
+      "concept_display": "Feedback : Build-out for stakeholder presentations would be greatly helped by legends and clarifications of how to interpret data presentation.",
+      "weeks_seen": [
+        "2025-03-13"
+      ],
+      "first_seen_week": "2025-03-13",
+      "last_seen_week": "2025-03-13",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-13",
+          "record_id": "everpure_2025_03_13",
+          "group": "other",
+          "text": "Feedback : Build-out for stakeholder presentations would be greatly helped by legends and clarifications of how to interpret data presentation.",
+          "deck_file_id": "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "03",
+        "13",
+        "150",
+        "142",
+        "21%",
+        "2",
+        "26%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "🧪 UX Metrics Engagement, Comprehension, Sentiment, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Pure.ai Teaser CONCEPT 142 SIGNALS ● Teasers should showcase performance with clarity.",
+        "● Industry Norm but Room for Improvement."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "gated landing page variations",
+      "concept_id": null,
+      "concept_title": "Gated Landing Page variations",
+      "concept_display": "Gated Landing Page variations",
+      "weeks_seen": [
+        "2025-01-09"
+      ],
+      "first_seen_week": "2025-01-09",
+      "last_seen_week": "2025-01-09",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-09",
+          "record_id": "everpure_2025_01_09",
+          "group": "other",
+          "text": "Gated Landing Page variations",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "header",
+      "concept_id": null,
+      "concept_title": "Header",
+      "concept_display": "Header",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Header"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Header",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "homepage",
+      "concept_id": null,
+      "concept_title": "Homepage",
+      "concept_display": "Homepage",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Homepage"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Homepage",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "homepage gravity score",
+      "concept_id": null,
+      "concept_title": "Homepage Gravity Score",
+      "concept_display": "Homepage Gravity Score",
+      "weeks_seen": [
+        "2026-01-15"
+      ],
+      "first_seen_week": "2026-01-15",
+      "last_seen_week": "2026-01-15",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-01-15",
+          "record_id": "everpure_2026_01_15",
+          "group": "testing_concepts",
+          "text": "Homepage Gravity Score",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "journey map & brand implementation",
+      "concept_id": null,
+      "concept_title": "Journey Map & Brand Implementation",
+      "concept_display": "Journey Map & Brand Implementation",
+      "weeks_seen": [
+        "2025-08-21"
+      ],
+      "first_seen_week": "2025-08-21",
+      "last_seen_week": "2025-08-21",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+      ],
+      "raw_finding_excerpts": [
+        "Journey Map & Brand Implementation"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-08-21",
+          "record_id": "everpure_2025_08_21",
+          "group": "findings",
+          "text": "Journey Map & Brand Implementation",
+          "deck_file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "08",
+        "28",
+        "21",
+        "156",
+        "12%",
+        "20%",
+        "70%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 21st, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, Comprehension, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Contact Us Page CONCEPT 156 SIGNALS ●The long format of the contact page distracts users from engaging with the form."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "landing page",
+      "concept_id": null,
+      "concept_title": "Landing Page",
+      "concept_display": "Landing Page",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Landing Page"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Landing Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "pathfinder journey analysis",
+      "concept_id": null,
+      "concept_title": "Pathfinder Journey Analysis",
+      "concept_display": "Pathfinder Journey Analysis",
+      "weeks_seen": [
+        "2026-01-15"
+      ],
+      "first_seen_week": "2026-01-15",
+      "last_seen_week": "2026-01-15",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "testing_concepts"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-01-15",
+          "record_id": "everpure_2026_01_15",
+          "group": "testing_concepts",
+          "text": "Pathfinder Journey Analysis",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "analysis"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "platform configurator: wireframe assessments",
+      "concept_id": null,
+      "concept_title": "Platform Configurator: Wireframe Assessments",
+      "concept_display": "Platform Configurator: Wireframe Assessments",
+      "weeks_seen": [
+        "2025-08-28"
+      ],
+      "first_seen_week": "2025-08-28",
+      "last_seen_week": "2025-08-28",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+      ],
+      "raw_finding_excerpts": [
+        "Platform Configurator: Wireframe Assessments"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-08-28",
+          "record_id": "everpure_2025_08_28",
+          "group": "findings",
+          "text": "Platform Configurator: Wireframe Assessments",
+          "deck_file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "08",
+        "28",
+        "21",
+        "156",
+        "12%",
+        "20%",
+        "70%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 21st, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, Comprehension, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Contact Us Page CONCEPT 156 SIGNALS ●The long format of the contact page distracts users from engaging with the form."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "previous a/b testing has revealed a 375% increase in conversion by shifting cta labels from test drive to “try now”.",
+      "concept_id": null,
+      "concept_title": "Previous A/B testing has revealed a 375% increase in conversion by shifting CTA labels from Test Drive to “Try Now”.",
+      "concept_display": "Previous A/B testing has revealed a 375% increase in conversion by shifting CTA labels from Test Drive to “Try Now”.",
+      "weeks_seen": [
+        "2025-04-24"
+      ],
+      "first_seen_week": "2025-04-24",
+      "last_seen_week": "2025-04-24",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-24",
+          "record_id": "everpure_2025_04_24",
+          "group": "other",
+          "text": "Previous A/B testing has revealed a 375% increase in conversion by shifting CTA labels from Test Drive to “Try Now”.",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "375%",
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [
+        "a/b",
+        "increase"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "pure events",
+      "concept_id": null,
+      "concept_title": "Pure Events",
+      "concept_display": "Pure Events",
+      "weeks_seen": [
+        "2025-03-13"
+      ],
+      "first_seen_week": "2025-03-13",
+      "last_seen_week": "2025-03-13",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-13",
+          "record_id": "everpure_2025_03_13",
+          "group": "other",
+          "text": "Pure Events",
+          "deck_file_id": "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "03",
+        "13",
+        "150",
+        "142",
+        "21%",
+        "2",
+        "26%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "🧪 UX Metrics Engagement, Comprehension, Sentiment, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Pure.ai Teaser CONCEPT 142 SIGNALS ● Teasers should showcase performance with clarity.",
+        "● Industry Norm but Room for Improvement."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "pure//launch and pure//updates labels both match the page’s content.",
+      "concept_id": null,
+      "concept_title": "Pure//Launch and Pure//Updates labels both match the page’s content.",
+      "concept_display": "Pure//Launch and Pure//Updates labels both match the page’s content.",
+      "weeks_seen": [
+        "2025-03-13"
+      ],
+      "first_seen_week": "2025-03-13",
+      "last_seen_week": "2025-03-13",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-13",
+          "record_id": "everpure_2025_03_13",
+          "group": "other",
+          "text": "→ Pure//Launch and Pure//Updates labels both match the page’s content.",
+          "deck_file_id": "1ZF4HOENbd8eMrCQBKtD03FGuzOKHjHMuP9WWhNx5xLQ"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "03",
+        "13",
+        "150",
+        "142",
+        "21%",
+        "2",
+        "26%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "🧪 UX Metrics Engagement, Comprehension, Sentiment, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Pure.ai Teaser CONCEPT 142 SIGNALS ● Teasers should showcase performance with clarity.",
+        "● Industry Norm but Room for Improvement."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "reader page (in process)",
+      "concept_id": null,
+      "concept_title": "Reader Page (in process)",
+      "concept_display": "Reader Page (in process)",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Reader Page (in process)"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Reader Page (in process)",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "rebrand launch debrief",
+      "concept_id": null,
+      "concept_title": "ReBrand Launch Debrief",
+      "concept_display": "ReBrand Launch Debrief",
+      "weeks_seen": [
+        "2026-02-26"
+      ],
+      "first_seen_week": "2026-02-26",
+      "last_seen_week": "2026-02-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-26",
+          "record_id": "everpure_2026_02_26",
+          "group": "other",
+          "text": "ReBrand Launch Debrief",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "report out c145 to heather, gather feedback on next steps",
+      "concept_id": null,
+      "concept_title": "Report out C145 to Heather, gather feedback on next steps",
+      "concept_display": "Report out C145 to Heather, gather feedback on next steps",
+      "weeks_seen": [
+        "2025-03-27"
+      ],
+      "first_seen_week": "2025-03-27",
+      "last_seen_week": "2025-03-27",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-27",
+          "record_id": "everpure_2025_03_27",
+          "group": "other",
+          "text": "Report out C145 to Heather, gather feedback on next steps",
+          "deck_file_id": "143HmDVZ8nfAicQv-yMlImNoqEYmtX0c_GOeybbv0HRc"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "03",
+        "27",
+        "143",
+        "5",
+        "58%",
+        "89%",
+        "79%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | March 27th, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, success and intent."
+      ],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "search page",
+      "concept_id": null,
+      "concept_title": "Search Page",
+      "concept_display": "Search Page",
+      "weeks_seen": [
+        "2026-04-02"
+      ],
+      "first_seen_week": "2026-04-02",
+      "last_seen_week": "2026-04-02",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "raw_finding_excerpts": [
+        "Search Page"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-02",
+          "record_id": "everpure_2026_04_02",
+          "group": "findings",
+          "text": "Search Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "04",
+        "09",
+        "02",
+        "182",
+        "82%",
+        "81%",
+        "83%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "UX Metrics ● Success ● Frequency Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File AI Summaries Concept 182 pypdf AI summaries will be a helpful way to condense a large amount of support information Assumption ● “Book” summary may not be intuitive ● Location of publication summary is hard to ﬁnd AI Summaries Hunch Concept 182 Source: Figma File pypdf AI Summaries Design Concept 182 Source: Figma File V1 - Results V2 - Book V3 - Publication pypdf Visually diﬀerentiate between results summaries and book summaries CTAs Participants were unable to successfully choose between a full results summary and an individual book summary when both are present on the page.",
+        "Source: Data Comparison Sheet pypdf Where can we identify improvements to the UX across key pages in the Knowledge Portal?"
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "support platform migration",
+      "concept_id": null,
+      "concept_title": "Support Platform Migration",
+      "concept_display": "Support Platform Migration",
+      "weeks_seen": [
+        "2026-01-15"
+      ],
+      "first_seen_week": "2026-01-15",
+      "last_seen_week": "2026-01-15",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "initiatives_on_deck"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-01-15",
+          "record_id": "everpure_2026_01_15",
+          "group": "initiatives_on_deck",
+          "text": "Support Platform Migration",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "testing incoming - we have a range of testing incoming across marketing, events, branding, and internal efforts.",
+      "concept_id": null,
+      "concept_title": "Testing Incoming - We have a range of testing incoming across Marketing, Events, Branding, and internal efforts.",
+      "concept_display": "Testing Incoming - We have a range of testing incoming across Marketing, Events, Branding, and internal efforts.",
+      "weeks_seen": [
+        "2025-01-09"
+      ],
+      "first_seen_week": "2025-01-09",
+      "last_seen_week": "2025-01-09",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-01-09",
+          "record_id": "everpure_2025_01_09",
+          "group": "other",
+          "text": "Testing Incoming - We have a range of testing incoming across Marketing, Events, Branding, and internal efforts.",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "this document outlines the interconnected dependencies and implementation phases required to deliver pure’s journey mapping recommendation engine and brand refresh. it incorporates cta orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration.",
+      "concept_id": null,
+      "concept_title": "This document outlines the interconnected dependencies and implementation phases required to deliver Pure’s journey mapping recommendation engine and brand refresh. It incorporates CTA orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. Each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration.",
+      "concept_display": "This document outlines the interconnected dependencies and implementation phases required to deliver Pure’s journey mapping recommendation engine and brand refresh. It incorporates CTA orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. Each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration.",
+      "weeks_seen": [
+        "2025-08-21"
+      ],
+      "first_seen_week": "2025-08-21",
+      "last_seen_week": "2025-08-21",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+      ],
+      "raw_finding_excerpts": [
+        "This document outlines the interconnected dependencies and implementation phases required to deliver Pure’s journey mapping recommendation engine and brand refresh. It incorporates CTA orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. Each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-08-21",
+          "record_id": "everpure_2025_08_21",
+          "group": "findings",
+          "text": "This document outlines the interconnected dependencies and implementation phases required to deliver Pure’s journey mapping recommendation engine and brand refresh. It incorporates CTA orchestration, sitemap optimization, configurator strategy, page simplification, personalization, design system updates, and asset production practices. Each element ties back to our guiding principles: simplicity, clarity, modularity, and persona-driven orchestration.",
+          "deck_file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "08",
+        "28",
+        "21",
+        "156",
+        "12%",
+        "20%",
+        "70%"
+      ],
+      "comparison_cues": [],
+      "behavioral_signals": [
+        "clarity"
+      ],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 21st, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, Comprehension, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Contact Us Page CONCEPT 156 SIGNALS ●The long format of the contact page distracts users from engaging with the form."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "we’ll review previous year’s testing and insights into the accelerate web promotions. this will gives us an overarching perspective to identify areas to highlight this year.",
+      "concept_id": null,
+      "concept_title": "We’ll review previous year’s testing and insights into the Accelerate web promotions. This will gives us an overarching perspective to identify areas to highlight this year.",
+      "concept_display": "We’ll review previous year’s testing and insights into the Accelerate web promotions. This will gives us an overarching perspective to identify areas to highlight this year.",
+      "weeks_seen": [
+        "2025-03-20"
+      ],
+      "first_seen_week": "2025-03-20",
+      "last_seen_week": "2025-03-20",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-03-20",
+          "record_id": "everpure_2025_03_20",
+          "group": "other",
+          "text": "We’ll review previous year’s testing and insights into the Accelerate web promotions. This will gives us an overarching perspective to identify areas to highlight this year.",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "work_in_motion",
+      "rule_based_next_step": "watch",
+      "rule_based_confidence": "low"
+    },
+    {
+      "concept_key": "we’ll review the results of our partner page updates and",
+      "concept_id": null,
+      "concept_title": "We’ll review the results of our Partner page updates and",
+      "concept_display": "We’ll review the results of our Partner page updates and",
+      "weeks_seen": [
+        "2025-04-10"
+      ],
+      "first_seen_week": "2025-04-10",
+      "last_seen_week": "2025-04-10",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2025-04-10",
+          "record_id": "everpure_2025_04_10",
+          "group": "other",
+          "text": "We’ll review the results of our Partner page updates and",
+          "deck_file_id": "1F4iZrJ--QADMUnJPpc85rjlYfbXyG3ivK8NiEiO7dtw"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "05",
+        "08",
+        "04",
+        "24",
+        "17",
+        "10",
+        "144"
+      ],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | April 3rd, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Comprehension, engagement, helpfulness, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Partners Overview CONCEPT 144 SIGNALS ●The purpose of the page—and who it’s for—remained unclear in both variations."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "we’re excited to review the rebrand launch with the team!",
+      "concept_id": null,
+      "concept_title": "We’re excited to review the ReBrand launch with the team!",
+      "concept_display": "We’re excited to review the ReBrand launch with the team!",
+      "weeks_seen": [
+        "2026-02-26"
+      ],
+      "first_seen_week": "2026-02-26",
+      "last_seen_week": "2026-02-26",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2026-02-26",
+          "record_id": "everpure_2026_02_26",
+          "group": "other",
+          "text": "We’re excited to review the ReBrand launch with the team!",
+          "deck_file_id": "1hxhJ_aDFZxrbRIkL1YxguWwhMxdP9FupQpW_l6ohYIU"
+        }
+      ],
+      "supporting_numbers": [
+        "2026",
+        "02",
+        "26",
+        "19",
+        "2025",
+        "12",
+        "11",
+        "20"
+      ],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "Assumption ● Providing imagery in nav menu will increase engagement with key products ● Using a full width bar at the bottom of the nav will provide a place to emphasize key oﬀerings Early Nav Explorations Hunch Concept 169 pypdf Early Nav Explorations Design Concept 169 V2V1 Source: Helio Test V3 pypdf Move forward with nav layout V3: This version was chosen as the preferred nav design across all three factors tested: helpfulness, ease of use, and personal preference.",
+        "V3 Early Nav Explorations Recommendation Concept 169 Source: Helio Test pypdf The reduced options in nav V2 led to it being the least preferred version of the nav explorations."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    },
+    {
+      "concept_key": "we’ve run an initial assessment using our helio ai tool. we’ll review and align on our hunches for testing.",
+      "concept_id": null,
+      "concept_title": "We’ve run an initial assessment using our Helio Ai tool. We’ll review and align on our hunches for testing.",
+      "concept_display": "We’ve run an initial assessment using our Helio Ai tool. We’ll review and align on our hunches for testing.",
+      "weeks_seen": [
+        "2025-08-28"
+      ],
+      "first_seen_week": "2025-08-28",
+      "last_seen_week": "2025-08-28",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "findings"
+      ],
+      "deck_refs": [
+        "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+      ],
+      "raw_finding_excerpts": [
+        "We’ve run an initial assessment using our Helio Ai tool. We’ll review and align on our hunches for testing."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2025-08-28",
+          "record_id": "everpure_2025_08_28",
+          "group": "findings",
+          "text": "We’ve run an initial assessment using our Helio Ai tool. We’ll review and align on our hunches for testing.",
+          "deck_file_id": "1XXlCWfdo176PxOZZXthi60GK3rCC24eUJsDKTR5vE0Y"
+        }
+      ],
+      "supporting_numbers": [
+        "2025",
+        "08",
+        "28",
+        "21",
+        "156",
+        "12%",
+        "20%",
+        "70%"
+      ],
+      "comparison_cues": [
+        "review"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | August 21st, 2025 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, Comprehension, Intent Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Contact Us Page CONCEPT 156 SIGNALS ●The long format of the contact page distracts users from engaging with the form."
+      ],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "ship_or_finalize",
+      "rule_based_confidence": "high"
+    },
+    {
+      "concept_key": "zurb provides weekly concept testing, additional feature support for the experience and functionality, and web analysis.",
+      "concept_id": null,
+      "concept_title": "ZURB provides weekly concept testing, additional feature support for the experience and functionality, and web analysis.",
+      "concept_display": "ZURB provides weekly concept testing, additional feature support for the experience and functionality, and web analysis.",
+      "weeks_seen": [
+        "2024-11-21"
+      ],
+      "first_seen_week": "2024-11-21",
+      "last_seen_week": "2024-11-21",
+      "occurrence_count": 1,
+      "groups_seen": [
+        "other"
+      ],
+      "deck_refs": [
+        "1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0"
+      ],
+      "raw_finding_excerpts": [],
+      "source_refs": [
+        {
+          "week_date": "2024-11-21",
+          "record_id": "everpure_2024_11_21",
+          "group": "other",
+          "text": "ZURB provides weekly concept testing, additional feature support for the experience and functionality, and web analysis.",
+          "deck_file_id": "1GVtv5c-pdE66Q02Li92cBfCxX2Y4tFKU_nTGLjoasC0"
+        }
+      ],
+      "supporting_numbers": [
+        "2024",
+        "11",
+        "21",
+        "104",
+        "2%",
+        "12%",
+        "72%",
+        "21%"
+      ],
+      "comparison_cues": [
+        "analysis"
+      ],
+      "behavioral_signals": [],
+      "evidence_snapshot_rule_based": [
+        "ZURB | November 6th, 2024 pypdf Advocacy Process Test & Learn Advocates use hunches to formulate questions for participants.",
+        "🧪 UX Metrics Engagement, comprehension, sentiment Advanced audiences of ● IT Professionals (US) ● Tech Decision Makers (CA) ● Data Professionals (US) ● IT Managers (US) ● Tech Decision Makers (US) Solutions Page R4 CONCEPT 104 SIGNALS ● The change in story and increase in orange reduced comprehension and sentiment."
+      ],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate"
+    }
+  ]
+}
