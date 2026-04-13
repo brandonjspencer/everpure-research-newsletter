@@ -69,7 +69,7 @@ const aprilDeck = {
 };
 
 const brief = {
-  title: 'Everpure monthly leadership brief (30d)',
+  title: 'Everpure monthly research roundup (30d)',
   generated_at: generatedAt,
   window: '30d',
   audience: 'exec',
@@ -519,7 +519,7 @@ a { color: inherit; }
 
   html.push('<footer class="footer"><div class="wrapper footer-inner">');
   html.push('<span>Everpure User Research Program</span>');
-  html.push(`<span>Monthly Leadership Brief · Issue 01 · ${escapeHtml(issueDate)}</span>`);
+  html.push(`<span>Monthly Research Roundup · Issue 01 · ${escapeHtml(issueDate)}</span>`);
   html.push('</div></footer>');
   html.push('</body></html>');
   return html.join('');
