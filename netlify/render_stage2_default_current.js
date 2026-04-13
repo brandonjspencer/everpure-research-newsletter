@@ -467,7 +467,7 @@ a { color: inherit; }
   html.push('<div class="title-pane">');
   html.push('<div class="ghost">01</div>');
   html.push('<div class="monthly-tag">Monthly</div>');
-  html.push('<h1 class="h1">Leadership<br/>Brief</h1>');
+  html.push('<h1 class="h1">Research<br/>Roundup</h1>');
   html.push('<div class="cycle-note">30-day research cycle</div>');
   html.push('</div>');
   html.push('<div class="stats-grid">');
@@ -483,7 +483,7 @@ a { color: inherit; }
   html.push('</div></div></div></header>');
 
   html.push('<section class="brief-band"><div class="wrapper brief-grid">');
-  html.push('<div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Brief</div></div>');
+  html.push('<div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Roundup</div></div>');
   html.push(`<div class="brief-copy">${escapeHtml(data.executive_summary)}</div>`);
   html.push('</div></section>');
 
