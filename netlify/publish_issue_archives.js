@@ -13,7 +13,7 @@ function exists(p) {
 function readJson(filePath, fallback = null) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } catch (err) {
+  } catch {
     return fallback;
   }
 }

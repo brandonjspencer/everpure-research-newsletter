@@ -60,6 +60,8 @@ function buildHomeHtml(status, groups) {
       { href: '/status.json', label: '/status.json' },
       { href: '/newsletter/index.html', label: '/newsletter/index.html' },
       { href: '/api/index.html', label: '/api/index.html' },
+      { href: '/issues/index.html', label: '/issues/index.html' },
+      { href: '/data/issues.json', label: '/data/issues.json' },
     ]
   };
 
@@ -87,6 +89,8 @@ function buildHomeHtml(status, groups) {
     marketing_md: 'newsletter/marketing-activity-30d.md',
     marketing_html: 'newsletter/marketing-activity-30d.html',
     api_status_json: 'api/status.json',
+    issues_index: 'issues/index.html',
+    issues_json: 'data/issues.json',
     concept_evidence_default_30d: 'data/concept-evidence-default-30d.json',
     evidence_packs_default_30d: 'data/evidence-packs-default-30d.json'
   };
