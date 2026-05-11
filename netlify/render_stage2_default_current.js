@@ -330,6 +330,42 @@ function groupSource(group) {
   return sourceFromPack({ source_refs: group.source_refs, deck_refs: group.deck_refs });
 }
 
+
+// Confidence labels are editorial evidence-readiness labels, not statistical confidence.
+// High = ready to decide, Medium = ready to run a decisive next round, Low = real signal that still needs proof.
+function confidenceForGroup(group, purpose = 'track') {
+  const weeks = asArray(group?.weeks_seen || []);
+  const deckRefs = asArray(group?.deck_refs || []);
+  const comparisonCues = asArray(group?.comparison_cues || []);
+  const behavioralSignals = asArray(group?.behavioral_signals || []);
+  const substantiveExcerpts = asArray(group?.raw_excerpts || [])
+    .map(cleanText)
+    .filter((text) => text && !looksLabelOnly(text));
+  const occurrenceCount = Number(group?.occurrence_count || 0);
+
+  const hasRepeatedSignal = weeks.length >= 2 || occurrenceCount >= 2;
+  const hasSourceDetail = deckRefs.length >= 1 || substantiveExcerpts.length >= 1;
+  const hasBehaviorSignal = behavioralSignals.length >= 1 || substantiveExcerpts.some((text) => /\b(users?|participants?|customers?|visitors?|readers?)\b/i.test(text));
+  const hasDecisionShape = comparisonCues.length >= 1 || /comparison|compare|v1|v2|variant|baseline|cta|label|messaging|registration|filter/i.test(String(group?.title || ''));
+
+  if (hasRepeatedSignal && hasSourceDetail && hasBehaviorSignal && hasDecisionShape && purpose !== 'unresolved') {
+    return 'high';
+  }
+
+  if (hasRepeatedSignal || hasDecisionShape || deckRefs.length >= 2) {
+    return 'medium';
+  }
+
+  return 'low';
+}
+
+function confidenceForCycle(groups) {
+  const recurringCount = groups.filter((group) => (group.weeks_seen || []).length >= 2 || Number(group.occurrence_count || 0) >= 2).length;
+  const decisionShapedCount = groups.filter((group) => confidenceForGroup(group) !== 'low').length;
+  if (recurringCount >= 3 && decisionShapedCount >= 3) return 'medium';
+  return 'low';
+}
+
 function actionForTopic(title) {
   const key = topicKey(title);
   if (key === 'events_page') return 'Run one final Events decision round that compares the surviving version or page direction against explicit winning criteria: first-glance purpose, event-discovery clarity, primary CTA clarity, and confidence that the page will get visitors to the right event path.';
@@ -366,7 +402,7 @@ function buildProgramFinding(groups, statusInfo) {
     finding_statement: `The refreshed 30-day window points to ${groups.length || 'multiple'} active research tracks. The strongest signal is not broad validation yet; it is that several tracks have moved from open exploration into clearer decisions the team can now resolve.`,
     proof_point: `The current cycle includes ${counts.week_count_30d || 'multiple'} weeks through ${latest}. Recurring tracks include ${recurringText}, which gives the team enough direction to define next-step criteria for each workstream.`,
     next_step: 'Use Issue 02 to align each active track to a decision: choose, compare, clarify, or hold. Then focus the next research round on the tracks that still lack a clear winner or a user-facing success criterion.',
-    confidence: recurring.length >= 2 ? 'medium' : 'low',
+    confidence: confidenceForCycle(groups),
     decision_status: 'iterate',
     source_label: null,
     source_href: null,
@@ -382,7 +418,7 @@ function findingFromGroup(group) {
       finding_statement: 'Events is the clearest recurring decision track in the current issue. The signal is not yet “ship this version”; it is that the team has enough repeated activity to force a tighter Events page decision.',
       proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)} and includes V1/V2 comparison cues. That recurrence makes it the clearest place to force a page-direction decision.`,
       next_step: actionForTopic('Events Page'),
-      confidence: 'medium',
+      confidence: confidenceForGroup(group, 'comparison'),
       decision_status: 'compare',
       source_label: source.label,
       source_href: source.href,
@@ -394,7 +430,7 @@ function findingFromGroup(group) {
       finding_statement: 'Homepage AI Messaging is recurring, which means it should no longer be treated as a generic copy exploration. The next study needs to say whether AI language is improving understanding, trust, differentiation, or pathing.',
       proof_point: `Homepage AI Messaging appears in ${weekPhrase(group)} ${deckPhrase(group)}. The next test needs to isolate whether the AI language improves comprehension, credibility, differentiation, or pathing.`,
       next_step: actionForTopic('Homepage AI Messaging'),
-      confidence: 'low',
+      confidence: confidenceForGroup(group, 'comparison'),
       decision_status: 'define criteria',
       source_label: source.label,
       source_href: source.href,
@@ -406,7 +442,7 @@ function findingFromGroup(group) {
       finding_statement: 'Pathfinder CTA Labels should be framed as a decision about expectation-setting, not as a preference test. The useful question is which label makes the next step feel specific, credible, and low-friction.',
       proof_point: `Pathfinder CTA Labels appears in ${weekPhrase(group)} ${deckPhrase(group)}. The repeated signal makes it worth a focused comparison around expectation-setting and commitment friction.`,
       next_step: actionForTopic('Pathfinder CTA Labels'),
-      confidence: 'low',
+      confidence: confidenceForGroup(group, 'comparison'),
       decision_status: 'compare',
       source_label: source.label,
       source_href: source.href,
@@ -417,7 +453,7 @@ function findingFromGroup(group) {
     finding_statement: `${group.title} is active in the current research window, but should stay in discovery until the research shows what users understood, preferred, missed, or acted on.`,
     proof_point: `${group.title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a live workstream until the next round shows a clearer user behavior or preference signal.`,
     next_step: actionForTopic(group.title),
-    confidence: 'low',
+    confidence: confidenceForGroup(group, 'track'),
     decision_status: 'review evidence',
     source_label: source.label,
     source_href: source.href,
@@ -440,7 +476,7 @@ function comparisonFromGroup(group) {
     finding_statement: comparisonStatementForTopic(group.title, group),
     decision_criteria: comparisonCriteriaForTopic(group.title),
     next_step: actionForTopic(group.title),
-    confidence: topicKey(group.title) === 'events_page' ? 'medium' : 'low',
+    confidence: confidenceForGroup(group, 'comparison'),
     decision_status: 'compare',
     source_label: source.label,
     source_href: source.href,
