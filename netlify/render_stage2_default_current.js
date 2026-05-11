@@ -51,125 +51,210 @@ function summarizeCounts(publishRoot) {
 const publishRoot = path.resolve(process.argv[2] || 'publish');
 const counts = summarizeCounts(publishRoot);
 const generatedAt = new Date().toISOString();
-const issueDate = (() => {
+
+function formatIssueDate(dateStr) {
+  if (!dateStr) return 'Current cycle';
+  const normalized = String(dateStr).slice(0, 10);
   try {
-    return new Date(generatedAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return new Date(normalized + 'T00:00:00Z').toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC'
+    });
   } catch {
     return 'Current cycle';
   }
-})();
+}
 
-const marchDeck = {
-  label: 'Source deck',
-  href: 'https://docs.google.com/presentation/d/13jB1RYa-3uNGR4KBgjSycNxqAv5v-R9vUUdovsCjlfM/edit'
-};
-const aprilDeck = {
-  label: 'Source deck',
-  href: 'https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit'
-};
+function issueNumberForMonth(dateStr) {
+  if (!dateStr) return '01';
+  const match = String(dateStr).match(/^(\d{4})-(\d{2})/);
+  if (!match) return '01';
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  // April 2026 was the first frozen/public issue. Keep future monthly issues monotonic from there.
+  const issue = Math.max(1, (year - 2026) * 12 + (month - 4) + 1);
+  return String(issue).padStart(2, '0');
+}
 
-const brief = {
-  title: 'Everpure monthly research roundup (30d)',
-  generated_at: generatedAt,
-  window: '30d',
-  audience: 'exec',
-  tone: 'strategic',
-  summary: counts,
-  executive_summary:
-    'The month points to three clear direction calls: keep simplifying the platform redesign, anchor knowledge portal positioning in support expectations, and continue the Evergreen rebrand in the higher-appeal direction without adding top-of-page complexity. Events and AI Summary are no longer broad exploration tracks — they now need one decision round each with explicit winning criteria.',
-  surfaced_findings: [
-    {
-      title: 'Platform redesign baselines',
-      finding_statement:
-        'The platform redesign is strongest when the page is easier to scan at first glance. Reducing upper-page noise improves sentiment, while dense infographic treatment too early makes the page read as meant for advanced technical leads and lowers comprehension.',
-      proof_point:
-        'Findings suggest the cleaner direction produces a stronger positive reaction and that the top-of-page infographic is the main comprehension risk.',
-      next_step:
-        'Run one confirmation round that compares the simpler low-noise version against the current redesign, using comprehension plus sentiment together as the release gate.',
-      confidence: 'medium',
-      decision_status: 'iterate',
-      source_label: marchDeck.label,
-      source_href: marchDeck.href,
-    },
-    {
-      title: 'Knowledge portal naming & structure',
-      finding_statement:
-        'This is primarily a naming and discoverability choice, not a broad structural rewrite. People are not strongly confused by either knowledge or support framing, but the support-led version is producing the clearer positive reaction.',
-      proof_point:
-        'Evidence suggests expectations were roughly even between knowledge and support URL options, while sentiment ran about 10 points higher for the support version.',
-      next_step:
-        'Keep the next pass anchored in support-led naming and search expectations, then test whether the broader portal model can expand without losing that clarity advantage.',
-      confidence: 'medium',
-      decision_status: 'iterate',
-      source_label: marchDeck.label,
-      source_href: marchDeck.href,
-    },
-    {
-      title: 'Evergreen rebrand direction',
-      finding_statement:
-        'The Evergreen rebrand is strongest when it increases appeal without adding cognitive load too early. Clearer visual pacing helps, while dense infographic treatment near the top hurts both understanding and sentiment.',
-      proof_point:
-        'Evidence suggests a color break after the hero increases appeal and sentiment, while adding more infographic content at the top reduces comprehension.',
-      next_step:
-        'Continue with the higher-appeal direction, keep the upper page simpler, and delay denser explanatory content until after the offer is understood.',
-      confidence: 'medium',
-      decision_status: 'iterate',
-      source_label: marchDeck.label,
-      source_href: marchDeck.href,
-    },
-  ],
-  comparison_tests: [
-    {
-      title: 'Events page baseline',
-      finding_statement:
-        'Events-page work has moved out of broad exploration and into a narrower comparison problem. The open question is which version gives the clearest path into the event content.',
-      decision_criteria:
-        'Choose on first-glance comprehension of the page offer and clarity of the primary next step — not stylistic preference alone.',
-      next_step:
-        'Reduce to one decisive V1-versus-V2 comparison and agree on comprehension and progression criteria before the test starts.',
-      confidence: 'medium',
-      decision_status: 'watch',
-      source_label: aprilDeck.label,
-      source_href: aprilDeck.href,
-    },
-    {
-      title: 'AI summary variations',
-      finding_statement:
-        'The AI Summary work now needs selection pressure, not more expansion. The job of the next round is to choose the single framing that is easiest to understand and easiest to trust.',
-      decision_criteria:
-        'Pick the winning framing based on which version is clearest and most credible at first read, and which makes people most confident about what the AI summary is doing.',
-      next_step:
-        'Collapse to the two strongest framings and use the next round to choose one on comprehension and confidence — not novelty.',
-      confidence: 'medium',
-      decision_status: 'watch',
-      source_label: aprilDeck.label,
-      source_href: aprilDeck.href,
-    },
-  ],
-  unresolved_questions: [
-    {
-      title: 'Design & UX feedback',
-      scope: 'Homepage · Landing · Reader · Search · Header',
-      question: 'Which changes materially improve clarity and progression, rather than simply making the design feel cleaner in review?',
-    },
-    {
-      title: 'Support taxonomy',
-      question: 'Which label and path model makes support intent obvious without expanding IA complexity or fragmenting the navigation model?',
-    },
-    {
-      title: 'Pathfinder CTA labels',
-      question: 'Which label set is clearest at the moment of commitment and least likely to add friction at the point of action?',
-    },
-  ],
-  next_actions: [
-    'Validate the simpler platform redesign against the current redesign using comprehension and sentiment together as the release gate.',
-    'Keep knowledge portal testing anchored in support-led naming and search expectations before broadening the portal model.',
-    'Continue Evergreen in the higher-appeal direction, but hold top-of-page infographic density until after the offer is understood.',
-    'Run decisive comparison rounds for Events and AI Summary with explicit winning criteria defined before the test starts.',
-  ],
-  note:
-    'This brief is a current-cycle, content-first stage-2 rendering written over the deterministic evidence layer. It is intended to support prioritization and iteration planning more than broad rollout approval.',
-};
+const issueDate = formatIssueDate(counts.latest_week_date || generatedAt.slice(0, 10));
+const issueNumber = issueNumberForMonth(counts.latest_week_date || generatedAt.slice(0, 10));
+const issueLabel = `Issue ${issueNumber}`;
+
+function asArray(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.items)) return payload.items;
+  if (payload && Array.isArray(payload.concepts)) return payload.concepts;
+  if (payload && Array.isArray(payload.records)) return payload.records;
+  return [];
+}
+
+function cleanText(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function firstText(...values) {
+  for (const value of values) {
+    if (Array.isArray(value)) {
+      const joined = value.map(cleanText).filter(Boolean).slice(0, 2).join(' ');
+      if (joined) return joined;
+    } else {
+      const text = cleanText(value);
+      if (text) return text;
+    }
+  }
+  return '';
+}
+
+function normalizeConfidence(value) {
+  const text = String(value || '').toLowerCase();
+  if (text.includes('high')) return 'high';
+  if (text.includes('low') || text.includes('directional')) return 'low';
+  return 'medium';
+}
+
+function titleFor(item) {
+  return cleanText(item.title || item.headline || item.workstream || item.theme || item.test || item.name || 'Research signal');
+}
+
+function sourceFor(item) {
+  if (item.source_href) return { label: item.source_label || 'Source deck', href: item.source_href };
+  const refs = asArray(item.source_refs || item.sourceRefs);
+  const direct = refs.find((ref) => ref && (ref.canonical_url || ref.deck_url || ref.url || ref.href));
+  if (direct) return { label: 'Source deck', href: direct.canonical_url || direct.deck_url || direct.url || direct.href };
+  const deckRef = refs.find((ref) => ref && (ref.deck_id || ref.deckId || ref.file_id || ref.fileId));
+  if (deckRef) {
+    const id = deckRef.deck_id || deckRef.deckId || deckRef.file_id || deckRef.fileId;
+    return { label: 'Source deck', href: `https://docs.google.com/presentation/d/${id}/edit` };
+  }
+  return { label: null, href: null };
+}
+
+function uniqueByTitle(items) {
+  const seen = new Set();
+  const out = [];
+  for (const item of items || []) {
+    const key = titleFor(item).toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
+function fallbackFindingStatement(title) {
+  return `${title} is showing up as one of the clearest signals in the current 30-day research window. Treat this as a direction to validate, not a blanket launch recommendation.`;
+}
+
+function toFinding(item) {
+  const source = sourceFor(item);
+  const title = titleFor(item);
+  return {
+    title,
+    finding_statement: firstText(item.finding_statement, item.findingStatement, item.summary, item.evidence_snapshot, item.evidenceSnapshot) || fallbackFindingStatement(title),
+    proof_point: firstText(item.proof_point, item.proofPoint, item.evidence_snapshot, item.evidenceSnapshot, item.key_numbers, item.keyNumbers, item.supporting_signals, item.supportingSignals) || 'Evidence is present in the current weekly records, but the proof point should be tightened during the manual stage-2 review.',
+    next_step: firstText(item.next_step, item.nextStep, item.recommendation, item.implication) || 'Define the specific decision this signal should inform, then validate the strongest direction in the next research round.',
+    confidence: normalizeConfidence(item.confidence || item.confidence_level || item.confidenceLevel),
+    decision_status: cleanText(item.decision_status || item.decisionStatus || 'iterate'),
+    source_label: source.label,
+    source_href: source.href,
+  };
+}
+
+function toComparison(item) {
+  const source = sourceFor(item);
+  const title = titleFor(item);
+  const statement = firstText(item.finding_statement, item.findingStatement, item.summary, item.evidence_snapshot, item.evidenceSnapshot) || `${title} is best treated as a narrowed comparison problem in this issue.`;
+  return {
+    title,
+    finding_statement: statement,
+    decision_criteria: firstText(item.decision_criteria, item.decisionCriteria, item.proof_point, item.proofPoint, item.evidence_snapshot, item.evidenceSnapshot) || 'Choose the strongest direction based on first-glance comprehension, user confidence, and clarity of the next step rather than preference alone.',
+    next_step: firstText(item.next_step, item.nextStep, item.recommendation, item.implication) || 'Run one decisive comparison round with explicit winning criteria before expanding the design space again.',
+    confidence: normalizeConfidence(item.confidence || item.confidence_level || item.confidenceLevel),
+    decision_status: cleanText(item.decision_status || item.decisionStatus || 'watch'),
+    source_label: source.label,
+    source_href: source.href,
+  };
+}
+
+function toQuestion(item) {
+  const title = titleFor(item);
+  return {
+    title,
+    scope: cleanText(item.scope || item.area || ''),
+    question: firstText(item.question, item.open_question, item.openQuestion) || `What decision does ${title.toLowerCase()} need to unblock before the next iteration or release decision?`,
+  };
+}
+
+function looksLikeComparison(item) {
+  const text = `${titleFor(item)} ${item.finding_statement || ''} ${item.evidence_snapshot || ''}`.toLowerCase();
+  return /\b(v1|v2|v3|r2|r3|baseline|comparison|variant|variation|versus|vs\.?|test)\b/.test(text);
+}
+
+function buildStage2Brief() {
+  const sourcePath = path.join(publishRoot, 'newsletter', 'default.json');
+  const source = readJson(sourcePath, {});
+  const sections = source.sections || {};
+
+  const rawFindings = asArray(sections.top_findings).length
+    ? asArray(sections.top_findings)
+    : asArray(source.surfaced_findings || sections.validated_findings || source.sections?.validated_findings);
+
+  const rawComparisons = [
+    ...asArray(sections.comparison_tests),
+    ...asArray(source.comparison_tests),
+    ...asArray(sections.watch_items).filter(looksLikeComparison),
+    ...asArray(sections.in_progress).filter(looksLikeComparison),
+  ];
+
+  const rawMotion = [
+    ...asArray(sections.in_progress),
+    ...asArray(sections.workstreams_to_watch),
+    ...asArray(sections.watch_items),
+    ...asArray(sections.emerging_signals),
+    ...asArray(source.unresolved_questions),
+  ];
+
+  const surfacedFindings = uniqueByTitle(rawFindings).map(toFinding).slice(0, 3);
+  const comparisonTests = uniqueByTitle(rawComparisons).map(toComparison).slice(0, 3);
+  const usedTitles = new Set([...surfacedFindings, ...comparisonTests].map((item) => item.title.toLowerCase()));
+  const unresolvedQuestions = uniqueByTitle(rawMotion)
+    .map(toQuestion)
+    .filter((item) => !usedTitles.has(item.title.toLowerCase()))
+    .slice(0, 3);
+
+  const actions = asArray(source.next_actions || sections.next_actions)
+    .map((item) => typeof item === 'string' ? item : firstText(item.next_step, item.nextStep, item.recommendation, item.title, item.headline))
+    .map(cleanText)
+    .filter(Boolean)
+    .slice(0, 4);
+
+  return {
+    title: 'Everpure monthly research roundup (30d)',
+    generated_at: generatedAt,
+    window: '30d',
+    audience: 'exec',
+    tone: 'strategic',
+    issue: { number: issueNumber, label: issueLabel, date: issueDate },
+    summary: counts,
+    executive_summary: firstText(source.executive_summary) || 'This month should be read through movement: which research tracks are ready for a decision, which still need one focused comparison round, and which remain unresolved.',
+    surfaced_findings: surfacedFindings.length ? surfacedFindings : [
+      toFinding({ title: 'Current 30-day research signal', finding_statement: 'The refreshed 30-day window is available, but the manual stage-2 pass should still decide which signals are strong enough to promote.', next_step: 'Review the refreshed evidence packs, weekly records, and deck coverage before freezing this issue.' })
+    ],
+    comparison_tests: comparisonTests,
+    unresolved_questions: unresolvedQuestions.length ? unresolvedQuestions : [
+      { title: 'Evidence review', question: 'Which current signals are strong enough to promote from activity into decision guidance?' }
+    ],
+    next_actions: actions.length ? actions : [
+      'Review the refreshed 30-day evidence and promote only the strongest decision-relevant findings.',
+      'Use one focused comparison round for any narrowed alternatives before choosing a direction.',
+      'Keep unresolved workstreams out of the findings section until the evidence is decision-grade.'
+    ],
+    note: 'This brief uses the current refreshed 30-day evidence layer and renders it through the custom Research Roundup presentation. It should still receive a manual stage-2 editorial review before the issue is frozen or emailed.',
+  };
+}
+
+const brief = buildStage2Brief();
 
 function labelConfidence(level) {
   switch (String(level || '').toLowerCase()) {
@@ -461,11 +546,11 @@ a { color: inherit; }
   html.push('<a class="back-link" href="../">Back to homepage</a>');
   html.push('<div class="meta-bar">');
   html.push('<span class="meta-left">Everpure User Research Program</span>');
-  html.push(`<div class="meta-right"><span class="meta-issue">Issue 01</span><span style="opacity:.2">·</span><span class="meta-date">${escapeHtml(issueDate)}</span></div>`);
+  html.push(`<div class="meta-right"><span class="meta-issue">${escapeHtml(data.issue?.label || issueLabel)}</span><span style="opacity:.2">·</span><span class="meta-date">${escapeHtml(data.issue?.date || issueDate)}</span></div>`);
   html.push('</div>');
   html.push('<div class="masthead-grid">');
   html.push('<div class="title-pane">');
-  html.push('<div class="ghost">01</div>');
+  html.push(`<div class="ghost">${escapeHtml(data.issue?.number || issueNumber)}</div>`);
   html.push('<div class="monthly-tag">Monthly</div>');
   html.push('<h1 class="h1">Research<br/>Roundup</h1>');
   html.push('<div class="cycle-note">30-day research cycle</div>');
@@ -519,7 +604,7 @@ a { color: inherit; }
 
   html.push('<footer class="footer"><div class="wrapper footer-inner">');
   html.push('<span>Everpure User Research Program</span>');
-  html.push(`<span>Monthly Research Roundup · Issue 01 · ${escapeHtml(issueDate)}</span>`);
+  html.push(`<span>Monthly Research Roundup · ${escapeHtml(data.issue?.label || issueLabel)} · ${escapeHtml(data.issue?.date || issueDate)}</span>`);
   html.push('</div></footer>');
   html.push('</body></html>');
   return html.join('');
