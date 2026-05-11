@@ -973,7 +973,23 @@ a { color: inherit; }
   .questions--two-up .question:nth-child(even) { padding-left:0; border-left:none; }
   .questions--two-up .question:nth-child(n+3) { border-top:none; }
 }
-</style>`);
+
+    /* Issue 02 unresolved layout refinement: use a wider 2-up layout, and let the last item span when the count is odd. */
+    .questions.questions--two-up {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .questions.questions--two-up.questions--odd > *:last-child {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 860px) {
+      .questions.questions--two-up {
+        grid-template-columns: 1fr;
+      }
+      .questions.questions--two-up.questions--odd > *:last-child {
+        grid-column: auto;
+      }
+    }
+  </style>`);
   html.push('</head>');
   html.push('<body>');
   html.push('<header class="masthead">');
@@ -1021,7 +1037,10 @@ a { color: inherit; }
 
   html.push('<section class="section section-mint"><div class="wrapper">');
   html.push(sectionLabel('What Is Still Unresolved'));
-  const unresolvedLayoutClass = data.unresolved_questions.length === 4 ? ' questions--two-up' : '';
+  const unresolvedCount = data.unresolved_questions.length;
+  const unresolvedLayoutClass = unresolvedCount > 1
+    ? ` questions--two-up${unresolvedCount % 2 === 1 ? ' questions--odd' : ''}`
+    : '';
   html.push(`<div class="questions${unresolvedLayoutClass}">`);
   data.unresolved_questions.forEach((item, idx) => {
     html.push(`<div class="question"><span class="question-num">${String(idx + 1).padStart(2, '0')}</span><div><div class="question-head"><div class="question-title">${escapeHtml(item.title)}</div>${item.scope ? `<div class="question-scope">${escapeHtml(item.scope)}</div>` : ''}</div><p>${escapeHtml(item.question)}</p></div></div>`);
