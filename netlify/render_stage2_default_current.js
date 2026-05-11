@@ -314,7 +314,7 @@ function groupEvidencePacks(packs) {
 
 function weekPhrase(group) {
   const weeks = group.weeks_seen || [];
-  if (!weeks.length) return 'the current 30-day window';
+  if (!weeks.length) return 'the current research cycle';
   if (weeks.length === 1) return 'a recent weekly update';
   return `${weeks.length} weekly updates`;
 }
@@ -338,21 +338,25 @@ function confidenceForGroup(group, purpose = 'track') {
   const deckRefs = asArray(group?.deck_refs || []);
   const comparisonCues = asArray(group?.comparison_cues || []);
   const behavioralSignals = asArray(group?.behavioral_signals || []);
-  const substantiveExcerpts = asArray(group?.raw_excerpts || [])
+  const excerpts = asArray(group?.raw_finding_excerpts || group?.raw_excerpts || [])
     .map(cleanText)
     .filter((text) => text && !looksLabelOnly(text));
   const occurrenceCount = Number(group?.occurrence_count || 0);
+  const titleText = String(group?.title || '');
+  const allEvidenceText = `${titleText} ${behavioralSignals.join(' ')} ${excerpts.join(' ')}`.toLowerCase();
 
   const hasRepeatedSignal = weeks.length >= 2 || occurrenceCount >= 2;
-  const hasSourceDetail = deckRefs.length >= 1 || substantiveExcerpts.length >= 1;
-  const hasBehaviorSignal = behavioralSignals.length >= 1 || substantiveExcerpts.some((text) => /\b(users?|participants?|customers?|visitors?|readers?)\b/i.test(text));
-  const hasDecisionShape = comparisonCues.length >= 1 || /comparison|compare|v1|v2|variant|baseline|cta|label|messaging|registration|filter/i.test(String(group?.title || ''));
+  const hasSourceDetail = deckRefs.length >= 1 || excerpts.length >= 1;
+  const hasDecisionShape = comparisonCues.length >= 1 || /comparison|compare|v1|v2|variant|baseline|cta|label|messaging|registration|filter/i.test(titleText);
+  const hasBehaviorOutcome = /users?|participants?|customers?|visitors?|readers?/.test(allEvidenceText)
+    && /understood|preferred|missed|struggled|trusted|clicked|selected|chose|completed|abandoned|hesitated|confused|clearer|friction/.test(allEvidenceText);
+  const hasClearWinner = /clear winner|outperformed|ship|validated|ready to decide|ready to ship|stronger direction|confirmed/.test(allEvidenceText);
 
-  if (hasRepeatedSignal && hasSourceDetail && hasBehaviorSignal && hasDecisionShape && purpose !== 'unresolved') {
+  if (purpose !== 'unresolved' && hasRepeatedSignal && hasSourceDetail && hasBehaviorOutcome && hasClearWinner) {
     return 'high';
   }
 
-  if (hasRepeatedSignal || hasDecisionShape || deckRefs.length >= 2) {
+  if (hasRepeatedSignal || hasDecisionShape || hasSourceDetail) {
     return 'medium';
   }
 
@@ -368,13 +372,13 @@ function confidenceForCycle(groups) {
 
 function actionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Run one final Events decision round that compares the surviving version or page direction against explicit winning criteria: first-glance purpose, event-discovery clarity, primary CTA clarity, and confidence that the page will get visitors to the right event path.';
-  if (key === 'homepage_ai_messaging') return 'Define what Homepage AI Messaging is supposed to improve before testing again: faster comprehension, stronger credibility, clearer differentiation, or better pathing. Do not treat positive reaction to AI language as enough to ship.';
-  if (key === 'pathfinder_cta_labels') return 'Test Pathfinder CTA labels around expectation-setting and commitment friction. The winning label should make the next step feel specific and safe, not merely more energetic.';
-  if (key === 'webinar_registration_page') return 'Clarify what the webinar registration work is signaling before calling a direction. Decide whether users need a clearer reason to register, less form friction, stronger offer framing, or more concrete content detail.';
-  if (key === 'this_book_filter') return 'For the reader/content filter labeled “This Book,” validate whether users understand it as a current-content filter. If the label reads as internal language, rename it before expanding the filter model or promoting it as a finding.';
-  if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item unless the next research update clarifies whether the signal is about message clarity, audience relevance, or next-step interest.';
-  return `Define the decision ${title} should unblock, then run a focused validation pass with explicit success criteria.`;
+  if (key === 'events_page') return 'Run one final Events page decision round. Compare the surviving direction against first-glance purpose, event-discovery clarity, CTA clarity, and whether visitors know how to get to the right event path.';
+  if (key === 'homepage_ai_messaging') return 'Define the job of Homepage AI Messaging before testing again. Decide whether the copy needs to improve comprehension, trust, differentiation, or navigation — then evaluate against that single success criterion.';
+  if (key === 'pathfinder_cta_labels') return 'Test Pathfinder CTA labels as expectation-setting, not preference. The winning label should make the next step specific, credible, and low-friction.';
+  if (key === 'webinar_registration_page') return 'Diagnose the webinar registration barrier before recommending a direction. Determine whether visitors need a clearer reason to register, less form friction, stronger offer framing, or more concrete session detail.';
+  if (key === 'this_book_filter') return 'Validate whether readers understand “This Book” as a filter within the current content set. If the phrase reads as internal terminology, rename it before expanding the filter model.';
+  if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item until the next round shows what the signal is actually about: message clarity, audience relevance, or interest in the next step.';
+  return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
 }
 
 function comparisonCriteriaForTopic(title) {
@@ -387,21 +391,20 @@ function comparisonCriteriaForTopic(title) {
 
 function comparisonStatementForTopic(title, group) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Events has moved from broad exploration into a decision problem. The research record shows repeated Events Page activity plus an Events V1/V2 comparison cue, so the next round should choose a direction instead of reopening the page model.';
-  if (key === 'homepage_ai_messaging') return 'Homepage AI Messaging is recurring enough to treat as a focused messaging decision. The next pass should determine whether AI framing improves comprehension and trust, or simply adds fashionable language to the page.';
-  if (key === 'pathfinder_cta_labels') return 'Pathfinder CTA Labels should be treated as an expectation-setting comparison. The issue is not which label sounds best, but which one makes the user understand the next step and feel comfortable taking it.';
-  return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
+  if (key === 'events_page') return 'Events has narrowed from broad page exploration into a decision about which page direction best helps visitors understand what is available and what to do next.';
+  if (key === 'homepage_ai_messaging') return 'Homepage AI Messaging should now be evaluated as a user-benefit message, not simply as AI-forward language. The comparison needs to show whether AI framing increases comprehension and trust.';
+  if (key === 'pathfinder_cta_labels') return 'Pathfinder CTA Labels are an expectation-setting problem. The comparison should identify which label makes the next step feel clear, specific, and safe to take.';
+  return `${title} is active in ${weekPhrase(group)}. The next step should define what users need to understand or do before more variants are introduced.`;
 }
 
 function buildProgramFinding(groups, statusInfo) {
   const recurring = groups.filter((g) => g.occurrence_count >= 2).map((g) => g.title);
-  const latest = statusInfo?._meta?.latest_week_date || counts.latest_week_date || 'the latest update';
   const recurringText = recurring.slice(0, 5).join(', ') || 'the current research workstreams';
   return {
-    title: 'Several research tracks now need sharper decision criteria',
-    finding_statement: `Across the current research window, several workstreams have moved beyond broad exploration. The useful signal is that teams can now define what each study must prove before choosing a direction.`,
-    proof_point: `Recurring research tracks include ${recurringText}. The next evidence pass should clarify the user behavior each track is trying to change or validate.`,
-    next_step: 'For each active track, define the decision it should unblock: choose, compare, clarify, or hold. Then focus the next research round on tracks that still lack a clear winner or user-facing success criterion.',
+    title: 'Current research is narrowing around concrete user decisions',
+    finding_statement: `The active workstreams are becoming more specific. Rather than asking whether each concept is broadly appealing, the next round should clarify what users understand, trust, or feel ready to do.`,
+    proof_point: `Recurring research tracks include ${recurringText}. Each one now needs a user-facing success criterion before it becomes stronger decision guidance.`,
+    next_step: 'For each active track, define the user behavior the study should clarify: comprehension, trust, discovery, commitment, or next-step confidence.',
     confidence: confidenceForCycle(groups),
     decision_status: 'iterate',
     source_label: null,
@@ -414,9 +417,9 @@ function findingFromGroup(group) {
   const key = topicKey(group.title);
   if (key === 'events_page') {
     return {
-      title: 'Events needs a final decision round, not more exploration',
-      finding_statement: 'Events is the clearest recurring decision track in the current cycle. The signal is not yet “ship this version”; it is that the team has enough repeated activity to force a tighter Events page decision.',
-      proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)} and includes V1/V2 comparison cues. That recurrence makes it the clearest place to force a page-direction decision.`,
+      title: 'Events page work is ready for a final direction choice',
+      finding_statement: 'Events testing has narrowed from broad page exploration to a decision about which direction best helps visitors understand what is available and what to do next.',
+      proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)} and includes V1/V2 comparison cues. That recurrence makes it the clearest track for a final page-direction decision round.`,
       next_step: actionForTopic('Events Page'),
       confidence: confidenceForGroup(group, 'comparison'),
       decision_status: 'compare',
@@ -426,9 +429,9 @@ function findingFromGroup(group) {
   }
   if (key === 'homepage_ai_messaging') {
     return {
-      title: 'Homepage AI messaging needs a clearer success definition',
-      finding_statement: 'Homepage AI Messaging is recurring, which means it should no longer be treated as a generic copy exploration. The next study needs to say whether AI language is improving understanding, trust, differentiation, or pathing.',
-      proof_point: `Homepage AI Messaging appears in ${weekPhrase(group)} ${deckPhrase(group)}. The next test needs to isolate whether the AI language improves comprehension, credibility, differentiation, or pathing.`,
+      title: 'Homepage AI messaging needs to prove a user benefit',
+      finding_statement: 'The homepage AI work is recurring enough to move past generic AI copy exploration. The next study should clarify whether AI language helps people understand the offer, trust it, distinguish it, or choose a path.',
+      proof_point: `Homepage AI Messaging appears in ${weekPhrase(group)} ${deckPhrase(group)}. The evidence points to a focused messaging decision, but not yet a final wording recommendation.`,
       next_step: actionForTopic('Homepage AI Messaging'),
       confidence: confidenceForGroup(group, 'comparison'),
       decision_status: 'define criteria',
@@ -438,8 +441,8 @@ function findingFromGroup(group) {
   }
   if (key === 'pathfinder_cta_labels') {
     return {
-      title: 'Pathfinder CTA labels are a commitment-friction problem',
-      finding_statement: 'Pathfinder CTA Labels should be framed as a decision about expectation-setting, not as a preference test. The useful question is which label makes the next step feel specific, credible, and low-friction.',
+      title: 'Pathfinder CTA labels should be judged on commitment friction',
+      finding_statement: 'The Pathfinder CTA work is less about which label sounds best and more about whether the label sets the right expectation at the moment of commitment.',
       proof_point: `Pathfinder CTA Labels appears in ${weekPhrase(group)} ${deckPhrase(group)}. The repeated signal makes it worth a focused comparison around expectation-setting and commitment friction.`,
       next_step: actionForTopic('Pathfinder CTA Labels'),
       confidence: confidenceForGroup(group, 'comparison'),
@@ -450,7 +453,7 @@ function findingFromGroup(group) {
   }
   return {
     title: group.title,
-    finding_statement: `${group.title} is active in the current research window, but should stay in discovery until the research shows what users understood, preferred, missed, or acted on.`,
+    finding_statement: `${group.title} is active in the current research cycle, but the available signal is still directional. The next pass should identify what users understood, missed, trusted, or acted on before promoting it as decision guidance.`,
     proof_point: `${group.title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a live workstream until the next round shows a clearer user behavior or preference signal.`,
     next_step: actionForTopic(group.title),
     confidence: confidenceForGroup(group, 'track'),
@@ -467,11 +470,11 @@ function buildNarrativeFindings(groups, statusInfo) {
     if (group) out.push(findingFromGroup(group));
   }
   if (!out.length) {
-    for (const group of groups.slice(0, 4)) {
+    for (const group of groups.slice(0, 3)) {
       out.push(findingFromGroup(group));
     }
   }
-  return out.slice(0, 4);
+  return out.slice(0, 3);
 }
 
 function comparisonFromGroup(group) {
@@ -495,10 +498,7 @@ function buildComparisons(groups, sourceComparisons) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) comparisons.push(comparisonFromGroup(group));
   }
-  const validSource = uniqueByTitle(sourceComparisons)
-    .map(toComparison)
-    .filter((item) => !looksLabelOnly(item.finding_statement, item.title) && !looksLabelOnly(item.decision_criteria, item.title));
-  return uniqueByTitle([...comparisons, ...validSource]).slice(0, 4);
+  return uniqueByTitle(comparisons).slice(0, 3);
 }
 
 function buildUnresolvedQuestions(groups, statusInfo) {
@@ -508,15 +508,27 @@ function buildUnresolvedQuestions(groups, statusInfo) {
     if (!group) continue;
     const key = topicKey(title);
     if (key === 'webinar_registration_page') {
-      questions.push({ title, scope: 'Registration value and form clarity', question: 'Does the webinar registration page make the value of registering clear enough for visitors to continue, or is the remaining friction coming from the form, offer framing, or lack of content detail?' });
+      questions.push({
+        title: 'Webinar Registration Page',
+        scope: 'Registration value and friction',
+        question: 'The webinar registration work points to a registration-flow question, but the open issue is what is actually blocking confidence: unclear value, too much form friction, weak offer framing, or not enough detail about what the visitor gets after registering?'
+      });
     } else if (key === 'this_book_filter') {
-      questions.push({ title: 'Reader Filter: “This Book”', scope: 'Content filtering clarity', question: 'Does the “This Book” label clearly tell readers they are narrowing within the current content set, or does it sound like internal terminology that should be rewritten before the filter model expands?' });
+      questions.push({
+        title: 'Reader Filter: “This Book”',
+        scope: 'Content filtering clarity',
+        question: 'Does “This Book” clearly tell readers they are filtering within the current content set, or does the phrase sound like internal terminology that should be replaced with a more familiar label?'
+      });
     } else if (key === 'virtualization_campaign') {
-      questions.push({ title, scope: 'Campaign message direction', question: 'Is the Virtualization Campaign signal pointing to a clearer campaign direction — message clarity, audience relevance, or next-step interest — or is it only a single mention that should stay out of executive recommendations until it repeats?' });
+      questions.push({
+        title: 'Virtualization Campaign',
+        scope: 'Campaign message direction',
+        question: 'The virtualization work is a watch item until the next round clarifies what kind of signal it is: clearer message comprehension, stronger audience relevance, or more interest in taking the next step.'
+      });
     }
   }
   if (!questions.length) {
-    questions.push({ title: 'Evidence review', scope: 'Decision readiness', question: 'Which current signals are strong enough to promote from activity into decision guidance?' });
+    questions.push({ title: 'Current research signals', scope: 'Decision readiness', question: 'Which current signals are strong enough to move from research activity into decision guidance?' });
   }
   return questions.slice(0, 5);
 }
@@ -570,17 +582,9 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) actions.push(topicAction(title, actionForTopic(title)));
   }
-  const source = sourceActions
-    .map((item) => {
-      if (typeof item === 'string') return topicAction('Generated recommendation', item);
-      const action = firstText(item.next_step, item.nextStep, item.recommendation, item.action, item.body, item.text, item.title, item.headline);
-      const topic = firstText(item.topic, item.concept_title, item.concept, item.scope, item.category, item.title);
-      return topicAction(topic || 'Generated recommendation', action);
-    })
-    .filter((item) => item.action && !looksLabelOnly(item.action) && !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item));
-  return uniqueActions([...actions, ...source])
+  return uniqueActions(actions)
     .filter((item) => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
-    .slice(0, 8);
+    .slice(0, 6);
 }
 
 function buildStage2Brief() {
@@ -609,7 +613,7 @@ function buildStage2Brief() {
 
   const useSourceFindings = sourceFindings.length >= 2 && deckContentCount(statusInfo) > 0;
   const surfacedFindings = useSourceFindings
-    ? sourceFindings.slice(0, 4)
+    ? sourceFindings.slice(0, 3)
     : buildNarrativeFindings(evidenceGroups, statusInfo);
 
   const comparisonTests = buildComparisons(evidenceGroups, rawComparisons);
@@ -618,10 +622,9 @@ function buildStage2Brief() {
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
   const deckCount = deckContentCount(statusInfo);
 
-  const latestDate = counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week';
-  const executiveSummary = `The current 30-day research cycle is updated through ${latestDate}. The strongest movement is around Events, Homepage AI Messaging, and Pathfinder CTA Labels, where the next step is to narrow criteria and choose a direction. Recent updates also add Webinar Registration Page and Reader Filter work that should stay unresolved until the next round clarifies the user behavior behind each signal.`;
+  const executiveSummary = 'This month’s research is most useful as a decision-readiness readout. Events Page, Homepage AI Messaging, and Pathfinder CTA Labels are the clearest tracks to narrow next; Webinar Registration, Reader Filter: “This Book,” and Virtualization Campaign need more evidence before they should become stronger recommendations.';
 
-  const note = "Use this cycle's evidence as a decision-readiness view. The actions identify what each research track needs to prove before it becomes a stronger recommendation.";
+  const note = 'Use these actions to decide what each research track must prove next before promoting it into stronger guidance.';
 
   return {
     title: 'Everpure monthly research roundup (30d)',
@@ -633,18 +636,19 @@ function buildStage2Brief() {
     summary: { ...counts, evidence_pack_count: evidenceGroups.length, deck_content_count: deckCount },
     executive_summary: executiveSummary,
     surfaced_findings: surfacedFindings.length ? surfacedFindings : [
-      toFinding({ title: 'Current 30-day research signal', finding_statement: 'The current research window contains active signals, but each one should be tied to clear user behavior before it is promoted.', next_step: 'Use the next research review to decide which signals are strong enough to become decision guidance.' })
+      toFinding({ title: 'Current research signal', finding_statement: 'The current research window contains active signals, but each should be tied to a user behavior before it becomes decision guidance.', next_step: 'Use the next research review to decide which signals are strong enough to guide a design, content, or product decision.' })
     ],
     comparison_tests: comparisonTests,
     unresolved_questions: unresolvedQuestions,
     next_actions: nextActions.length ? nextActions : [
-      'Review the refreshed 30-day evidence and promote only the strongest decision-relevant findings.',
-      'Use one focused comparison round for any narrowed alternatives before choosing a direction.',
-      'Keep unresolved workstreams out of the findings section until the evidence is decision-grade.'
+      topicAction('Current research signals', 'Review the refreshed evidence and promote only the strongest decision-relevant findings.'),
+      topicAction('Comparison tracks', 'Use one focused comparison round for narrowed alternatives before choosing a direction.'),
+      topicAction('Unresolved workstreams', 'Keep unresolved workstreams out of the findings section until the evidence is decision-grade.')
     ],
     note,
   };
 }
+
 const brief = buildStage2Brief();
 
 function labelConfidence(level) {
