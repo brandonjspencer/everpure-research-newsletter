@@ -191,10 +191,336 @@ function looksLikeComparison(item) {
   return /\b(v1|v2|v3|r2|r3|baseline|comparison|variant|variation|versus|vs\.?|test)\b/.test(text);
 }
 
+function evidencePackPayload() {
+  return readJson(path.join(publishRoot, 'data', 'evidence-packs-default-30d.json'), null)
+    || readJson(path.join(publishRoot, 'data', 'evidence_packs_default_30d.json'), null)
+    || { packs: [] };
+}
+
+function readStatusPayload() {
+  return readJson(path.join(publishRoot, 'status.json'), {}) || {};
+}
+
+function deckContentCount(status) {
+  const value = status?._meta?.deck_content_count ?? status?.deck_content_count ?? status?.deckContentCount ?? 0;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function cleanConceptTitle(value) {
+  return cleanText(value)
+    .replace(/^concept\s+/i, '')
+    .replace(/^\d+\s*[-:–]\s*/i, '')
+    .replace(/\s+baseline$/i, ' baseline')
+    .trim();
+}
+
+function canonicalTopicTitle(title) {
+  const text = cleanConceptTitle(title).toLowerCase();
+  if (text.includes('events page') || text === 'events' || text.includes('events v1') || text.includes('events v2')) return 'Events Page';
+  if (text.includes('homepage ai')) return 'Homepage AI Messaging';
+  if (text.includes('pathfinder') && text.includes('cta')) return 'Pathfinder CTA Labels';
+  if (text.includes('webinar registration')) return 'Webinar Registration Page';
+  if (text.includes('book filter')) return 'This Book Filter';
+  if (text.includes('virtualization')) return 'Virtualization Campaign';
+  return cleanConceptTitle(title) || 'Research signal';
+}
+
+function topicKey(title) {
+  return canonicalTopicTitle(title).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+}
+
+function hasSentenceShape(text) {
+  const value = cleanText(text);
+  return value.length >= 42 && /[.!?]/.test(value) && /\b(should|because|users?|participants?|customers?|evidence|signal|clear|confusing|prefer|understand|confidence|friction|trust|choose|validated|direction)\b/i.test(value);
+}
+
+function looksLabelOnly(text, title = '') {
+  const value = cleanText(text);
+  if (!value) return true;
+  const normalized = value.toLowerCase().replace(/^concept\s+/i, '').replace(/^\d+\s*[-:–]\s*/i, '').trim();
+  const normalizedTitle = cleanConceptTitle(title).toLowerCase();
+  if (normalizedTitle && normalized === normalizedTitle) return true;
+  if (/^(concept\s*)?\d+\s*[-:–]\s*[a-z0-9\s/&()]+$/i.test(value)) return true;
+  if (/^[a-z0-9\s/&()]+\s+v\d$/i.test(value)) return true;
+  return !hasSentenceShape(value) && value.length < 48;
+}
+
+function substantiveText(...values) {
+  for (const value of values.flat()) {
+    const text = cleanText(value);
+    if (text && !looksLabelOnly(text)) return text;
+  }
+  return '';
+}
+
+function sourceFromPack(pack) {
+  const refs = asArray(pack.source_refs || pack.sourceRefs);
+  const withDeck = refs.find((ref) => ref && (ref.deck_file_id || ref.deck_id || ref.file_id || ref.deckFileId));
+  const id = withDeck?.deck_file_id || withDeck?.deck_id || withDeck?.file_id || withDeck?.deckFileId || asArray(pack.deck_refs)[0];
+  if (id) return { label: 'Source deck', href: `https://docs.google.com/presentation/d/${id}/edit` };
+  return { label: null, href: null };
+}
+
+function groupEvidencePacks(packs) {
+  const groups = new Map();
+  for (const pack of packs || []) {
+    const title = canonicalTopicTitle(pack.concept_title || pack.concept_display || pack.concept_key || pack.title || 'Research signal');
+    const key = topicKey(title);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        title,
+        weeks: new Set(),
+        deckRefs: new Set(),
+        sourceRefs: [],
+        rawExcerpts: [],
+        comparisonCues: new Set(),
+        behavioralSignals: new Set(),
+        occurrence_count: 0,
+        first_seen_week: null,
+        last_seen_week: null,
+        statuses: new Set(),
+        confidences: new Set(),
+      });
+    }
+    const group = groups.get(key);
+    for (const week of asArray(pack.weeks_seen)) if (week) group.weeks.add(week);
+    for (const deck of asArray(pack.deck_refs)) if (deck) group.deckRefs.add(deck);
+    for (const cue of asArray(pack.comparison_cues)) if (cue) group.comparisonCues.add(String(cue).toLowerCase());
+    for (const signal of asArray(pack.behavioral_signals)) if (signal) group.behavioralSignals.add(String(signal).toLowerCase());
+    for (const excerpt of asArray(pack.raw_finding_excerpts)) if (excerpt) group.rawExcerpts.push(cleanText(excerpt));
+    for (const ref of asArray(pack.source_refs || pack.sourceRefs)) if (ref) group.sourceRefs.push(ref);
+    group.occurrence_count += Number(pack.occurrence_count || asArray(pack.source_refs || pack.sourceRefs).length || 1);
+    if (pack.first_seen_week && (!group.first_seen_week || pack.first_seen_week < group.first_seen_week)) group.first_seen_week = pack.first_seen_week;
+    if (pack.last_seen_week && (!group.last_seen_week || pack.last_seen_week > group.last_seen_week)) group.last_seen_week = pack.last_seen_week;
+    if (pack.rule_based_status) group.statuses.add(pack.rule_based_status);
+    if (pack.rule_based_confidence) group.confidences.add(String(pack.rule_based_confidence).toLowerCase());
+  }
+  return [...groups.values()].map((group) => ({
+    ...group,
+    weeks_seen: [...group.weeks].sort(),
+    deck_refs: [...group.deckRefs],
+    comparison_cues: [...group.comparisonCues],
+    behavioral_signals: [...group.behavioralSignals],
+    source_refs: group.sourceRefs,
+    raw_finding_excerpts: [...new Set(group.rawExcerpts)].filter(Boolean),
+  })).sort((a, b) => {
+    if (b.occurrence_count !== a.occurrence_count) return b.occurrence_count - a.occurrence_count;
+    return String(b.last_seen_week || '').localeCompare(String(a.last_seen_week || ''));
+  });
+}
+
+function weekPhrase(group) {
+  const weeks = group.weeks_seen || [];
+  if (!weeks.length) return 'the current 30-day window';
+  if (weeks.length === 1) return `the ${weeks[0]} update`;
+  return `${weeks.length} weekly updates (${weeks.join(', ')})`;
+}
+
+function deckPhrase(group) {
+  const count = (group.deck_refs || []).length;
+  if (!count) return 'without a linked deck in the artifact';
+  if (count === 1) return 'with 1 linked findings deck';
+  return `with ${count} linked findings decks`;
+}
+
+function groupSource(group) {
+  return sourceFromPack({ source_refs: group.source_refs, deck_refs: group.deck_refs });
+}
+
+function actionForTopic(title) {
+  const key = topicKey(title);
+  if (key === 'events_page') return 'Run one final Events decision round that compares the surviving version or page direction against explicit winning criteria: first-glance purpose, event-discovery clarity, primary CTA clarity, and confidence that the page will get visitors to the right event path.';
+  if (key === 'homepage_ai_messaging') return 'Define what Homepage AI Messaging is supposed to improve before testing again: faster comprehension, stronger credibility, clearer differentiation, or better pathing. Do not treat positive reaction to AI language as enough to ship.';
+  if (key === 'pathfinder_cta_labels') return 'Test Pathfinder CTA labels around expectation-setting and commitment friction. The winning label should make the next step feel specific and safe, not merely more energetic.';
+  if (key === 'webinar_registration_page') return 'Review the May 7 webinar registration evidence before calling a direction. Decide whether the issue is registration-page clarity, form friction, offer framing, or content sufficiency.';
+  if (key === 'this_book_filter') return 'Clarify whether the “This Book” filter helps users narrow content or introduces internal language. Promote it only if the evidence shows users understand the filter without explanation.';
+  if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item unless the next update adds either repeated evidence or a concrete behavior signal.';
+  return `Define the decision ${title} should unblock, then run a focused validation pass with explicit success criteria.`;
+}
+
+function comparisonCriteriaForTopic(title) {
+  const key = topicKey(title);
+  if (key === 'events_page') return 'Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.';
+  if (key === 'homepage_ai_messaging') return 'Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.';
+  if (key === 'pathfinder_cta_labels') return 'Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.';
+  return 'Choose the strongest direction based on comprehension, confidence, clarity of next step, and decision relevance rather than preference alone.';
+}
+
+function comparisonStatementForTopic(title, group) {
+  const key = topicKey(title);
+  if (key === 'events_page') return 'Events has moved from broad exploration into a decision problem. The artifact shows repeated Events Page activity plus an Events V1/V2 comparison cue, so the next round should choose a direction instead of reopening the page model.';
+  if (key === 'homepage_ai_messaging') return 'Homepage AI Messaging is recurring enough to treat as a focused messaging decision. The next pass should determine whether AI framing improves comprehension and trust, or simply adds fashionable language to the page.';
+  if (key === 'pathfinder_cta_labels') return 'Pathfinder CTA Labels should be treated as an expectation-setting comparison. The issue is not which label sounds best, but which one makes the user understand the next step and feel comfortable taking it.';
+  return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
+}
+
+function buildProgramFinding(groups, statusInfo) {
+  const recurring = groups.filter((g) => g.occurrence_count >= 2).map((g) => g.title);
+  const latest = statusInfo?._meta?.latest_week_date || counts.latest_week_date || 'the latest update';
+  return {
+    title: 'The cycle is showing decision pressure, not final validation',
+    finding_statement: `The refreshed 30-day window now points to ${groups.length || 'multiple'} active research tracks, but the strongest pattern is movement toward decisions rather than enough evidence to declare broad ship-ready findings. The issue should therefore prioritize what each track needs to prove next.`,
+    proof_point: `The current build includes ${counts.week_count_30d || 'multiple'} weeks through ${latest}. Recurring tracks include ${recurring.slice(0, 5).join(', ') || 'the current research workstreams'}, while the public deck-content artifact still needs enough extracted detail to support stronger behavioral claims.`,
+    next_step: 'Frame Issue 02 around decision readiness: promote only evidence-backed findings, keep label-only tracks out of the findings section, and give every unresolved track an explicit unblocking action.',
+    confidence: deckContentCount(statusInfo) > 0 ? 'medium' : 'low',
+    decision_status: 'iterate',
+    source_label: null,
+    source_href: null,
+  };
+}
+
+function findingFromGroup(group) {
+  const source = groupSource(group);
+  const key = topicKey(group.title);
+  if (key === 'events_page') {
+    return {
+      title: 'Events needs a final decision round, not more exploration',
+      finding_statement: 'Events is the clearest recurring decision track in the current issue. The signal is not yet “ship this version”; it is that the team has enough repeated activity to force a tighter Events page decision.',
+      proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)}. The evidence pack also contains V1/V2 comparison cues, but the current public artifact is still too label-heavy to name a winner from the newsletter alone.`,
+      next_step: actionForTopic('Events Page'),
+      confidence: 'medium',
+      decision_status: 'compare',
+      source_label: source.label,
+      source_href: source.href,
+    };
+  }
+  if (key === 'homepage_ai_messaging') {
+    return {
+      title: 'Homepage AI messaging needs a clearer success definition',
+      finding_statement: 'Homepage AI Messaging is recurring, which means it should no longer be treated as a generic copy exploration. The next study needs to say whether AI language is improving understanding, trust, differentiation, or pathing.',
+      proof_point: `Homepage AI Messaging appears in ${weekPhrase(group)} ${deckPhrase(group)}. The artifact confirms repeated attention to the topic, but does not yet expose enough user-level evidence to know what the AI framing is improving.`,
+      next_step: actionForTopic('Homepage AI Messaging'),
+      confidence: 'low',
+      decision_status: 'define criteria',
+      source_label: source.label,
+      source_href: source.href,
+    };
+  }
+  if (key === 'pathfinder_cta_labels') {
+    return {
+      title: 'Pathfinder CTA labels are a commitment-friction problem',
+      finding_statement: 'Pathfinder CTA Labels should be framed as a decision about expectation-setting, not as a preference test. The useful question is which label makes the next step feel specific, credible, and low-friction.',
+      proof_point: `Pathfinder CTA Labels appears in ${weekPhrase(group)} ${deckPhrase(group)}. The repeated signal makes it worth a focused comparison, but the current artifact does not yet include the behavioral proof needed to call a winner.`,
+      next_step: actionForTopic('Pathfinder CTA Labels'),
+      confidence: 'low',
+      decision_status: 'compare',
+      source_label: source.label,
+      source_href: source.href,
+    };
+  }
+  return {
+    title: group.title,
+    finding_statement: `${group.title} is active in the current research window, but should stay out of “validated finding” territory until the evidence shows what users understood, preferred, missed, or acted on.`,
+    proof_point: `${group.title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. The current excerpt is label-level, so it needs deck-level review before it can support a stronger claim.`,
+    next_step: actionForTopic(group.title),
+    confidence: 'low',
+    decision_status: 'review evidence',
+    source_label: source.label,
+    source_href: source.href,
+  };
+}
+
+function buildNarrativeFindings(groups, statusInfo) {
+  const out = [buildProgramFinding(groups, statusInfo)];
+  for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels']) {
+    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
+    if (group) out.push(findingFromGroup(group));
+  }
+  return out.slice(0, 4);
+}
+
+function comparisonFromGroup(group) {
+  const source = groupSource(group);
+  return {
+    title: group.title,
+    finding_statement: comparisonStatementForTopic(group.title, group),
+    decision_criteria: comparisonCriteriaForTopic(group.title),
+    next_step: actionForTopic(group.title),
+    confidence: topicKey(group.title) === 'events_page' ? 'medium' : 'low',
+    decision_status: 'compare',
+    source_label: source.label,
+    source_href: source.href,
+  };
+}
+
+function buildComparisons(groups, sourceComparisons) {
+  const topicOrder = ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels'];
+  const comparisons = [];
+  for (const title of topicOrder) {
+    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
+    if (group) comparisons.push(comparisonFromGroup(group));
+  }
+  const validSource = uniqueByTitle(sourceComparisons)
+    .map(toComparison)
+    .filter((item) => !looksLabelOnly(item.finding_statement, item.title) && !looksLabelOnly(item.decision_criteria, item.title));
+  return uniqueByTitle([...comparisons, ...validSource]).slice(0, 4);
+}
+
+function buildUnresolvedQuestions(groups, statusInfo) {
+  const questions = [];
+  if (deckContentCount(statusInfo) === 0) {
+    questions.push({
+      title: 'Deck evidence extraction',
+      scope: 'Evidence quality',
+      question: 'The build is fresh, but deck content is currently empty. Which deck-ingestion step needs to be fixed before this issue can support stronger behavioral claims?'
+    });
+  }
+  for (const title of ['Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
+    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
+    if (!group) continue;
+    const key = topicKey(title);
+    if (key === 'webinar_registration_page') {
+      questions.push({ title, scope: 'May 7 evidence review', question: 'Is the webinar registration signal about page clarity, form friction, offer framing, or content sufficiency?' });
+    } else if (key === 'this_book_filter') {
+      questions.push({ title, scope: 'Label and filtering clarity', question: 'Does “This Book” help users narrow content, or does it introduce internal language that needs a clearer label?' });
+    } else if (key === 'virtualization_campaign') {
+      questions.push({ title, scope: 'Single-occurrence watch item', question: 'Is this a real campaign-direction signal, or a one-week mention that should stay out of executive recommendations until it repeats?' });
+    }
+  }
+  if (!questions.length) {
+    questions.push({ title: 'Evidence review', scope: 'Decision readiness', question: 'Which current signals are strong enough to promote from activity into decision guidance?' });
+  }
+  return questions.slice(0, 5);
+}
+
+function uniqueActions(actions) {
+  const seen = new Set();
+  const out = [];
+  for (const action of actions.map(cleanText).filter(Boolean)) {
+    const key = action.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(action);
+  }
+  return out;
+}
+
+function buildRecommendedActions(groups, statusInfo, sourceActions) {
+  const actions = [];
+  if (deckContentCount(statusInfo) === 0) {
+    actions.push('Fix deck-content ingestion before freezing or emailing Issue 02; the current build is fresh, but the public deck-content artifact is empty, so several claims are still label-level.');
+  }
+  for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels', 'Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
+    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
+    if (group) actions.push(actionForTopic(title));
+  }
+  actions.push('Update the evidence-pack extraction so every promoted finding carries a week, source deck, plain-English user signal, and decision implication instead of only a concept label.');
+  actions.push('Re-run the stage-2 synthesis after deck content is nonzero, then freeze only the approved May issue into the archive.' );
+  const source = sourceActions
+    .map((item) => typeof item === 'string' ? item : firstText(item.next_step, item.nextStep, item.recommendation, item.title, item.headline))
+    .filter((item) => item && !looksLabelOnly(item));
+  return uniqueActions([...actions, ...source]).slice(0, 8);
+}
+
 function buildStage2Brief() {
   const sourcePath = path.join(publishRoot, 'newsletter', 'default.json');
   const source = readJson(sourcePath, {});
+  const statusInfo = readStatusPayload();
   const sections = source.sections || {};
+  const evidencePayload = evidencePackPayload();
+  const evidencePacks = asArray(evidencePayload.packs || evidencePayload);
+  const evidenceGroups = groupEvidencePacks(evidencePacks);
 
   const rawFindings = asArray(sections.top_findings).length
     ? asArray(sections.top_findings)
@@ -207,27 +533,28 @@ function buildStage2Brief() {
     ...asArray(sections.in_progress).filter(looksLikeComparison),
   ];
 
-  const rawMotion = [
-    ...asArray(sections.in_progress),
-    ...asArray(sections.workstreams_to_watch),
-    ...asArray(sections.watch_items),
-    ...asArray(sections.emerging_signals),
-    ...asArray(source.unresolved_questions),
-  ];
+  const sourceFindings = uniqueByTitle(rawFindings)
+    .map(toFinding)
+    .filter((item) => !looksLabelOnly(item.finding_statement, item.title) && !looksLabelOnly(item.proof_point, item.title));
 
-  const surfacedFindings = uniqueByTitle(rawFindings).map(toFinding).slice(0, 3);
-  const comparisonTests = uniqueByTitle(rawComparisons).map(toComparison).slice(0, 3);
-  const usedTitles = new Set([...surfacedFindings, ...comparisonTests].map((item) => item.title.toLowerCase()));
-  const unresolvedQuestions = uniqueByTitle(rawMotion)
-    .map(toQuestion)
-    .filter((item) => !usedTitles.has(item.title.toLowerCase()))
-    .slice(0, 3);
+  const useSourceFindings = sourceFindings.length >= 2 && deckContentCount(statusInfo) > 0;
+  const surfacedFindings = useSourceFindings
+    ? sourceFindings.slice(0, 4)
+    : buildNarrativeFindings(evidenceGroups, statusInfo);
 
-  const actions = asArray(source.next_actions || sections.next_actions)
-    .map((item) => typeof item === 'string' ? item : firstText(item.next_step, item.nextStep, item.recommendation, item.title, item.headline))
-    .map(cleanText)
-    .filter(Boolean)
-    .slice(0, 4);
+  const comparisonTests = buildComparisons(evidenceGroups, rawComparisons);
+  const unresolvedQuestions = buildUnresolvedQuestions(evidenceGroups, statusInfo);
+  const sourceActions = asArray(source.next_actions || sections.next_actions);
+  const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
+  const deckCount = deckContentCount(statusInfo);
+
+  const executiveSummary = deckCount === 0
+    ? `The refreshed Issue 02 cycle is current through ${counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week'}, but it should be treated as a decision-readiness brief rather than a final insight report. The main signal is convergence around Events, Homepage AI Messaging, and Pathfinder CTA Labels, with May 7 adding Webinar Registration Page and This Book Filter work that needs deck-level evidence review before promotion.`
+    : firstText(source.executive_summary) || 'This month should be read through movement: which research tracks are ready for a decision, which still need one focused comparison round, and which remain unresolved.';
+
+  const note = deckCount === 0
+    ? 'Evidence quality note: the build is fresh, but deck-content extraction is currently empty. Do not freeze or email this issue until deck-level evidence has been restored and the stage-2 claims have been reviewed against source decks.'
+    : 'This brief uses the current refreshed 30-day evidence layer and renders it through the custom Research Roundup presentation. It should still receive a manual stage-2 editorial review before the issue is frozen or emailed.';
 
   return {
     title: 'Everpure monthly research roundup (30d)',
@@ -236,24 +563,21 @@ function buildStage2Brief() {
     audience: 'exec',
     tone: 'strategic',
     issue: { number: issueNumber, label: issueLabel, date: issueDate },
-    summary: counts,
-    executive_summary: firstText(source.executive_summary) || 'This month should be read through movement: which research tracks are ready for a decision, which still need one focused comparison round, and which remain unresolved.',
+    summary: { ...counts, evidence_pack_count: evidenceGroups.length, deck_content_count: deckCount },
+    executive_summary: executiveSummary,
     surfaced_findings: surfacedFindings.length ? surfacedFindings : [
       toFinding({ title: 'Current 30-day research signal', finding_statement: 'The refreshed 30-day window is available, but the manual stage-2 pass should still decide which signals are strong enough to promote.', next_step: 'Review the refreshed evidence packs, weekly records, and deck coverage before freezing this issue.' })
     ],
     comparison_tests: comparisonTests,
-    unresolved_questions: unresolvedQuestions.length ? unresolvedQuestions : [
-      { title: 'Evidence review', question: 'Which current signals are strong enough to promote from activity into decision guidance?' }
-    ],
-    next_actions: actions.length ? actions : [
+    unresolved_questions: unresolvedQuestions,
+    next_actions: nextActions.length ? nextActions : [
       'Review the refreshed 30-day evidence and promote only the strongest decision-relevant findings.',
       'Use one focused comparison round for any narrowed alternatives before choosing a direction.',
       'Keep unresolved workstreams out of the findings section until the evidence is decision-grade.'
     ],
-    note: 'This brief uses the current refreshed 30-day evidence layer and renders it through the custom Research Roundup presentation. It should still receive a manual stage-2 editorial review before the issue is frozen or emailed.',
+    note,
   };
 }
-
 const brief = buildStage2Brief();
 
 function labelConfidence(level) {
