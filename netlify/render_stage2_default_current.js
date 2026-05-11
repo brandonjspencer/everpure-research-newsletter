@@ -372,13 +372,13 @@ function confidenceForCycle(groups) {
 
 function actionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Create a one-page Events decision scorecard before the next test. Use purpose clarity, event discovery, CTA clarity, and path confidence as the criteria, then choose a direction instead of keeping both page models open.';
-  if (key === 'homepage_ai_messaging') return 'Write the Homepage AI test brief around one primary success target before another copy round: comprehension, credibility, differentiation, or pathing. Treat positive reaction to AI language as supporting evidence only if it improves that target.';
-  if (key === 'pathfinder_cta_labels') return 'Create a small CTA label set that varies specificity and commitment level. Choose the label that best explains what happens next and makes the next step feel safe, not the one that simply sounds more energetic.';
-  if (key === 'webinar_registration_page') return 'Split the next webinar registration review into the likely barriers: unclear value, form effort, offer framing, and content detail. Use the next round to identify which barrier is actually blocking progression.';
-  if (key === 'this_book_filter') return 'Test the reader filter with people who are trying to narrow content inside the current page or asset. Compare “This Book” against plainer labels and choose the label users can explain without internal context.';
-  if (key === 'virtualization_campaign') return 'Keep Virtualization Campaign as a watch item until the research identifies what is improving: value clarity, audience fit, or next-step interest. Do not promote it to an executive recommendation from a single unclear mention.';
-  return `Define the decision ${title} should unblock, then run a focused validation pass with explicit success criteria.`;
+  if (key === 'events_page') return 'Use V4b as the Events implementation baseline, then quality-check the page against four rules: one clear search/filter model, lighter featured cards, event cards instead of dense lists, and no competing visual shapes that make the page feel busy.';
+  if (key === 'homepage_ai_messaging') return 'Adopt the lighter homepage AI direction: one-sentence hero copy, conversational language, and restrained AI emphasis. Validate that the copy improves comprehension and trust before increasing AI density again.';
+  if (key === 'pathfinder_cta_labels') return 'Keep “Personalize” as the safest homepage CTA for now, then test a hybrid that pairs its recognized meaning with start-language that attracts engagement. Avoid labels that imply users will receive instant recommendations before sharing inputs.';
+  if (key === 'webinar_registration_page') return 'Run the next webinar registration review as a barrier diagnosis. Separate value clarity, form effort, offer framing, and session detail so the team knows which part of the experience is blocking progression.';
+  if (key === 'this_book_filter') return 'Test “This Book” against plainer filter labels with readers who are trying to narrow content inside the current asset. Choose the label users can explain without knowing internal taxonomy.';
+  if (key === 'virtualization_campaign') return 'Refine the Virtualization Campaign by borrowing the stronger solution-page patterns: reduce narrow problem framing in the hero, move the buyer’s guide out of the hero, and give the demo video a clearer below-the-fold role.';
+  return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
 }
 
 function comparisonCriteriaForTopic(title) {
@@ -391,17 +391,17 @@ function comparisonCriteriaForTopic(title) {
 
 function comparisonDirectionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Use the scorecard to select one page direction. If neither version wins on purpose clarity and path confidence, simplify the page model before adding new variants.';
-  if (key === 'homepage_ai_messaging') return 'Pick one success measure before the test. Treat the winning message as the one that improves that measure, not the one that sounds most AI-forward.';
-  if (key === 'pathfinder_cta_labels') return 'Choose the label that best explains the next step and lowers perceived effort. Do not choose based on tone or energy alone.';
+  if (key === 'events_page') return 'Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete.';
+  if (key === 'homepage_ai_messaging') return 'Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation.';
+  if (key === 'pathfinder_cta_labels') return 'Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow.';
   return 'Use the next comparison round to choose a direction against explicit criteria rather than reopening broad exploration.';
 }
 
 function comparisonStatementForTopic(title, group) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'The Events decision is now about selecting the clearest page model. The remaining question is which version best explains page purpose and leads visitors into a relevant event path.';
-  if (key === 'homepage_ai_messaging') return 'The Homepage AI comparison should determine what AI language is doing for the visitor. The decision is whether it improves comprehension, credibility, or pathing enough to earn top-page space.';
-  if (key === 'pathfinder_cta_labels') return 'The Pathfinder CTA comparison should decide how much specificity people need before they commit. The decision is whether a label sets expectations well enough to reduce hesitation.';
+  if (key === 'events_page') return 'The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems.';
+  if (key === 'homepage_ai_messaging') return 'The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion.';
+  if (key === 'pathfinder_cta_labels') return 'The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy.';
   return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
 }
 
@@ -433,36 +433,36 @@ function findingFromGroup(group) {
   const key = topicKey(group.title);
   if (key === 'events_page') {
     return {
-      title: 'Events page work is ready for a final direction choice',
-      finding_statement: 'Events testing has narrowed from broad page exploration to a decision about which direction best helps visitors understand what is available and what to do next.',
-      proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)} and includes V1/V2 comparison cues. That recurrence makes it the clearest track for a final page-direction decision round.`,
-      next_step: findingDirectionForTopic('Events Page'),
-      confidence: confidenceForGroup(group, 'comparison'),
-      decision_status: 'compare',
+      title: 'Simpler Events layouts are outperforming visually busy versions',
+      finding_statement: 'Events research is no longer just asking whether the page needs a refresh. The clearest learning is that visitors need a more consistent visual system and a simpler path from “what is on this page?” to “which event should I choose?”',
+      proof_point: 'Testing showed the current page suffers from busy, inconsistent visual elements and lower findability. Later variations improved the path: card-based event presentation increased findability, a light featured-card treatment improved topic-finding success, and V4b produced the strongest overall experience signal.',
+      next_step: 'Move forward from the V4b direction, but protect the simplification: keep one clear search/filter model, preserve scannable event cards, and avoid reintroducing competing shapes or multiple search behaviors.',
+      confidence: 'high',
+      decision_status: 'ready to decide',
       source_label: source.label,
       source_href: source.href,
     };
   }
   if (key === 'homepage_ai_messaging') {
     return {
-      title: 'Homepage AI messaging needs to prove a user benefit',
-      finding_statement: 'The homepage AI work is recurring enough to move past generic AI copy exploration. The next study should clarify whether AI language helps people understand the offer, trust it, distinguish it, or choose a path.',
-      proof_point: `Homepage AI Messaging appears in ${weekPhrase(group)} ${deckPhrase(group)}. The evidence points to a focused messaging decision, but not yet a final wording recommendation.`,
-      next_step: findingDirectionForTopic('Homepage AI Messaging'),
-      confidence: confidenceForGroup(group, 'comparison'),
-      decision_status: 'define criteria',
+      title: 'Homepage AI messaging works best when it feels useful, not maximal',
+      finding_statement: 'The homepage AI work is pointing toward restrained, benefit-led AI language rather than heavier AI-forward copy. The opportunity is to make AI feel clear, credible, and connected to the offer without making visitors work to understand AI’s role.',
+      proof_point: 'The strongest pattern is not simply “more AI.” A conversational one-sentence hero improved the read, while the later 25% AI direction improved trust and confidence and made users less likely to describe the page only through the lens of AI.',
+      next_step: 'Use lighter AI emphasis and a more conversational one-sentence hero as the next homepage direction. Judge the next pass on comprehension and trust, not the amount of AI language on the page.',
+      confidence: 'high',
+      decision_status: 'ready to decide',
       source_label: source.label,
       source_href: source.href,
     };
   }
   if (key === 'pathfinder_cta_labels') {
     return {
-      title: 'Pathfinder CTA labels should be judged on commitment friction',
-      finding_statement: 'The Pathfinder CTA work is less about which label sounds best and more about whether the label sets the right expectation at the moment of commitment.',
-      proof_point: `Pathfinder CTA Labels appears in ${weekPhrase(group)} ${deckPhrase(group)}. The repeated signal makes it worth a focused comparison around expectation-setting and commitment friction.`,
-      next_step: findingDirectionForTopic('Pathfinder CTA Labels'),
-      confidence: confidenceForGroup(group, 'comparison'),
-      decision_status: 'compare',
+      title: 'Pathfinder CTA labels need to balance recognition with engagement',
+      finding_statement: 'Pathfinder CTA testing shows a real tradeoff: “Personalize” is better recognized as the place to get a custom solution, while “Start Here” does a better job attracting first-click engagement. The winning direction likely needs both clarity and momentum.',
+      proof_point: 'Participants were over twice as successful with “Personalize” than the new label variations, but “Start Here” attracted much more first-click engagement. Labels such as “Guide Me” and “Get Recommendations” risk setting the wrong expectation by implying users will receive value immediately.',
+      next_step: 'Maintain “Personalize” where recognition matters, then test a hybrid direction that borrows start-language without promising instant recommendations before users provide inputs.',
+      confidence: 'medium',
+      decision_status: 'ready for final comparison',
       source_label: source.label,
       source_href: source.href,
     };
@@ -527,19 +527,19 @@ function buildUnresolvedQuestions(groups, statusInfo) {
       questions.push({
         title: 'Webinar Registration Page',
         scope: 'Registration value and friction',
-        question: 'The webinar registration work needs to show where visitors are hesitating: the value of registering, the effort of the form, the offer framing, or the amount of content detail. Which barrier is actually stopping progression?'
+        question: 'The research has surfaced webinar registration as a track, but the barrier still needs to be isolated. Are visitors hesitating because the value of registering is unclear, the form feels like too much effort, the offer is not compelling enough, or the page does not explain what they get after registering?'
       });
     } else if (key === 'this_book_filter') {
       questions.push({
         title: 'Reader Filter: “This Book”',
         scope: 'Content filtering clarity',
-        question: 'Does “This Book” clearly tell readers they are filtering within the current content set, or does the phrase sound like internal terminology that should be replaced with a more familiar label?'
+        question: 'The label “This Book” needs a plain-language check. Do readers understand that it narrows results inside the current content set, or does it sound like internal terminology that should become “Current book,” “This guide,” or another clearer scope label?'
       });
     } else if (key === 'virtualization_campaign') {
       questions.push({
         title: 'Virtualization Campaign',
-        scope: 'Campaign message direction',
-        question: 'Which part of the Virtualization Campaign is showing promise: clearer value, better audience fit, or stronger next-step interest? If the research does not identify one of those signals again, it should stay as a watch item rather than an executive recommendation.'
+        scope: 'Campaign-to-solution translation',
+        question: 'The solutions page is producing stronger engagement and sentiment than the campaign page, but the open question is how far to carry those patterns into the campaign. Which changes preserve campaign intent while improving below-the-fold engagement and reducing hero-offer friction?'
       });
     }
   }
@@ -649,9 +649,9 @@ function buildStage2Brief() {
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
   const deckCount = deckContentCount(statusInfo);
 
-  const executiveSummary = 'The strongest takeaway this month is that Events, Homepage AI Messaging, and Pathfinder CTA Labels have moved from broad exploration into focused decision work. Webinar Registration, Reader Filter: “This Book,” and Virtualization Campaign should stay in clarification until the next round shows which user behavior is changing.';
+  const executiveSummary = 'This month’s strongest research value is more concrete than “which tracks need another round.” Events is ready to move toward a simplified V4b direction, Homepage AI Messaging should use lighter conversational AI framing, and Pathfinder CTA work should balance the recognizable “Personalize” label with start-language that attracts engagement. Webinar Registration, Reader Filter: “This Book,” and Virtualization Campaign remain useful clarification tracks for the next cycle.';
 
-  const note = 'Prioritize the three narrowed tracks first: Events, Homepage AI Messaging, and Pathfinder CTA Labels. Keep Webinar Registration, Reader Filter, and Virtualization in clarification until the next round identifies a clearer user behavior or decision signal.';
+  const note = 'The next cycle should protect the decisions that are now clear enough to move forward, while using targeted follow-up work to resolve registration friction, reader-filter language, and campaign-page translation.';
 
   return {
     title: 'Everpure monthly research roundup (30d)',
