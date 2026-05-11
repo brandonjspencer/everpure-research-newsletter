@@ -321,7 +321,7 @@ function weekPhrase(group) {
 
 function deckPhrase(group) {
   const count = (group.deck_refs || []).length;
-  if (!count) return 'without a linked deck in the artifact';
+  if (!count) return 'without a linked findings deck';
   if (count === 1) return 'with 1 linked findings deck';
   return `with ${count} linked findings decks`;
 }
@@ -387,7 +387,7 @@ function comparisonCriteriaForTopic(title) {
 
 function comparisonStatementForTopic(title, group) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Events has moved from broad exploration into a decision problem. The artifact shows repeated Events Page activity plus an Events V1/V2 comparison cue, so the next round should choose a direction instead of reopening the page model.';
+  if (key === 'events_page') return 'Events has moved from broad exploration into a decision problem. The research record shows repeated Events Page activity plus an Events V1/V2 comparison cue, so the next round should choose a direction instead of reopening the page model.';
   if (key === 'homepage_ai_messaging') return 'Homepage AI Messaging is recurring enough to treat as a focused messaging decision. The next pass should determine whether AI framing improves comprehension and trust, or simply adds fashionable language to the page.';
   if (key === 'pathfinder_cta_labels') return 'Pathfinder CTA Labels should be treated as an expectation-setting comparison. The issue is not which label sounds best, but which one makes the user understand the next step and feel comfortable taking it.';
   return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
@@ -398,10 +398,10 @@ function buildProgramFinding(groups, statusInfo) {
   const latest = statusInfo?._meta?.latest_week_date || counts.latest_week_date || 'the latest update';
   const recurringText = recurring.slice(0, 5).join(', ') || 'the current research workstreams';
   return {
-    title: 'The cycle is narrowing around decision-ready workstreams',
-    finding_statement: `The refreshed 30-day window points to ${groups.length || 'multiple'} active research tracks. The strongest signal is not broad validation yet; it is that several tracks have moved from open exploration into clearer decisions the team can now resolve.`,
-    proof_point: `The current cycle includes ${counts.week_count_30d || 'multiple'} weeks through ${latest}. Recurring tracks include ${recurringText}, which gives the team enough direction to define next-step criteria for each workstream.`,
-    next_step: 'Use Issue 02 to align each active track to a decision: choose, compare, clarify, or hold. Then focus the next research round on the tracks that still lack a clear winner or a user-facing success criterion.',
+    title: 'Several research tracks now need sharper decision criteria',
+    finding_statement: `Across the current research window, several workstreams have moved beyond broad exploration. The useful signal is that teams can now define what each study must prove before choosing a direction.`,
+    proof_point: `Recurring research tracks include ${recurringText}. The next evidence pass should clarify the user behavior each track is trying to change or validate.`,
+    next_step: 'For each active track, define the decision it should unblock: choose, compare, clarify, or hold. Then focus the next research round on tracks that still lack a clear winner or user-facing success criterion.',
     confidence: confidenceForCycle(groups),
     decision_status: 'iterate',
     source_label: null,
@@ -415,7 +415,7 @@ function findingFromGroup(group) {
   if (key === 'events_page') {
     return {
       title: 'Events needs a final decision round, not more exploration',
-      finding_statement: 'Events is the clearest recurring decision track in the current issue. The signal is not yet “ship this version”; it is that the team has enough repeated activity to force a tighter Events page decision.',
+      finding_statement: 'Events is the clearest recurring decision track in the current cycle. The signal is not yet “ship this version”; it is that the team has enough repeated activity to force a tighter Events page decision.',
       proof_point: `Events appears across ${weekPhrase(group)} ${deckPhrase(group)} and includes V1/V2 comparison cues. That recurrence makes it the clearest place to force a page-direction decision.`,
       next_step: actionForTopic('Events Page'),
       confidence: confidenceForGroup(group, 'comparison'),
@@ -461,10 +461,15 @@ function findingFromGroup(group) {
 }
 
 function buildNarrativeFindings(groups, statusInfo) {
-  const out = [buildProgramFinding(groups, statusInfo)];
+  const out = [];
   for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels']) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) out.push(findingFromGroup(group));
+  }
+  if (!out.length) {
+    for (const group of groups.slice(0, 4)) {
+      out.push(findingFromGroup(group));
+    }
   }
   return out.slice(0, 4);
 }
@@ -533,7 +538,7 @@ function isNewsletterSelfTestAction(item) {
 
 function isInternalOperationalAction(item) {
   const text = `${actionTopic(item)} ${actionText(item)}`.toLowerCase();
-  return /\b(deck-content|deck content|deck ingestion|deck-ingestion|evidence extraction|evidence-quality|evidence quality|artifact|build|pipeline|renderer|rendering|publish|publishing|freeze|frozen|email|emailed|stage-2|stage 2)\b/.test(text);
+  return /\b(deck-content|deck content|deck ingestion|deck-ingestion|evidence extraction|evidence-quality|evidence quality|artifact|build|pipeline|renderer|rendering|publish|publishing|freeze|frozen|email|emailed|stage-2|stage 2|source traceability|extraction)\b/.test(text);
 }
 
 function topicAction(topic, action, scope = '') {
@@ -613,9 +618,10 @@ function buildStage2Brief() {
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
   const deckCount = deckContentCount(statusInfo);
 
-  const executiveSummary = `Issue 02 is current through ${counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week'}. The strongest movement is around Events, Homepage AI Messaging, and Pathfinder CTA Labels, where the next step is to narrow criteria and choose a direction. May 7 also adds Webinar Registration Page and Reader Filter work that should stay unresolved until the next round clarifies the user behavior behind each signal.`;
+  const latestDate = counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week';
+  const executiveSummary = `The current 30-day research cycle is updated through ${latestDate}. The strongest movement is around Events, Homepage AI Messaging, and Pathfinder CTA Labels, where the next step is to narrow criteria and choose a direction. May 7 also adds Webinar Registration Page and Reader Filter work that should stay unresolved until the next round clarifies the user behavior behind each signal.`;
 
-  const note = 'Use this roundup as a decision-readiness view for the current research cycle. The actions identify what each track needs to prove before it becomes a stronger recommendation.';
+  const note = "Use this cycle's evidence as a decision-readiness view. The actions identify what each research track needs to prove before it becomes a stronger recommendation.";
 
   return {
     title: 'Everpure monthly research roundup (30d)',
@@ -627,7 +633,7 @@ function buildStage2Brief() {
     summary: { ...counts, evidence_pack_count: evidenceGroups.length, deck_content_count: deckCount },
     executive_summary: executiveSummary,
     surfaced_findings: surfacedFindings.length ? surfacedFindings : [
-      toFinding({ title: 'Current 30-day research signal', finding_statement: 'The refreshed 30-day window is available, but each signal should still be tied to a clear user behavior before it is promoted.', next_step: 'Use the next research review to decide which signals are strong enough to become decision guidance.' })
+      toFinding({ title: 'Current 30-day research signal', finding_statement: 'The current research window contains active signals, but each one should be tied to clear user behavior before it is promoted.', next_step: 'Use the next research review to decide which signals are strong enough to become decision guidance.' })
     ],
     comparison_tests: comparisonTests,
     unresolved_questions: unresolvedQuestions,
