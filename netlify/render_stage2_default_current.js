@@ -494,6 +494,11 @@ function actionTopic(action) {
   return cleanText(action?.topic || action?.concept || action?.title || action?.scope || action?.category);
 }
 
+function isNewsletterSelfTestAction(item) {
+  const text = `${actionTopic(item)} ${actionText(item)}`.toLowerCase();
+  return /\b(research roundup|newsletter)\b/.test(text) && /\b(test|testing|validate|validation|research study|study)\b/.test(text);
+}
+
 function topicAction(topic, action, scope = '') {
   return {
     topic: canonicalTopicTitle(topic || 'Recommended action'),
@@ -524,7 +529,7 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
   }
   for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels', 'Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
-    if (group) actions.push(topicAction(title, actionForTopic(title), weekPhrase(group)));
+    if (group) actions.push(topicAction(title, actionForTopic(title)));
   }
   actions.push(topicAction('Source traceability', 'Update the evidence-pack extraction so every promoted finding carries a week, source deck, plain-English user signal, and decision implication instead of only a concept label.', 'Evidence packs'));
   actions.push(topicAction('Publishing readiness', 'Re-run the stage-2 synthesis after deck content is nonzero, then freeze only the approved May issue into the archive.', 'Archive workflow'));
@@ -535,8 +540,8 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
       const topic = firstText(item.topic, item.concept_title, item.concept, item.scope, item.category, item.title);
       return topicAction(topic || 'Generated recommendation', action);
     })
-    .filter((item) => item.action && !looksLabelOnly(item.action));
-  return uniqueActions([...actions, ...source]).slice(0, 8);
+    .filter((item) => item.action && !looksLabelOnly(item.action) && !isNewsletterSelfTestAction(item));
+  return uniqueActions([...actions, ...source]).filter((item) => !isNewsletterSelfTestAction(item)).slice(0, 8);
 }
 
 function buildStage2Brief() {
@@ -879,7 +884,7 @@ a { color: inherit; }
 .action-row:first-child { border-top:2px solid var(--orange-100); }
 .action-index { font-size:40px; font-weight:700; color:var(--primary); opacity:.35; line-height:1; letter-spacing:-.03em; padding-top:4px; }
 .action-content { display:flex; flex-direction:column; gap:10px; }
-.action-topic { width:max-content; max-width:100%; padding:7px 10px 6px; background:rgba(213,93,29,0.10); border:1px solid var(--orange-100); border-radius:999px; font-size:var(--text-label); font-weight:700; color:var(--primary); letter-spacing:.1em; text-transform:uppercase; line-height:1.1; }
+.action-topic { width:max-content; max-width:100%; padding:5px 8px 4px; background:rgba(213,93,29,0.10); border:1px solid var(--orange-100); border-radius:999px; font-size:10px; font-weight:700; color:var(--primary); letter-spacing:.08em; text-transform:uppercase; line-height:1.05; }
 .action-scope { display:block; margin-top:-4px; font-size:13px; font-weight:600; color:var(--muted-fg); line-height:1.5; }
 .action-row p { margin:0; font-size:var(--text-h4); line-height:1.75; }
 .note { margin:48px 0 0; font-size:var(--text-label); line-height:1.75; color:var(--muted-fg); font-style:italic; }
@@ -961,9 +966,8 @@ a { color: inherit; }
   html.push('<div class="actions">');
   data.next_actions.forEach((item, idx) => {
     const topic = actionTopic(item);
-    const scope = typeof item === 'string' ? '' : cleanText(item.scope);
     const action = actionText(item);
-    html.push(`<div class="action-row"><span class="action-index">${String(idx + 1).padStart(2, '0')}</span><div class="action-content">${topic ? `<span class="action-topic">${escapeHtml(topic)}</span>` : ''}${scope ? `<span class="action-scope">${escapeHtml(scope)}</span>` : ''}<p>${escapeHtml(action)}</p></div></div>`);
+    html.push(`<div class="action-row"><span class="action-index">${String(idx + 1).padStart(2, '0')}</span><div class="action-content">${topic ? `<span class="action-topic">${escapeHtml(topic)}</span>` : ''}<p>${escapeHtml(action)}</p></div></div>`);
   });
   html.push('</div>');
   html.push(`<p class="note">${escapeHtml(data.note)}</p>`);
