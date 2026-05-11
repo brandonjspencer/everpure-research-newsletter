@@ -221,12 +221,14 @@ function canonicalTopicTitle(title) {
   if (text.includes('homepage ai')) return 'Homepage AI Messaging';
   if (text.includes('pathfinder') && text.includes('cta')) return 'Pathfinder CTA Labels';
   if (text.includes('webinar registration')) return 'Webinar Registration Page';
-  if (text.includes('book filter')) return 'This Book Filter';
+  if (text.includes('book filter') || text.includes('this book')) return 'Reader Filter: “This Book”';
   if (text.includes('virtualization')) return 'Virtualization Campaign';
   return cleanConceptTitle(title) || 'Research signal';
 }
 
 function topicKey(title) {
+  const raw = cleanConceptTitle(title).toLowerCase();
+  if (raw.includes('book filter') || raw.includes('this book')) return 'this_book_filter';
   return canonicalTopicTitle(title).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 }
 
@@ -334,7 +336,7 @@ function actionForTopic(title) {
   if (key === 'homepage_ai_messaging') return 'Define what Homepage AI Messaging is supposed to improve before testing again: faster comprehension, stronger credibility, clearer differentiation, or better pathing. Do not treat positive reaction to AI language as enough to ship.';
   if (key === 'pathfinder_cta_labels') return 'Test Pathfinder CTA labels around expectation-setting and commitment friction. The winning label should make the next step feel specific and safe, not merely more energetic.';
   if (key === 'webinar_registration_page') return 'Review the May 7 webinar registration evidence before calling a direction. Decide whether the issue is registration-page clarity, form friction, offer framing, or content sufficiency.';
-  if (key === 'this_book_filter') return 'Clarify whether the “This Book” filter helps users narrow content or introduces internal language. Promote it only if the evidence shows users understand the filter without explanation.';
+  if (key === 'this_book_filter') return 'For the reader/content filter labeled “This Book,” validate whether users understand it as a current-content filter. If the label reads as internal language, rename it before expanding the filter model or promoting it as a finding.';
   if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item unless the next update adds either repeated evidence or a concrete behavior signal.';
   return `Define the decision ${title} should unblock, then run a focused validation pass with explicit success criteria.`;
 }
@@ -459,13 +461,6 @@ function buildComparisons(groups, sourceComparisons) {
 
 function buildUnresolvedQuestions(groups, statusInfo) {
   const questions = [];
-  if (deckContentCount(statusInfo) === 0) {
-    questions.push({
-      title: 'Deck evidence extraction',
-      scope: 'Evidence quality',
-      question: 'The build is fresh, but deck content is currently empty. Which deck-ingestion step needs to be fixed before this issue can support stronger behavioral claims?'
-    });
-  }
   for (const title of ['Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (!group) continue;
@@ -473,7 +468,7 @@ function buildUnresolvedQuestions(groups, statusInfo) {
     if (key === 'webinar_registration_page') {
       questions.push({ title, scope: 'May 7 evidence review', question: 'Is the webinar registration signal about page clarity, form friction, offer framing, or content sufficiency?' });
     } else if (key === 'this_book_filter') {
-      questions.push({ title, scope: 'Label and filtering clarity', question: 'Does “This Book” help users narrow content, or does it introduce internal language that needs a clearer label?' });
+      questions.push({ title: 'Reader Filter: “This Book”', scope: 'Content filtering clarity', question: 'In the May 7 filtering work, does the “This Book” label clearly tell users they are narrowing within the current content set, or should the label be rewritten in more user-facing language?' });
     } else if (key === 'virtualization_campaign') {
       questions.push({ title, scope: 'Single-occurrence watch item', question: 'Is this a real campaign-direction signal, or a one-week mention that should stay out of executive recommendations until it repeats?' });
     }
@@ -524,15 +519,10 @@ function uniqueActions(actions) {
 
 function buildRecommendedActions(groups, statusInfo, sourceActions) {
   const actions = [];
-  if (deckContentCount(statusInfo) === 0) {
-    actions.push(topicAction('Evidence quality', 'Fix deck-content ingestion before freezing or emailing Issue 02; the current build is fresh, but the public deck-content artifact is empty, so several claims are still label-level.', 'Deck extraction'));
-  }
   for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels', 'Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) actions.push(topicAction(title, actionForTopic(title)));
   }
-  actions.push(topicAction('Source traceability', 'Update the evidence-pack extraction so every promoted finding carries a week, source deck, plain-English user signal, and decision implication instead of only a concept label.', 'Evidence packs'));
-  actions.push(topicAction('Publishing readiness', 'Re-run the stage-2 synthesis after deck content is nonzero, then freeze only the approved May issue into the archive.', 'Archive workflow'));
   const source = sourceActions
     .map((item) => {
       if (typeof item === 'string') return topicAction('Generated recommendation', item);
@@ -580,7 +570,7 @@ function buildStage2Brief() {
   const deckCount = deckContentCount(statusInfo);
 
   const executiveSummary = deckCount === 0
-    ? `The refreshed Issue 02 cycle is current through ${counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week'}, but it should be treated as a decision-readiness brief rather than a final insight report. The main signal is convergence around Events, Homepage AI Messaging, and Pathfinder CTA Labels, with May 7 adding Webinar Registration Page and This Book Filter work that needs deck-level evidence review before promotion.`
+    ? `The refreshed Issue 02 cycle is current through ${counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week'}, but it should be treated as a decision-readiness brief rather than a final insight report. The main signal is convergence around Events, Homepage AI Messaging, and Pathfinder CTA Labels, with May 7 adding Webinar Registration Page and reader-filter work around “This Book” that needs deck-level evidence review before promotion.`
     : firstText(source.executive_summary) || 'This month should be read through movement: which research tracks are ready for a decision, which still need one focused comparison round, and which remain unresolved.';
 
   const note = deckCount === 0
