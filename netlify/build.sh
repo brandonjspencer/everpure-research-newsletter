@@ -69,8 +69,7 @@ node "$ROOT/netlify/generate_static_newsletters.js"
 node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
 node "$ROOT/netlify/fix_default_bottom.js" "$ROOT/publish"
 
-# Temporarily disabled stale Issue 01 stage-2 default overwrite for Issue 02 refresh
-# node "$ROOT/netlify/render_stage2_default_current.js" "$ROOT/publish"
+node "$ROOT/netlify/render_stage2_default_current.js" "$ROOT/publish"
 node "$ROOT/netlify/render_stage2_marketing_current.js" "$ROOT/publish"
 node "$ROOT/netlify/publish_issue_archives.js" "$ROOT"
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
