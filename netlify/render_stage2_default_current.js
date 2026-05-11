@@ -833,8 +833,12 @@ a { color: inherit; }
 .mini-line { flex:1; height:1px; background:var(--orange-100); }
 .mini-line--dark { background: rgba(255,245,227,0.18); }
 .questions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-top:40px; }
+.questions--two-up { grid-template-columns:1fr 1fr; }
 .question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
 .question + .question { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
+.questions--two-up .question { border-left:none; padding-left:0; }
+.questions--two-up .question:nth-child(even) { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
+.questions--two-up .question:nth-child(n+3) { border-top:2px solid rgba(90,99,89,0.16); }
 .question-num { font-size:72px; font-weight:700; color:var(--primary); opacity:0.45; line-height:1; letter-spacing:-.04em; }
 .question-head { display:flex; flex-direction:column; gap:8px; }
 .question-title { font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.07em; text-transform:uppercase; line-height:1.4; }
@@ -861,6 +865,8 @@ a { color: inherit; }
   .evidence-col { padding-right:0; border-right:none; margin-bottom:24px; }
   .direction-col { padding-left:0; }
   .question + .question { padding-left:0; border-left:none; padding-top:0; }
+  .questions--two-up .question:nth-child(even) { padding-left:0; border-left:none; }
+  .questions--two-up .question:nth-child(n+3) { border-top:none; }
 }
 </style>`);
   html.push('</head>');
@@ -884,7 +890,7 @@ a { color: inherit; }
     [String(data.surfaced_findings.length), 'Research\nFindings'],
     [String(data.comparison_tests.length), 'Comparison\nTests'],
     [String(data.unresolved_questions.length), 'Open\nQuestions'],
-    ['30', 'Day\nReport'],
+    [String(data.next_actions.length), 'Recommended\nActions'],
   ];
   for (const [value, label] of stats) {
     html.push(`<div class="stat"><span class="stat-value">${escapeHtml(value)}</span><span class="stat-label">${escapeHtml(label)}</span></div>`);
@@ -910,7 +916,8 @@ a { color: inherit; }
 
   html.push('<section class="section section-mint"><div class="wrapper">');
   html.push(sectionLabel('What Is Still Unresolved'));
-  html.push('<div class="questions">');
+  const unresolvedLayoutClass = data.unresolved_questions.length === 4 ? ' questions--two-up' : '';
+  html.push(`<div class="questions${unresolvedLayoutClass}">`);
   data.unresolved_questions.forEach((item, idx) => {
     html.push(`<div class="question"><span class="question-num">${String(idx + 1).padStart(2, '0')}</span><div><div class="question-head"><div class="question-title">${escapeHtml(item.title)}</div>${item.scope ? `<div class="question-scope">${escapeHtml(item.scope)}</div>` : ''}</div><p>${escapeHtml(item.question)}</p></div></div>`);
   });
