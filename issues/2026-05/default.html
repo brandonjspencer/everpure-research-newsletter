@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Everpure monthly research roundup (30d)</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-family-primary: 'Familjen Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --text-h1: 43px;
+  --text-h2: 30px;
+  --text-h3: 24px;
+  --text-h4: 18px;
+  --text-base: 16px;
+  --text-label: 14px;
+  --background: rgba(255,245,227,1);
+  --foreground: rgba(45,42,39,1);
+  --primary: rgba(213,93,29,1);
+  --primary-fg: rgba(255,245,227,1);
+  --orange-100: rgba(255,224,194,1);
+  --mint-400: rgba(207,232,212,1);
+  --sidebar: rgba(38,35,33,1);
+  --sidebar-fg: rgba(255,245,227,1);
+  --secondary: rgba(90,99,89,1);
+  --muted: rgba(143,165,150,1);
+  --muted-fg: rgba(90,99,89,1);
+  --chart-4: rgba(189,103,61,1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--background); color: var(--foreground); }
+body { font-family: var(--font-family-primary); }
+a { color: inherit; }
+.wrapper { max-width: 760px; margin: 0 auto; padding: 0 48px; }
+.masthead { background: var(--sidebar); color: var(--sidebar-fg); }
+.meta-bar { display:flex; justify-content:space-between; align-items:center; padding:32px 0 24px; border-bottom:1px solid rgba(255,245,227,0.1); }
+.meta-left, .meta-issue, .meta-date { font-size: var(--text-label); }
+.meta-left { font-weight:700; color: rgba(255,245,227,0.38); letter-spacing:.12em; text-transform:uppercase; }
+.meta-right { display:flex; align-items:center; gap:14px; }
+.meta-issue { font-weight:700; color: var(--primary); letter-spacing:.1em; text-transform:uppercase; }
+.meta-date { font-weight:400; color: rgba(255,245,227,0.38); }
+.masthead-grid { display:grid; grid-template-columns:1fr auto; gap:0; }
+.title-pane { position:relative; padding:44px 40px 44px 0; border-right:1px solid rgba(255,245,227,0.08); display:flex; flex-direction:column; justify-content:space-between; gap:32px; overflow:hidden; }
+.ghost { position:absolute; right:-8px; bottom:-12px; font-size:160px; font-weight:700; color: rgba(255,245,227,0.04); line-height:1; letter-spacing:-.05em; }
+.monthly-tag { display:inline-flex; align-items:center; gap:8px; font-size:var(--text-label); font-weight:700; color:var(--primary); letter-spacing:.14em; text-transform:uppercase; }
+.monthly-tag::before { content:''; width:16px; height:2px; background:var(--primary); border-radius:1px; display:inline-block; }
+.h1 { margin:0; font-size:52px; font-weight:500; line-height:.95; letter-spacing:-.03em; color:var(--sidebar-fg); }
+.cycle-note { font-size:var(--text-label); color: rgba(255,245,227,0.28); }
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; width:280px; }
+.stat { padding:24px 22px; display:flex; flex-direction:column; gap:6px; }
+.stat:nth-child(2n) { border-left:1px solid rgba(255,245,227,0.08); }
+.stat:nth-child(-n+2) { border-bottom:1px solid rgba(255,245,227,0.08); }
+.stat:nth-child(odd) { background: rgba(255,245,227,0.02); }
+.stat:nth-child(even) { background: rgba(255,245,227,0.015); }
+.stat-value { font-size:28px; font-weight:700; color:var(--primary); line-height:1; letter-spacing:-.02em; }
+.stat-label { font-size:var(--text-label); white-space:pre-line; color: rgba(255,245,227,0.38); line-height:1.4; }
+.brief-band { background: var(--primary); border-bottom:2px solid var(--orange-100); }
+.brief-grid { display:grid; grid-template-columns:120px 1fr; gap:0; }
+.brief-sidebar { padding:56px 32px 56px 0; border-right:1px solid rgba(255,245,227,0.18); }
+.brief-index { font-size:var(--text-label); font-weight:700; color:var(--primary-fg); opacity:0.4; letter-spacing:.16em; text-transform:uppercase; }
+.brief-title { margin-top:6px; font-size:var(--text-base); font-weight:500; color:var(--primary-fg); opacity:0.55; }
+.brief-copy { padding:56px 0 56px 40px; font-size:var(--text-h4); line-height:1.85; color:var(--primary-fg); }
+.section { padding:68px 0 72px; }
+.section-dark { background: var(--sidebar); color: var(--sidebar-fg); border-top:2px solid var(--orange-100); }
+.section-mint { background: var(--mint-400); border-top:2px solid var(--orange-100); border-bottom:2px solid var(--orange-100); }
+.section-label { display:flex; align-items:baseline; }
+.section-title { font-size:var(--text-h2); font-weight:500; line-height:1.5; }
+.findings { display:flex; flex-direction:column; gap:0; margin-top:40px; }
+.dispatch-finding { padding-bottom:52px; margin-bottom:52px; border-bottom:2px solid var(--orange-100); }
+.dispatch-finding.is-last { margin-bottom:0; border-bottom:none; }
+.dispatch-finding--dark { border-bottom-color: rgba(255,245,227,0.18); }
+.finding-row { display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+.finding-index { font-size:var(--text-label); font-weight:700; color:var(--primary); opacity:0.7; letter-spacing:.16em; }
+.finding-index--dark { color: rgba(255,224,194,0.72); }
+.finding-title { flex:1; font-size:var(--text-base); font-weight:700; color:var(--foreground); letter-spacing:.06em; text-transform:uppercase; }
+.finding-title--dark { color: var(--sidebar-fg); }
+.confidence { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:4px; font-size:var(--text-label); font-weight:700; }
+.dot { width:5px; height:5px; border-radius:50%; display:inline-block; }
+.source-link-inline { display:inline; white-space:nowrap; font-size:0.72em; font-weight:600; color:var(--muted-fg); text-decoration:none; border-bottom:1px solid rgba(90,99,89,0.35); padding-bottom:1px; margin-left:8px; vertical-align:baseline; }
+.source-link-inline:hover { color:var(--primary); border-bottom-color:var(--primary); }
+.source-link-inline--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
+.source-link-inline--dark:hover { color:var(--orange-100); border-bottom-color:var(--orange-100); }
+.finding-copy { margin:0 0 36px; font-size:var(--text-h4); line-height:1.82; }
+.finding-copy--dark { color: var(--sidebar-fg); }
+.finding-columns { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.finding-columns--dark { column-gap:0; }
+.finding-col p { margin:0; font-size:var(--text-base); line-height:1.7; }
+.finding-copy-sub { margin:0; font-size:var(--text-base); line-height:1.7; }
+.finding-copy-sub--dark { color: var(--sidebar-fg); }
+.evidence-col { padding-right:32px; border-right:2px solid var(--orange-100); }
+.evidence-col--dark { border-right-color: rgba(255,245,227,0.18); }
+.direction-col { padding-left:32px; }
+.mini-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.mini-head span { flex-shrink:0; font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.1em; text-transform:uppercase; }
+.mini-head--accent span { color:var(--primary); }
+.mini-head--dark span { color: rgba(255,245,227,0.58); }
+.mini-head--accent-dark span { color: var(--primary); }
+.mini-line { flex:1; height:1px; background:var(--orange-100); }
+.mini-line--dark { background: rgba(255,245,227,0.18); }
+.questions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-top:40px; }
+.questions--two-up { grid-template-columns:1fr 1fr; }
+.question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
+.question + .question { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
+.questions--two-up .question { border-left:none; padding-left:0; }
+.questions--two-up .question:nth-child(even) { padding-left:28px; border-left:2px solid rgba(90,99,89,0.2); }
+.questions--two-up .question:nth-child(n+3) { border-top:2px solid rgba(90,99,89,0.16); }
+.question-num { font-size:72px; font-weight:700; color:var(--primary); opacity:0.45; line-height:1; letter-spacing:-.04em; }
+.question-head { display:flex; flex-direction:column; gap:8px; }
+.question-title { font-size:var(--text-label); font-weight:700; color:var(--muted-fg); letter-spacing:.07em; text-transform:uppercase; line-height:1.4; }
+.question-scope { font-size:13px; font-weight:600; color:rgba(90,99,89,0.78); line-height:1.55; }
+.question p { margin:0; font-size:var(--text-base); line-height:1.75; }
+.actions { display:flex; flex-direction:column; gap:0; margin-top:40px; }
+.action-row { display:grid; grid-template-columns:72px 1fr; gap:24px; align-items:start; padding:28px 0; border-bottom:2px solid var(--orange-100); }
+.action-row:first-child { border-top:2px solid var(--orange-100); }
+.action-index { font-size:40px; font-weight:700; color:var(--primary); opacity:.35; line-height:1; letter-spacing:-.03em; padding-top:4px; }
+.action-content { display:flex; flex-direction:column; gap:10px; }
+.action-topic { width:max-content; max-width:100%; padding:5px 8px 4px; background:rgba(213,93,29,0.10); border:1px solid var(--orange-100); border-radius:999px; font-size:10px; font-weight:700; color:var(--primary); letter-spacing:.08em; text-transform:uppercase; line-height:1.05; }
+.action-scope { display:block; margin-top:-4px; font-size:13px; font-weight:600; color:var(--muted-fg); line-height:1.5; }
+.action-row p { margin:0; font-size:var(--text-h4); line-height:1.75; }
+.note { margin:48px 0 0; font-size:var(--text-label); line-height:1.75; color:var(--muted-fg); font-style:italic; }
+.feedback-note { margin:16px 0 0; font-size:var(--text-label); line-height:1.75; color:var(--muted-fg); }
+.feedback-note a { color:var(--primary); font-weight:700; text-decoration:none; }
+.feedback-note a:hover { text-decoration:underline; }
+.footer { background: var(--sidebar); border-top:3px solid var(--primary); }
+.footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:28px 0; }
+.footer span { font-size:var(--text-label); color:var(--sidebar-fg); opacity:0.32; }
+.back-link { display:inline-block; color:rgba(255,245,227,0.9); text-decoration:none; margin-top:22px; }
+.back-link:hover { text-decoration:underline; }
+@media (max-width: 900px) {
+  .wrapper { padding: 0 24px; }
+  .masthead-grid, .questions, .brief-grid, .finding-columns, .action-row { grid-template-columns:1fr; }
+  .title-pane { padding-right:0; border-right:none; }
+  .stats-grid { width:auto; border-top:1px solid rgba(255,245,227,0.08); }
+  .brief-sidebar { border-right:none; padding-right:0; padding-bottom:0; }
+  .brief-copy { padding:24px 0 48px; }
+  .evidence-col { padding-right:0; border-right:none; margin-bottom:24px; }
+  .direction-col { padding-left:0; }
+  .question + .question { padding-left:0; border-left:none; padding-top:0; }
+  .questions--two-up .question:nth-child(even) { padding-left:0; border-left:none; }
+  .questions--two-up .question:nth-child(n+3) { border-top:none; }
+}
+
+    /* Issue 02 unresolved layout refinement: use a wider 2-up layout, and let the last item span when the count is odd. */
+    .questions.questions--two-up {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .questions.questions--two-up.questions--odd > *:last-child {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 860px) {
+      .questions.questions--two-up {
+        grid-template-columns: 1fr;
+      }
+      .questions.questions--two-up.questions--odd > *:last-child {
+        grid-column: auto;
+      }
+    }
+  </style></head><body><header class="masthead"><div class="wrapper"><a class="back-link" href="../">Back to homepage</a><div class="meta-bar"><span class="meta-left">Everpure User Research Program</span><div class="meta-right"><span class="meta-issue">Issue 02</span><span style="opacity:.2">·</span><span class="meta-date">May 2026</span></div></div><div class="masthead-grid"><div class="title-pane"><div class="ghost">02</div><div class="monthly-tag">Monthly</div><h1 class="h1">Research<br/>Roundup</h1><div class="cycle-note">30-day research cycle</div></div><div class="stats-grid"><div class="stat"><span class="stat-value">3</span><span class="stat-label">Research
+Findings</span></div><div class="stat"><span class="stat-value">3</span><span class="stat-label">Comparison
+Tests</span></div><div class="stat"><span class="stat-value">3</span><span class="stat-label">Open
+Questions</span></div><div class="stat"><span class="stat-value">5</span><span class="stat-label">Recommended
+Actions</span></div></div></div></div></header><section class="brief-band"><div class="wrapper brief-grid"><div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Roundup</div></div><div class="brief-copy">This month’s strongest research value is more concrete than “which tracks need another round.” Events is ready to move toward a simplified V4b direction, Homepage AI Messaging should use lighter conversational AI framing, and Pathfinder CTA work should balance the recognizable “Personalize” label with start-language that attracts engagement. Webinar Registration, Reader Filter: “This Book,” and Virtualization Campaign remain useful clarification tracks for the next cycle.</div></div></section><section id="research-findings" class="section"><div class="wrapper"><div class="section-label"><span class="section-title">Research Findings</span></div><div class="findings">
+  <div class="dispatch-finding ">
+    <div class="finding-row">
+      <span class="finding-index">01</span>
+      <div class="finding-title">SIMPLER EVENTS LAYOUTS ARE OUTPERFORMING VISUALLY BUSY VERSIONS</div>
+      <div class="confidence" style="background:rgba(90,99,89,0.12);color:var(--secondary);">High confidence</div>
+    </div>
+    <p class="finding-copy">Events research is no longer just asking whether the page needs a refresh. The clearest learning is that visitors need a more consistent visual system and a simpler path from “what is on this page?” to “which event should I choose?” <a class="source-link-inline " href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns">
+      <div class="finding-col evidence-col">
+        <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
+        <p>Testing showed the current page suffers from busy, inconsistent visual elements and lower findability. Later variations improved the path: card-based event presentation increased findability, a light featured-card treatment improved topic-finding success, and V4b produced the strongest overall experience signal.</p>
+      </div>
+      <div class="finding-col direction-col">
+        <div class="mini-head mini-head--accent"><span>DIRECTION</span><div class="mini-line"></div></div>
+        <p>Move forward from the V4b direction, but protect the simplification: keep one clear search/filter model, preserve scannable event cards, and avoid reintroducing competing shapes or multiple search behaviors.</p>
+      </div>
+    </div>
+  </div>
+  <div class="dispatch-finding ">
+    <div class="finding-row">
+      <span class="finding-index">02</span>
+      <div class="finding-title">HOMEPAGE AI MESSAGING WORKS BEST WHEN IT FEELS USEFUL, NOT MAXIMAL</div>
+      <div class="confidence" style="background:rgba(90,99,89,0.12);color:var(--secondary);">High confidence</div>
+    </div>
+    <p class="finding-copy">The homepage AI work is pointing toward restrained, benefit-led AI language rather than heavier AI-forward copy. The opportunity is to make AI feel clear, credible, and connected to the offer without making visitors work to understand AI’s role. <a class="source-link-inline " href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns">
+      <div class="finding-col evidence-col">
+        <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
+        <p>The strongest pattern is not simply “more AI.” A conversational one-sentence hero improved the read, while the later 25% AI direction improved trust and confidence and made users less likely to describe the page only through the lens of AI.</p>
+      </div>
+      <div class="finding-col direction-col">
+        <div class="mini-head mini-head--accent"><span>DIRECTION</span><div class="mini-line"></div></div>
+        <p>Use lighter AI emphasis and a more conversational one-sentence hero as the next homepage direction. Judge the next pass on comprehension and trust, not the amount of AI language on the page.</p>
+      </div>
+    </div>
+  </div>
+  <div class="dispatch-finding is-last">
+    <div class="finding-row">
+      <span class="finding-index">03</span>
+      <div class="finding-title">PATHFINDER CTA LABELS NEED TO BALANCE RECOGNITION WITH ENGAGEMENT</div>
+      <div class="confidence" style="background:rgba(213,93,29,0.12);color:var(--primary);">Medium confidence</div>
+    </div>
+    <p class="finding-copy">Pathfinder CTA testing shows a real tradeoff: “Personalize” is better recognized as the place to get a custom solution, while “Start Here” does a better job attracting first-click engagement. The winning direction likely needs both clarity and momentum. <a class="source-link-inline " href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns">
+      <div class="finding-col evidence-col">
+        <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
+        <p>Participants were over twice as successful with “Personalize” than the new label variations, but “Start Here” attracted much more first-click engagement. Labels such as “Guide Me” and “Get Recommendations” risk setting the wrong expectation by implying users will receive value immediately.</p>
+      </div>
+      <div class="finding-col direction-col">
+        <div class="mini-head mini-head--accent"><span>DIRECTION</span><div class="mini-line"></div></div>
+        <p>Maintain “Personalize” where recognition matters, then test a hybrid direction that borrows start-language without promising instant recommendations before users provide inputs.</p>
+      </div>
+    </div>
+  </div></div></div></section><section id="meaningful-comparisons" class="section section-dark"><div class="wrapper"><div class="section-label"><span class="section-title">Meaningful Comparisons</span></div><div class="findings">
+  <div class="dispatch-finding dispatch-finding--dark ">
+    <div class="finding-row">
+      <span class="finding-index finding-index--dark">01</span>
+      <div class="finding-title finding-title--dark">EVENTS PAGE</div>
+      <div class="confidence" style="background:rgba(213,93,29,0.14);color:var(--primary);">Medium confidence</div>
+    </div>
+    <p class="finding-copy finding-copy--dark">The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems. <a class="source-link-inline source-link-inline--dark" href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns finding-columns--dark">
+      <div class="finding-col evidence-col evidence-col--dark">
+        <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.</p>
+      </div>
+      <div class="finding-col direction-col direction-col--dark">
+        <div class="mini-head mini-head--accent-dark"><span>DIRECTION</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete.</p>
+      </div>
+    </div>
+  </div>
+  <div class="dispatch-finding dispatch-finding--dark ">
+    <div class="finding-row">
+      <span class="finding-index finding-index--dark">02</span>
+      <div class="finding-title finding-title--dark">HOMEPAGE AI MESSAGING</div>
+      <div class="confidence" style="background:rgba(213,93,29,0.14);color:var(--primary);">Medium confidence</div>
+    </div>
+    <p class="finding-copy finding-copy--dark">The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion. <a class="source-link-inline source-link-inline--dark" href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns finding-columns--dark">
+      <div class="finding-col evidence-col evidence-col--dark">
+        <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.</p>
+      </div>
+      <div class="finding-col direction-col direction-col--dark">
+        <div class="mini-head mini-head--accent-dark"><span>DIRECTION</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation.</p>
+      </div>
+    </div>
+  </div>
+  <div class="dispatch-finding dispatch-finding--dark is-last">
+    <div class="finding-row">
+      <span class="finding-index finding-index--dark">03</span>
+      <div class="finding-title finding-title--dark">PATHFINDER CTA LABELS</div>
+      <div class="confidence" style="background:rgba(213,93,29,0.14);color:var(--primary);">Medium confidence</div>
+    </div>
+    <p class="finding-copy finding-copy--dark">The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy. <a class="source-link-inline source-link-inline--dark" href="https://docs.google.com/presentation/d/1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY/edit" target="_blank" rel="noopener">Source deck ↗</a></p>
+    <div class="finding-columns finding-columns--dark">
+      <div class="finding-col evidence-col evidence-col--dark">
+        <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.</p>
+      </div>
+      <div class="finding-col direction-col direction-col--dark">
+        <div class="mini-head mini-head--accent-dark"><span>DIRECTION</span><div class="mini-line mini-line--dark"></div></div>
+        <p class="finding-copy-sub finding-copy-sub--dark">Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow.</p>
+      </div>
+    </div>
+  </div></div></div></section><section id="unresolved" class="section section-mint"><div class="wrapper"><div class="section-label"><span class="section-title">What Is Still Unresolved</span></div><div class="questions questions--two-up questions--odd"><div class="question"><span class="question-num">01</span><div><div class="question-head"><div class="question-title">Webinar Registration Page</div><div class="question-scope">Registration value and friction</div></div><p>The research has surfaced webinar registration as a track, but the barrier still needs to be isolated. Are visitors hesitating because the value of registering is unclear, the form feels like too much effort, the offer is not compelling enough, or the page does not explain what they get after registering?</p></div></div><div class="question"><span class="question-num">02</span><div><div class="question-head"><div class="question-title">Reader Filter: “This Book”</div><div class="question-scope">Content filtering clarity</div></div><p>The label “This Book” needs a plain-language check. Do readers understand that it narrows results inside the current content set, or does it sound like internal terminology that should become “Current book,” “This guide,” or another clearer scope label?</p></div></div><div class="question"><span class="question-num">03</span><div><div class="question-head"><div class="question-title">Virtualization Campaign</div><div class="question-scope">Campaign-to-solution translation</div></div><p>The solutions page is producing stronger engagement and sentiment than the campaign page, but the open question is how far to carry those patterns into the campaign. Which changes preserve campaign intent while improving below-the-fold engagement and reducing hero-offer friction?</p></div></div></div></div></section><section id="recommended-actions" class="section"><div class="wrapper"><div class="section-label"><span class="section-title">Recommended Actions</span></div><div class="actions"><div class="action-row"><span class="action-index">01</span><div class="action-content"><span class="action-topic">Events Page</span><p>Use V4b as the Events implementation baseline, then quality-check the page against four rules: one clear search/filter model, lighter featured cards, event cards instead of dense lists, and no competing visual shapes that make the page feel busy.</p></div></div><div class="action-row"><span class="action-index">02</span><div class="action-content"><span class="action-topic">Homepage AI Messaging</span><p>Adopt the lighter homepage AI direction: one-sentence hero copy, conversational language, and restrained AI emphasis. Validate that the copy improves comprehension and trust before increasing AI density again.</p></div></div><div class="action-row"><span class="action-index">03</span><div class="action-content"><span class="action-topic">Webinar Registration Page</span><p>Run the next webinar registration review as a barrier diagnosis. Separate value clarity, form effort, offer framing, and session detail so the team knows which part of the experience is blocking progression.</p></div></div><div class="action-row"><span class="action-index">04</span><div class="action-content"><span class="action-topic">Reader Filter: “This Book”</span><p>Test “This Book” against plainer filter labels with readers who are trying to narrow content inside the current asset. Choose the label users can explain without knowing internal taxonomy.</p></div></div><div class="action-row"><span class="action-index">05</span><div class="action-content"><span class="action-topic">Virtualization Campaign</span><p>Refine the Virtualization Campaign by borrowing the stronger solution-page patterns: reduce narrow problem framing in the hero, move the buyer’s guide out of the hero, and give the demo video a clearer below-the-fold role.</p></div></div></div><p class="note">The next cycle should protect the decisions that are now clear enough to move forward, while using targeted follow-up work to resolve registration friction, reader-filter language, and campaign-page translation.</p><p class="feedback-note">Have feedback on how to improve the newsletter? Share it in <a href="https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ">#research-and-discovery</a>.</p></div></section><footer class="footer"><div class="wrapper footer-inner"><span>Everpure User Research Program</span><span>Monthly Research Roundup · Issue 02 · May 2026</span></div></footer></body></html>

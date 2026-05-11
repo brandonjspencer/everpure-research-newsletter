@@ -1,0 +1,398 @@
+{
+  "title": "Everpure research activity log (30d)",
+  "summary": "A 30-day operations view of research cadence, volume, and active workstreams. Use this log to show what moved this month, where research effort is concentrating, and which comparisons are still in flight.",
+  "window": "30d",
+  "audience": "marketing",
+  "tone": "detailed",
+  "preset": "marketing_activity_30d",
+  "defaults": {
+    "window": "30d",
+    "audience": "marketing",
+    "tone": "detailed",
+    "preset": "marketing_activity_30d"
+  },
+  "generated_at": "2026-05-11T23:15:11.886Z",
+  "snapshot": {
+    "window": "30d",
+    "weekly_updates": 5,
+    "tracked_items": 0,
+    "linked_decks_in_window": 23,
+    "decks_with_ingested_text_available": 0
+  },
+  "weekly_activity_log": [
+    {
+      "week_label": "📌 May 7, 2026",
+      "week_date": "2026-05-07",
+      "workstreams": [
+        {
+          "key": "this-book-filter",
+          "name": "This Book Filter",
+          "examples": [
+            "This Book Filter"
+          ],
+          "labels": [
+            "This Book Filter"
+          ]
+        },
+        {
+          "key": "webinar-registration-page",
+          "name": "Webinar Registration Page",
+          "examples": [
+            "Webinar Registration Page"
+          ],
+          "labels": [
+            "Webinar Registration Page"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 April 30, 2026",
+      "week_date": "2026-04-30",
+      "workstreams": [
+        {
+          "key": "view-concepts-in-figma",
+          "name": "👉 View Concepts In Figma",
+          "examples": [
+            "👉 View Concepts in Figma"
+          ],
+          "labels": [
+            "👉 View Concepts in Figma"
+          ]
+        },
+        {
+          "key": "events",
+          "name": "Events",
+          "examples": [
+            "Events Page"
+          ],
+          "labels": [
+            "Events Page"
+          ]
+        },
+        {
+          "key": "on-deck",
+          "name": "On Deck",
+          "examples": [
+            "On Deck"
+          ],
+          "labels": [
+            "On Deck"
+          ]
+        },
+        {
+          "key": "pathfinder",
+          "name": "Pathfinder",
+          "examples": [
+            "Pathfinder CTA Labels"
+          ],
+          "labels": [
+            "Pathfinder CTA Labels"
+          ]
+        },
+        {
+          "key": "this-book-filter",
+          "name": "This Book Filter",
+          "examples": [
+            "This Book Filter"
+          ],
+          "labels": [
+            "This Book Filter"
+          ]
+        },
+        {
+          "key": "virtualization-campaign",
+          "name": "Virtualization Campaign",
+          "examples": [
+            "Virtualization Campaign"
+          ],
+          "labels": [
+            "Virtualization Campaign"
+          ]
+        },
+        {
+          "key": "webinar-registration-page",
+          "name": "Webinar Registration Page",
+          "examples": [
+            "Webinar Registration Page"
+          ],
+          "labels": [
+            "Webinar Registration Page"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 April 23, 2026",
+      "week_date": "2026-04-23",
+      "workstreams": [
+        {
+          "key": "view-research-roundup-audit",
+          "name": "✅ View Research Roundup Audit",
+          "examples": [
+            "✅ View Research Roundup Audit"
+          ],
+          "labels": [
+            "✅ View Research Roundup Audit"
+          ]
+        },
+        {
+          "key": "ai-summary",
+          "name": "AI Summary & Messaging",
+          "examples": [
+            "Homepage AI Messaging"
+          ],
+          "labels": [
+            "Homepage AI Messaging"
+          ]
+        },
+        {
+          "key": "business-communication-issues",
+          "name": "Business Communication Issues",
+          "examples": [
+            "Business communication issues"
+          ],
+          "labels": [
+            "Business communication issues"
+          ]
+        },
+        {
+          "key": "events",
+          "name": "Events",
+          "examples": [
+            "Events Page"
+          ],
+          "labels": [
+            "Events Page"
+          ]
+        },
+        {
+          "key": "interactive-issues",
+          "name": "Interactive Issues",
+          "examples": [
+            "Interactive issues"
+          ],
+          "labels": [
+            "Interactive issues"
+          ]
+        },
+        {
+          "key": "presentation-issues",
+          "name": "Presentation Issues",
+          "examples": [
+            "Presentation issues"
+          ],
+          "labels": [
+            "Presentation issues"
+          ]
+        },
+        {
+          "key": "research-roundup-audit",
+          "name": "Research Roundup Audit",
+          "examples": [
+            "Research Roundup Audit"
+          ],
+          "labels": [
+            "Research Roundup Audit"
+          ]
+        },
+        {
+          "key": "we-ve-audited-the-email-and-roundup-report-to-highlight-areas-of-improvement-across",
+          "name": "We’ve Audited The Email And Roundup Report To Highlight Areas Of Improvement Across",
+          "examples": [
+            "We’ve audited the email and Roundup report to highlight areas of improvement across"
+          ],
+          "labels": [
+            "We’ve audited the email and Roundup report to highlight areas of improvement across"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 April 16, 2026",
+      "week_date": "2026-04-16",
+      "workstreams": [
+        {
+          "key": "ai-summary",
+          "name": "AI Summary & Messaging",
+          "examples": [
+            "Homepage AI Messaging"
+          ],
+          "labels": [
+            "Homepage AI Messaging"
+          ]
+        },
+        {
+          "key": "events",
+          "name": "Events",
+          "examples": [
+            "Events Page"
+          ],
+          "labels": [
+            "Events Page"
+          ]
+        },
+        {
+          "key": "pathfinder",
+          "name": "Pathfinder",
+          "examples": [
+            "Pathfinder CTA Labels"
+          ],
+          "labels": [
+            "Pathfinder CTA Labels"
+          ]
+        }
+      ]
+    },
+    {
+      "week_label": "📌 April 9, 2026",
+      "week_date": "2026-04-09",
+      "workstreams": [
+        {
+          "key": "ai-summary",
+          "name": "AI Summary & Messaging",
+          "examples": [
+            "Homepage AI Messaging"
+          ],
+          "labels": [
+            "Homepage AI Messaging"
+          ]
+        },
+        {
+          "key": "events",
+          "name": "Events",
+          "examples": [
+            "Events V1",
+            "Events V2"
+          ],
+          "labels": [
+            "Events Page Baseline"
+          ]
+        },
+        {
+          "key": "pathfinder",
+          "name": "Pathfinder",
+          "examples": [
+            "Pathfinder CTA Labels"
+          ],
+          "labels": [
+            "Pathfinder CTA Labels"
+          ]
+        }
+      ]
+    }
+  ],
+  "active_workstreams": [
+    {
+      "name": "Events",
+      "unresolved_question": "Which event-page structure and content framing should move forward after the baseline / V1 / V2 comparison?",
+      "recent_examples": [
+        "Events Page",
+        "Events V1",
+        "Events V2"
+      ]
+    },
+    {
+      "name": "AI Summary & Messaging",
+      "unresolved_question": "Which one or two AI framings are strongest enough to take into the next comparison round?",
+      "recent_examples": [
+        "Homepage AI Messaging"
+      ]
+    },
+    {
+      "name": "Pathfinder",
+      "unresolved_question": "Which labels or journey cues need to become clearer before the next validation round?",
+      "recent_examples": [
+        "Pathfinder CTA Labels"
+      ]
+    },
+    {
+      "name": "This Book Filter",
+      "unresolved_question": "What does this line of work need to prove in the next round of research?",
+      "recent_examples": [
+        "This Book Filter"
+      ]
+    },
+    {
+      "name": "Webinar Registration Page",
+      "unresolved_question": "What does this line of work need to prove in the next round of research?",
+      "recent_examples": [
+        "Webinar Registration Page"
+      ]
+    }
+  ],
+  "repeated_research_threads": [
+    {
+      "name": "Events",
+      "weeks_seen_count": 4,
+      "examples": [
+        "Events Page",
+        "Events V1",
+        "Events V2"
+      ]
+    },
+    {
+      "name": "AI Summary & Messaging",
+      "weeks_seen_count": 3,
+      "examples": [
+        "Homepage AI Messaging"
+      ]
+    },
+    {
+      "name": "Pathfinder",
+      "weeks_seen_count": 3,
+      "examples": [
+        "Pathfinder CTA Labels"
+      ]
+    },
+    {
+      "name": "This Book Filter",
+      "weeks_seen_count": 2,
+      "examples": [
+        "This Book Filter"
+      ]
+    },
+    {
+      "name": "Webinar Registration Page",
+      "weeks_seen_count": 2,
+      "examples": [
+        "Webinar Registration Page"
+      ]
+    }
+  ],
+  "comparison_work_in_flight": [
+    {
+      "name": "Events",
+      "decision_criteria": "Pick the version that gives the clearest event-page direction with the fewest comprehension tradeoffs.",
+      "examples": [
+        "Events Page",
+        "Events Page Baseline",
+        "Events V1",
+        "Events V2"
+      ],
+      "weeks_seen": [
+        "📌 April 30, 2026",
+        "📌 April 23, 2026",
+        "📌 April 16, 2026",
+        "📌 April 9, 2026"
+      ]
+    },
+    {
+      "name": "AI Summary & Messaging",
+      "decision_criteria": "Reduce to the strongest one or two framings, then choose the version that is clearest and easiest to act on.",
+      "examples": [
+        "Homepage AI Messaging"
+      ],
+      "weeks_seen": [
+        "📌 April 23, 2026",
+        "📌 April 16, 2026",
+        "📌 April 9, 2026"
+      ]
+    }
+  ],
+  "how_to_use_this_log": [
+    "Use this page to show research cadence and volume across the last 30 days, not to make final ship / hold calls.",
+    "Treat repeated threads as signs of where research capacity is concentrating over multiple weekly updates.",
+    "Use comparison work in flight to understand which decisions are narrowing, even when a final winner is not chosen yet."
+  ]
+}

@@ -1,0 +1,642 @@
+{
+  "generated_at": "2026-05-11T23:15:11.659Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 8,
+  "with_evidence_count": 8,
+  "concepts": [
+    {
+      "concept_key": "187__pathfinder cta labels",
+      "concept_id": "187",
+      "concept_title": "Pathfinder CTA Labels",
+      "concept_display": "187 - Pathfinder CTA Labels",
+      "weeks_seen": [
+        "2026-04-09",
+        "2026-04-16",
+        "2026-04-30"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "187 - Pathfinder CTA Labels",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-16",
+          "record_id": "everpure_2026_04_16",
+          "group": "findings",
+          "text": "187 - Pathfinder CTA Labels",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "187 - Pathfinder CTA Labels",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 25,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 21,
+          "numbers": [
+            "151",
+            "1",
+            "187",
+            "188",
+            "0",
+            "189",
+            "190"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 21,
+          "numbers": [
+            "151",
+            "1",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "187 - Pathfinder CTA Labels",
+          "score": 21,
+          "numbers": [
+            "187"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "187 - Pathfinder CTA Labels"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187",
+        "188"
+      ],
+      "matched_summary": "187 - Pathfinder CTA Labels is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "186__homepage ai messaging",
+      "concept_id": "186",
+      "concept_title": "Homepage AI Messaging",
+      "concept_display": "186 - Homepage AI Messaging",
+      "weeks_seen": [
+        "2026-04-09",
+        "2026-04-16",
+        "2026-04-23"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-23",
+          "record_id": "everpure_2026_04_23",
+          "group": "findings",
+          "text": "186 - Homepage AI Messaging",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-16",
+          "record_id": "everpure_2026_04_16",
+          "group": "findings",
+          "text": "186 - Homepage AI Messaging",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "in_process",
+          "text": "186 - Homepage AI Messaging",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"✅ View Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"We’ve audited the email and Roundup report to highlight areas of improvement across:\",\"level\":0,\"children\":[]},{\"text\":\"Business communication issues\",\"level\":1,\"children\":[]},{\"text\":\"Interactive issues\",\"level\":1,\"children\":[]},{\"text\":\"Presentation issues\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "151",
+            "1",
+            "186",
+            "0"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "151",
+            "1",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "186 - Homepage AI Messaging",
+          "score": 18,
+          "numbers": [
+            "186"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"✅ View Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"We’ve audited the email and Roundup report to highlight areas of improvement across:\",\"level\":0,\"children\":[]},{\"text\":\"Business communication issues\",\"level\":1,\"children\":[]},{\"text\":\"Interactive issues\",\"level\":1,\"children\":[]},{\"text\":\"Presentation issues\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "186 - Homepage AI Messaging"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187",
+        "0"
+      ],
+      "matched_summary": "186 - Homepage AI Messaging is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "151__events page baseline",
+      "concept_id": "151",
+      "concept_title": "Events Page Baseline",
+      "concept_display": "151 - Events Page Baseline",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "151 - Events Page Baseline",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 22,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "151 - Events Page Baseline",
+          "score": 22,
+          "numbers": [
+            "151"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "151 - Events Page Baseline"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187"
+      ],
+      "matched_summary": "151 - Events Page Baseline is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "189__webinar registration page",
+      "concept_id": "189",
+      "concept_title": "Webinar Registration Page",
+      "concept_display": "189 - Webinar Registration Page",
+      "weeks_seen": [
+        "2026-04-30",
+        "2026-05-07"
+      ],
+      "deck_refs": [
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM",
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-05-07",
+          "record_id": "everpure_2026_05_07",
+          "group": "findings",
+          "text": "189 - Webinar Registration Page",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        },
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "189 - Webinar Registration Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "151",
+            "1",
+            "187",
+            "188",
+            "0",
+            "189",
+            "190"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "189",
+            "1",
+            "190"
+          ]
+        },
+        {
+          "text": "189 - Webinar Registration Page",
+          "score": 18,
+          "numbers": [
+            "189"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "189 - Webinar Registration Page"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "187",
+        "188",
+        "0",
+        "189"
+      ],
+      "matched_summary": "189 - Webinar Registration Page is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "190__this book filter",
+      "concept_id": "190",
+      "concept_title": "This Book Filter",
+      "concept_display": "190 - This Book Filter",
+      "weeks_seen": [
+        "2026-04-30",
+        "2026-05-07"
+      ],
+      "deck_refs": [
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM",
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-05-07",
+          "record_id": "everpure_2026_05_07",
+          "group": "findings",
+          "text": "190 - This Book Filter",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        },
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "190 - This Book Filter",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "151",
+            "1",
+            "187",
+            "188",
+            "0",
+            "189",
+            "190"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "189",
+            "1",
+            "190"
+          ]
+        },
+        {
+          "text": "190 - This Book Filter",
+          "score": 16,
+          "numbers": [
+            "190"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "190 - This Book Filter"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "187",
+        "188",
+        "0",
+        "189"
+      ],
+      "matched_summary": "190 - This Book Filter is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "188__virtualization campaign",
+      "concept_id": "188",
+      "concept_title": "Virtualization Campaign",
+      "concept_display": "188 - Virtualization Campaign",
+      "weeks_seen": [
+        "2026-04-30"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "188 - Virtualization Campaign",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 18,
+          "numbers": [
+            "151",
+            "1",
+            "187",
+            "188",
+            "0",
+            "189",
+            "190"
+          ]
+        },
+        {
+          "text": "188 - Virtualization Campaign",
+          "score": 18,
+          "numbers": [
+            "188"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "188 - Virtualization Campaign"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "187",
+        "188",
+        "0",
+        "189"
+      ],
+      "matched_summary": "188 - Virtualization Campaign is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "151__events page",
+      "concept_id": "151",
+      "concept_title": "Events Page",
+      "concept_display": "151 - Events Page",
+      "weeks_seen": [
+        "2026-04-16",
+        "2026-04-23",
+        "2026-04-30"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "151 - Events Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-23",
+          "record_id": "everpure_2026_04_23",
+          "group": "findings",
+          "text": "151 - Events Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-16",
+          "record_id": "everpure_2026_04_16",
+          "group": "findings",
+          "text": "151 - Events Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"✅ View Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"We’ve audited the email and Roundup report to highlight areas of improvement across:\",\"level\":0,\"children\":[]},{\"text\":\"Business communication issues\",\"level\":1,\"children\":[]},{\"text\":\"Interactive issues\",\"level\":1,\"children\":[]},{\"text\":\"Presentation issues\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 15,
+          "numbers": [
+            "151",
+            "1",
+            "186",
+            "0"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 15,
+          "numbers": [
+            "151",
+            "1",
+            "187",
+            "188",
+            "0",
+            "189",
+            "190"
+          ]
+        },
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 15,
+          "numbers": [
+            "151",
+            "1",
+            "186",
+            "187"
+          ]
+        },
+        {
+          "text": "151 - Events Page",
+          "score": 1,
+          "numbers": [
+            "151"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"✅ View Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"Research Roundup Audit\",\"level\":0,\"children\":[]},{\"text\":\"We’ve audited the email and Roundup report to highlight areas of improvement across:\",\"level\":0,\"children\":[]},{\"text\":\"Business communication issues\",\"level\":1,\"children\":[]},{\"text\":\"Interactive issues\",\"level\":1,\"children\":[]},{\"text\":\"Presentation issues\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]},{\"text\":\"188 - Virtualization Campaign\",\"level\":1,\"children\":[]},{\"text\":\"👉 View Concepts in Figma\",\"level\":0,\"children\":[]},{\"text\":\"On Deck\",\"level\":0,\"children\":[]},{\"text\":\"189 - Webinar Registration Page\",\"level\":1,\"children\":[]},{\"text\":\"190 - This Book Filter\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "{\"findings\":[{\"text\":\"151 - Events Page\",\"level\":1,\"children\":[]},{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"testing_concepts\":[],\"in_process\":[],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+        "151 - Events Page"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "186",
+        "0",
+        "187",
+        "188"
+      ],
+      "matched_summary": "151 - Events Page is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 15,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "events",
+      "concept_id": null,
+      "concept_title": "Events",
+      "concept_display": "Events",
+      "weeks_seen": [
+        "2026-04-09"
+      ],
+      "deck_refs": [
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V1",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        },
+        {
+          "week_date": "2026-04-09",
+          "record_id": "everpure_2026_04_09",
+          "group": "findings",
+          "text": "Events V2",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}",
+          "score": 11,
+          "numbers": [
+            "151",
+            "1",
+            "2",
+            "186",
+            "187"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "{\"findings\":[{\"text\":\"151 - Events Page Baseline\",\"level\":1,\"children\":[{\"text\":\"Events V1\",\"level\":2,\"children\":[]},{\"text\":\"Events V2\",\"level\":2,\"children\":[]}]}],\"testing_concepts\":[],\"in_process\":[{\"text\":\"186 - Homepage AI Messaging\",\"level\":1,\"children\":[]},{\"text\":\"187 - Pathfinder CTA Labels\",\"level\":1,\"children\":[]}],\"initiatives_on_deck\":[],\"weekly_progress\":[],\"needs\":[],\"next_steps\":[],\"other\":[]}"
+      ],
+      "clean_key_numbers": [
+        "151",
+        "1",
+        "2",
+        "186",
+        "187"
+      ],
+      "matched_summary": "Events is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 11,
+      "evidence_found": true
+    }
+  ]
+}
