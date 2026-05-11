@@ -741,7 +741,7 @@ function confidenceBadge(level, dark = false) {
     low: { bg: dark ? 'rgba(255,245,227,0.12)' : 'rgba(143,165,150,0.18)', fg: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted-fg)', dot: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted)', label: 'Low confidence' },
   };
   const c = map[key] || map.medium;
-  return `<div class="confidence" style="background:${c.bg};color:${c.fg};"><span class="dot" style="background:${c.dot};"></span>${escapeHtml(c.label)}</div>`;
+  return `<div class="confidence" style="background:${c.bg};color:${c.fg};">${escapeHtml(c.label)}</div>`;
 }
 
 function sourceLinkInline(label, href, dark = false) {
