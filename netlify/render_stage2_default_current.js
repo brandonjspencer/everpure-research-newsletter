@@ -315,8 +315,8 @@ function groupEvidencePacks(packs) {
 function weekPhrase(group) {
   const weeks = group.weeks_seen || [];
   if (!weeks.length) return 'the current 30-day window';
-  if (weeks.length === 1) return `the ${weeks[0]} update`;
-  return `${weeks.length} weekly updates (${weeks.join(', ')})`;
+  if (weeks.length === 1) return 'a recent weekly update';
+  return `${weeks.length} weekly updates`;
 }
 
 function deckPhrase(group) {
@@ -371,9 +371,9 @@ function actionForTopic(title) {
   if (key === 'events_page') return 'Run one final Events decision round that compares the surviving version or page direction against explicit winning criteria: first-glance purpose, event-discovery clarity, primary CTA clarity, and confidence that the page will get visitors to the right event path.';
   if (key === 'homepage_ai_messaging') return 'Define what Homepage AI Messaging is supposed to improve before testing again: faster comprehension, stronger credibility, clearer differentiation, or better pathing. Do not treat positive reaction to AI language as enough to ship.';
   if (key === 'pathfinder_cta_labels') return 'Test Pathfinder CTA labels around expectation-setting and commitment friction. The winning label should make the next step feel specific and safe, not merely more energetic.';
-  if (key === 'webinar_registration_page') return 'Review the May 7 webinar registration evidence before calling a direction. Decide whether the issue is registration-page clarity, form friction, offer framing, or content sufficiency.';
+  if (key === 'webinar_registration_page') return 'Clarify what the webinar registration work is signaling before calling a direction. Decide whether users need a clearer reason to register, less form friction, stronger offer framing, or more concrete content detail.';
   if (key === 'this_book_filter') return 'For the reader/content filter labeled “This Book,” validate whether users understand it as a current-content filter. If the label reads as internal language, rename it before expanding the filter model or promoting it as a finding.';
-  if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item unless the next update adds either repeated evidence or a concrete behavior signal.';
+  if (key === 'virtualization_campaign') return 'Keep the Virtualization Campaign as a watch item unless the next research update clarifies whether the signal is about message clarity, audience relevance, or next-step interest.';
   return `Define the decision ${title} should unblock, then run a focused validation pass with explicit success criteria.`;
 }
 
@@ -508,11 +508,11 @@ function buildUnresolvedQuestions(groups, statusInfo) {
     if (!group) continue;
     const key = topicKey(title);
     if (key === 'webinar_registration_page') {
-      questions.push({ title, scope: 'May 7 evidence review', question: 'Is the webinar registration signal about page clarity, form friction, offer framing, or content sufficiency?' });
+      questions.push({ title, scope: 'Registration value and form clarity', question: 'Does the webinar registration page make the value of registering clear enough for visitors to continue, or is the remaining friction coming from the form, offer framing, or lack of content detail?' });
     } else if (key === 'this_book_filter') {
-      questions.push({ title: 'Reader Filter: “This Book”', scope: 'Content filtering clarity', question: 'In the May 7 filtering work, does the “This Book” label clearly tell users they are narrowing within the current content set, or should the label be rewritten in more user-facing language?' });
+      questions.push({ title: 'Reader Filter: “This Book”', scope: 'Content filtering clarity', question: 'Does the “This Book” label clearly tell readers they are narrowing within the current content set, or does it sound like internal terminology that should be rewritten before the filter model expands?' });
     } else if (key === 'virtualization_campaign') {
-      questions.push({ title, scope: 'Single-occurrence watch item', question: 'Is this a real campaign-direction signal, or a one-week mention that should stay out of executive recommendations until it repeats?' });
+      questions.push({ title, scope: 'Campaign message direction', question: 'Is the Virtualization Campaign signal pointing to a clearer campaign direction — message clarity, audience relevance, or next-step interest — or is it only a single mention that should stay out of executive recommendations until it repeats?' });
     }
   }
   if (!questions.length) {
@@ -619,7 +619,7 @@ function buildStage2Brief() {
   const deckCount = deckContentCount(statusInfo);
 
   const latestDate = counts.latest_week_date || statusInfo?._meta?.latest_week_date || 'the latest week';
-  const executiveSummary = `The current 30-day research cycle is updated through ${latestDate}. The strongest movement is around Events, Homepage AI Messaging, and Pathfinder CTA Labels, where the next step is to narrow criteria and choose a direction. May 7 also adds Webinar Registration Page and Reader Filter work that should stay unresolved until the next round clarifies the user behavior behind each signal.`;
+  const executiveSummary = `The current 30-day research cycle is updated through ${latestDate}. The strongest movement is around Events, Homepage AI Messaging, and Pathfinder CTA Labels, where the next step is to narrow criteria and choose a direction. Recent updates also add Webinar Registration Page and Reader Filter work that should stay unresolved until the next round clarifies the user behavior behind each signal.`;
 
   const note = "Use this cycle's evidence as a decision-readiness view. The actions identify what each research track needs to prove before it becomes a stronger recommendation.";
 
