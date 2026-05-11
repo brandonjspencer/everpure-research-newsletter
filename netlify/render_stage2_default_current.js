@@ -763,6 +763,8 @@ function renderMarkdown(data) {
   out.push('');
   out.push(data.note);
   out.push('');
+  out.push('Feedback: Have feedback on how to improve the newsletter? Share it in [#research-and-discovery](https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ).');
+  out.push('');
   return out.join('\n');
 }
 
@@ -955,6 +957,9 @@ a { color: inherit; }
 .action-scope { display:block; margin-top:-4px; font-size:13px; font-weight:600; color:var(--muted-fg); line-height:1.5; }
 .action-row p { margin:0; font-size:var(--text-h4); line-height:1.75; }
 .note { margin:48px 0 0; font-size:var(--text-label); line-height:1.75; color:var(--muted-fg); font-style:italic; }
+.feedback-note { margin:16px 0 0; font-size:var(--text-label); line-height:1.75; color:var(--muted-fg); }
+.feedback-note a { color:var(--primary); font-weight:700; text-decoration:none; }
+.feedback-note a:hover { text-decoration:underline; }
 .footer { background: var(--sidebar); border-top:3px solid var(--primary); }
 .footer-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:28px 0; }
 .footer span { font-size:var(--text-label); color:var(--sidebar-fg); opacity:0.32; }
@@ -1057,6 +1062,7 @@ a { color: inherit; }
   });
   html.push('</div>');
   html.push(`<p class="note">${escapeHtml(data.note)}</p>`);
+  html.push('<p class="feedback-note">Have feedback on how to improve the newsletter? Share it in <a href="https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ">#research-and-discovery</a>.</p>');
   html.push('</div></section>');
 
   html.push('<footer class="footer"><div class="wrapper footer-inner">');
