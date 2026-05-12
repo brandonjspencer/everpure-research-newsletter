@@ -57,6 +57,18 @@ if compgen -G "$ARTIFACTS/*.pdf" > /dev/null; then
     --pdf-dir "$ARTIFACTS"
 fi
 
+if [ -f "$ROOT/everpure_external_research_ingest.py" ]; then
+  if [ ${#FETCH_ARGS[@]} -gt 0 ]; then
+    if [ "${EXTERNAL_EVIDENCE_STRICT:-0}" = "1" ]; then
+      python3 "$ROOT/everpure_external_research_ingest.py" "${FETCH_ARGS[@]}"
+    else
+      python3 "$ROOT/everpure_external_research_ingest.py" "${FETCH_ARGS[@]}" || echo "External research evidence ingest failed; continuing."
+    fi
+  else
+    echo "Skipping external research evidence ingest because Google credentials are not available."
+  fi
+fi
+
 if [ -f "$ROOT/netlify/build_evidence_packs.js" ]; then
   node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
 fi
