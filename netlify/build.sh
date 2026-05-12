@@ -72,6 +72,10 @@ fi
 if [ -f "$ROOT/netlify/build_evidence_packs.js" ]; then
   node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
 fi
+if [ -f "$ROOT/netlify/merge_external_evidence_packs.js" ]; then
+  node "$ROOT/netlify/merge_external_evidence_packs.js" "$ROOT/publish"
+fi
+
 
 if [ -f "$ROOT/netlify/clean_evidence_signals.js" ]; then
   node "$ROOT/netlify/clean_evidence_signals.js" "$ROOT/publish"
@@ -82,6 +86,10 @@ if [ -f "$ROOT/netlify/build_concept_evidence.js" ]; then
 fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
+if [ -f "$ROOT/netlify/external_evidence_observability.js" ]; then
+  node "$ROOT/netlify/external_evidence_observability.js" "$ROOT/publish"
+fi
+
 node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
 node "$ROOT/netlify/fix_default_bottom.js" "$ROOT/publish"
 
