@@ -45,6 +45,10 @@ if [ ${#FETCH_ARGS[@]} -gt 0 ]; then
     FETCH_ARGS+=(--limit "$GOOGLE_FETCH_LIMIT")
   fi
   python3 "$ROOT/everpure_google_fetch.py" "${FETCH_ARGS[@]}"
+
+  if [ -f "$ROOT/everpure_deck_link_smoke.py" ]; then
+    python3 "$ROOT/everpure_deck_link_smoke.py" "${FETCH_ARGS[@]}" || echo "Deck link smoke test failed; continuing main build."
+  fi
 fi
 
 if compgen -G "$ARTIFACTS/*.pdf" > /dev/null; then
