@@ -23,13 +23,55 @@ if [ -n "${SOURCE_URL:-}" ]; then
 
   if [ "$REFRESH_STATUS" -ne 0 ]; then
     if [ -f "$ROOT/data/Everpure.html" ]; then
-      echo "::warning::Live Notion fetch failed; using committed data/Everpure.html source snapshot."
+      echo "::warning::Live Notion fetch failed; validating committed data/Everpure.html source snapshot."
 
+      SNAP_OUT="$(mktemp -d)"
+
+      set +e
       python3 "$ROOT/everpure_refresh.py" \
         --html-path "$ROOT/data/Everpure.html" \
-        --output-dir "$OUT"
+        --output-dir "$SNAP_OUT"
+      SNAP_STATUS=$?
+      set -e
 
-      OUT_PATH="$OUT" python3 - <<'PY2'
+      SNAP_OK=0
+      if [ "$SNAP_STATUS" -eq 0 ]; then
+        SNAP_OK=$(python3 - "$SNAP_OUT" <<'PY_CHECK'
+import json
+import sys
+from pathlib import Path
+
+out = Path(sys.argv[1])
+weeks_path = out / "weeks.json"
+decks_path = out / "decks.json"
+summary_path = out / "summary.json"
+
+try:
+    weeks = json.loads(weeks_path.read_text(encoding="utf-8")) if weeks_path.exists() else []
+    decks = json.loads(decks_path.read_text(encoding="utf-8")) if decks_path.exists() else []
+    summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
+except Exception:
+    print("0")
+    raise SystemExit(0)
+
+date_range = summary.get("date_range", {}) if isinstance(summary, dict) else {}
+latest = date_range.get("max")
+
+if isinstance(weeks, list) and len(weeks) > 0 and latest:
+    print("1")
+else:
+    print("0")
+PY_CHECK
+)
+      fi
+
+      if [ "$SNAP_OK" = "1" ]; then
+        echo "Local source snapshot parsed successfully; using it for this build."
+        rm -rf "$OUT"
+        mkdir -p "$OUT"
+        cp -R "$SNAP_OUT"/. "$OUT"/
+
+        OUT_PATH="$OUT" python3 - <<'PY_MARK'
 import json
 import os
 from pathlib import Path
@@ -39,14 +81,24 @@ data = json.loads(manifest_path.read_text(encoding="utf-8"))
 source = data.setdefault("source", {})
 source["fetch_method"] = "local_html_fallback"
 source["source_fallback"] = "local_html_snapshot"
-source["fallback_warning"] = "Live Notion fetch failed; build used committed data/Everpure.html snapshot before falling back to existing parsed outputs."
+source["fallback_warning"] = "Live Notion fetch failed; build used committed data/Everpure.html snapshot after validation."
 manifest_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-PY2
+PY_MARK
+      else
+        echo "::warning::data/Everpure.html exists but parsed into zero usable weeks; falling back to existing parsed outputs."
+
+        NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
+        ALLOW_SOURCE_FALLBACK=1 \
+          python3 "$ROOT/everpure_refresh.py" \
+            --source-url "$SOURCE_URL" \
+            --output-dir "$OUT" \
+            --raw-dir "$RAW"
+      fi
     else
-      echo "::warning::Live Notion fetch failed and data/Everpure.html was not found; retrying with existing output fallback enabled."
+      echo "::warning::Live Notion fetch failed and data/Everpure.html was not found; falling back to existing parsed outputs."
 
       NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
-      ALLOW_SOURCE_FALLBACK="${ALLOW_SOURCE_FALLBACK:-1}" \
+      ALLOW_SOURCE_FALLBACK=1 \
         python3 "$ROOT/everpure_refresh.py" \
           --source-url "$SOURCE_URL" \
           --output-dir "$OUT" \
