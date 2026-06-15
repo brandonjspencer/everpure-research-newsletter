@@ -100,17 +100,25 @@ class NotionFetcher:
             )
             context = browser.new_context(
                 user_agent=DEFAULT_UA,
-                viewport={'width': 1440, 'height': 3000},
+                viewport={'width': 1440, 'height': 3200},
                 java_script_enabled=True,
                 locale='en-US',
             )
             page = context.new_page()
             page.set_default_timeout(self.timeout * 1000)
 
+            # Reduce background churn from Notion so the rendered DOM can settle.
             try:
-                # Notion is brittle in GitHub Actions when waiting for
-                # domcontentloaded/load. Commit starts navigation; selector and
-                # content checks below decide whether the page is usable.
+                page.route(
+                    "**/*",
+                    lambda route: route.abort()
+                    if route.request.resource_type in ["image", "media", "font"]
+                    else route.continue_()
+                )
+            except Exception:
+                pass
+
+            try:
                 page.goto(url, wait_until='commit', timeout=self.timeout * 1000)
             except Exception as exc:
                 if exc.__class__.__name__ != 'TimeoutError':
@@ -118,45 +126,62 @@ class NotionFetcher:
                     browser.close()
                     raise
 
-            # Give Notion time to hydrate.
-            page.wait_for_timeout(12000)
+            # Give Notion time to hydrate visible blocks.
+            page.wait_for_timeout(15000)
 
             try:
-                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=45000)
+                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=60000)
             except Exception:
-                page.wait_for_timeout(10000)
+                page.wait_for_timeout(12000)
 
-            # Trigger lazy rendering.
-            for _ in range(6):
+            # Trigger lazy-rendered blocks.
+            for _ in range(8):
                 try:
                     page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
                 except Exception:
                     pass
-                page.wait_for_timeout(2500)
+                page.wait_for_timeout(2000)
 
-            # Notion may still be navigating when content is requested. Retry a few
-            # times before falling back to documentElement.outerHTML.
+            # Freeze the page before attempting to read HTML. This prevents
+            # Page.content failures caused by continuous Notion navigation/hydration.
+            try:
+                page.evaluate('window.stop && window.stop()')
+            except Exception:
+                pass
+
+            page.wait_for_timeout(3000)
+
             html = ''
             last_exc = None
+
+            # Prefer direct DOM serialization; it is more tolerant when Playwright
+            # thinks the page is still changing.
             for _ in range(6):
                 try:
-                    html = page.content()
+                    html = page.evaluate("document.documentElement ? document.documentElement.outerHTML : ''")
                     if html and len(html) > 1000:
                         break
                 except Exception as exc:
                     last_exc = exc
-                    page.wait_for_timeout(3000)
+                    page.wait_for_timeout(2500)
 
+            # Fallback to Playwright page.content.
             if not html:
-                try:
-                    html = page.evaluate("document.documentElement ? document.documentElement.outerHTML : ''")
-                except Exception as exc:
-                    context.close()
-                    browser.close()
-                    raise FetchError(f'Playwright rendered page but could not retrieve HTML content: {last_exc or exc}') from exc
+                for _ in range(4):
+                    try:
+                        html = page.content()
+                        if html and len(html) > 1000:
+                            break
+                    except Exception as exc:
+                        last_exc = exc
+                        page.wait_for_timeout(2500)
 
             context.close()
             browser.close()
+
+            if not html:
+                raise FetchError(f'Playwright rendered page but could not retrieve HTML content: {last_exc}')
+
             return html
 
     def _looks_like_rendered_notion(self, html: str) -> bool:
