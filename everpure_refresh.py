@@ -150,7 +150,7 @@ def refresh_pipeline(
         fetch_meta['source_html_path'] = str(html_path)
         fetch_meta['fetch_method'] = 'local_html'
     elif source_url:
-        fetcher = NotionFetcher()
+        fetcher = NotionFetcher(timeout=int(os.environ.get('NOTION_FETCH_TIMEOUT', '120')))
         fetched = fetcher.fetch(source_url, method=fetch_method)
         html = fetched['html']
         fetch_meta['fetch_method'] = fetched['method']

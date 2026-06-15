@@ -22,6 +22,7 @@ jobs:
     env:
       SOURCE_URL: ${{ secrets.SOURCE_URL }}
       NOTION_FETCH_METHOD: auto
+      NOTION_FETCH_TIMEOUT: '120'
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
