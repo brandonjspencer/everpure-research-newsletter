@@ -33,15 +33,13 @@ class FetchError(RuntimeError):
 
 
 class NotionFetcher:
-    def __init__(self, timeout: int = 45):
+    def __init__(self, timeout: int = 180):
         self.timeout = timeout
 
     def fetch(self, url: str, method: str = 'auto') -> Dict[str, Any]:
-        method = method.lower()
+        method = (method or 'auto').lower()
         attempts = []
 
-        # For hosted environments, browser rendering is usually the reliable path.
-        ordered_methods = []
         if method == 'auto':
             ordered_methods = ['playwright', 'requests']
         else:
@@ -89,7 +87,7 @@ class NotionFetcher:
 
     def _fetch_playwright(self, url: str) -> str:
         try:
-            from playwright.sync_api import sync_playwright # type: ignore
+            from playwright.sync_api import sync_playwright  # type: ignore
         except Exception as exc:
             raise FetchError('Playwright is not installed. Install with: pip install playwright && python -m playwright install chromium') from exc
 
@@ -107,18 +105,21 @@ class NotionFetcher:
             page = context.new_page()
             page.set_default_timeout(self.timeout * 1000)
 
-            # Reduce background churn from Notion so the rendered DOM can settle.
+            # Reduce Notion background churn so the DOM can settle in GitHub Actions.
             try:
                 page.route(
-                    "**/*",
+                    '**/*',
                     lambda route: route.abort()
-                    if route.request.resource_type in ["image", "media", "font"]
-                    else route.continue_()
+                    if route.request.resource_type in ['image', 'media', 'font']
+                    else route.continue_(),
                 )
             except Exception:
                 pass
 
             try:
+                # Notion is brittle in GitHub Actions when waiting for load or
+                # domcontentloaded. Commit starts navigation; the selector and
+                # validation checks below determine whether the content is usable.
                 page.goto(url, wait_until='commit', timeout=self.timeout * 1000)
             except Exception as exc:
                 if exc.__class__.__name__ != 'TimeoutError':
@@ -126,7 +127,6 @@ class NotionFetcher:
                     browser.close()
                     raise
 
-            # Give Notion time to hydrate visible blocks.
             page.wait_for_timeout(15000)
 
             try:
@@ -134,7 +134,6 @@ class NotionFetcher:
             except Exception:
                 page.wait_for_timeout(12000)
 
-            # Trigger lazy-rendered blocks.
             for _ in range(8):
                 try:
                     page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
@@ -142,20 +141,15 @@ class NotionFetcher:
                     pass
                 page.wait_for_timeout(2000)
 
-            # Freeze the page before attempting to read HTML. This prevents
-            # Page.content failures caused by continuous Notion navigation/hydration.
             try:
                 page.evaluate('window.stop && window.stop()')
             except Exception:
                 pass
-
             page.wait_for_timeout(3000)
 
             html = ''
             last_exc = None
 
-            # Prefer direct DOM serialization; it is more tolerant when Playwright
-            # thinks the page is still changing.
             for _ in range(6):
                 try:
                     html = page.evaluate("document.documentElement ? document.documentElement.outerHTML : ''")
@@ -165,7 +159,6 @@ class NotionFetcher:
                     last_exc = exc
                     page.wait_for_timeout(2500)
 
-            # Fallback to Playwright page.content.
             if not html:
                 for _ in range(4):
                     try:
@@ -193,6 +186,7 @@ class NotionFetcher:
             or 'View Findings Deck' in html
             or 'Findings Deck' in html
             or 'Research' in html
+            or '📌' in html
         )
         return block_count >= 5 and has_research_hint
 
@@ -207,6 +201,73 @@ def read_text(path: Path) -> str:
         return f.read()
 
 
+
+def read_json(path: Path) -> Any:
+    with path.open('r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def existing_parsed_outputs_available(output_dir: Path) -> bool:
+    required = ['metadata.json', 'weeks.json', 'decks.json', 'summary.json']
+    return all((output_dir / name).is_file() for name in required)
+
+
+def build_manifest_from_existing_outputs(
+    output_dir: Path,
+    source_url: Optional[str],
+    raw_dir: Optional[Path],
+    since: Optional[str],
+    until: Optional[str],
+    fetch_method: str,
+    fetch_error: Exception,
+) -> Dict[str, Any]:
+    if not existing_parsed_outputs_available(output_dir):
+        raise fetch_error
+
+    if until is None:
+        until = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    if since is None:
+        since = (datetime.now(timezone.utc) - timedelta(days=90)).strftime('%Y-%m-%d')
+
+    # Rebuild the newsletter pack from the last committed/generated parsed data.
+    store = EverpureStore(str(output_dir))
+    newsletter_pack = build_newsletter_pack(store, since=since, until=until)
+    write_json(output_dir / 'newsletter_pack_90d.json', newsletter_pack)
+
+    weeks = read_json(output_dir / 'weeks.json')
+    decks = read_json(output_dir / 'decks.json')
+    summary = read_json(output_dir / 'summary.json')
+
+    snapshot_candidates = []
+    if raw_dir and raw_dir.exists():
+        snapshot_candidates = sorted(raw_dir.glob('everpure_snapshot_*.html'))
+    source_html_path = str(snapshot_candidates[-1].resolve()) if snapshot_candidates else None
+
+    manifest = {
+        'generated_at': utc_now(),
+        'source': {
+            'source_url': source_url,
+            'source_html_path': source_html_path,
+            'fetch_method': 'fallback_existing_outputs',
+            'requested_fetch_method': fetch_method,
+            'fetched_at': utc_now(),
+            'source_fallback': 'existing_outputs',
+            'fallback_reason': f'{fetch_error.__class__.__name__}: {fetch_error}',
+            'fallback_warning': 'Live Notion fetch failed; build reused the existing parsed source outputs committed/generated in publish/data.',
+        },
+        'outputs': {
+            key: str((output_dir / f'{key}.json').resolve())
+            for key in ('metadata', 'weeks', 'decks', 'summary')
+        },
+        'newsletter_pack_90d': str((output_dir / 'newsletter_pack_90d.json').resolve()),
+        'record_count': len(weeks),
+        'deck_count': len(decks),
+        'date_range': summary.get('date_range', {}),
+        'source_fallback': 'existing_outputs',
+    }
+    write_json(output_dir / 'refresh_manifest.json', manifest)
+    return manifest
+
 def refresh_pipeline(
     source_url: Optional[str],
     html_path: Optional[Path],
@@ -217,7 +278,12 @@ def refresh_pipeline(
     fetch_method: str,
 ) -> Dict[str, Any]:
     source_html_path: Optional[Path] = None
-    fetch_meta: Dict[str, Any] = {'source_url': source_url, 'source_html_path': None, 'fetch_method': None, 'fetched_at': utc_now()}
+    fetch_meta: Dict[str, Any] = {
+        'source_url': source_url,
+        'source_html_path': None,
+        'fetch_method': None,
+        'fetched_at': utc_now(),
+    }
 
     if html_path is not None:
         html = read_text(html_path)
@@ -225,8 +291,24 @@ def refresh_pipeline(
         fetch_meta['source_html_path'] = str(html_path)
         fetch_meta['fetch_method'] = 'local_html'
     elif source_url:
-        fetcher = NotionFetcher(timeout=int(os.environ.get('NOTION_FETCH_TIMEOUT', '120')))
-        fetched = fetcher.fetch(source_url, method=fetch_method)
+        timeout = int(os.environ.get('NOTION_FETCH_TIMEOUT', '180'))
+        allow_fallback = os.environ.get('ALLOW_SOURCE_FALLBACK', '1').lower() not in {'0', 'false', 'no'}
+        fetcher = NotionFetcher(timeout=timeout)
+        try:
+            fetched = fetcher.fetch(source_url, method=fetch_method)
+        except Exception as exc:
+            if allow_fallback and existing_parsed_outputs_available(output_dir):
+                return build_manifest_from_existing_outputs(
+                    output_dir=output_dir,
+                    source_url=source_url,
+                    raw_dir=raw_dir,
+                    since=since,
+                    until=until,
+                    fetch_method=fetch_method,
+                    fetch_error=exc,
+                )
+            raise
+
         html = fetched['html']
         fetch_meta['fetch_method'] = fetched['method']
         fetch_meta['fetch_attempts'] = fetched.get('attempts', [])
@@ -267,8 +349,6 @@ def refresh_pipeline(
     }
     write_json(output_dir / 'refresh_manifest.json', manifest)
     return manifest
-
-
 def cli() -> None:
     ap = argparse.ArgumentParser(description='Fetch and refresh Everpure Notion-derived JSON outputs')
     ap.add_argument('--source-url', default=None, help='Public Notion URL to fetch')

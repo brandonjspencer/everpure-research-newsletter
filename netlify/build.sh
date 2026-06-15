@@ -10,7 +10,7 @@ python3 -m pip install --disable-pip-version-check -r "$ROOT/requirements.txt"
 
 if [ -n "${SOURCE_URL:-}" ]; then
   python3 -m playwright install chromium
-  NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-playwright}" \
+  NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
     python3 "$ROOT/everpure_refresh.py" \
       --source-url "$SOURCE_URL" \
       --output-dir "$OUT" \
