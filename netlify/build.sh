@@ -13,7 +13,7 @@ if [ -n "${SOURCE_URL:-}" ]; then
 
   set +e
   NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
-  NOTION_FETCH_TIMEOUT="${NOTION_FETCH_TIMEOUT:-180}" \
+  ALLOW_SOURCE_FALLBACK=0 \
     python3 "$ROOT/everpure_refresh.py" \
       --source-url "$SOURCE_URL" \
       --output-dir "$OUT" \
@@ -22,73 +22,36 @@ if [ -n "${SOURCE_URL:-}" ]; then
   set -e
 
   if [ "$REFRESH_STATUS" -ne 0 ]; then
-    echo "Live Notion refresh failed with status $REFRESH_STATUS."
-    echo "Attempting fallback to existing parsed outputs in $OUT."
+    if [ -f "$ROOT/data/Everpure.html" ]; then
+      echo "::warning::Live Notion fetch failed; using committed data/Everpure.html source snapshot."
 
-    if [ ! -f "$OUT/weeks.json" ] || [ ! -f "$OUT/decks.json" ] || [ ! -f "$OUT/summary.json" ]; then
-      echo "Fallback unavailable: missing weeks.json, decks.json, or summary.json in $OUT."
-      exit "$REFRESH_STATUS"
-    fi
+      python3 "$ROOT/everpure_refresh.py" \
+        --html-path "$ROOT/data/Everpure.html" \
+        --output-dir "$OUT"
 
-    python3 - "$OUT" <<'PY_FALLBACK'
+      OUT_PATH="$OUT" python3 - <<'PY2'
 import json
-import sys
-from datetime import datetime, timezone, timedelta
+import os
 from pathlib import Path
 
-out = Path(sys.argv[1])
+manifest_path = Path(os.environ["OUT_PATH"]) / "refresh_manifest.json"
+data = json.loads(manifest_path.read_text(encoding="utf-8"))
+source = data.setdefault("source", {})
+source["fetch_method"] = "local_html_fallback"
+source["source_fallback"] = "local_html_snapshot"
+source["fallback_warning"] = "Live Notion fetch failed; build used committed data/Everpure.html snapshot before falling back to existing parsed outputs."
+manifest_path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+PY2
+    else
+      echo "::warning::Live Notion fetch failed and data/Everpure.html was not found; retrying with existing output fallback enabled."
 
-def read_json(name, default):
-    path = out / name
-    if not path.exists():
-        return default
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
-
-def write_json(name, data):
-    path = out / name
-    with path.open("w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-
-now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-weeks = read_json("weeks.json", [])
-decks = read_json("decks.json", [])
-summary = read_json("summary.json", {})
-
-try:
-    from everpure_api import build_newsletter_pack, EverpureStore  # type: ignore
-    since = (datetime.now(timezone.utc) - timedelta(days=90)).strftime("%Y-%m-%d")
-    until = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    pack = build_newsletter_pack(EverpureStore(str(out)), since=since, until=until)
-    write_json("newsletter_pack_90d.json", pack)
-except Exception as exc:
-    print(f"Could not rebuild newsletter_pack_90d.json from fallback outputs: {exc}")
-
-manifest = {
-    "generated_at": now,
-    "source": {
-        "source_url": "***",
-        "source_html_path": None,
-        "fetch_method": "fallback_existing_outputs",
-        "fetched_at": now,
-        "fetch_failed": True,
-        "fallback_note": "Live Notion fetch failed; reused existing parsed publish/data outputs."
-    },
-    "outputs": {
-        "metadata": str((out / "metadata.json").resolve()),
-        "weeks": str((out / "weeks.json").resolve()),
-        "decks": str((out / "decks.json").resolve()),
-        "summary": str((out / "summary.json").resolve())
-    },
-    "newsletter_pack_90d": str((out / "newsletter_pack_90d.json").resolve()),
-    "record_count": len(weeks) if isinstance(weeks, list) else 0,
-    "deck_count": len(decks) if isinstance(decks, list) else 0,
-    "date_range": summary.get("date_range", {}) if isinstance(summary, dict) else {},
-    "source_fallback": "existing_outputs"
-}
-write_json("refresh_manifest.json", manifest)
-print(json.dumps(manifest, indent=2))
-PY_FALLBACK
+      NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
+      ALLOW_SOURCE_FALLBACK="${ALLOW_SOURCE_FALLBACK:-1}" \
+        python3 "$ROOT/everpure_refresh.py" \
+          --source-url "$SOURCE_URL" \
+          --output-dir "$OUT" \
+          --raw-dir "$RAW"
+    fi
   fi
 else
   python3 "$ROOT/everpure_refresh.py" \
