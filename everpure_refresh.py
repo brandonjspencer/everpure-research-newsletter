@@ -89,7 +89,7 @@ class NotionFetcher:
 
     def _fetch_playwright(self, url: str) -> str:
         try:
-            from playwright.sync_api import sync_playwright  # type: ignore
+            from playwright.sync_api import sync_playwright # type: ignore
         except Exception as exc:
             raise FetchError('Playwright is not installed. Install with: pip install playwright && python -m playwright install chromium') from exc
 
@@ -97,25 +97,44 @@ class NotionFetcher:
             browser = p.chromium.launch(headless=True)
             context = browser.new_context(
                 user_agent=DEFAULT_UA,
-                viewport={'width': 1440, 'height': 2200},
+                viewport={'width': 1440, 'height': 2600},
                 java_script_enabled=True,
                 locale='en-US',
             )
             page = context.new_page()
-            page.goto(url, wait_until='domcontentloaded', timeout=self.timeout * 1000)
-            page.wait_for_timeout(4000)
+
             try:
-                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=25000)
+                # Notion is brittle in GitHub Actions when waiting for domcontentloaded.
+                # Commit starts the document; selector/content checks below determine
+                # whether the page actually rendered usable Notion content.
+                page.goto(url, wait_until='commit', timeout=self.timeout * 1000)
+            except Exception as exc:
+                # If navigation partially committed before timing out, continue and
+                # inspect page content. Final validation still happens after return.
+                if exc.__class__.__name__ != 'TimeoutError':
+                    context.close()
+                    browser.close()
+                    raise
+
+            page.wait_for_timeout(12000)
+
+            try:
+                page.wait_for_selector(f'[{NOTION_BLOCK_HINT}]', timeout=45000)
             except Exception:
-                page.wait_for_timeout(5000)
-            page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
-            page.wait_for_timeout(2000)
+                page.wait_for_timeout(10000)
+
+            for _ in range(4):
+                try:
+                    page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+                except Exception:
+                    pass
+                page.wait_for_timeout(2500)
+
             html = page.content()
             context.close()
             browser.close()
             return html
 
-    @staticmethod
     def _looks_like_rendered_notion(html: str) -> bool:
         block_count = html.count(NOTION_BLOCK_HINT)
         return block_count >= 20 and ('Weekly Rundown' in html or '📌' in html or 'View Findings Deck' in html)
