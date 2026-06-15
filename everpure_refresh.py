@@ -94,28 +94,31 @@ class NotionFetcher:
             raise FetchError('Playwright is not installed. Install with: pip install playwright && python -m playwright install chromium') from exc
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(
+                headless=True,
+                args=['--disable-dev-shm-usage', '--no-sandbox'],
+            )
             context = browser.new_context(
                 user_agent=DEFAULT_UA,
-                viewport={'width': 1440, 'height': 2600},
+                viewport={'width': 1440, 'height': 3000},
                 java_script_enabled=True,
                 locale='en-US',
             )
             page = context.new_page()
+            page.set_default_timeout(self.timeout * 1000)
 
             try:
-                # Notion is brittle in GitHub Actions when waiting for domcontentloaded.
-                # Commit starts the document; selector/content checks below determine
-                # whether the page actually rendered usable Notion content.
+                # Notion is brittle in GitHub Actions when waiting for
+                # domcontentloaded/load. Commit starts navigation; selector and
+                # content checks below decide whether the page is usable.
                 page.goto(url, wait_until='commit', timeout=self.timeout * 1000)
             except Exception as exc:
-                # If navigation partially committed before timing out, continue and
-                # inspect page content. Final validation still happens after return.
                 if exc.__class__.__name__ != 'TimeoutError':
                     context.close()
                     browser.close()
                     raise
 
+            # Give Notion time to hydrate.
             page.wait_for_timeout(12000)
 
             try:
@@ -123,22 +126,50 @@ class NotionFetcher:
             except Exception:
                 page.wait_for_timeout(10000)
 
-            for _ in range(4):
+            # Trigger lazy rendering.
+            for _ in range(6):
                 try:
                     page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
                 except Exception:
                     pass
                 page.wait_for_timeout(2500)
 
-            html = page.content()
+            # Notion may still be navigating when content is requested. Retry a few
+            # times before falling back to documentElement.outerHTML.
+            html = ''
+            last_exc = None
+            for _ in range(6):
+                try:
+                    html = page.content()
+                    if html and len(html) > 1000:
+                        break
+                except Exception as exc:
+                    last_exc = exc
+                    page.wait_for_timeout(3000)
+
+            if not html:
+                try:
+                    html = page.evaluate("document.documentElement ? document.documentElement.outerHTML : ''")
+                except Exception as exc:
+                    context.close()
+                    browser.close()
+                    raise FetchError(f'Playwright rendered page but could not retrieve HTML content: {last_exc or exc}') from exc
+
             context.close()
             browser.close()
             return html
 
-    def _looks_like_rendered_notion(html: str) -> bool:
+    def _looks_like_rendered_notion(self, html: str) -> bool:
+        if not html:
+            return False
         block_count = html.count(NOTION_BLOCK_HINT)
-        return block_count >= 20 and ('Weekly Rundown' in html or '📌' in html or 'View Findings Deck' in html)
-
+        has_research_hint = (
+            'Weekly Rundown' in html
+            or 'View Findings Deck' in html
+            or 'Findings Deck' in html
+            or 'Research' in html
+        )
+        return block_count >= 5 and has_research_hint
 
 def write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
