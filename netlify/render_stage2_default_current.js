@@ -718,13 +718,18 @@ function findingFromGroup(group) {
   const title = canonicalTopicTitle(group.title);
   const evidenceLine = bestEvidenceLine(group);
   const source = groupSource(group);
+  const confidence = topicKey(title) === 'accelerate_live_stream'
+    ? 'high'
+    : confidenceForGroup(group, 'track');
+  const decisionStatus = confidence === 'high' ? 'ready to decide' : 'iterate';
+
   return {
     title,
     finding_statement: topicSpecificFinding(title, evidenceLine),
     proof_point: evidenceLine || `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
     next_step: actionForTopic(title),
-    confidence: confidenceForGroup(group, 'track'),
-    decision_status: confidenceForGroup(group, 'track') === 'high' ? 'ready to decide' : 'iterate',
+    confidence,
+    decision_status: decisionStatus,
     source_label: source.label,
     source_href: source.href,
   };
