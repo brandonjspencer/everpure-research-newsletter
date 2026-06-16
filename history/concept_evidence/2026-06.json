@@ -1,0 +1,636 @@
+{
+  "generated_at": "2026-06-16T00:47:05.146Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 7,
+  "with_evidence_count": 7,
+  "concepts": [
+    {
+      "concept_key": "accelerate live stream",
+      "concept_id": null,
+      "concept_title": "Accelerate Live Stream",
+      "concept_display": "Accelerate Live Stream",
+      "weeks_seen": [
+        "2026-05-28",
+        "2026-06-04",
+        "2026-06-11"
+      ],
+      "deck_refs": [
+        "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c",
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-06-11",
+          "record_id": "everpure_2026_06_11",
+          "group": "other",
+          "text": "Accelerate Live Stream Exploring how to make the keynote and live stream experience feel more active, immersive, and event-driven.",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        },
+        {
+          "week_date": "2026-06-04",
+          "record_id": "everpure_2026_06_04",
+          "group": "other",
+          "text": "Accelerate Live Stream The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant \"Watch Live\" action.",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        },
+        {
+          "week_date": "2026-05-28",
+          "record_id": "everpure_2026_05_28",
+          "group": "other",
+          "text": "Accelerate Live Stream Exploring how to make the keynote and live stream experience feel more active, immersive, and event-driven.",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Establishing a single dominant headline that names the event type, brand, and live moment above the fold will increase ﬁrst-impression comprehension Accelerate Live Stream Signal Concept 192 Source: Data Comparison The page creates an ok emotional baseline, strongest around Innovative and Helpful The design's tone is working ok for visitors who orient quickly.",
+          "score": 24,
+          "numbers": [
+            "192"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+          "score": 17,
+          "numbers": [
+            "191",
+            "5%",
+            "50%",
+            "29%",
+            "20%"
+          ]
+        },
+        {
+          "text": "Accelerate Live Stream Recommendation Concept 192 Source: Data Comparison Accelerate Live Stream Design Concept 192 Source: Figma File Baseline The page needs to operate across three distinct temporal states, pre-event (registration drive), live event (viewership), and post-event (replay + follow-up).",
+          "score": 17,
+          "numbers": [
+            "192"
+          ]
+        },
+        {
+          "text": "Autoplay expectation mismatch creates friction for the keynote CTA Accelerate Live Stream Signal Concept 192 Source: Data Comparison \"Very unclear that this would autoplay.",
+          "score": 17,
+          "numbers": [
+            "192"
+          ]
+        },
+        {
+          "text": "Accelerate Live Stream Signal Concept 192 Source: Data Comparison Action intent is fragmented and no single CTA dominates.",
+          "score": 17,
+          "numbers": [
+            "192"
+          ]
+        },
+        {
+          "text": "Accelerate Live Stream Exploring how to make the keynote and live stream experience feel more active, immersive, and event-driven.",
+          "score": 12,
+          "numbers": []
+        },
+        {
+          "text": "Since the video component is present and there's text highlighted in orange that says 'LIVE NOW', this tells me that the intention for this page is to show or highlight this feature.\" \"I am not sure if this promotes an event or if it enables me to view it on stream.\" The page's purpose doesn't land in 10 seconds for a meaningful minority.",
+          "score": 10,
+          "numbers": [
+            "10"
+          ]
+        },
+        {
+          "text": "Clarifying live state in the ﬁrst viewport, through motion, explicit labeling, or a persistent status badge, will increase watch-the-keynote engagement and live viewership duration.",
+          "score": 10,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "Establishing a single dominant headline that names the event type, brand, and live moment above the fold will increase ﬁrst-impression comprehension Accelerate Live Stream Signal Concept 192 Source: Data Comparison The page creates an ok emotional baseline, strongest around Innovative and Helpful The design's tone is working ok for visitors who orient quickly.",
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+        "Accelerate Live Stream Recommendation Concept 192 Source: Data Comparison Accelerate Live Stream Design Concept 192 Source: Figma File Baseline The page needs to operate across three distinct temporal states, pre-event (registration drive), live event (viewership), and post-event (replay + follow-up).",
+        "Autoplay expectation mismatch creates friction for the keynote CTA Accelerate Live Stream Signal Concept 192 Source: Data Comparison \"Very unclear that this would autoplay.",
+        "Accelerate Live Stream Signal Concept 192 Source: Data Comparison Action intent is fragmented and no single CTA dominates."
+      ],
+      "clean_key_numbers": [
+        "192",
+        "191",
+        "5%",
+        "50%",
+        "29%",
+        "20%"
+      ],
+      "matched_summary": "Accelerate Live Stream shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 24,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "contextual intelligence pdp",
+      "concept_id": null,
+      "concept_title": "Contextual Intelligence PDP",
+      "concept_display": "Contextual Intelligence PDP",
+      "weeks_seen": [
+        "2026-05-28",
+        "2026-06-11"
+      ],
+      "deck_refs": [
+        "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c",
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-06-11",
+          "record_id": "everpure_2026_06_11",
+          "group": "other",
+          "text": "Contextual Intelligence PDP Exploring how to communicate trustworthy AI and contextual intelligence in a clearer and more operational way",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        },
+        {
+          "week_date": "2026-05-28",
+          "record_id": "everpure_2026_05_28",
+          "group": "other",
+          "text": "Contextual Intelligence PDP Exploring how to communicate trustworthy AI and contextual intelligence in a clearer and more operational way.",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+          "score": 21,
+          "numbers": [
+            "193",
+            "66%"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+          "score": 21,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison \"Watch a Demo\" dominates, signaling curiosity over conviction.",
+          "score": 17,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Decisions Concept 193 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on lack of satisfaction with the Book ﬁlter and inability to successfully activate the ﬁlter, the team should: ● Rewrite the hero to lead with the buyer's problem, position the product as the resolution.",
+          "score": 14,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Hunch Concept 193 Source: Figma File Reframe the hero around the gap, not the product.",
+          "score": 13,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Exploring how to communicate trustworthy AI and contextual intelligence in a clearer and more operational way.",
+          "score": 12,
+          "numbers": []
+        },
+        {
+          "text": "Contextual Intelligence PDP Exploring how to communicate trustworthy AI and contextual intelligence in a clearer and more operational way",
+          "score": 12,
+          "numbers": []
+        },
+        {
+          "text": "Before the vocabulary of \"contextual intelligence,\" \"semantic enrichment,\" and \"governance\" hits, give visitors a one-sentence translation of what this means in business terms Restructure Core Features with progressive disclosure.",
+          "score": 6,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+        "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+        "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison \"Watch a Demo\" dominates, signaling curiosity over conviction.",
+        "Contextual Intelligence PDP Decisions Concept 193 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on lack of satisfaction with the Book ﬁlter and inability to successfully activate the ﬁlter, the team should: ● Rewrite the hero to lead with the buyer's problem, position the product as the resolution.",
+        "Contextual Intelligence PDP Hunch Concept 193 Source: Figma File Reframe the hero around the gap, not the product."
+      ],
+      "clean_key_numbers": [
+        "193",
+        "66%"
+      ],
+      "matched_summary": "Contextual Intelligence PDP is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "edc blueprint page",
+      "concept_id": null,
+      "concept_title": "EDC Blueprint Page",
+      "concept_display": "EDC Blueprint Page",
+      "weeks_seen": [
+        "2026-05-28",
+        "2026-06-11"
+      ],
+      "deck_refs": [
+        "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c",
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-06-11",
+          "record_id": "everpure_2026_06_11",
+          "group": "other",
+          "text": "EDC Blueprint Page Exploring whether the assessment and workshop positioning feels credible, useful, and worth engaging with.",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        },
+        {
+          "week_date": "2026-05-28",
+          "record_id": "everpure_2026_05_28",
+          "group": "other",
+          "text": "EDC Blueprint Page Exploring whether the assessment and workshop positioning feels credible, useful, and worth engaging with.",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 21,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint Baseline EDC Page Baseline A stronger message could increase assessment start rates by setting a clearer expectation for what users will get.",
+          "score": 17,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+          "score": 14,
+          "numbers": [
+            "191",
+            "5%",
+            "50%",
+            "29%",
+            "20%"
+          ]
+        },
+        {
+          "text": "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted.",
+          "score": 14,
+          "numbers": [
+            "10",
+            "5"
+          ]
+        },
+        {
+          "text": "One respondent asked directly: \"Why would you assume I'd start an assessment straight away?\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison The page functions as an information hub but not a persuasion tool.",
+          "score": 14,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison A one-line descriptor beneath the CTA, like \"Answer 5 questions.",
+          "score": 14,
+          "numbers": [
+            "191",
+            "5"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison",
+          "score": 14,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Hunch Concept 191 Source: Figma File pypdf Rewrite the hero headline to lead with a speciﬁc user outcome, not \"Enterprise Data Cloud.\" Add a CTA descriptor line directly beneath \"Start Y our Assessment.\" Copy should name the format, the time commitment, and the output.",
+          "score": 11,
+          "numbers": [
+            "191"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+        "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint Baseline EDC Page Baseline A stronger message could increase assessment start rates by setting a clearer expectation for what users will get.",
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+        "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted.",
+        "One respondent asked directly: \"Why would you assume I'd start an assessment straight away?\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison The page functions as an information hub but not a persuasion tool."
+      ],
+      "clean_key_numbers": [
+        "191",
+        "5%",
+        "50%",
+        "29%",
+        "20%",
+        "10"
+      ],
+      "matched_summary": "EDC Blueprint Page is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "edc blueprint",
+      "concept_id": null,
+      "concept_title": "EDC Blueprint",
+      "concept_display": "EDC Blueprint",
+      "weeks_seen": [
+        "2026-06-04"
+      ],
+      "deck_refs": [
+        "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-06-04",
+          "record_id": "everpure_2026_06_04",
+          "group": "other",
+          "text": "EDC Blueprint Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 21,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint Baseline EDC Page Baseline A stronger message could increase assessment start rates by setting a clearer expectation for what users will get.",
+          "score": 17,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+          "score": 14,
+          "numbers": [
+            "191",
+            "5%",
+            "50%",
+            "29%",
+            "20%"
+          ]
+        },
+        {
+          "text": "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted.",
+          "score": 14,
+          "numbers": [
+            "10",
+            "5"
+          ]
+        },
+        {
+          "text": "One respondent asked directly: \"Why would you assume I'd start an assessment straight away?\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison The page functions as an information hub but not a persuasion tool.",
+          "score": 14,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison A one-line descriptor beneath the CTA, like \"Answer 5 questions.",
+          "score": 14,
+          "numbers": [
+            "191",
+            "5"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison",
+          "score": 14,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Hunch Concept 191 Source: Figma File pypdf Rewrite the hero headline to lead with a speciﬁc user outcome, not \"Enterprise Data Cloud.\" Add a CTA descriptor line directly beneath \"Start Y our Assessment.\" Copy should name the format, the time commitment, and the output.",
+          "score": 11,
+          "numbers": [
+            "191"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+        "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint Baseline EDC Page Baseline A stronger message could increase assessment start rates by setting a clearer expectation for what users will get.",
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses Pure Accelerate is a high-value ﬂagship event, but the core keynote/live stream experience risks becoming passive and transactional once attendees land on the page.",
+        "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted.",
+        "One respondent asked directly: \"Why would you assume I'd start an assessment straight away?\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison The page functions as an information hub but not a persuasion tool."
+      ],
+      "clean_key_numbers": [
+        "191",
+        "5%",
+        "50%",
+        "29%",
+        "20%",
+        "10"
+      ],
+      "matched_summary": "EDC Blueprint is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "189__webinar registration page",
+      "concept_id": "189",
+      "concept_title": "Webinar Registration Page",
+      "concept_display": "189 - Webinar Registration Page",
+      "weeks_seen": [
+        "2026-04-30",
+        "2026-05-07",
+        "2026-05-14"
+      ],
+      "deck_refs": [
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM",
+        "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-05-14",
+          "record_id": "everpure_2026_05_14",
+          "group": "findings",
+          "text": "189 - Webinar Registration Page",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        },
+        {
+          "week_date": "2026-05-07",
+          "record_id": "everpure_2026_05_07",
+          "group": "findings",
+          "text": "189 - Webinar Registration Page",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        },
+        {
+          "week_date": "2026-04-30",
+          "record_id": "everpure_2026_04_30",
+          "group": "findings",
+          "text": "189 - Webinar Registration Page",
+          "deck_file_id": "1aVwt3b5lEfS7JA1j751_PsnBegVnhZbPd1_5iFOX5KY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "189 - Webinar Registration Page",
+          "score": 18,
+          "numbers": [
+            "189"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "189 - Webinar Registration Page"
+      ],
+      "clean_key_numbers": [
+        "189"
+      ],
+      "matched_summary": "189 - Webinar Registration Page is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "contextual intelligence",
+      "concept_id": null,
+      "concept_title": "Contextual Intelligence",
+      "concept_display": "Contextual Intelligence",
+      "weeks_seen": [
+        "2026-06-04"
+      ],
+      "deck_refs": [
+        "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-06-04",
+          "record_id": "everpure_2026_06_04",
+          "group": "other",
+          "text": "Contextual Intelligence Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.",
+          "deck_file_id": "1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+          "score": 18,
+          "numbers": [
+            "193",
+            "66%"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+          "score": 18,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison \"Watch a Demo\" dominates, signaling curiosity over conviction.",
+          "score": 14,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Decisions Concept 193 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on lack of satisfaction with the Book ﬁlter and inability to successfully activate the ﬁlter, the team should: ● Rewrite the hero to lead with the buyer's problem, position the product as the resolution.",
+          "score": 11,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Hunch Concept 193 Source: Figma File Reframe the hero around the gap, not the product.",
+          "score": 10,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "Before the vocabulary of \"contextual intelligence,\" \"semantic enrichment,\" and \"governance\" hits, give visitors a one-sentence translation of what this means in business terms Restructure Core Features with progressive disclosure.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "Contextual Intelligence Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "Enterprise buyers dealing with fragmented data will see \"transform fragmented data into AI-ready contextual intelligence\" and immediately feel the page is speaking to them.",
+          "score": 6,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+        "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+        "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison \"Watch a Demo\" dominates, signaling curiosity over conviction.",
+        "Contextual Intelligence PDP Decisions Concept 193 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on lack of satisfaction with the Book ﬁlter and inability to successfully activate the ﬁlter, the team should: ● Rewrite the hero to lead with the buyer's problem, position the product as the resolution.",
+        "Contextual Intelligence PDP Hunch Concept 193 Source: Figma File Reframe the hero around the gap, not the product."
+      ],
+      "clean_key_numbers": [
+        "193",
+        "66%"
+      ],
+      "matched_summary": "Contextual Intelligence is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "platform diagram update",
+      "concept_id": null,
+      "concept_title": "Platform Diagram Update",
+      "concept_display": "Platform Diagram Update",
+      "weeks_seen": [
+        "2026-05-28"
+      ],
+      "deck_refs": [
+        "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-05-28",
+          "record_id": "everpure_2026_05_28",
+          "group": "other",
+          "text": "Platform Diagram Update- Exploring a simpler platform story that shifts perception from storage platform to intelligent AI-ready data platform.",
+          "deck_file_id": "1skR0z-QFrKYyF3rZ6kpjsqregcMuHPrMY1rlkYIJOTM"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Platform Diagram Update- Exploring a simpler platform story that shifts perception from storage platform to intelligent AI-ready data platform.",
+          "score": 9,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "Platform Diagram Update- Exploring a simpler platform story that shifts perception from storage platform to intelligent AI-ready data platform."
+      ],
+      "clean_key_numbers": [],
+      "matched_summary": "Platform Diagram Update is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.",
+      "matched_confidence": "low",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 9,
+      "evidence_found": true
+    }
+  ]
+}
