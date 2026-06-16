@@ -53,33 +53,118 @@ function extractNumbers(text) {
   return matches ? [...new Set(matches)].slice(0, 8) : [];
 }
 
+
+const BAD_EVIDENCE_PATTERNS = [
+  /HTTPError|Client Error|Forbidden for url|Traceback|Exception:/i,
+  /sheets\.googleapis\.com|drive_csv_export|Data Comparison Framework/i,
+  /\b(?:[A-Za-z0-9_-]{18,})\b/,
+  /^https?:\/\//i,
+  /^\s*(?:View Findings Deck|View Concepts in Figma|View Google Doc|Research Roundup Audit)\s*$/i,
+  /^\s*📌\s*[A-Z][a-z]+\s+\d{1,2},\s+20\d{2}\s*$/i,
+];
+
+const INTRO_PATTERNS = [
+  /^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i,
+  /^on deck$/i,
+  /^events page findings:?$/i,
+  /^webinar landing page:?$/i,
+];
+
+function isBadEvidenceText(text) {
+  const t = normalizeWhitespace(text);
+  if (!t) return true;
+  if (BAD_EVIDENCE_PATTERNS.some(rx => rx.test(t))) return true;
+  return false;
+}
+
+function isIntroLine(text) {
+  const t = normalizeWhitespace(text).replace(/[“”]/g, '"');
+  return INTRO_PATTERNS.some(rx => rx.test(t));
+}
+
+function hasSentenceEvidenceShape(text) {
+  const t = normalizeWhitespace(text);
+  if (isBadEvidenceText(t) || isIntroLine(t)) return false;
+  return t.length >= 32 && /\b(users?|participants?|visitors?|readers?|customers?|need|needs|understand|recognize|clear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|registration|assessment|workshop|live|watch live|differentiat|business value|platform story)\b/i.test(t);
+}
+
+function cleanupConceptTitle(title) {
+  return normalizeWhitespace(title)
+    .replace(/^👉\s*/, '')
+    .replace(/^🧠\s*/, '')
+    .replace(/^📈\s*/, '')
+    .replace(/^💜\s*/, '')
+    .replace(/^→\s*/, '')
+    .replace(/^[-•]\s*/, '')
+    .replace(/\b\(in process\)\b/ig, '')
+    .replace(/\s+R\d+$/i, '')
+    .replace(/\s+V\d+$/i, '')
+    .replace(/\s*[:–-]\s*$/g, '')
+    .trim();
+}
+
+function structuredConceptFromLine(text) {
+  const t = normalizeWhitespace(text);
+  if (!t || isBadEvidenceText(t) || isIntroLine(t)) return null;
+  const patterns = [
+    /^(.{3,72}?)(?:\s*[-–:]\s*|\s+)Exploring\b/i,
+    /^(.{3,72}?)\s+Users?\s+(?:understand|recognize|need|are|can|cannot|don'?t|do not)\b/i,
+    /^(.{3,72}?)\s+The biggest opportunity\b/i,
+    /^(.{3,72}?)\s+Needs? to\b/i,
+    /^(.{3,72}?)\s+should\b/i,
+  ];
+  for (const rx of patterns) {
+    const match = t.match(rx);
+    if (!match) continue;
+    const title = cleanupConceptTitle(match[1]);
+    if (title && title.length >= 3 && title.length <= 72) return title;
+  }
+  return null;
+}
+
+function conceptTokens(title) {
+  const stop = new Set(['the','and','for','with','from','this','that','page','pages','test','testing','concept','concepts','update','landing','registration']);
+  return normalizeWhitespace(title).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(t => t.length >= 3 && !stop.has(t));
+}
+
+function snippetMatchesConcept(snippet, concept) {
+  const tokens = conceptTokens(concept.title || concept.concept_title || concept.raw_label || '');
+  if (!tokens.length) return false;
+  const low = normalizeWhitespace(snippet).toLowerCase();
+  return tokens.some(tok => low.includes(tok));
+}
+
 function extractConcept(text) {
-  const cleaned = normalizeWhitespace(text)
-    .replace(/^👉\s*/,'')
-    .replace(/^🧠\s*/,'')
-    .replace(/^📈\s*/,'')
-    .replace(/^💜\s*/,'')
-    .replace(/^→\s*/,'')
-    .replace(/^[-•]\s*/,'');
+  const raw = normalizeWhitespace(text);
+  if (!raw || isBadEvidenceText(raw) || isIntroLine(raw)) return null;
+
+  const cleaned = cleanupConceptTitle(raw);
   const idMatch = cleaned.match(/^(\d{2,3})\s*[-:–]\s*(.+)$/);
   if (idMatch) {
+    const title = cleanupConceptTitle(idMatch[2]);
+    if (!title || isIntroLine(title)) return null;
     return {
       concept_id: idMatch[1],
-      title: normalizeWhitespace(idMatch[2].replace(/\(in process\)/ig, '').replace(/\s+R\d+$/i, '').replace(/\s+V\d+$/i, '')),
+      title,
       raw_label: cleaned,
     };
   }
 
-  const candidate = cleaned
-    .replace(/\b\(in process\)\b/ig, '')
-    .replace(/\s+R\d+$/i, '')
-    .replace(/\s+V\d+$/i, '')
-    .replace(/:$/,'')
-    .trim();
+  const structuredTitle = structuredConceptFromLine(cleaned);
+  if (structuredTitle) {
+    return {
+      concept_id: null,
+      title: structuredTitle,
+      raw_label: cleaned,
+    };
+  }
 
-  if (!candidate) return null;
+  const candidate = cleanupConceptTitle(cleaned.replace(/:$/,''));
+  if (!candidate || candidate.length > 90) return null;
+  if (/^(make|rewrite|improve|reduce|clarify|keep|move|add|remove)\b/i.test(candidate)) return null;
+  if (/^(higher contrast|simpler layouts?|a more prominent)\b/i.test(candidate)) return null;
 
-  const useful = /baseline|comparison|review|analysis|messaging|labels|navigation|portal|homepage|events|taxonomy|knowledge|platform|journey|rebrand|landing page|reader page|search page|header|feedback/i.test(candidate);
+  const useful = /baseline|comparison|review|analysis|messaging|labels|navigation|portal|homepage|events|taxonomy|knowledge|platform|journey|rebrand|landing page|reader page|search page|header|feedback|edc|blueprint|accelerate|live stream|contextual intelligence|diagram|webinar|registration|assessment|workshop|pdp|campaign|virtualization/i.test(candidate);
   if (!useful) return null;
   return {
     concept_id: null,
@@ -138,7 +223,7 @@ function buildPack(rec, group, text, concept, deckTextById, packs) {
     text: normalizeWhitespace(text),
     deck_file_id: rec.deck?.file_id || null,
   });
-  if (group === 'findings') pack.raw_finding_excerpts.push(normalizeWhitespace(text));
+  if (group === 'findings' || hasSentenceEvidenceShape(text)) pack.raw_finding_excerpts.push(normalizeWhitespace(text));
   for (const n of extractNumbers(text)) pack.supporting_numbers.add(n);
   const cueMatches = normalizeWhitespace(text).match(/\b(?:baseline|comparison|review|analysis|variant|variation|V\d+|R\d+|A\/B|winner|preferred|lift|increase|decrease|improved?|reduced?)\b/ig) || [];
   if (cueMatches.length) pack.comparison_cues.push(...cueMatches);
@@ -148,9 +233,16 @@ function buildPack(rec, group, text, concept, deckTextById, packs) {
     pack.deck_refs.add(rec.deck.file_id);
     const deckBlob = deckTextById.get(rec.deck.file_id);
     if (deckBlob) {
-      for (const n of extractNumbers(deckBlob)) pack.supporting_numbers.add(n);
-      const snippets = deckBlob.split(/(?<=[.!?])\s+/).filter(s => /improv|increase|decrease|participants|preferred|engagement|comprehension|sentiment|clarity|confidence|successful/i.test(s)).slice(0,2);
-      pack.evidence_snapshot_rule_based.push(...snippets.map(normalizeWhitespace));
+      const snippets = deckBlob
+        .split(/(?<=[.!?])\s+/)
+        .map(normalizeWhitespace)
+        .filter(s => hasSentenceEvidenceShape(s))
+        .filter(s => snippetMatchesConcept(s, concept))
+        .slice(0, 3);
+      for (const snippet of snippets) {
+        for (const n of extractNumbers(snippet)) pack.supporting_numbers.add(n);
+      }
+      pack.evidence_snapshot_rule_based.push(...snippets);
     }
   }
 }

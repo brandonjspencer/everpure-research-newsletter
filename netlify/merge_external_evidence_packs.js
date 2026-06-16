@@ -19,6 +19,47 @@ function normalize(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
+
+function badEvidenceText(text) {
+  const t = normalize(text);
+  if (!t) return true;
+  return /HTTPError|Client Error|Forbidden for url|sheets\.googleapis\.com|drive_csv_export|Traceback|Exception:|\b(?:[A-Za-z0-9_-]{18,})\b/i.test(t);
+}
+
+function dateSet(values) {
+  return new Set((values || []).map(v => normalize(v).slice(0, 10)).filter(v => /^\d{4}-\d{2}-\d{2}$/.test(v)));
+}
+
+function evidenceDeckIds(evidence) {
+  const ids = [];
+  for (const key of ['deck_file_id', 'deck_id', 'deckFileId', 'deckId']) if (evidence && evidence[key]) ids.push(evidence[key]);
+  for (const link of evidence?.linked_from || evidence?.linkedFrom || []) {
+    for (const key of ['deck_file_id', 'deck_id', 'deckFileId', 'deckId']) if (link && link[key]) ids.push(link[key]);
+  }
+  return uniq(ids);
+}
+
+function evidenceWeeks(evidence) {
+  return uniq([...(evidence?.associated_weeks || evidence?.associatedWeeks || []), ...(evidence?.week_dates || evidence?.weekDates || [])]);
+}
+
+function evidenceIsAligned(pack, evidence) {
+  const packDecks = new Set([...(pack.deck_refs || []), ...(pack.deckRefs || [])].map(normalize).filter(Boolean));
+  const extDecks = evidenceDeckIds(evidence);
+  if (packDecks.size && extDecks.some(id => packDecks.has(id))) return true;
+
+  const packWeeks = dateSet(pack.weeks_seen || pack.weeksSeen || []);
+  const extWeeks = dateSet(evidenceWeeks(evidence));
+  if (packWeeks.size && extWeeks.size) {
+    for (const week of extWeeks) if (packWeeks.has(week)) return true;
+    return false;
+  }
+
+  // If neither deck nor week alignment is available, do not merge external evidence into a dated 30-day pack.
+  if (packDecks.size || packWeeks.size) return false;
+  return false;
+}
+
 function uniq(values) {
   const seen = new Set();
   const out = [];
@@ -46,7 +87,7 @@ function flattenStrings(obj, out = [], depth = 0) {
   }
   if (typeof obj === 'object') {
     for (const [key, value] of Object.entries(obj)) {
-      if (/^(raw|binary|buffer|html|thumbnail|image|screenshot|token)$/i.test(key)) continue;
+      if (/^(raw|binary|buffer|html|thumbnail|image|screenshot|token|id|gid|url|href|source_url|resolved_url|link_id|spreadsheet_id|deck_id|deck_file_id|record_id|fetch_meta|sheets_api_error|error|errors|status)$/i.test(key)) continue;
       flattenStrings(value, out, depth + 1);
     }
   }
@@ -184,6 +225,7 @@ function numbers(text) {
 function signalScore(text) {
   const t = normalize(text);
   if (!t || t.length < 18) return -10;
+  if (badEvidenceText(t)) return -10;
   if (/^(https?:|docs\.google|my\.helio|glare-playground)/i.test(t)) return -8;
   let score = 0;
   if (/\b\d{1,3}%\b/.test(t)) score += 7;
@@ -229,7 +271,7 @@ function mergePack(pack, matches) {
   const signals = [];
   const nums = [];
   for (const match of matches) {
-    const matchSignals = extractSignals(match.evidence, 8);
+    const matchSignals = extractSignals(match.evidence, 8).filter(signal => !badEvidenceText(signal));
     if (!matchSignals.length) continue;
     refs.push(evidenceRef(match.evidence, matchSignals));
     signals.push(...matchSignals);
@@ -288,11 +330,12 @@ function uniqObjects(items) {
 function bestMatchesForPack(pack, evidenceItems) {
   const scored = [];
   for (const evidence of evidenceItems) {
+    if (!evidenceIsAligned(pack, evidence)) continue;
     const score = matchScore(pack, evidence);
-    if (score >= 10) scored.push({ score, evidence });
+    if (score >= 32) scored.push({ score, evidence });
   }
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, 5);
+  return scored.slice(0, 3);
 }
 
 function main() {

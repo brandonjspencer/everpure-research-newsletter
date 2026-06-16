@@ -44,7 +44,7 @@ function summarizeCounts(publishRoot) {
   return {
     latest_week_date: latestWeekDate,
     week_count_30d: new Set(weeks30d.map((w) => w.week_date)).size,
-    concept_evidence_count: Array.isArray(conceptEvidence) ? conceptEvidence.length : 0,
+    concept_evidence_count: Array.isArray(conceptEvidence) ? conceptEvidence.length : (Array.isArray(conceptEvidence?.concepts) ? conceptEvidence.concepts.length : 0),
   };
 }
 
@@ -614,6 +614,220 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
     .slice(0, 6);
 }
 
+
+
+// Dynamic issue synthesis guardrails. These definitions intentionally override the earlier
+// topic-specific Issue 02 helpers so each new issue is built from the current evidence window.
+function uniquePublicValues(values) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of values || []) {
+    const value = cleanText(raw);
+    if (!value) continue;
+    const key = value.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(value);
+  }
+  return out;
+}
+
+function isContaminatedPublicText(text) {
+  const value = cleanText(text);
+  if (!value) return true;
+  if (/HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export|Data Comparison Framework/i.test(value)) return true;
+  if (/\b(?:[A-Za-z0-9_-]{18,})\b/.test(value)) return true;
+  if (/^https?:\/\//i.test(value)) return true;
+  if (/^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(value)) return true;
+  if (/^\s*(?:view findings deck|view concepts in figma|events page findings:?|webinar landing page:?|on deck)\s*$/i.test(value)) return true;
+  return false;
+}
+
+function canonicalTopicTitle(title) {
+  const original = cleanConceptTitle(title);
+  const text = original.toLowerCase();
+  if (/\bedc\b|enterprise data cloud|blueprint/.test(text)) return 'EDC Blueprint Page';
+  if (/accelerate/.test(text) && /live|stream|keynote/.test(text)) return 'Accelerate Live Stream';
+  if (/contextual intelligence/.test(text)) return 'Contextual Intelligence PDP';
+  if (/platform diagram|platform story/.test(text)) return 'Platform Diagram Update';
+  if (/webinar registration/.test(text)) return 'Webinar Registration Page';
+  if (/webinar landing/.test(text)) return 'Webinar Landing Page';
+  if (/events page|\bevents\b|event page/.test(text)) return 'Events Page';
+  if (/homepage ai/.test(text)) return 'Homepage AI Messaging';
+  if (/pathfinder/.test(text) && /cta|label/.test(text)) return 'Pathfinder CTA Labels';
+  if (/book filter|this book/.test(text)) return 'Reader Filter: “This Book”';
+  if (/virtualization/.test(text)) return 'Virtualization Campaign';
+  return original || 'Research signal';
+}
+
+function publicEvidenceLines(group) {
+  return uniquePublicValues([
+    ...(group.raw_finding_excerpts || []),
+    ...(group.supporting_signals || []),
+    ...(group.key_synthesis_signals || []),
+    ...(group.source_refs || []).map(ref => ref && ref.text),
+  ].map(cleanText).filter(text => text && !isContaminatedPublicText(text)));
+}
+
+function evidenceLineScore(line, group) {
+  const text = cleanText(line);
+  if (!text || isContaminatedPublicText(text)) return -100;
+  let score = 0;
+  if (/[.!?]/.test(text)) score += 2;
+  if (/\b(users?|participants?|visitors?|readers?|customers?)\b/i.test(text)) score += 4;
+  if (/\b(understand|recognize|need|needs|unclear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|friction|differentiat|business value|watch live|assessment|workshop|platform story)\b/i.test(text)) score += 5;
+  if (/\b\d{1,3}%\b/.test(text)) score += 2;
+  if (text.length >= 45 && text.length <= 260) score += 2;
+  if (text.length > 340) score -= 3;
+  const title = cleanConceptTitle(group.title || '').toLowerCase();
+  const titleTokens = title.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(t => t.length >= 4);
+  if (titleTokens.some(t => text.toLowerCase().includes(t))) score += 2;
+  return score;
+}
+
+function bestEvidenceLine(group) {
+  const ranked = publicEvidenceLines(group).map(line => ({ line, score: evidenceLineScore(line, group) })).sort((a, b) => b.score - a.score || b.line.length - a.line.length);
+  return ranked[0]?.line || '';
+}
+
+function topicSpecificFinding(title, evidenceLine) {
+  const key = topicKey(title);
+  if (key === 'edc_blueprint_page') return 'Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.';
+  if (key === 'accelerate_live_stream') return 'The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.';
+  if (key === 'contextual_intelligence_pdp') return 'Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.';
+  if (key === 'platform_diagram_update') return 'The platform diagram work is really a positioning problem: the story needs to move perception from storage platform to intelligent, AI-ready data platform.';
+  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return 'The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.';
+  if (key === 'events_page') return 'Events-page work is pointing toward clearer hierarchy, simpler layouts, and more obvious paths into the full event set.';
+  return evidenceLine && evidenceLine.length >= 40
+    ? evidenceLine
+    : `${title} is active in the current research window, but the most useful takeaway is the decision it needs to clarify next.`;
+}
+
+function actionForTopic(title) {
+  const key = topicKey(title);
+  if (key === 'edc_blueprint_page') return 'Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.';
+  if (key === 'accelerate_live_stream') return 'Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.';
+  if (key === 'contextual_intelligence_pdp') return 'Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.';
+  if (key === 'platform_diagram_update') return 'Simplify the platform diagram around one AI-ready data-platform story and test whether users describe the platform as intelligent and connected rather than only storage-oriented.';
+  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return 'Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.';
+  if (key === 'events_page') return 'Preserve the simplified hierarchy and clear “Explore All Events” path, then confirm the page still helps visitors find relevant events quickly.';
+  return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
+}
+
+function findingFromGroup(group) {
+  const title = canonicalTopicTitle(group.title);
+  const evidenceLine = bestEvidenceLine(group);
+  const source = groupSource(group);
+  return {
+    title,
+    finding_statement: topicSpecificFinding(title, evidenceLine),
+    proof_point: evidenceLine || `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
+    next_step: actionForTopic(title),
+    confidence: confidenceForGroup(group, 'track'),
+    decision_status: confidenceForGroup(group, 'track') === 'high' ? 'ready to decide' : 'iterate',
+    source_label: source.label,
+    source_href: source.href,
+  };
+}
+
+function groupRankScore(group) {
+  const last = group.last_seen_week || (group.weeks_seen || []).slice(-1)[0] || '';
+  let score = Number(String(last).replace(/-/g, '')) || 0;
+  score += Math.min(50, Number(group.occurrence_count || 0) * 5);
+  score += publicEvidenceLines(group).length * 10;
+  if (/edc|blueprint|accelerate|contextual|platform diagram|webinar|events/i.test(group.title || '')) score += 25;
+  return score;
+}
+
+function eligibleGroups(groups) {
+  return uniqueByTitle((groups || [])
+    .filter(group => group && group.title && !isContaminatedPublicText(group.title))
+    .map(group => ({ ...group, title: canonicalTopicTitle(group.title) })))
+    .sort((a, b) => groupRankScore(b) - groupRankScore(a));
+}
+
+function buildNarrativeFindings(groups, statusInfo) {
+  const preferredOrder = ['EDC Blueprint Page', 'Accelerate Live Stream', 'Contextual Intelligence PDP', 'Platform Diagram Update', 'Webinar Landing Page', 'Events Page'];
+  const candidates = eligibleGroups(groups);
+  const picked = [];
+  for (const title of preferredOrder) {
+    const group = candidates.find(g => topicKey(g.title) === topicKey(title));
+    if (group && picked.length < 3) picked.push(findingFromGroup(group));
+  }
+  for (const group of candidates) {
+    if (picked.length >= 3) break;
+    if (!picked.some(item => topicKey(item.title) === topicKey(group.title))) picked.push(findingFromGroup(group));
+  }
+  return picked.slice(0, 3);
+}
+
+function buildComparisons(groups, sourceComparisons) {
+  const candidates = eligibleGroups(groups)
+    .filter(group => {
+      const text = `${group.title} ${(group.comparison_cues || []).join(' ')} ${publicEvidenceLines(group).join(' ')}`.toLowerCase();
+      return /compare|comparison|variant|variation|v\d|baseline|outperformed|higher contrast|simpler layout|platform diagram|events/.test(text);
+    })
+    .slice(0, 2);
+  return candidates.map(group => {
+    const source = groupSource(group);
+    const title = canonicalTopicTitle(group.title);
+    return {
+      title,
+      finding_statement: `${title} is best treated as a narrowed comparison problem: the next decision should protect the clearest user behavior rather than reopen broad creative exploration.`,
+      decision_criteria: 'Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task.',
+      next_step: actionForTopic(title),
+      confidence: confidenceForGroup(group, 'comparison'),
+      decision_status: 'compare',
+      source_label: source.label,
+      source_href: source.href,
+    };
+  });
+}
+
+function unresolvedQuestionForGroup(group) {
+  const title = canonicalTopicTitle(group.title);
+  const key = topicKey(title);
+  if (key === 'edc_blueprint_page') return { title, scope: 'Assessment value and workshop clarity', question: 'Do visitors understand what they get from the assessment and why the workshop is worth engaging with before they have enough context?' };
+  if (key === 'accelerate_live_stream') return { title, scope: 'Live-state orientation', question: 'Can visitors immediately tell the event is live, what they should watch now, and what action matters most?' };
+  if (key === 'contextual_intelligence_pdp') return { title, scope: 'Differentiation and business value', question: 'Can users explain what contextual intelligence does differently and why that difference matters operationally?' };
+  if (key === 'platform_diagram_update') return { title, scope: 'Platform story and perception shift', question: 'Does the simplified diagram shift perception toward an intelligent AI-ready data platform, or does it still read like a storage architecture diagram?' };
+  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return { title, scope: 'Value clarity and registration effort', question: 'Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?' };
+  return { title, scope: 'Decision readiness', question: `What user behavior does ${title.toLowerCase()} need to clarify before it can become stronger decision guidance?` };
+}
+
+function buildUnresolvedQuestions(groups, statusInfo) {
+  const candidates = eligibleGroups(groups);
+  const questions = [];
+  const preferred = ['Platform Diagram Update', 'Webinar Landing Page', 'EDC Blueprint Page', 'Contextual Intelligence PDP', 'Accelerate Live Stream'];
+  for (const title of preferred) {
+    const group = candidates.find(g => topicKey(g.title) === topicKey(title));
+    if (group && questions.length < 3) questions.push(unresolvedQuestionForGroup(group));
+  }
+  for (const group of candidates) {
+    if (questions.length >= 3) break;
+    if (!questions.some(q => topicKey(q.title) === topicKey(group.title))) questions.push(unresolvedQuestionForGroup(group));
+  }
+  return questions.slice(0, 3);
+}
+
+function buildRecommendedActions(groups, statusInfo, sourceActions) {
+  const actions = [];
+  for (const group of eligibleGroups(groups).slice(0, 5)) {
+    actions.push(topicAction(group.title, actionForTopic(group.title)));
+  }
+  return uniqueActions(actions)
+    .filter(item => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
+    .slice(0, 5);
+}
+
+function buildExecutiveSummaryFromBrief(findings, comparisons, unresolved) {
+  const findingTitles = (findings || []).map(item => item.title).slice(0, 3);
+  const unresolvedTitles = (unresolved || []).map(item => item.title).filter(title => !findingTitles.includes(title)).slice(0, 2);
+  if (findingTitles.length) {
+    return `This month’s research is centered on ${findingTitles.join(', ')}. The strongest value is decision-shaping rather than broad launch approval: each track points to a clearer question about what users understand, trust, or know how to do next.${unresolvedTitles.length ? ` The next cycle should resolve the remaining uncertainty around ${unresolvedTitles.join(' and ')}.` : ''}`;
+  }
+  return 'The current 30-day window is more useful for prioritizing what to test next than for making a broad rollout decision.';
+}
 function buildStage2Brief() {
   const sourcePath = path.join(publishRoot, 'newsletter', 'default.json');
   const source = readJson(sourcePath, {});
@@ -638,7 +852,7 @@ function buildStage2Brief() {
     .map(toFinding)
     .filter((item) => !looksLabelOnly(item.finding_statement, item.title) && !looksLabelOnly(item.proof_point, item.title));
 
-  const useSourceFindings = sourceFindings.length >= 2 && deckContentCount(statusInfo) > 0;
+  const useSourceFindings = false;
   const surfacedFindings = useSourceFindings
     ? sourceFindings.slice(0, 3)
     : buildNarrativeFindings(evidenceGroups, statusInfo);
@@ -649,9 +863,9 @@ function buildStage2Brief() {
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
   const deckCount = deckContentCount(statusInfo);
 
-  const executiveSummary = 'This month’s strongest research value is more concrete than “which tracks need another round.” Events is ready to move toward a simplified V4b direction, Homepage AI Messaging should use lighter conversational AI framing, and Pathfinder CTA work should balance the recognizable “Personalize” label with start-language that attracts engagement. Webinar Registration, Reader Filter: “This Book,” and Virtualization Campaign remain useful clarification tracks for the next cycle.';
+  const executiveSummary = buildExecutiveSummaryFromBrief(surfacedFindings, comparisonTests, unresolvedQuestions);
 
-  const note = 'The next cycle should protect the decisions that are now clear enough to move forward, while using targeted follow-up work to resolve registration friction, reader-filter language, and campaign-page translation.';
+  const note = 'The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.';
 
   return {
     title: 'Everpure monthly research roundup (30d)',

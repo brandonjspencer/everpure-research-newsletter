@@ -106,6 +106,24 @@ function looksBoilerplate(text) {
   return false;
 }
 
+
+function isBadEvidenceLine(text) {
+  const t = normalize(text);
+  if (!t) return true;
+  if (/HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export/i.test(t)) return true;
+  if (/\b(?:[A-Za-z0-9_-]{18,})\b/.test(t)) return true;
+  if (/^https?:\/\//i.test(t)) return true;
+  if (/^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(t)) return true;
+  return false;
+}
+
+function conceptLineMatches(line, concept) {
+  const tokens = concept.tokens || [];
+  if (!tokens.length) return true;
+  const low = normalize(line).toLowerCase();
+  return tokens.some(tok => low.includes(tok));
+}
+
 function sentenceSplit(text) {
   return normalize(text)
     .split(/(?<=[.!?])\s+/)
@@ -122,7 +140,7 @@ function tokenOverlap(text, tokens) {
 
 function signalScore(text, concept) {
   const t = normalize(text);
-  if (!t) return -999;
+  if (!t || isBadEvidenceLine(t)) return -999;
   let score = 0;
   const low = t.toLowerCase();
   if (looksBoilerplate(t)) score -= 12;
@@ -239,11 +257,16 @@ function main() {
     for (const sig of pack.key_synthesis_signals || []) candidateLines.push(sig);
 
     for (const ref of pack.source_refs || []) {
-      if (ref.text) candidateLines.push(ref.text);
+      if (ref.text && !isBadEvidenceLine(ref.text)) candidateLines.push(ref.text);
       if (ref.week_date && weekSet.has(ref.week_date)) {
         const week = (weeks || []).find(w => w.week_date === ref.week_date && w.record_id === ref.record_id) || (weeks || []).find(w => w.week_date === ref.week_date);
         if (week) {
-          candidateLines.push(JSON.stringify(week.content_groups || {}));
+          const groups = week.content_groups || {};
+          for (const items of Object.values(groups)) {
+            for (const line of flattenText(items)) {
+              if (!isBadEvidenceLine(line) && conceptLineMatches(line, concept)) candidateLines.push(line);
+            }
+          }
         }
       }
     }
@@ -251,7 +274,9 @@ function main() {
     for (const fileId of deckSet) {
       if (!deckText.has(fileId)) continue;
       const text = deckText.get(fileId);
-      for (const sentence of sentenceSplit(text)) candidateLines.push(sentence);
+      for (const sentence of sentenceSplit(text)) {
+        if (!isBadEvidenceLine(sentence) && conceptLineMatches(sentence, concept)) candidateLines.push(sentence);
+      }
     }
 
     const ranked = rankLines(candidateLines, concept).slice(0, 8);
