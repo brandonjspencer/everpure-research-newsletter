@@ -51,6 +51,13 @@ There are **two layers of output**:
 Notion + Google data (when secrets are present), runs the full Python → Node pipeline, and
 leaves the deployable site in `publish/`.
 
+After the build, the Pages workflow runs `scripts/refresh_committed_snapshot.py` to keep the
+committed `data/Everpure.html` fallback fresh: on a **live** fetch
+(`notion_api`/`playwright`/`requests`) that returned records, it overwrites the snapshot with
+the freshly-fetched HTML and commits it **only if it changed**, using a `[skip ci]` message so
+the commit doesn't re-trigger the build. Fallback tiers leave the snapshot untouched. See
+[OPERATIONS.md](OPERATIONS.md) "Committed snapshot auto-refresh".
+
 > **Generated outputs are not committed.** `publish/` (except `publish/index.html`) and
 > `output/` legacy sample data are rebuilt fresh; CI uploads `publish/` as the Pages
 > artifact. See `.gitignore`.
@@ -133,7 +140,7 @@ publish/                    Deployable site — REBUILT in CI (generated, gitign
 issues/YYYY-MM/             Frozen, immutable monthly issue archives (committed)
 history/                    Per-month history snapshots (committed)
 emails/                     Email HTML artifacts for distribution (committed)
-scripts/                    export_ai_context.sh and other helpers
+scripts/                    export_ai_context.sh, refresh_committed_snapshot.py, helpers
 docs/                       This documentation; docs/handoff/ holds canonical context
 .github/workflows/          CI (ci.yml) + GitHub Pages deploy (deploy-pages.yml)
 ```

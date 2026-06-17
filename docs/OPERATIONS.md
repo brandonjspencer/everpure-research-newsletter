@@ -91,6 +91,26 @@ Key artifacts to inspect: `status.json`, `weeks.json`, `evidence_packs_default_3
 `concept_evidence_default_30d.json`, `deck_content.json`, `newsletter/default.json`,
 `newsletter/default.html`.
 
+### Committed snapshot auto-refresh
+
+To keep the `local_html_fallback` tier from drifting stale, the Pages build refreshes the
+committed `data/Everpure.html` snapshot automatically. After a build,
+`scripts/refresh_committed_snapshot.py` reads `refresh_manifest.json` and — **only when the
+build used a live fetch (`notion_api`/`playwright`/`requests`) that returned a non-empty
+result** — overwrites `data/Everpure.html` with the freshly-fetched HTML. The workflow then
+commits it **only if it changed**, with a `[skip ci]` message so the commit does not
+re-trigger the build (or CI). Fallback tiers never overwrite the snapshot.
+
+What this means in practice:
+
+- The snapshot tracks the live page within one build cycle (weekly cron + any push/dispatch),
+  so a future fallback build serves near-current content instead of a months-old page.
+- Expect an occasional `chore: refresh committed Notion snapshot [skip ci]` commit on `main`
+  authored by `github-actions[bot]`. No content commit means Notion was unchanged.
+- The committed HTML is the **notion_api-rendered** shape (parser-ready), not a raw browser
+  dump — this is intentional and matches the primary fetch path.
+- It is best-effort: a refresh problem prints a warning and **never fails the deploy**.
+
 ---
 
 ## Agent / QC sequence (before freeze or email)
