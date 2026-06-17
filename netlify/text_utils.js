@@ -3,6 +3,10 @@
 // Pure text helpers shared by the stage-2 renderers. Kept dependency-free
 // (Node built-ins only) and side-effect-free so they can be unit-tested.
 
+function normWord(w) {
+  return w.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 /**
  * Drop a leading concept label from an evidence/proof line.
  *
@@ -17,23 +21,16 @@
  * the title, so a single coincidental word ("Platform messaging…" under a
  * "Platform Diagram Update" finding) is never truncated. Returns `text`
  * unchanged when nothing qualifies, and never returns an empty string.
- *
- * @param {string} text  evidence/proof text, possibly label-prefixed
- * @param {string} title finding title to strip from the front of `text`
- * @returns {string}
  */
 function stripLeadingConceptLabel(text, title) {
   if (!text || !title) return text;
-  const norm = (w) => w.toLowerCase().replace(/[^a-z0-9]/g, "");
-  const titleWords = title.split(/\s+/).map(norm).filter(Boolean);
+  const titleWords = title.split(/\s+/).map(normWord).filter(Boolean);
   if (!titleWords.length) return text;
 
-  // Tokenize the leading words of `text`, remembering where each token ends so
-  // we can slice the original string (preserving its spacing/punctuation).
   const tokens = [];
   const re = /\S+\s*/g;
   let m;
-  while ((m = re.exec(text)) !== null) tokens.push({ end: re.lastIndex, norm: norm(m[0]) });
+  while ((m = re.exec(text)) !== null) tokens.push({ end: re.lastIndex, norm: normWord(m[0]) });
 
   let matched = 0;
   let cut = 0;
@@ -47,11 +44,249 @@ function stripLeadingConceptLabel(text, title) {
     matched += 1;
   }
 
-  // Require a >=2-word label match to avoid stripping a coincidental first word.
   if (matched < 2) return text;
   const rest = text.slice(cut).replace(/^\s+/, "");
   if (!rest) return text;
   return rest.charAt(0).toUpperCase() + rest.slice(1);
 }
 
-module.exports = { stripLeadingConceptLabel };
+/** Mirror of stripLeadingConceptLabel for a trailing label run. */
+function stripTrailingConceptLabel(text, title) {
+  if (!text || !title) return text;
+  const titleWords = title.split(/\s+/).map(normWord).filter(Boolean);
+  if (!titleWords.length) return text;
+
+  const tokens = [];
+  const re = /\s*\S+/g;
+  let m;
+  while ((m = re.exec(text)) !== null) tokens.push({ start: m.index, norm: normWord(m[0]) });
+
+  let matched = 0;
+  while (matched < tokens.length && matched < titleWords.length) {
+    const tw = tokens[tokens.length - 1 - matched].norm;
+    const titw = titleWords[titleWords.length - 1 - matched];
+    if (tw && tw === titw) matched += 1;
+    else break;
+  }
+  if (matched < 2) return text;
+  const rest = text.slice(0, tokens[tokens.length - matched].start).replace(/\s+$/, "");
+  return rest || text;
+}
+
+// Common PDF ligatures leak into deck-extracted text (e.g. "ﬁrst",
+// "diﬀerentiation"). Normalize them so public copy reads correctly.
+const LIGATURES = {
+  ﬀ: "ff",
+  ﬁ: "fi",
+  ﬂ: "fl",
+  ﬃ: "ffi",
+  ﬄ: "ffl",
+  ﬅ: "ft",
+  ﬆ: "st",
+};
+
+function normalizeLigatures(text) {
+  if (!text) return text;
+  return String(text).replace(/[ﬀ-ﬆ]/g, (ch) => LIGATURES[ch] || ch);
+}
+
+// Pipeline scaffolding that bleeds into deck-extracted evidence strings. These
+// are *split points*: genuine content can sit before or after them, and a
+// single string often splices several concepts together via this scaffolding.
+const SCAFFOLD_SPLIT = new RegExp(
+  [
+    "(?:Signal|Recommendation|Decisions?|Hunch|Design)\\s+Concept\\s+\\d+",
+    "Concept\\s+\\d+",
+    "Source:\\s*Data Comparison",
+    "Source:\\s*Figma File",
+    "Source:\\s*\\S+",
+    "Decision Rationale",
+    "Implement\\s+Refine\\s+Design(?:\\s+Test\\s+Iteration)?",
+    "Test\\s+Iteration\\s+Revisit\\s+Later",
+    "Revisit\\s+Later",
+    "Do\\s+Not\\s+Pursue",
+    "Refine\\s+Design",
+    "Assumption\\s*[\\u25cf\\u2022]",
+    "[\\u25cf\\u2022]",
+    "pypdf",
+  ].join("|"),
+  "gi"
+);
+
+// Scaffolding tokens that, if still present after splitting, mark a segment as
+// not-clean (used to penalize, not to split).
+const SCAFFOLD_REMNANT =
+  /\b(concept\s*\d+|source:|decision rationale|implement|iteration|pursue|figma file|data comparison|baseline)\b/i;
+
+// Words that signal a concrete observation/measurement (real evidence).
+const OBSERVATION =
+  /\b(respondents?|visitors?|responses?|participants?|users?|describe[ds]?|named|clustered|clicked|asked|dominate[ds]?|fragmented|mismatch|friction|grasp(?:ed)?|miss(?:ed)?|understood|understand|comprehension|impression|emotional|expectation|autoplay|labels?|conversion|sentiment)\b/i;
+
+// Words that signal a hunch/recommendation rather than a surfaced signal.
+const HUNCH =
+  /\b(explor\w+|opportunity|should|could|recommend\w*|establish\w*|reframe|assumption|consider|introduce|rewrite|simplif\w+|needs? to|guiding|biggest opportunity)\b/i;
+
+function splitOnScaffold(text) {
+  return String(text || "")
+    .split(SCAFFOLD_SPLIT)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Clean one raw evidence string into zero or more presentable segments:
+ * normalize ligatures, split off pipeline scaffolding, strip leading/trailing
+ * concept labels and bullet artifacts, and drop fragments that are too short.
+ */
+function leadSentence(text) {
+  const parts = String(text || "").split(/(?<=[.?!])\s+(?=[A-Z“"])/);
+  return parts[0] || text;
+}
+
+function sanitizeEvidenceSegments(raw, title) {
+  const normalized = normalizeLigatures(raw);
+  const out = [];
+  for (let seg of splitOnScaffold(normalized)) {
+    seg = seg.replace(/\s+/g, " ").trim();
+    // Drop a leading deck section-label like "Conversion (consideration → action) "
+    // or "Decision Rationale: " that precedes the real sentence.
+    seg = seg.replace(/^[A-Z][A-Za-z]+(?:\s+[A-Z][A-Za-z]+)?\s*\([^)]*\)\s+(?=[A-Z])/, "");
+    seg = stripLeadingConceptLabel(seg, title);
+    seg = stripTrailingConceptLabel(seg, title);
+    seg = seg.replace(/^[\s●•:.\-–—]+/, "").replace(/\s+$/, "");
+    if (seg.length < 25 || !/[a-z]/i.test(seg)) continue;
+    out.push(seg);
+    // Also offer the lead sentence as a tighter candidate when the segment is
+    // long and multi-sentence — keeps EVIDENCE concise when that reads better.
+    const lead = leadSentence(seg).trim();
+    if (lead && lead !== seg && lead.length >= 40) out.push(lead);
+  }
+  return out;
+}
+
+function contentTokens(t) {
+  return (
+    String(t || "")
+      .toLowerCase()
+      .match(/[a-z0-9]{4,}/g) || []
+  );
+}
+
+function overlapRatio(a, b) {
+  const A = new Set(contentTokens(a));
+  const B = new Set(contentTokens(b));
+  if (!A.size || !B.size) return 0;
+  let hit = 0;
+  for (const x of A) if (B.has(x)) hit += 1;
+  return hit / A.size;
+}
+
+/**
+ * Score a candidate evidence segment for "concreteness": reward quotes,
+ * metrics, and observation language; penalize hunch/recommendation language,
+ * leftover scaffolding, and segments that merely restate the finding.
+ */
+function scoreEvidence(text, ctx = {}) {
+  const { findingStatement = "" } = ctx;
+  let s = 0;
+  if (/["“][^"”]+["”]/.test(text)) s += 4; // contains a quote
+  if (/\b\d{1,3}%/.test(text)) s += 3; // a percentage
+  if (/\b\d+\b/.test(text)) s += 1; // any number
+  if (OBSERVATION.test(text)) s += 5;
+  if (HUNCH.test(text)) s -= 4;
+  if (SCAFFOLD_REMNANT.test(text)) s -= 8;
+  const len = text.length;
+  if (len >= 40 && len <= 300) s += 2;
+  if (len > 380) s -= 3;
+  if (overlapRatio(text, findingStatement) >= 0.6) s -= 6; // restates the hunch
+  return s;
+}
+
+/**
+ * Choose the strongest concrete evidence segment from raw candidate strings.
+ * Returns "" when nothing clears the concreteness threshold (caller should then
+ * fall back to its existing behavior rather than show a weak/hunchy line).
+ */
+function pickBestEvidence(rawCandidates, ctx = {}) {
+  const title = ctx.title || "";
+  const segs = [];
+  for (const raw of rawCandidates || []) {
+    for (const seg of sanitizeEvidenceSegments(raw, title)) segs.push(seg);
+  }
+  const seen = new Set();
+  let best = "";
+  let bestScore = -Infinity;
+  for (const seg of segs) {
+    const key = seg.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const score = scoreEvidence(seg, ctx);
+    if (score > bestScore) {
+      bestScore = score;
+      best = seg;
+    }
+  }
+  return bestScore >= 4 ? best : "";
+}
+
+function ensureSentenceEnd(text) {
+  return /[.?!”"]$/.test(text) ? text : `${text}.`;
+}
+
+// Trim to a max length at the nearest sentence boundary (preferred) or word
+// boundary, so evidence stays within a consistent ceiling.
+function capLength(text, maxLen) {
+  if (text.length <= maxLen) return text;
+  const slice = text.slice(0, maxLen + 1);
+  const sentenceEnd = Math.max(
+    slice.lastIndexOf(". "),
+    slice.lastIndexOf("? "),
+    slice.lastIndexOf("! ")
+  );
+  if (sentenceEnd >= 80) return text.slice(0, sentenceEnd + 1);
+  const space = slice.lastIndexOf(" ");
+  const cut = space >= 80 ? space : maxLen;
+  return `${text.slice(0, cut).replace(/[\s,;:—-]+$/, "")}…`;
+}
+
+/**
+ * Compose a concise evidence summary from raw candidate strings: take the
+ * strongest concrete segment, then append further *distinct* concrete segments
+ * while they fit under `maxLen`. This gives the EVIDENCE column a richer,
+ * multi-signal line (the convention curated overrides also follow) with a
+ * consistent length ceiling. Returns "" when nothing clears the bar.
+ */
+function composeEvidenceSummary(rawCandidates, ctx = {}, maxLen = 295) {
+  const title = ctx.title || "";
+  const segMap = new Map();
+  for (const raw of rawCandidates || []) {
+    for (const seg of sanitizeEvidenceSegments(raw, title)) {
+      const key = seg.toLowerCase();
+      if (!segMap.has(key)) segMap.set(key, seg);
+    }
+  }
+  const ranked = [...segMap.values()]
+    .map((seg) => ({ seg, score: scoreEvidence(seg, ctx) }))
+    .filter((x) => x.score >= 4)
+    .sort((a, b) => b.score - a.score || a.seg.length - b.seg.length);
+  if (!ranked.length) return "";
+
+  let result = capLength(ranked[0].seg, maxLen);
+  for (let i = 1; i < ranked.length; i += 1) {
+    const cand = ranked[i].seg;
+    if (overlapRatio(cand, result) >= 0.4) continue; // must add a distinct signal
+    const joined = `${ensureSentenceEnd(result)} ${cand}`;
+    if (joined.length <= maxLen) result = joined;
+  }
+  return capLength(result, maxLen);
+}
+
+module.exports = {
+  stripLeadingConceptLabel,
+  stripTrailingConceptLabel,
+  normalizeLigatures,
+  sanitizeEvidenceSegments,
+  scoreEvidence,
+  pickBestEvidence,
+  composeEvidenceSummary,
+};

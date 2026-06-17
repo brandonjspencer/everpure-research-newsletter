@@ -14,7 +14,7 @@ Users understand the Enterprise Data Cloud category, but the Blueprint page stil
 
 #### Evidence
 
-Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.
+In the 10-second first impression, most respondents called the page "data cloud storage" and fewer than 5 named the Success Blueprint unprompted; half clicked "Start Your Assessment," but expectations were inconsistent and 29% weren't sure it was for them.
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -32,7 +32,7 @@ The live stream experience needs to make the event feel live immediately and gui
 
 #### Evidence
 
-The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant "Watch Live" action.
+Action intent is fragmented — no single CTA dominates — and an autoplay expectation mismatch creates friction for the keynote ("Very unclear that this would autoplay"). The emotional baseline reads only "ok," strongest on "Innovative" and "Helpful."
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -50,7 +50,7 @@ Contextual Intelligence is recognizable as an AI and data management topic, but 
 
 #### Evidence
 
-Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.
+Most visitors grasp the category but miss the differentiation — responses clustered around generic labels ("AI," "data storage"). After a plain-language value statement was added, 66% understood it most or very well; "Watch a Demo" dominated in testing.
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 

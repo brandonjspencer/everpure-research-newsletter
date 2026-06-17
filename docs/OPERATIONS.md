@@ -160,6 +160,14 @@ falls back to a generic default in `render_stage2_default_current.js`, and a per
 be selected with `STAGE2_CONTENT_FILE=netlify/content/default-2026-07.json`. Confidence is now
 data-driven (`confidence_override`) — do **not** reintroduce a hardcoded `"high"` in the renderer.
 
+The **EVIDENCE** column is `proof_point`. When a topic has no `proof_point` override, the
+renderer auto-composes one from the concept-evidence substrate (`text_utils.composeEvidenceSummary`):
+it splits off pipeline scaffolding, repairs PDF ligatures, prefers concrete signals (quotes,
+metrics, observations) over the finding restatement, joins distinct signals, and caps length
+(~295 chars). For a leadership-ready, length-consistent line, set an explicit `proof_point`
+per topic (aim ~250 chars, ceiling ~295) — that always wins over the auto-composed fallback.
+Keep EVIDENCE a _surfaced signal_, not a paraphrase of the finding.
+
 ---
 
 ## Archive freeze workflow
