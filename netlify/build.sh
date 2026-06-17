@@ -9,7 +9,11 @@ mkdir -p "$OUT" "$RAW" "$ARTIFACTS" "$ROOT/publish/newsletter" "$ROOT/publish/ap
 python3 -m pip install --disable-pip-version-check -r "$ROOT/requirements.txt"
 
 if [ -n "${SOURCE_URL:-}" ]; then
-  python3 -m playwright install chromium
+  # A browser-download hiccup must not abort the whole deploy: on failure, degrade
+  # to the requests fetch + committed-snapshot/existing fallback handled below.
+  if ! python3 -m playwright install chromium; then
+    echo "::warning::playwright browser install failed; relying on requests fetch + snapshot/existing fallback"
+  fi
 
   set +e
   NOTION_FETCH_METHOD="${NOTION_FETCH_METHOD:-auto}" \
