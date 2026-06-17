@@ -58,15 +58,23 @@ KEY_SIGNAL_RE = re.compile(
     re.I,
 )
 
+# More specific phrases first so they win the concept slot (infer_concepts keeps
+# first-matched order). These are matched against deck title + slide text + link
+# text near each linked comparison.
 CONCEPT_HINTS = [
-    ("events", "Events Page"),
-    ("event", "Events Page"),
+    ("contextual intelligence", "Contextual Intelligence PDP"),
+    ("accelerate live stream", "Accelerate Live Stream"),
+    ("live stream", "Accelerate Live Stream"),
+    ("accelerate", "Accelerate Live Stream"),
+    ("success blueprint", "EDC Success Blueprint"),
+    ("edc", "EDC Success Blueprint"),
     ("homepage ai", "Homepage AI Messaging"),
     ("ai messaging", "Homepage AI Messaging"),
     ("ai summary", "AI Summary"),
-    ("summary", "AI Summary"),
     ("pathfinder", "Pathfinder CTA Labels"),
     ("cta", "Pathfinder CTA Labels"),
+    ("events", "Events Page"),
+    ("event", "Events Page"),
     ("webinar", "Webinar Registration Page"),
     ("this book", "Reader Filter: This Book"),
     ("filter", "Reader Filter: This Book"),
@@ -75,6 +83,8 @@ CONCEPT_HINTS = [
     ("support", "Support Taxonomy"),
     ("evergreen", "Evergreen Rebrand"),
     ("platform", "Platform Redesign"),
+    ("summary", "AI Summary"),
+    ("pdp", "Contextual Intelligence PDP"),
 ]
 
 

@@ -78,7 +78,35 @@ function confidenceChart(cycles) {
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Confidence mix per cycle">${bars}</svg><div class="legend">${legend}</div>`;
 }
 
-// Grouped bars (baseline vs later variant) across UX metrics for one comparison.
+// Distinct colors for the variants in a comparison (read on light + dark cards).
+const VARIANT_COLORS = [
+  "#9aa7b1",
+  "#ef5b25",
+  "#2e7d57",
+  "#d98a00",
+  "#7c6bd6",
+  "#3a86c8",
+  "#c2557a",
+  "#1d9e88",
+];
+
+// Tidy a comparison title: drop leading test-number prefixes ("191 ") and
+// collapse a trailing version on the variant side ("…Page V1" → "v1") so
+// "191 EDC Success Blueprint Baseline vs 191 EDC Page V1" → "EDC Success
+// Blueprint Baseline vs v1". Concept titles (no "vs", no number) pass through.
+function succinctTitle(title) {
+  return String(title || "")
+    .split(/\s+vs\.?\s+/i)
+    .map((part, i) => {
+      const clean = part.replace(/^\d+\s+/, "").trim();
+      if (i === 0) return clean;
+      const m = clean.match(/\bv(?:ersion)?\s*([0-9]+)\b\s*$/i);
+      return m ? `v${m[1]}` : clean;
+    })
+    .join(" vs ");
+}
+
+// Grouped bars across UX metrics for one comparison — one colored bar per variant.
 function comparisonChart(title, n, variants, metricKeys, key) {
   // Render every metric actually present (live tests use success/satisfaction/
   // effort too), ordered by the canonical list, then any extras alphabetically.
@@ -88,76 +116,90 @@ function comparisonChart(title, n, variants, metricKeys, key) {
     ...metricKeys.filter((m) => present.has(m)),
     ...[...present].filter((m) => !metricKeys.includes(m)).sort(),
   ];
-  if (!metrics.length) return "";
+  const vars = variants.slice(0, 8);
+  if (!metrics.length || !vars.length) return "";
   const W = 720;
-  const rowH = 30;
   const labelW = 150;
-  const trackW = W - labelW - 70;
+  const valW = 40;
+  const trackW = W - labelW - valW - 10;
+  const barH = 7;
+  const vgap = 3;
+  const metricGap = 16;
+  const blockH = vars.length * (barH + vgap);
+  let y = 8;
   let rows = "";
-  metrics.forEach((m, i) => {
-    const y = i * rowH + 8;
-    rows += `<text x="0" y="${y + 14}" class="mlabel">${esc(m.replace(/_/g, " "))}</text>`;
-    variants.slice(0, 2).forEach((v, vi) => {
-      const score = v.metrics[m];
-      if (typeof score !== "number") return;
-      const barH = 9;
-      const by = y + vi * (barH + 2);
-      const w = (trackW * score) / 100;
-      const color = vi === 0 ? "var(--bar-base)" : "var(--bar-variant)";
+  metrics.forEach((m) => {
+    rows += `<text x="0" y="${y + blockH / 2}" class="mlabel" dominant-baseline="middle">${esc(m.replace(/_/g, " "))}</text>`;
+    vars.forEach((v, vi) => {
+      const by = y + vi * (barH + vgap);
       rows += `<rect x="${labelW}" y="${by}" width="${trackW}" height="${barH}" fill="var(--track)" rx="2"></rect>`;
-      rows += `<rect x="${labelW}" y="${by}" width="${w.toFixed(1)}" height="${barH}" fill="${color}" rx="2"><title>${esc(v.test_name)} — ${m}: ${score}%</title></rect>`;
-      rows += `<text x="${labelW + trackW + 6}" y="${by + barH}" class="mval">${score}%</text>`;
+      const score = v.metrics[m];
+      if (typeof score === "number") {
+        const w = (trackW * score) / 100;
+        const color = VARIANT_COLORS[vi % VARIANT_COLORS.length];
+        rows += `<rect x="${labelW}" y="${by}" width="${w.toFixed(1)}" height="${barH}" fill="${color}" rx="2"><title>${esc(v.test_name)} — ${m}: ${score}%</title></rect>`;
+        rows += `<text x="${labelW + trackW + 6}" y="${by + barH}" class="mval">${score}%</text>`;
+      }
     });
+    y += blockH + metricGap;
   });
-  const H = metrics.length * rowH + 16;
-  const names = variants
-    .slice(0, 2)
-    .map((v) => esc(v.test_name))
-    .join(" → ");
-  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong><span>${names}${n ? ` · n=${n}` : ""}</span></div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+  const H = y;
+  const legend = vars
+    .map(
+      (v, i) =>
+        `<span class="lg"><i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>${esc(v.test_name)}</span>`
+    )
+    .join("");
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong><span>${n ? `n=${n}` : ""}</span></div><div class="legend">${legend}</div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
 }
 
 function helioComparisons(helioMetrics) {
-  // Group by the compare page (compare_id) so each block is one real comparison
-  // (its baseline + variant), not a concept-wide pile. Fall back to test_id.
-  const byKey = new Map();
+  // 1. Assemble compare pages (one per compare_id), deduping variants by test_id.
+  const pages = new Map();
   for (const row of helioMetrics) {
-    const key = row.compare_id || row.test_id;
-    if (!byKey.has(key)) byKey.set(key, { key, rows: [] });
-    byKey.get(key).rows.push(row);
+    const id = row.compare_id || row.test_id;
+    if (!pages.has(id)) pages.set(id, { id, rows: [] });
+    pages.get(id).rows.push(row);
   }
   const pick = (rows, field) => (rows.find((r) => r[field]) || {})[field];
-  const comparisons = [...byKey.values()].map((g) => {
-    // Title preference: real "X vs Y" → concept → deck link text → generic.
-    // Never the raw ULID.
-    const title =
-      pick(g.rows, "comparison_title") ||
-      pick(g.rows, "concept") ||
-      pick(g.rows, "link_text") ||
-      "Helio comparison";
+  const built = [];
+  for (const p of pages.values()) {
+    const comparisonTitle = pick(p.rows, "comparison_title") || null;
+    const concept = pick(p.rows, "concept") || null;
+    // Drop comparisons with no real label — the generic "Data Comparison" /
+    // unlabeled records are confusing, so they're omitted rather than shown.
+    if (!comparisonTitle && !concept) continue;
     const seen = new Set();
     const variants = [];
-    for (const r of g.rows) {
+    for (const r of p.rows) {
       if (seen.has(r.test_id)) continue;
       seen.add(r.test_id);
       variants.push(r);
     }
     const ns = variants.map((v) => v.n).filter((x) => typeof x === "number");
-    return { key: g.key, title, label: title, variants, n: ns.length ? Math.max(...ns) : null };
+    const withMetrics = variants.filter((v) => Object.keys(v.metrics || {}).length).length;
+    const metricCount = new Set(variants.flatMap((v) => Object.keys(v.metrics || {}))).size;
+    built.push({
+      key: p.id,
+      comparisonTitle,
+      concept,
+      variants,
+      n: ns.length ? Math.max(...ns) : null,
+      rank: withMetrics * 100 + metricCount,
+    });
+  }
+  // 2. Titled comparisons (e.g. the EDC compare page) stay distinct; concept-only
+  // ones collapse to a single block per concept — keep the most informative.
+  const groups = new Map();
+  for (const b of built) {
+    const groupKey = b.comparisonTitle ? `T:${b.key}` : `C:${b.concept}`;
+    const cur = groups.get(groupKey);
+    if (!cur || b.rank > cur.rank) groups.set(groupKey, b);
+  }
+  return [...groups.values()].map((b) => {
+    const title = succinctTitle(b.comparisonTitle || b.concept);
+    return { key: b.key, title, label: title, variants: b.variants, n: b.n };
   });
-  // Disambiguate duplicate titles (e.g. several "Pathfinder CTA Labels").
-  const total = {};
-  comparisons.forEach((c) => (total[c.title] = (total[c.title] || 0) + 1));
-  const used = {};
-  comparisons.forEach((c) => {
-    if (total[c.title] > 1) {
-      used[c.title] = (used[c.title] || 0) + 1;
-      c.label = `${c.title} (${used[c.title]})`;
-    } else {
-      c.label = c.title;
-    }
-  });
-  return comparisons;
 }
 
 function helioSection(helioMetrics, metricKeys) {
@@ -313,4 +355,11 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { render, confidenceChart, comparisonChart, helioSection, helioComparisons };
+module.exports = {
+  render,
+  confidenceChart,
+  comparisonChart,
+  helioSection,
+  helioComparisons,
+  succinctTitle,
+};
