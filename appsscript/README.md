@@ -25,20 +25,32 @@ anyone on the suppression tab.
 4. In the Apps Script editor → **Project Settings → Script Properties**, set these (they live in
    Apps Script, **never in the repo**, so the recipient sheet id and Drive ids stay private):
 
-   | Property              | Example / meaning                                            |
-   | --------------------- | ------------------------------------------------------------ |
-   | `RECIPIENTS_SHEET_ID` | Drive id of the recipients spreadsheet (has the PII list)    |
-   | `ISSUE_HTML_FILE_ID`  | Drive id of the current issue email HTML                     |
-   | `UXTIP_HTML_FILE_ID`  | Drive id of the current UX-tip email HTML                    |
-   | `ISSUE_SUBJECT`       | e.g. `Everpure Research Roundup — June 2026 Issue`           |
-   | `UXTIP_SUBJECT`       | e.g. `Everpure UX Tip — …`                                   |
-   | `REPLY_TO`            | your address (also gets a copy of each batch for visibility) |
-   | `REVIEWERS`           | comma-separated reviewer addresses for **test** mode         |
-   | `UNSUBSCRIBE_URL`     | optional: link/mailto added as an unsubscribe footer         |
+   | Property                | Example / meaning                                                           |
+   | ----------------------- | --------------------------------------------------------------------------- |
+   | `RECIPIENTS_SHEET_ID`   | Drive id of the recipients spreadsheet (has the PII list)                   |
+   | `ISSUE_EMAIL_FOLDER_ID` | Drive **folder** id holding issue email HTML — newest `.html` is auto-used  |
+   | `UXTIP_EMAIL_FOLDER_ID` | Drive **folder** id holding UX-tip email HTML — newest `.html` is auto-used |
+   | `ISSUE_SUBJECT`         | e.g. `Everpure Research Roundup — June 2026 Issue`                          |
+   | `UXTIP_SUBJECT`         | e.g. `Everpure UX Tip — …`                                                  |
+   | `REPLY_TO`              | your address (also gets a copy of each batch for visibility)                |
+   | `REVIEWERS`             | comma-separated reviewer addresses for **test** mode                        |
+   | `UNSUBSCRIBE_URL`       | optional: link/mailto added as an unsubscribe footer                        |
+
+   **Email HTML resolution:** by default the script auto-picks the **newest `.html`** in the
+   configured folder (`ISSUE_EMAIL_FOLDER_ID` / `UXTIP_EMAIL_FOLDER_ID`), so there's no per-issue
+   file id to update — just drop the new email HTML in the folder. To pin an exact file instead,
+   set `ISSUE_HTML_FILE_ID` / `UXTIP_HTML_FILE_ID` (these override the folder). Narrow the match
+   with `ISSUE_HTML_PATTERN` / `UXTIP_HTML_PATTERN` (a case-insensitive filename substring) if a
+   folder holds more than one kind of `.html`.
 
    Optional overrides (sensible defaults in `Code.gs`): `RECIPIENTS_TAB` (`Recipients`),
    `EMAIL_HEADER` (`email`), `ACTIVE_HEADER` (`active`), `SUPPRESSION_TAB` (`Unsubscribed`),
    `BATCH_SIZE` (`45`), `BATCH_PAUSE_MS` (`1200`), `FROM_NAME`.
+
+   > These folders/files live in the **Pulse-Web-SEO** shared drive under
+   > **`01 Tools & Plugins`**. Drive **ids are stable across moves**, so relocating folders there
+   > does not change any of these property values — just keep your access to the shared drive (the
+   > script reads them as you).
 
 ## Running
 
@@ -59,7 +71,9 @@ an API-executable deployment). The `/new-issue` skill (Phase 6) drives this as
 
 - Recipients tab: columns `email` and `active` (truthy = `true/yes/y/1`). Matches the existing sheet.
 - Suppression: add an `Unsubscribed` tab with an `email` column; broadcasts skip those addresses.
-- Monthly: upload the frozen issue email HTML to Drive and update `ISSUE_HTML_FILE_ID`.
+- Monthly: drop the new frozen issue email HTML into the `ISSUE_EMAIL_FOLDER_ID` folder — the
+  script auto-uses the newest `.html`, so there's nothing else to update. Then `dryRunIssue` →
+  `sendIssueTest` → `sendIssueBroadcast`.
 
 ## Scaling notes
 
