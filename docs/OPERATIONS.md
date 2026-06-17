@@ -91,10 +91,45 @@ A green build is **not** proof the source data is fresh. Before drafting:
   `truncated_to_first_tab_count`, `requested_gid_not_found_count`, and per-sheet
   `row_truncated` / `column_truncated` flags. Non-zero means a linked Google Sheet's evidence
   is incomplete (a tab, gid, or rows/columns were dropped) — investigate before relying on it.
+- Check Helio capture in `helio_fetch_status.json` (`summary`): `evidence_count`, `error_count`,
+  `empty_count`, `discovered_report_ids`, and `tier_b_report_api` (`configured`/`absent`).
+  `check_build_freshness.py` rolls Helio `error_count` + `empty_count` into the same
+  `live_degraded` (exit 3) signal as degraded sheets, so a Helio hiccup is visible at the gate.
 
 Key artifacts to inspect: `status.json`, `weeks.json`, `evidence_packs_default_30d.json`,
-`concept_evidence_default_30d.json`, `deck_content.json`, `newsletter/default.json`,
-`newsletter/default.html`.
+`concept_evidence_default_30d.json`, `deck_content.json`, `helio_evidence.json`,
+`newsletter/default.json`, `newsletter/default.html`.
+
+### Helio evidence (compare pages + report API)
+
+The decks link to ZURB **Helio** sources. `everpure_helio_ingest.py` fetches them (the Google-Sheet
+ingest only inventories them):
+
+- **Tier A — compare share pages** (`glare-playground.../share/compare/<id>`): public, no auth. We
+  parse the per-metric comparison (Engagement/Expectations/Comprehension/Intent/Sentiment, score +
+  qualitative label per variant) into evidence signals and discover the `my.helio.app/report/<id>`
+  deep links. Capped by `HELIO_FETCH_LIMIT` (default 12).
+- **Tier B-lite — report config / integrity** via the Helio Enterprise **public API**
+  (`X-API-ID`/`X-API-TOKEN`, from `HELIO_APP_ID`/`HELIO_API_TOKEN`). For each discovered report id
+  it fetches `GET /tests/:id` and attaches **sample size (n) + question count** as provenance,
+  folding n into the headline signal so it backs the confidence label.
+
+  **The public API serves test config only — it does NOT expose per-response/score data.** Probed
+  2026-06: `GET /tests/:id/responses` 504s on Helio's origin (every page size + section scoping),
+  `/results` `/insights` `/sections` return 406, and `?expand=`/`?include=` are ignored. So
+  per-question scores / open-text responses / common-words are **not fetchable via the public API**;
+  the headline metric deltas come from the **compare pages (Tier A)**, and deeper data needs the
+  private app API (session auth, not CI-safe) or a manual export. Re-check if Helio fixes
+  `/responses` or publishes API docs. To re-probe the surface with live keys:
+
+  ```bash
+  HELIO_APP_ID=… HELIO_API_TOKEN=… python3 scripts/helio_api_probe.py [TEST_ID]
+  ```
+
+  It prints a redacted skeleton (no keys; values truncated) — safe to share.
+
+Both tiers are **non-blocking**: a Helio failure is recorded in `helio_fetch_status.json` and never
+aborts the deploy.
 
 ### Committed snapshot auto-refresh
 

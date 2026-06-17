@@ -107,10 +107,16 @@ Never paste or commit credentials, OAuth refresh tokens, client secrets, `.env` 
 private keys, or recipient spreadsheets. The Notion source is a **public page** fetched via
 the `SOURCE_URL` secret (no Notion API token or database id is used). Google deck fetch needs
 a `drive.readonly` OAuth token. The Pages deploy (`deploy-pages.yml`) reads secrets
-`SOURCE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` and the
-variable `GOOGLE_FETCH_LIMIT`. `GOOGLE_REFRESH_TOKEN` should be a long-lived token from a
-published (Production/Internal) OAuth app — it does not need monthly rotation; see
-[docs/OPERATIONS.md](docs/OPERATIONS.md) "Google auth".
+`SOURCE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`,
+`HELIO_APP_ID`, `HELIO_API_TOKEN`, and the variable `GOOGLE_FETCH_LIMIT`. `GOOGLE_REFRESH_TOKEN`
+should be a long-lived token from a published (Production/Internal) OAuth app — it does not need
+monthly rotation; see [docs/OPERATIONS.md](docs/OPERATIONS.md) "Google auth". `HELIO_APP_ID` /
+`HELIO_API_TOKEN` are the Enterprise public-API pair (`X-API-ID`/`X-API-TOKEN`) used by
+`everpure_helio_ingest.py` for Helio report **config/integrity** provenance (Tier B-lite:
+sample size + question count); issued in Helio Org Settings → Administration, never committed.
+The public API serves test **config only** — it does **not** expose per-response/score data (the
+`/responses` route 504s), so deep report data isn't fetchable there. Helio **compare** share
+pages (Tier A, the headline metric deltas) are public and need no auth.
 
 ## Environment notes
 

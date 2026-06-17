@@ -163,6 +163,13 @@ if [ -f "$ROOT/everpure_external_research_ingest.py" ]; then
   fi
 fi
 
+# Helio evidence ingest runs AFTER the external ingest (it reads the deck_links.json
+# that step writes) and BEFORE evidence packs. Tier A (compare share pages) needs no
+# auth; Tier B (report API) uses HELIO_APP_ID/HELIO_API_TOKEN from the environment.
+if [ -f "$ROOT/everpure_helio_ingest.py" ] && [ -f "$OUT/deck_links.json" ]; then
+  python3 "$ROOT/everpure_helio_ingest.py" --data-dir "$OUT" || echo "Helio evidence ingest failed; continuing."
+fi
+
 if [ -f "$ROOT/netlify/build_evidence_packs.js" ]; then
   node "$ROOT/netlify/build_evidence_packs.js" "$ROOT/publish"
 fi
