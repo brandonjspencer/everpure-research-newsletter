@@ -61,8 +61,11 @@ def check_freshness(data_dir: Path) -> Dict[str, Any]:
     helio_summary = helio.get("summary") or {}
     helio_errors = int(helio_summary.get("error_count") or 0)
     helio_empty = int(helio_summary.get("empty_count") or 0)
+    helio_config_errors = int(helio_summary.get("report_config_error_count") or 0)
 
-    capture_degraded = degraded + truncated + gid_missing + helio_errors + helio_empty
+    capture_degraded = (
+        degraded + truncated + gid_missing + helio_errors + helio_empty + helio_config_errors
+    )
 
     live = method in LIVE_FETCH_METHODS
     if not live:
@@ -87,6 +90,7 @@ def check_freshness(data_dir: Path) -> Dict[str, Any]:
         "helio_capture": {
             "error_count": helio_errors,
             "empty_count": helio_empty,
+            "report_config_error_count": helio_config_errors,
             "evidence_count": int(helio_summary.get("evidence_count") or 0),
             "tier_b_report_api": helio_summary.get("tier_b_report_api"),
         },
@@ -117,6 +121,7 @@ def _print_human(result: Dict[str, Any]) -> None:
         f"evidence={hc.get('evidence_count', 0)} "
         f"errors={hc.get('error_count', 0)} "
         f"empty={hc.get('empty_count', 0)} "
+        f"config_errors={hc.get('report_config_error_count', 0)} "
         f"report_api={hc.get('tier_b_report_api')}"
     )
     if status == "live_clean":

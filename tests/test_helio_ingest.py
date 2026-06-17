@@ -211,3 +211,94 @@ def test_discovered_report_ids_dedupes_in_order():
         V1_REPORT,
         "01KZZZZZZZZZZZZZZZZZZZZZZZZ",
     ]
+
+
+# ---- Tier B-lite: config / integrity via the public API --------------------
+
+
+class _FakeApiResp:
+    def __init__(self, status_code, payload):
+        self.status_code = status_code
+        self._payload = payload
+
+    def json(self):
+        return self._payload
+
+
+class _FakeApiSession:
+    """Maps report-id -> (status_code, payload). Records requested URLs."""
+
+    def __init__(self, by_id):
+        self._by_id = by_id
+        self.headers = {}
+        self.calls = []
+
+    def get(self, url, timeout=None):
+        self.calls.append(url)
+        rid = url.rstrip("/").rsplit("/", 1)[-1]
+        status, payload = self._by_id.get(rid, (404, {}))
+        return _FakeApiResp(status, payload)
+
+
+def _test_config_payload(n=100, sections=8, spammed=7):
+    return {
+        "test": {
+            "enroll_responses_count": n,
+            "open_responses_count": 0,
+            "spammed_responses_count": spammed,
+            "flagged_participants_count": 28,
+            "sections": [{"id": i} for i in range(sections)],
+        }
+    }
+
+
+def test_fetch_test_config_parses_provenance():
+    session = _FakeApiSession({BASELINE_REPORT: (200, _test_config_payload(n=100, sections=8))})
+    cfg = helio.fetch_test_config(session, BASELINE_REPORT)
+    assert cfg["found"] is True
+    assert cfg["responses_count"] == 100
+    assert cfg["section_count"] == 8
+    assert cfg["spammed_responses_count"] == 7
+
+
+def test_fetch_test_config_non_200_is_not_found():
+    session = _FakeApiSession({BASELINE_REPORT: (504, {})})
+    cfg = helio.fetch_test_config(session, BASELINE_REPORT)
+    assert cfg["found"] is False
+    assert cfg["status_code"] == 504
+
+
+def test_enrich_with_report_config_attaches_provenance_and_n():
+    parsed = helio.parse_compare_html(_escaped_payload())
+    rec = helio.compare_evidence_record(
+        {"source_type": "helio_compare", "target_url": COMPARE_URL}, parsed
+    )
+    evidence = [rec]
+    session = _FakeApiSession(
+        {
+            BASELINE_REPORT: (200, _test_config_payload(n=100, sections=8)),
+            V1_REPORT: (200, _test_config_payload(n=98, sections=8)),
+        }
+    )
+    configs, statuses = helio.enrich_with_report_config(
+        evidence, "app", "tok", max_fetches=12, session=session
+    )
+
+    assert {s["status"] for s in statuses} == {"success"}
+    assert len(rec["report_configs"]) == 2
+    # Sample size folds into the headline signal (max across variants) → backs confidence.
+    assert "(n=100)" in rec["signals"][0]
+    assert "(n=100)" in rec["evidence_text"]
+
+
+def test_enrich_records_errors_for_unresolved_reports():
+    parsed = helio.parse_compare_html(_escaped_payload())
+    rec = helio.compare_evidence_record(
+        {"source_type": "helio_compare", "target_url": COMPARE_URL}, parsed
+    )
+    session = _FakeApiSession({BASELINE_REPORT: (504, {}), V1_REPORT: (504, {})})
+    _configs, statuses = helio.enrich_with_report_config(
+        [rec], "app", "tok", max_fetches=12, session=session
+    )
+    assert [s["status"] for s in statuses] == ["error", "error"]
+    assert "report_configs" not in rec  # nothing attached when none resolve

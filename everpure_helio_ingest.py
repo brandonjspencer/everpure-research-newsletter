@@ -49,6 +49,16 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
+# Public REST API base (Enterprise; X-API-ID / X-API-TOKEN). Probed 2026-06: it
+# serves test CONFIG only (GET /tests, GET /tests/:id). The per-response/score
+# route GET /tests/:id/responses TIMES OUT on Helio's origin (504) regardless of
+# pagination or section scoping, and /results /insights /sections return 406. So
+# deep response/score data is NOT fetchable via the public API today — Tier B is
+# limited to config/integrity provenance (sample size + question count). Revisit
+# if Helio fixes /responses or publishes API docs. Deep data otherwise needs the
+# private app API (session auth) or a manual export.
+HELIO_API_BASE = "https://my.helio.app/api/public"
+
 # Helio test/report/take ids are 26-char Crockford-style ULIDs (0-9 A-Z).
 COMPARE_ID_RE = re.compile(r"/share/compare/([A-Za-z0-9]+)")
 
@@ -323,6 +333,114 @@ def discovered_report_ids(evidence: List[Dict[str, Any]]) -> List[str]:
     return seen
 
 
+# ---------------------------------------------------------------------------
+# Tier B-lite — test config / integrity via the public API (the only part that
+# works). Attaches sample size + question count as provenance to the compare
+# evidence; it does NOT (cannot) fetch per-response/score data.
+# ---------------------------------------------------------------------------
+
+
+def helio_api_session(app_id: str, token: str) -> requests.Session:
+    session = requests.Session()
+    session.headers.update(
+        {
+            "X-API-ID": app_id,
+            "X-API-TOKEN": token,
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        }
+    )
+    return session
+
+
+def fetch_test_config(
+    session: requests.Session, report_id: str, timeout: int = 60
+) -> Dict[str, Any]:
+    """GET /tests/:id → provenance (sample size, question count, integrity counts).
+
+    Config only; the public API can't serve per-response/score data. Pure-ish:
+    a `session` double makes this unit-testable without a live call.
+    """
+    url = f"{HELIO_API_BASE}/tests/{report_id}"
+    try:
+        resp = session.get(url, timeout=timeout)
+    except Exception as exc:  # noqa: BLE001 - non-blocking ingest
+        return {"report_id": report_id, "found": False, "error": f"{exc.__class__.__name__}:{exc}"}
+    if getattr(resp, "status_code", None) != 200:
+        return {"report_id": report_id, "found": False, "status_code": resp.status_code}
+    try:
+        test = (resp.json() or {}).get("test") or {}
+    except ValueError:
+        return {"report_id": report_id, "found": False, "error": "non_json"}
+    n = (
+        test.get("enroll_responses_count")
+        or test.get("open_responses_count")
+        or test.get("customer_list_responses_count")
+    )
+    return {
+        "report_id": report_id,
+        "found": True,
+        "responses_count": n,
+        "section_count": len(test.get("sections") or []),
+        "spammed_responses_count": test.get("spammed_responses_count"),
+        "flagged_participants_count": test.get("flagged_participants_count"),
+    }
+
+
+def enrich_with_report_config(
+    evidence: List[Dict[str, Any]],
+    app_id: str,
+    token: str,
+    max_fetches: int,
+    session: Optional[requests.Session] = None,
+) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+    """Fetch /tests/:id config for each discovered report id and attach it as
+    provenance (n + question count) to the compare records, folding the sample
+    size into the headline signal so it backs the confidence label."""
+    report_ids = discovered_report_ids(evidence)
+    if not report_ids:
+        return {}, []
+    session = session or helio_api_session(app_id, token)
+
+    configs: Dict[str, Dict[str, Any]] = {}
+    statuses: List[Dict[str, Any]] = []
+    for idx, rid in enumerate(report_ids):
+        if idx >= max_fetches:
+            statuses.append({"report_id": rid, "status": "skipped_limit"})
+            continue
+        cfg = fetch_test_config(session, rid)
+        configs[rid] = cfg
+        statuses.append(
+            {
+                "report_id": rid,
+                "status": "success" if cfg.get("found") else "error",
+                "responses_count": cfg.get("responses_count"),
+                "section_count": cfg.get("section_count"),
+                "status_code": cfg.get("status_code"),
+                "error": cfg.get("error"),
+            }
+        )
+
+    for rec in evidence:
+        found = [
+            configs[r]
+            for r in rec.get("report_ids", [])
+            if r in configs and configs[r].get("found")
+        ]
+        if not found:
+            continue
+        rec["report_configs"] = found
+        ns = [c.get("responses_count") for c in found if c.get("responses_count")]
+        n = max(ns) if ns else None
+        signals = rec.get("signals") or []
+        if n and signals and "n=" not in signals[0]:
+            signals[0] = (signals[0].rstrip(".") + f" (n={n}).") if signals[0] else signals[0]
+            rec["signals"] = signals
+            rec["evidence_text"] = redact_text(" ".join(signals), limit=6000)
+    return configs, statuses
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Fetch Helio evidence linked from the decks")
     ap.add_argument("--data-dir", required=True, help="Build data dir (has deck_links.json)")
@@ -332,7 +450,8 @@ def main() -> None:
         type=int,
         default=int(os.environ.get("HELIO_FETCH_LIMIT", "12")),
     )
-    # Tier B (report API) credentials — accepted now, wired in the follow-up.
+    # Tier B-lite (report config / integrity) uses these public-API keys. The
+    # public API can't serve per-response/score data (see HELIO_API_BASE note).
     ap.add_argument("--helio-app-id", default=os.environ.get("HELIO_APP_ID"))
     ap.add_argument("--helio-api-token", default=os.environ.get("HELIO_API_TOKEN"))
     args, _unknown = ap.parse_known_args()
@@ -344,6 +463,21 @@ def main() -> None:
     links = link_payload.get("links", []) if isinstance(link_payload, dict) else []
 
     statuses, evidence = fetch_compare_pages(links, max_fetches=args.max_helio_fetches)
+
+    # Tier B-lite: enrich the compare evidence with sample size + question count
+    # from the public API (config only). Non-blocking; skipped without keys.
+    config_statuses: List[Dict[str, Any]] = []
+    has_keys = bool(args.helio_app_id and args.helio_api_token)
+    if has_keys and evidence:
+        try:
+            _configs, config_statuses = enrich_with_report_config(
+                evidence,
+                args.helio_app_id,
+                args.helio_api_token,
+                max_fetches=args.max_helio_fetches,
+            )
+        except Exception as exc:  # noqa: BLE001 - non-blocking ingest
+            config_statuses = [{"status": "error", "error": f"{exc.__class__.__name__}:{exc}"}]
 
     merged = merge_into_external_evidence(data_dir, evidence)
     augment_summary = augment_deck_content(data_dir, evidence) if evidence else {}
@@ -361,9 +495,16 @@ def main() -> None:
         "evidence_count": len(evidence),
         "merged_into_external_evidence": merged,
         "discovered_report_ids": report_ids,
-        "tier_b_report_api": "configured"
-        if (args.helio_app_id and args.helio_api_token)
-        else "absent",
+        "tier_b_report_api": "configured" if has_keys else "absent",
+        "report_config_attempted": len(
+            [s for s in config_statuses if s.get("status") != "skipped_limit"]
+        ),
+        "report_config_success_count": len(
+            [s for s in config_statuses if s.get("status") == "success"]
+        ),
+        "report_config_error_count": len(
+            [s for s in config_statuses if s.get("status") == "error"]
+        ),
     }
 
     write_aliases(
@@ -374,7 +515,12 @@ def main() -> None:
     write_aliases(
         data_dir,
         "helio_fetch_status.json",
-        {"generated_at": utc_now(), "summary": summary, "fetches": statuses},
+        {
+            "generated_at": utc_now(),
+            "summary": summary,
+            "fetches": statuses,
+            "report_config": config_statuses,
+        },
     )
 
     print(json.dumps({"helio_summary": summary, "augmentation": augment_summary}, indent=2))
