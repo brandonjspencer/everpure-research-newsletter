@@ -1421,7 +1421,7 @@ a { color: inherit; }
   html.push("<body>");
   html.push('<header class="masthead">');
   html.push('<div class="wrapper">');
-  html.push('<a class="back-link" href="../">Back to homepage</a>');
+  html.push('<a class="back-link" href="../">See all Issues</a>');
   html.push('<div class="meta-bar">');
   html.push('<span class="meta-left">Everpure User Research Program</span>');
   html.push(
