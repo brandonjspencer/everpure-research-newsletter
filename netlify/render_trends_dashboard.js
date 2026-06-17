@@ -143,12 +143,10 @@ function issuesSection(issues) {
   const cards = issues
     .map((it) => {
       const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
-      const sum = it.summary ? `<p class="issue-hero-sum">${esc(it.summary)}</p>` : "";
       return `<a class="issue-hero" href="${esc(it.href)}">
   <div class="issue-hero-band"><span class="issue-hero-month">${esc(it.label)}</span><span class="issue-hero-tag">${tag}</span></div>
   <div class="issue-hero-body">
     <div class="issue-hero-title">${esc(it.title)}</div>
-    ${sum}
     <div class="issue-hero-foot"><span>${it.finding_count} findings</span><span class="go">Read issue →</span></div>
   </div>
 </a>`;

@@ -2,6 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const { docHead, sidebar } = require("./dashboard_theme");
+const { monthLabel } = require("./build_trends");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -52,12 +53,23 @@ function listIssueMonths(issuesDir) {
 function buildIssuesCatalog(publishDir) {
   const issuesDir = path.join(publishDir, "issues");
   const months = listIssueMonths(issuesDir);
+  // Chronological issue numbers (oldest = 01) as a fallback when an issue's
+  // default.json lacks an explicit number.
+  const numberByMonth = {};
+  [...months].sort().forEach((m, i) => {
+    numberByMonth[m] = String(i + 1).padStart(2, "0");
+  });
   const issues = months.map((month) => {
     const manifestPath = path.join(issuesDir, month, "issue_manifest.json");
     const manifest = readJson(manifestPath, {}) || {};
+    const issueDoc = readJson(path.join(issuesDir, month, "default.json"), {}) || {};
+    const issueMeta = issueDoc.issue && typeof issueDoc.issue === "object" ? issueDoc.issue : {};
+    const issueLabel = issueMeta.label || `Issue ${issueMeta.number || numberByMonth[month]}`;
     return {
       issue_id: manifest.issue_id || `everpure-${month}`,
       issue_month: month,
+      month_label: monthLabel(month),
+      issue_label: issueLabel,
       generated_at: manifest.generated_at || null,
       audience: manifest.audience || manifest?.default_issue?.audience || null,
       tone: manifest.tone || manifest?.default_issue?.tone || null,
@@ -90,16 +102,19 @@ function buildIssuesCatalog(publishDir) {
         .map((issue) => {
           return `
         <li>
-          <strong>${issue.issue_month}</strong>
-          <span class="meta">${issue.generated_at ? `Generated ${issue.generated_at}` : ""}</span>
+          <div class="issue-row-head"><strong>${issue.month_label}</strong><span class="issue-tag">${issue.issue_label}</span></div>
           <div class="links">
-            <a href="../${issue.links.default_html}">Default HTML</a>
-            <a href="../${issue.links.default_md}">Default MD</a>
-            <a href="../${issue.links.default_json}">Default JSON</a>
-            <a href="../${issue.links.marketing_html}">Marketing HTML</a>
-            <a href="../${issue.links.marketing_md}">Marketing MD</a>
-            <a href="../${issue.links.marketing_json}">Marketing JSON</a>
-            <a href="../${issue.links.manifest}">Manifest</a>
+            <span class="linkset">
+              <a class="lead" href="../${issue.links.default_html}">Read issue →</a>
+              <a class="filechip" title="Markdown" href="../${issue.links.default_md}">MD</a>
+              <a class="filechip" title="JSON" href="../${issue.links.default_json}">JSON</a>
+            </span>
+            <span class="linkset">
+              <a class="lead" href="../${issue.links.marketing_html}">Activity log →</a>
+              <a class="filechip" title="Markdown" href="../${issue.links.marketing_md}">MD</a>
+              <a class="filechip" title="JSON" href="../${issue.links.marketing_json}">JSON</a>
+            </span>
+            <a class="filechip" title="Issue manifest" href="../${issue.links.manifest}">manifest</a>
           </div>
         </li>`;
         })
