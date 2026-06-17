@@ -99,3 +99,9 @@ A freeze layer was added so approved monthly issues become immutable, repo-track
 - The project deploys via `.github/workflows/deploy-pages.yml` (builds `publish/` and uploads it to GitHub Pages). The earlier **Netlify** integration was removed: deleted `netlify.toml` and the `netlify dev` script.
 - `netlify/functions/api.js` was **not** deleted — the build imports its `handler` to render the static API JSON mirror — so it was moved to `netlify/api.js` (a build-time render module, not a serverless function) and the `require` in `generate_static_newsletters.js` was updated. `netlify/functions/trigger-build.js` (a Netlify build-hook trigger, used by nothing in the build) was removed.
 - The `netlify/` directory name is retained for now (it holds the build pipeline) to avoid a churny path rename across `build.sh`, the workflow, and docs.
+
+## Notion JSON-API fetch (robust primary)
+
+- The live Notion fetch used to render the page with Playwright (brittle: it returned "unrendered" and the `requests` fallback hit HTTP 429). Replaced as the **primary** path with `everpure_notion_api.py`, which calls the Notion public JSON API (`/api/v3/loadPageChunk`, paginated via cursor with retries/backoff) to get the full block recordMap — no browser, no render-timing flakiness.
+- The recordMap is rendered into the same rendered-DOM HTML (`data-block-id` / `notion-<type>-block` / `data-content-editable-leaf` / bullet glyphs) that `everpure_parser.py` already consumes, so all downstream parsing/weeks/decks logic is reused unchanged. Verified: the live fetch reproduces the snapshot exactly (56 weeks / 24 decks / same date range).
+- Fetch order in `everpure_refresh.py` is now `notion_api` → Playwright → `requests`; `source_fetch_method` records which tier was used.

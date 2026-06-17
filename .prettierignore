@@ -13,4 +13,5 @@ issues/
 history/
 emails/
 docs/handoff/
+tests/fixtures/
 *.min.js

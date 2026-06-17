@@ -14,6 +14,11 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 from everpure_api import EverpureStore, build_newsletter_pack  # type: ignore
+from everpure_notion_api import (  # type: ignore
+    fetch_record_map,
+    page_id_from_url,
+    record_map_to_html,
+)
 from everpure_parser import parse_html  # type: ignore
 
 NOTION_BLOCK_HINT = "data-block-id"
@@ -41,12 +46,23 @@ class NotionFetcher:
         attempts = []
 
         if method == "auto":
-            ordered_methods = ["playwright", "requests"]
+            ordered_methods = ["notion_api", "playwright", "requests"]
         else:
             ordered_methods = [method]
 
         for candidate in ordered_methods:
-            if candidate == "requests":
+            if candidate == "notion_api":
+                try:
+                    html = self._fetch_notion_api(url)
+                    attempts.append("notion_api")
+                    if self._looks_like_rendered_notion(html):
+                        return {"html": html, "method": "notion_api", "attempts": attempts}
+                    attempts.append("notion_api_unrendered")
+                except Exception as exc:
+                    attempts.append(f"notion_api_failed:{exc.__class__.__name__}:{exc}")
+                    if method == "notion_api":
+                        raise
+            elif candidate == "requests":
                 try:
                     html = self._fetch_requests(url)
                     attempts.append("requests")
@@ -72,6 +88,15 @@ class NotionFetcher:
                 raise FetchError(f"Unsupported fetch method: {candidate}")
 
         raise FetchError("Unable to fetch a rendered Notion page. Attempts: " + ", ".join(attempts))
+
+    def _fetch_notion_api(self, url: str) -> str:
+        # Primary path: pull the page as structured blocks from Notion's public
+        # loadPageChunk JSON API (no browser) and render into parser-ready HTML.
+        # The API timeout is capped (per-request) rather than the long browser
+        # timeout, since pagination already retries on 429/5xx.
+        api_timeout = min(self.timeout, 30)
+        blocks = fetch_record_map(url, timeout=api_timeout)
+        return record_map_to_html(blocks, page_id_from_url(url))
 
     def _fetch_requests(self, url: str) -> str:
         headers = {
@@ -383,7 +408,7 @@ def cli() -> None:
     ap.add_argument(
         "--fetch-method",
         default=os.environ.get("NOTION_FETCH_METHOD", "auto"),
-        choices=["auto", "requests", "playwright"],
+        choices=["auto", "notion_api", "requests", "playwright"],
         help="Fetcher backend",
     )
     args = ap.parse_args()
