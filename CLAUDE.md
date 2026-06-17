@@ -48,6 +48,12 @@ deploy runs separately in `.github/workflows/deploy-pages.yml` — **do not fold
 Two entry points: `run_all.sh` (local, always uses the committed `data/Everpure.html`
 snapshot → `output/`) and `netlify/build.sh` (CI, layered live-fetch fallback → `publish/`).
 
+`data/Everpure.html` is **auto-maintained**: after a live CI build, the Pages workflow runs
+`scripts/refresh_committed_snapshot.py` and commits the freshly-fetched HTML back to `main`
+(`[skip ci]`, only when changed). Don't hand-edit it expecting the edit to persist — a live
+build overwrites it. Fallback builds leave it untouched. See OPERATIONS.md "Committed snapshot
+auto-refresh".
+
 The pipeline has a **strict order** (see ARCHITECTURE.md). Two invariants that have broken
 before:
 
