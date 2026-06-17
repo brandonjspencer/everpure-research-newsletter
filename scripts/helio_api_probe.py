@@ -25,10 +25,11 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
-from typing import Any, Tuple
+from typing import Any, List, Tuple
 
 API_BASE = "https://my.helio.app/api/public"
 DEFAULT_TEST_ID = "01KSV38T74ZYR3V9E19E6JYJMC"
@@ -37,6 +38,13 @@ DEFAULT_TEST_ID = "01KSV38T74ZYR3V9E19E6JYJMC"
 MAX_STR = 80
 MAX_LIST_SAMPLE = 2
 MAX_DEPTH = 6
+
+# Keys whose *locations* we want to find in the (large) test-detail response —
+# this is where the scores / per-question metrics / open responses live.
+INTEREST = re.compile(
+    r"score|result|metric|sentiment|common|distribut|aggregat|percent|rating|insight|answer|choice|response|word|nps|summary",
+    re.I,
+)
 
 
 def skeleton(obj: Any, depth: int = 0) -> Any:
@@ -59,6 +67,44 @@ def skeleton(obj: Any, depth: int = 0) -> Any:
     if obj is None:
         return "null"
     return f"{type(obj).__name__}"
+
+
+def _sample(value: Any) -> str:
+    if isinstance(value, dict):
+        return f"{{dict keys: {list(value.keys())[:10]}}}"
+    if isinstance(value, list):
+        head = f" first={_sample(value[0])}" if value else ""
+        return f"[list len {len(value)}]{head}"
+    if isinstance(value, bool):
+        return f"bool: {value}"
+    if isinstance(value, (int, float)):
+        return f"num: {value}"
+    if isinstance(value, str):
+        s = value if len(value) <= MAX_STR else value[:MAX_STR] + f"…(+{len(value) - MAX_STR})"
+        return f"str: {s!r}"
+    return "null" if value is None else type(value).__name__
+
+
+def find_paths(
+    obj: Any, pattern: re.Pattern, path: str = "", acc: List = None, seen: set = None
+) -> List[Tuple[str, str]]:
+    """Walk the tree; report unique key-paths whose key matches `pattern`, with a
+    one-line sample. List indices collapse to [] so 100 responses → one path."""
+    if acc is None:
+        acc, seen = [], set()
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            kp = f"{path}.{key}" if path else key
+            if pattern.search(key):
+                norm = re.sub(r"\[\d+\]", "[]", kp)
+                if norm not in seen:
+                    seen.add(norm)
+                    acc.append((norm, _sample(value)))
+            find_paths(value, pattern, kp, acc, seen)
+    elif isinstance(obj, list):
+        for i, value in enumerate(obj[:3]):
+            find_paths(value, pattern, f"{path}[{i}]", acc, seen)
+    return acc
 
 
 def curl_json(url: str, app_id: str, token: str) -> Tuple[str, str, str]:
@@ -91,13 +137,13 @@ def curl_json(url: str, app_id: str, token: str) -> Tuple[str, str, str]:
     return code.strip(), body, proc.stderr.strip()
 
 
-def call(url: str, app_id: str, token: str) -> None:
+def call(url: str, app_id: str, token: str, find: bool = False) -> None:
     print(f"\n=== GET {url} ===")
     code, body, err = curl_json(url, app_id, token)
     if not code:
         print(f"  curl failed: {err or 'no response'}")
         return
-    print(f"  status: {code}")
+    print(f"  status: {code}  (body {len(body)} bytes)")
     if code != "200":
         print(f"  body (first 300 chars): {body[:300]!r}")
         return
@@ -106,8 +152,22 @@ def call(url: str, app_id: str, token: str) -> None:
     except ValueError:
         print(f"  non-JSON body (first 300 chars): {body[:300]!r}")
         return
-    print("  shape:")
-    print(json.dumps(skeleton(data), indent=2, ensure_ascii=False)[:6000])
+
+    if not find:
+        print("  shape:")
+        print(json.dumps(skeleton(data), indent=2, ensure_ascii=False)[:6000])
+        return
+
+    # Detail endpoint: locate where the data lives instead of dumping it all.
+    top = data.get("test") if isinstance(data, dict) and "test" in data else data
+    print(
+        f"  top-level keys: {list(data.keys()) if isinstance(data, dict) else type(data).__name__}"
+    )
+    if isinstance(top, dict):
+        print(f"  test keys ({len(top)}): {list(top.keys())}")
+    print("  interesting paths (key matches score/result/metric/response/…):")
+    for pth, sample in find_paths(data, INTEREST):
+        print(f"    {pth} = {sample}")
 
 
 def main() -> int:
@@ -125,7 +185,7 @@ def main() -> int:
 
     print("Probing Helio public API via curl (keys redacted; samples truncated)…")
     call(f"{API_BASE}/tests", app_id, token)
-    call(f"{API_BASE}/tests/{test_id}", app_id, token)
+    call(f"{API_BASE}/tests/{test_id}", app_id, token, find=True)
     print("\nDone. The output above is safe to paste back (no keys; values truncated).")
     return 0
 
