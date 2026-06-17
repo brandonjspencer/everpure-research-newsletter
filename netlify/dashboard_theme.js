@@ -31,12 +31,7 @@ const ICONS = {
 const NAV = [
   { key: "dashboard", label: "Dashboard", icon: ICONS.dashboard, path: "" },
   { key: "issues", label: "Issues", icon: ICONS.issues, path: "issues/" },
-  {
-    key: "activity",
-    label: "Activity log",
-    icon: ICONS.activity,
-    path: "newsletter/marketing-activity-30d.html",
-  },
+  { key: "activity", label: "Activity log", icon: ICONS.activity, path: "activity/" },
   { key: "sitemap", label: "Sitemap", icon: ICONS.sitemap, path: "sitemap/" },
 ];
 
@@ -111,14 +106,14 @@ function brandCss() {
   footer{color:var(--muted);font-size:12px;margin-top:8px}
   .pagelink{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:600}
   .issuelist{list-style:none;padding:0;margin:0}
-  .issuelist>li{padding:16px 0;border-top:1px solid var(--line)}
+  .issuelist>li{padding:16px 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .issuelist>li:first-child{border-top:0}
-  .issue-row-head{display:flex;align-items:baseline;margin-bottom:10px}
+  .issue-row-head{display:flex;align-items:baseline}
   .issuelist strong{font-size:18px;letter-spacing:-.01em}
   .meta{display:block;color:var(--muted);font-size:13px;margin-bottom:10px}
-  .links{display:flex;flex-wrap:wrap;gap:10px 16px}
-  .links a{font-size:13px;text-decoration:none}
-  .links a:hover{text-decoration:underline}
+  .links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+  .btn{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:8px;padding:7px 15px;font-size:13px;font-weight:600;text-decoration:none}
+  .btn:hover{filter:brightness(1.06)}
   main{max-width:980px;margin:0 auto;padding:34px 24px 60px}
   main h1{font-size:30px;margin:0 0 8px;letter-spacing:-.02em}
   .lede{color:var(--muted);margin-bottom:24px;font-size:15px;line-height:1.6}
@@ -135,17 +130,22 @@ function brandCss() {
   .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
   .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
   .issue-hero-month{font-size:18px;font-weight:700;letter-spacing:-.01em}
-  .issue-hero-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.92}
+  .issue-hero-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#fff;border:1px solid rgba(255,255,255,.5);border-radius:999px;padding:2px 9px}
   .issue-hero-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
   .issue-hero-title{font-weight:600;font-size:15px;line-height:1.3}
   .issue-hero-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);padding-top:4px}
   .issue-hero-foot .go{color:var(--accent);font-weight:600}
   .issue-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:2px}
-  .links .lead{font-weight:600;color:var(--accent);text-decoration:none}
-  .links .lead:hover{text-decoration:underline}
-  .links .linkset{display:inline-flex;align-items:center;gap:8px;margin-right:20px}
-  .filechip{font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 7px;text-decoration:none}
+  .filechip{font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 7px;text-decoration:none}
   .filechip:hover{color:var(--ink);border-color:var(--muted)}
+  .ms{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 18px}
+  .ms-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+  .ms-title{font-size:13px;font-weight:600}
+  .ms-btn{font:inherit;font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:3px 10px;margin-left:6px;cursor:pointer}
+  .ms-btn:hover{color:var(--ink);border-color:var(--muted)}
+  .ms-opts{display:flex;flex-wrap:wrap;gap:8px 18px}
+  .ms-opt{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);cursor:pointer}
+  .ms-opt input{accent-color:var(--accent)}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>`;

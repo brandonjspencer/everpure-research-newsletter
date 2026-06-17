@@ -13,7 +13,7 @@ test("sidebar marks the active page and uses root-relative hrefs from the homepa
   assert.match(html, /class="navlink active"[^>]*aria-current="page"/);
   assert.match(html, /href="index\.html"/); // dashboard from root
   assert.match(html, /href="issues\/"/);
-  assert.match(html, /href="newsletter\/marketing-activity-30d\.html"/);
+  assert.match(html, /href="activity\/"/);
   assert.match(html, /href="sitemap\/"/);
   assert.match(html, /id="themeToggle"/);
 });

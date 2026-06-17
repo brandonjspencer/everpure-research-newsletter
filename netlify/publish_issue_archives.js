@@ -97,40 +97,44 @@ function buildIssuesCatalog(publishDir) {
     "utf8"
   );
 
-  const items = issues.length
-    ? issues
-        .map((issue) => {
-          return `
+  // One listing renderer, used for both the issues index and the (separate)
+  // activity-logs index — same card-style title + right-aligned MD/JSON chips and
+  // a "View" button at the end.
+  function listing(kind) {
+    const isIssues = kind === "issues";
+    const items = issues.length
+      ? issues
+          .map((issue) => {
+            const htmlHref = isIssues ? issue.links.default_html : issue.links.marketing_html;
+            const mdHref = isIssues ? issue.links.default_md : issue.links.marketing_md;
+            const jsonHref = isIssues ? issue.links.default_json : issue.links.marketing_json;
+            const btn = isIssues ? "View issue" : "View log";
+            return `
         <li>
           <div class="issue-row-head"><strong>${issue.month_label}</strong><span class="issue-tag">${issue.issue_label}</span></div>
           <div class="links">
-            <span class="linkset">
-              <a class="lead" href="../${issue.links.default_html}">Read issue →</a>
-              <a class="filechip" title="Markdown" href="../${issue.links.default_md}">MD</a>
-              <a class="filechip" title="JSON" href="../${issue.links.default_json}">JSON</a>
-            </span>
-            <span class="linkset">
-              <a class="lead" href="../${issue.links.marketing_html}">Activity log →</a>
-              <a class="filechip" title="Markdown" href="../${issue.links.marketing_md}">MD</a>
-              <a class="filechip" title="JSON" href="../${issue.links.marketing_json}">JSON</a>
-            </span>
-            <a class="filechip" title="Issue manifest" href="../${issue.links.manifest}">manifest</a>
+            <a class="filechip" title="Markdown" href="../${mdHref}">MD</a>
+            <a class="filechip" title="JSON" href="../${jsonHref}">JSON</a>
+            <a class="btn" href="../${htmlHref}">${btn}</a>
           </div>
         </li>`;
-        })
-        .join("\n")
-    : "<li>No archived issues yet.</li>";
-
-  const html = `<!doctype html>
+          })
+          .join("\n")
+      : `<li>No ${isIssues ? "archived issues" : "activity logs"} yet.</li>`;
+    const heading = isIssues ? "Issue Archive" : "Activity Logs";
+    const sub = isIssues
+      ? "Frozen monthly Research Roundups, preserved from approved builds."
+      : "The monthly research activity log for each cycle.";
+    return `<!doctype html>
 <html lang="en"><head>
-${docHead("Everpure Research — Issue Archive")}
+${docHead(`Everpure Research — ${heading}`)}
 </head>
 <body>
-${sidebar("issues", "../")}
+${sidebar(isIssues ? "issues" : "activity", "../")}
 <div class="shell"><div class="wrap">
 <header>
-  <h1>Issue Archive</h1>
-  <p class="sub">Frozen monthly issues and manifests preserved from approved builds.</p>
+  <h1>${heading}</h1>
+  <p class="sub">${sub}</p>
 </header>
 <section class="panel">
   <ul class="issuelist">${items}
@@ -138,9 +142,12 @@ ${sidebar("issues", "../")}
 </section>
 </div></div>
 </body></html>`;
+  }
 
   ensureDir(path.join(publishDir, "issues"));
-  fs.writeFileSync(path.join(publishDir, "issues", "index.html"), html, "utf8");
+  fs.writeFileSync(path.join(publishDir, "issues", "index.html"), listing("issues"), "utf8");
+  ensureDir(path.join(publishDir, "activity"));
+  fs.writeFileSync(path.join(publishDir, "activity", "index.html"), listing("activity"), "utf8");
 }
 
 function main() {

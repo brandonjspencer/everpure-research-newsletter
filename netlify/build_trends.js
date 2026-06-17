@@ -137,8 +137,10 @@ function helioRows(payload, month) {
       if (!Object.keys(slot.metrics).length) continue;
       out.push({
         month,
+        compare_id: rec.compare_id || null,
         comparison_title: rec.comparison_title || null,
         concept: (rec.inferred_concepts || [])[0] || null,
+        link_text: rec.link_text || null,
         test_id: slot.test_id || null,
         test_name: slot.test_name || null,
         n,
@@ -210,7 +212,14 @@ function buildTrends(root) {
   const quotes = [];
   const issues = [];
   const findingCountByMonth = {};
-  for (const month of monthDirs(issuesRoot)) {
+  const issueMonths = monthDirs(issuesRoot);
+  // Chronological issue numbers (oldest = 01) — the fallback when an issue's
+  // default.json lacks an explicit number (e.g. the first issue).
+  const numberByMonth = {};
+  [...issueMonths].sort().forEach((m, i) => {
+    numberByMonth[m] = String(i + 1).padStart(2, "0");
+  });
+  for (const month of issueMonths) {
     const issue = readJson(path.join(issuesRoot, month, "default.json"));
     if (!issue) continue;
     const findings = [...(issue.surfaced_findings || []), ...(issue.comparison_tests || [])];
@@ -222,10 +231,7 @@ function buildTrends(root) {
     issues.push({
       month,
       label: monthLabel(month),
-      issue_label:
-        issueMeta.label ||
-        (issueMeta.number ? `Issue ${issueMeta.number}` : null) ||
-        (typeof issue.issue === "string" ? issue.issue : null),
+      issue_label: issueMeta.label || `Issue ${issueMeta.number || numberByMonth[month]}`,
       title: issue.title || `Research Roundup — ${monthLabel(month)}`,
       summary: truncate(summaryText, 180),
       finding_count: findings.length,
@@ -269,6 +275,16 @@ function buildTrends(root) {
     for (const row of helioRows(currentHelio, month)) {
       if (!seen.has(`${row.month}|${row.test_id}`)) helioMetrics.push(row);
     }
+  }
+  // Backfill null concepts by cross-referencing the same test_id elsewhere: the
+  // same Helio test is often linked from several slides, some of which inferred a
+  // concept and some didn't. This rescues most "untitled" comparisons.
+  const conceptByTest = {};
+  for (const row of helioMetrics) {
+    if (row.concept && !conceptByTest[row.test_id]) conceptByTest[row.test_id] = row.concept;
+  }
+  for (const row of helioMetrics) {
+    if (!row.concept && conceptByTest[row.test_id]) row.concept = conceptByTest[row.test_id];
   }
 
   return {
