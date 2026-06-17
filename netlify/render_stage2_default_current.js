@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { stripLeadingConceptLabel } = require("./text_utils");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -243,23 +244,29 @@ function toFinding(item) {
   return {
     title,
     finding_statement:
-      firstText(
-        item.finding_statement,
-        item.findingStatement,
-        item.summary,
-        item.evidence_snapshot,
-        item.evidenceSnapshot
+      stripLeadingConceptLabel(
+        firstText(
+          item.finding_statement,
+          item.findingStatement,
+          item.summary,
+          item.evidence_snapshot,
+          item.evidenceSnapshot
+        ),
+        title
       ) || fallbackFindingStatement(title),
     proof_point:
-      firstText(
-        item.proof_point,
-        item.proofPoint,
-        item.evidence_snapshot,
-        item.evidenceSnapshot,
-        item.key_numbers,
-        item.keyNumbers,
-        item.supporting_signals,
-        item.supportingSignals
+      stripLeadingConceptLabel(
+        firstText(
+          item.proof_point,
+          item.proofPoint,
+          item.evidence_snapshot,
+          item.evidenceSnapshot,
+          item.key_numbers,
+          item.keyNumbers,
+          item.supporting_signals,
+          item.supportingSignals
+        ),
+        title
       ) ||
       "Evidence is present in the current weekly records, but the proof point should be tightened during the manual stage-2 review.",
     next_step:
@@ -289,13 +296,16 @@ function toComparison(item) {
     title,
     finding_statement: statement,
     decision_criteria:
-      firstText(
-        item.decision_criteria,
-        item.decisionCriteria,
-        item.proof_point,
-        item.proofPoint,
-        item.evidence_snapshot,
-        item.evidenceSnapshot
+      stripLeadingConceptLabel(
+        firstText(
+          item.decision_criteria,
+          item.decisionCriteria,
+          item.proof_point,
+          item.proofPoint,
+          item.evidence_snapshot,
+          item.evidenceSnapshot
+        ),
+        title
       ) ||
       "Choose the strongest direction based on first-glance comprehension, user confidence, and clarity of the next step rather than preference alone.",
     next_step:
@@ -756,8 +766,9 @@ function bestEvidenceLine(group) {
 function topicSpecificFinding(title, evidenceLine) {
   const specific = content.topics[topicKey(title)]?.finding_statement;
   if (specific) return specific;
-  return evidenceLine && evidenceLine.length >= 40
-    ? evidenceLine
+  const cleaned = stripLeadingConceptLabel(evidenceLine, title);
+  return cleaned && cleaned.length >= 40
+    ? cleaned
     : `${title} is active in the current research window, but the most useful takeaway is the decision it needs to clarify next.`;
 }
 
@@ -780,7 +791,7 @@ function findingFromGroup(group) {
     title,
     finding_statement: topicSpecificFinding(title, evidenceLine),
     proof_point:
-      evidenceLine ||
+      stripLeadingConceptLabel(evidenceLine, title) ||
       `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
     next_step: actionForTopic(title),
     confidence,
