@@ -187,20 +187,12 @@ def main() -> int:
     call(f"{API_BASE}/tests", app_id, token)
     call(f"{API_BASE}/tests/{test_id}", app_id, token, find=True)
 
-    # The base /tests/:id returns config only. Probe whether responses / results /
-    # scores are reachable via a sub-path or query param (the internal app used
-    # ?expand=true and /responses). Whichever returns 200 with non-count data wins.
-    print("\n--- Candidate endpoints for response/score data ---")
-    for suffix in (
-        f"/tests/{test_id}/responses",
-        f"/tests/{test_id}/results",
-        f"/tests/{test_id}/insights",
-        f"/tests/{test_id}/sections",
-        f"/tests/{test_id}?expand=responses",
-        f"/tests/{test_id}?include=responses,results",
-        f"/responses?test_id={test_id}",
-    ):
-        call(f"{API_BASE}{suffix}", app_id, token, find=True)
+    # /tests/:id/responses is REAL (it 504'd, not 404/406) but times out dumping all
+    # 100 responses. Page it small so it returns, and show the full structure (skeleton)
+    # so we can see where per-question scores / open text live.
+    print("\n--- Helio /responses, paginated small to dodge the 504 ---")
+    call(f"{API_BASE}/tests/{test_id}/responses?per=2&page=1", app_id, token)
+    call(f"{API_BASE}/tests/{test_id}/responses?per=2&page=1&expand=true", app_id, token)
 
     print("\nDone. The output above is safe to paste back (no keys; values truncated).")
     return 0
