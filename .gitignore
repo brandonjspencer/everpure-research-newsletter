@@ -56,3 +56,9 @@ eval "$(ssh-agent -s)".pub
 # Locally fetched deck artifacts (PDF/PPTX pulled from Google Slides)
 /deck_artifacts/
 /deck_artifacts_empty/
+
+# clasp local config carries the user's Apps Script id — keep it out of git
+# (a .clasp.json.example is tracked instead). Apps Script source under
+# appsscript/ IS tracked; clasp credentials never are.
+appsscript/.clasp.json
+.clasprc.json

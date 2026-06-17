@@ -58,6 +58,11 @@ Identity Federation, exporting a short-lived `GOOGLE_ACCESS_TOKEN`, which `build
 
 ## Monthly new-issue ritual
 
+> The **`/new-issue` skill** (`.claude/skills/new-issue/SKILL.md`) runs this entire ritual
+> end-to-end with the freshness gate and two approval gates (before freeze, before send) built
+> in, using `scripts/check_build_freshness.py` and `scripts/scaffold_issue_content.py`. The steps
+> below are what it automates — and the manual fallback if you run it by hand.
+
 Do **not** start a new issue with editorial synthesis or code patching. Start with build
 verification.
 
@@ -214,7 +219,20 @@ user asks to merge). Start from
 
 ### Apps Script / spreadsheet sending
 
-- The spreadsheet tab name matters; "no sheet found" → verify the tab name first.
+Sending runs in **Google Apps Script** under the user's Workspace account (not the GitHub Pages
+pipeline). The single consolidated, version-controlled sender lives in
+[`appsscript/`](../appsscript/README.md) — it replaces the three older scripts (issue broadcast,
+test/review, UX-tip) with one parameterized by **type** (issue | uxtip) × **mode** (test |
+broadcast).
+
+- **No 50-recipient cap.** The old scripts put every recipient in one message's BCC, hitting
+  Gmail's per-message limit. The consolidated script **batches** (default 45/message, paused) and
+  scales to ~500 within the ~1,500/day Workspace quota. It dedupes, validates, and skips the
+  suppression tab.
+- Instance values (recipient sheet id, HTML file ids, reviewers, from/reply-to) live in **Script
+  Properties**, never in the repo.
+- Always `dryRun*` → `send*Test` (reviewers) → **approval** → `send*Broadcast`.
+- The spreadsheet tab name matters; "no sheet found" → verify the tab/columns (`email`, `active`).
 - The email link must be the saved frozen issue, not the latest page.
 - Test-send before final distribution.
 
