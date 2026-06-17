@@ -13,6 +13,23 @@
  * survive the GitHub Pages /<repo>/ subpath.
  */
 
+const fs = require("fs");
+const path = require("path");
+
+// Brand favicon (Everpure/Pure Storage), embedded as a base64 data URI rather than
+// a /favicon.ico file reference. A data URI resolves identically at every page
+// depth, so it survives the GitHub Pages /<repo>/ subpath with no per-page prefix
+// and no build copy step — the same path fragility the nav links above avoid. The
+// source .ico is committed at netlify/assets/favicon.ico (read once at module load).
+const FAVICON_LINK = (() => {
+  try {
+    const ico = fs.readFileSync(path.join(__dirname, "assets", "favicon.ico"));
+    return `<link rel="icon" href="data:image/x-icon;base64,${ico.toString("base64")}">`;
+  } catch (_) {
+    return "";
+  }
+})();
+
 const ICONS = {
   brand:
     '<svg viewBox="0 0 29 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19.9941 0H8.82056C7.66536 0 6.59756 0.61636 6.01996 1.61728L0.4332 11.2936C-0.1444 12.2945 -0.1444 13.5272 0.4332 14.5274L6.11268 24.3922C6.69028 25.3931 7.7976 25.9821 8.95356 25.9821H14.516L6.96768 12.9101L10.6871 6.4676H18.1268L21.8462 12.9101L17.3576 20.6842H24.8262L28.3807 14.5274C28.9583 13.5272 28.9583 12.2945 28.3807 11.2936L22.7939 1.61728C22.2163 0.61636 21.1485 0 19.9933 0L19.9941 0Z" fill="#FF7023"/></svg>',
@@ -184,9 +201,10 @@ const FONT_LINK =
 function docHead(title) {
   return `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
+${FAVICON_LINK}
 ${FONT_LINK}
 ${brandCss()}
 ${themeInit()}`;
 }
 
-module.exports = { ICONS, NAV, brandCss, sidebar, themeInit, docHead, FONT_LINK };
+module.exports = { ICONS, NAV, brandCss, sidebar, themeInit, docHead, FONT_LINK, FAVICON_LINK };

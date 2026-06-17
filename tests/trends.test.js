@@ -12,7 +12,7 @@ const {
   monthLabel,
   truncate,
 } = require("../netlify/build_trends");
-const { render, helioComparisons } = require("../netlify/render_trends_dashboard");
+const { render, helioComparisons, succinctTitle } = require("../netlify/render_trends_dashboard");
 
 function writeJson(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -221,8 +221,8 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     ]) {
       assert.ok(html.includes(heading), `missing section: ${heading}`);
     }
-    // Helio comparison rendered with sample size + a metric value.
-    assert.match(html, /Events Baseline vs V1/);
+    // Helio comparison rendered with the succinct title + sample size.
+    assert.match(html, /Events Baseline vs v1/);
     assert.match(html, /n=100/);
     // Quote carried through.
     assert.match(html, /live sessions/);
@@ -240,62 +240,44 @@ test("render shows a friendly empty state when no Helio data exists", () => {
   assert.match(html, /No Helio comparisons captured yet/);
 });
 
-test("helioComparisons groups by compare page, titles by concept, never a raw id", () => {
+test("helioComparisons: titled stays distinct, concept dups collapse, unlabeled dropped", () => {
+  const v = (compare_id, concept, test_id, test_name, metric, comparison_title) => ({
+    compare_id,
+    comparison_title: comparison_title || null,
+    concept,
+    test_id,
+    test_name,
+    n: 100,
+    metrics: { [metric]: 60 },
+  });
+  const edcTitle = "191 EDC Success Blueprint Baseline vs 191 EDC Page V1";
   const rows = [
-    // One compare page (2 variants) with no comparison_title but a concept.
-    {
-      compare_id: "c1",
-      comparison_title: null,
-      concept: "Events Page",
-      test_id: "A",
-      test_name: "Baseline",
-      n: 100,
-      metrics: { engagement: 60 },
-    },
-    {
-      compare_id: "c1",
-      comparison_title: null,
-      concept: "Events Page",
-      test_id: "B",
-      test_name: "V1",
-      n: 100,
-      metrics: { engagement: 66 },
-    },
-    // A second comparison sharing the concept → disambiguated "(2)".
-    {
-      compare_id: "c2",
-      comparison_title: null,
-      concept: "Events Page",
-      test_id: "C",
-      test_name: "V1",
-      n: 90,
-      metrics: { success: 55 },
-    },
-    {
-      compare_id: "c2",
-      comparison_title: null,
-      concept: "Events Page",
-      test_id: "D",
-      test_name: "V2",
-      n: 90,
-      metrics: { success: 71 },
-    },
-    // No concept and no title → must NOT title by the test_id (ULID).
-    {
-      compare_id: "c3",
-      comparison_title: null,
-      concept: null,
-      test_id: "01ULIDONLYXXXXXXXXXXXXXXXX",
-      test_name: "Variant 1",
-      n: 50,
-      metrics: { sentiment: 30 },
-    },
+    // EDC has a real comparison_title → its own block (succinct), despite its
+    // concept also being Pathfinder.
+    v("edc", "Pathfinder CTA Labels", "e1", "Baseline", "engagement", edcTitle),
+    v("edc", "Pathfinder CTA Labels", "e2", "Page V1", "engagement", edcTitle),
+    // Two concept-only Pathfinder pages → collapse to ONE block (keep the richer).
+    v("p1", "Pathfinder CTA Labels", "a", "Variant 1", "engagement"),
+    v("p2", "Pathfinder CTA Labels", "b", "Variant 1", "engagement"),
+    v("p2", "Pathfinder CTA Labels", "c", "Variant 2", "engagement"),
+    // No concept and no title → dropped entirely (the confusing "Data Comparison").
+    v("x", null, "01ULIDONLYXXXXXXXXXXXXXXXX", "Variant 1", "sentiment"),
   ];
   const cmps = helioComparisons(rows);
-  const byKey = Object.fromEntries(cmps.map((c) => [c.key, c]));
-  assert.equal(byKey.c1.variants.length, 2); // grouped, not split per variant
-  assert.equal(byKey.c1.label, "Events Page (1)");
-  assert.equal(byKey.c2.label, "Events Page (2)");
-  assert.equal(byKey.c3.label, "Helio comparison"); // never the ULID
-  assert.ok(!cmps.some((c) => /^01[0-9A-Z]{24}/.test(c.title)), "no comparison titled by a ULID");
+  assert.deepEqual(cmps.map((c) => c.title).sort(), [
+    "EDC Success Blueprint Baseline vs v1",
+    "Pathfinder CTA Labels",
+  ]);
+  assert.equal(cmps.length, 2); // unlabeled dropped
+  const pf = cmps.find((c) => c.title === "Pathfinder CTA Labels");
+  assert.equal(pf.variants.length, 2); // collapsed to the richer page (p2)
+  assert.ok(!cmps.some((c) => /01ULID/.test(JSON.stringify(c))), "unlabeled comparison dropped");
+});
+
+test("succinctTitle drops number prefixes and collapses the trailing version", () => {
+  assert.equal(
+    succinctTitle("191 EDC Success Blueprint Baseline vs 191 EDC Page V1"),
+    "EDC Success Blueprint Baseline vs v1"
+  );
+  assert.equal(succinctTitle("Pathfinder CTA Labels"), "Pathfinder CTA Labels");
 });

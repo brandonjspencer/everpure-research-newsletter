@@ -25,6 +25,18 @@ test("sidebar prefixes links for one-level pages", () => {
   assert.match(html, /href="\.\.\/sitemap\/"/);
 });
 
+test("docHead embeds the brand favicon as a depth-agnostic data URI", () => {
+  // A data URI (no path) renders at any /<repo>/ subpath depth without a prefix.
+  assert.match(
+    theme.docHead("X"),
+    /<link rel="icon" href="data:image\/x-icon;base64,[A-Za-z0-9+/=]{200,}">/
+  );
+  // The embedded payload round-trips to a real .ico (MS icon magic 00 00 01 00).
+  const b64 = theme.FAVICON_LINK.match(/base64,([^"]+)/)[1];
+  const bytes = Buffer.from(b64, "base64");
+  assert.deepEqual([...bytes.subarray(0, 4)], [0, 0, 1, 0]);
+});
+
 test("brandCss defines both light and dark theme variables", () => {
   const css = theme.brandCss();
   assert.match(css, /--paper:#/);
