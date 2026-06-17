@@ -75,7 +75,8 @@ A green build is **not** proof the source data is fresh. Before drafting:
 
 - Check the source tier — read `source.fetch_method` in `publish/data/refresh_manifest.json`
   (surfaced as the flat `source_fetch_method` in live `status.json`):
-  - `playwright`/`requests` → live fetch (good)
+  - `notion_api` → live fetch via the Notion JSON API (the robust primary)
+  - `playwright`/`requests` → live fetch via headless browser / HTTP (fallbacks)
   - `local_html_fallback` → committed `data/Everpure.html` snapshot was used
   - `fallback_existing_outputs` (`source.source_fallback: existing_outputs`) → stale reused outputs
 - If a fallback was used and the issue needs new Notion entries, obtain a fresh HTML snapshot
