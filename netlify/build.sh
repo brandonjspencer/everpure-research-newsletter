@@ -193,6 +193,10 @@ if [ -f "$ROOT/netlify/build_trends.js" ]; then
 fi
 
 node "$ROOT/netlify/generate_static_newsletters.js"
+# Pre-render the classic API endpoints (api.js routes) as static JSON for Pages.
+if [ -f "$ROOT/netlify/build_api_endpoints.js" ]; then
+  node "$ROOT/netlify/build_api_endpoints.js"
+fi
 if [ -f "$ROOT/netlify/external_evidence_observability.js" ]; then
   node "$ROOT/netlify/external_evidence_observability.js" "$ROOT/publish"
 fi

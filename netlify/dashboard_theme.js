@@ -129,6 +129,17 @@ function brandCss() {
   .cards{display:grid;gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
+  .issuegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}
+  .issue-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .12s ease,box-shadow .12s ease}
+  .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
+  .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .issue-hero-month{font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .issue-hero-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;opacity:.92}
+  .issue-hero-body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .issue-hero-title{font-weight:600;font-size:15px;line-height:1.3}
+  .issue-hero-sum{color:var(--muted);font-size:13px;margin:0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .issue-hero-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);padding-top:8px}
+  .issue-hero-foot .go{color:var(--accent);font-weight:600}
   @media (max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>`;
 }

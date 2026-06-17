@@ -138,6 +138,25 @@ function quotesSection(quotes) {
     .join("\n");
 }
 
+function issuesSection(issues) {
+  if (!issues.length) return `<p class="empty">No issues published yet.</p>`;
+  const cards = issues
+    .map((it) => {
+      const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
+      const sum = it.summary ? `<p class="issue-hero-sum">${esc(it.summary)}</p>` : "";
+      return `<a class="issue-hero" href="${esc(it.href)}">
+  <div class="issue-hero-band"><span class="issue-hero-month">${esc(it.label)}</span><span class="issue-hero-tag">${tag}</span></div>
+  <div class="issue-hero-body">
+    <div class="issue-hero-title">${esc(it.title)}</div>
+    ${sum}
+    <div class="issue-hero-foot"><span>${it.finding_count} findings</span><span class="go">Read issue →</span></div>
+  </div>
+</a>`;
+    })
+    .join("\n");
+  return `<div class="issuegrid">${cards}</div>`;
+}
+
 function render(trends) {
   const cycles = trends.cycles || [];
   const metricKeys = trends.metric_keys || [];
@@ -191,8 +210,13 @@ ${sidebar("dashboard", "")}
   ${quotesSection(trends.quotes || [])}
 </section>
 
+<section class="panel">
+  <h2>Published issues</h2>
+  <p class="desc">Each monthly Research Roundup — open the frozen issue.</p>
+  ${issuesSection(trends.issues || [])}
+</section>
+
 <footer>
-  <a class="pagelink" href="issues/">Browse the published issues →</a><br><br>
   Source: committed <code>history/</code> + <code>issues/</code> + Helio compare evidence, rolled up by <code>build_trends.js</code>. Helio UX-metric trends begin June 2026 and grow as comparisons are run.
 </footer>
 </div></div></body></html>`;
