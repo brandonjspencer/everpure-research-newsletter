@@ -5,7 +5,13 @@ const assert = require("node:assert");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
-const { buildTrends, helioRows, normConfidence } = require("../netlify/build_trends");
+const {
+  buildTrends,
+  helioRows,
+  normConfidence,
+  monthLabel,
+  truncate,
+} = require("../netlify/build_trends");
 const { render } = require("../netlify/render_trends_dashboard");
 
 function writeJson(file, data) {
@@ -50,8 +56,13 @@ function fixtureRepo() {
       },
     ])
   );
-  // A frozen issue with a finding count + a respondent quote.
+  // A frozen issue with a finding count, a respondent quote, issue metadata,
+  // and the prose executive summary used by the hero card.
   writeJson(path.join(root, "issues", "2026-05", "default.json"), {
+    title: "Everpure monthly research roundup (30d)",
+    issue: { number: "02", label: "Issue 02", date: "May 2026" },
+    summary: { week_count_30d: 4 },
+    executive_summary: "May focused on the events page and EDC live sessions.",
     surfaced_findings: [
       {
         title: "Events Page",
@@ -156,9 +167,27 @@ test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () 
     // Respondent quote captured from the frozen issue.
     assert.equal(t.quotes.length, 1);
     assert.match(t.quotes[0].quote, /live sessions/);
+
+    // Issue hero data: human label, issue tag, prose summary (not the stats
+    // object), finding count, and the frozen-issue href.
+    const may = t.issues.find((i) => i.month === "2026-05");
+    assert.equal(may.label, "May 2026");
+    assert.equal(may.issue_label, "Issue 02");
+    assert.equal(may.finding_count, 2);
+    assert.match(may.summary, /events page/i);
+    assert.equal(may.href, "issues/2026-05/default.html");
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("monthLabel and truncate format issue-card text", () => {
+  assert.equal(monthLabel("2026-06"), "June 2026");
+  assert.equal(monthLabel("2026-01"), "January 2026");
+  assert.equal(monthLabel("nope"), "nope");
+  assert.equal(truncate("short", 50), "short");
+  const long = truncate("a ".repeat(200), 50);
+  assert.ok(long.length <= 52 && long.endsWith("…"));
 });
 
 test("render produces a self-contained dashboard with all sections + charts", () => {
@@ -171,8 +200,13 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /<!doctype html>/i);
     assert.equal((html.match(/<svg/g) || []).length, (html.match(/<\/svg>/g) || []).length);
 
-    // All three sections present.
-    for (const heading of ["Research program by cycle", "Helio UX metrics", "Voice of the user"]) {
+    // All sections present, including the issue hero cards.
+    for (const heading of [
+      "Research program by cycle",
+      "Helio UX metrics",
+      "Voice of the user",
+      "Published issues",
+    ]) {
       assert.ok(html.includes(heading), `missing section: ${heading}`);
     }
     // Helio comparison rendered with sample size + a metric value.
@@ -180,6 +214,10 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /n=100/);
     // Quote carried through.
     assert.match(html, /live sessions/);
+    // Issue hero card: branded card linking to the frozen issue.
+    assert.match(html, /class="issue-hero"/);
+    assert.match(html, /href="issues\/2026-05\/default\.html"/);
+    assert.match(html, /May 2026/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

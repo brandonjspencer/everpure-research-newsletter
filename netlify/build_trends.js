@@ -74,6 +74,37 @@ function metricKey(label) {
     .replace(/\s+/g, "_");
 }
 
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+function monthLabel(ym) {
+  const m = /^(\d{4})-(\d{2})$/.exec(String(ym || ""));
+  if (!m) return String(ym || "");
+  return `${MONTH_NAMES[parseInt(m[2], 10) - 1] || m[2]} ${m[1]}`;
+}
+
+function truncate(text, limit = 180) {
+  const t = String(text || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (t.length <= limit) return t;
+  const cut = t.slice(0, limit);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:]$/, "") + "…";
+}
+
 // Flatten a helio_evidence payload into one row per variant per comparison.
 function helioRows(payload, month) {
   const out = [];
@@ -175,14 +206,31 @@ function buildTrends(root) {
     });
   }
 
-  // --- Findings + respondent quotes from frozen issues -------------------
+  // --- Issues (hero cards) + findings + respondent quotes ----------------
   const quotes = [];
+  const issues = [];
   const findingCountByMonth = {};
   for (const month of monthDirs(issuesRoot)) {
     const issue = readJson(path.join(issuesRoot, month, "default.json"));
     if (!issue) continue;
     const findings = [...(issue.surfaced_findings || []), ...(issue.comparison_tests || [])];
     findingCountByMonth[month] = findings.length;
+    const issueMeta = issue.issue && typeof issue.issue === "object" ? issue.issue : {};
+    // `summary` is a stats object; `executive_summary` is the prose string.
+    const summaryText =
+      [issue.executive_summary, issue.summary].find((s) => typeof s === "string") || "";
+    issues.push({
+      month,
+      label: monthLabel(month),
+      issue_label:
+        issueMeta.label ||
+        (issueMeta.number ? `Issue ${issueMeta.number}` : null) ||
+        (typeof issue.issue === "string" ? issue.issue : null),
+      title: issue.title || `Research Roundup — ${monthLabel(month)}`,
+      summary: truncate(summaryText, 180),
+      finding_count: findings.length,
+      href: `issues/${month}/default.html`,
+    });
     for (const f of issue.surfaced_findings || []) {
       if (f.respondent_quote) {
         quotes.push({
@@ -195,6 +243,7 @@ function buildTrends(root) {
       }
     }
   }
+  issues.sort((a, b) => b.month.localeCompare(a.month)); // newest first
   for (const cycle of cycles) {
     if (cycle.month in findingCountByMonth) cycle.finding_count = findingCountByMonth[cycle.month];
   }
@@ -225,6 +274,7 @@ function buildTrends(root) {
   return {
     cycles,
     concepts: [...trajectory.values()],
+    issues,
     helio_metrics: helioMetrics,
     quotes,
     metric_keys: [
@@ -265,4 +315,12 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { buildTrends, helioRows, normConfidence, normDecision, metricKey };
+module.exports = {
+  buildTrends,
+  helioRows,
+  normConfidence,
+  normDecision,
+  metricKey,
+  monthLabel,
+  truncate,
+};
