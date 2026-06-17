@@ -35,6 +35,15 @@ SHEETS_VALUES_URL = (
 )
 DRIVE_EXPORT_URL = "https://www.googleapis.com/drive/v3/files/{file_id}/export"
 
+# Transient HTTP statuses that should be RETRIED against the Sheets API rather
+# than triggering a (lossy, first-tab-only) Drive CSV fallback.
+TRANSIENT_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
+# Number of attempts (initial + retries) for transient Sheets API errors.
+SHEETS_API_RETRY_ATTEMPTS = int(os.environ.get("EXTERNAL_EVIDENCE_SHEETS_API_RETRIES", "3"))
+SHEETS_API_RETRY_BACKOFF_SECONDS = float(
+    os.environ.get("EXTERNAL_EVIDENCE_SHEETS_API_BACKOFF", "1.5")
+)
+
 GOOGLE_SHEET_ID_RE = re.compile(r"/spreadsheets/d/([a-zA-Z0-9_-]+)")
 GOOGLE_DOC_ID_RE = re.compile(r"/document/d/([a-zA-Z0-9_-]+)")
 GOOGLE_SLIDES_ID_RE = re.compile(r"/presentation/d/([a-zA-Z0-9_-]+)")
@@ -425,6 +434,118 @@ def get_json(session: requests.Session, url: str, **kwargs: Any) -> Dict[str, An
     return resp.json()
 
 
+# ---------------------------------------------------------------------------
+# Pure helpers for Sheets-capture decisions (unit-tested in tests/test_sheets_capture.py)
+# ---------------------------------------------------------------------------
+
+
+def http_status_from_exc(exc: BaseException) -> Optional[int]:
+    """Best-effort extraction of an HTTP status code from a requests error.
+
+    Returns None for non-HTTP failures (timeouts, connection errors, ...).
+    """
+    resp = getattr(exc, "response", None)
+    if resp is not None:
+        code = getattr(resp, "status_code", None)
+        if isinstance(code, int):
+            return code
+    return None
+
+
+def should_fall_back_to_csv(status_code: Optional[int], reason: str = "") -> bool:
+    """Decide whether a Sheets API failure justifies the lossy Drive CSV fallback.
+
+    Only return True when the Sheets API is genuinely UNAVAILABLE for the project:
+      * HTTP 403 whose reason indicates the API is disabled (SERVICE_DISABLED /
+        accessNotConfigured / "has not been used"/"is disabled"), or
+      * HTTP 404 of the API itself (accessNotConfigured surfaced as 404).
+
+    Transient errors (429, 5xx, timeouts → status_code None) must NOT fall back;
+    they should be retried and, failing that, recorded as a hard error.
+    A plain 403 (per-tab permission / sharing) is NOT an API-disabled signal and
+    must not silently degrade to a first-tab CSV.
+    """
+    if status_code is None:
+        return False
+    if status_code in TRANSIENT_HTTP_STATUSES:
+        return False
+    reason_l = (reason or "").lower()
+    api_disabled_markers = (
+        "service_disabled",
+        "accessnotconfigured",
+        "has not been used",
+        "is disabled",
+        "api has not been used",
+        "enable it by visiting",
+    )
+    if status_code in (403, 404) and any(m in reason_l for m in api_disabled_markers):
+        return True
+    return False
+
+
+def is_transient_status(status_code: Optional[int]) -> bool:
+    """True for statuses/timeouts that warrant a retry of the Sheets API."""
+    if status_code is None:
+        # No HTTP status → network/timeout class error: treat as transient.
+        return True
+    return status_code in TRANSIENT_HTTP_STATUSES
+
+
+def tab_selection(meta: Dict[str, Any], gid: Optional[str]) -> Dict[str, Any]:
+    """Select which tabs of a spreadsheet to read.
+
+    Returns a dict with:
+      * "selected": list of sheet objects to read
+      * "sheet_count": total number of tabs in the spreadsheet
+      * "requested_gid_not_found": True when a gid was given but matched no tab
+      * "requested_gid": the gid that was requested (when applicable)
+
+    Behavior:
+      * gid given + matches a tab → that single tab.
+      * gid given + matches NO tab → empty selection + requested_gid_not_found
+        (does NOT silently read other tabs).
+      * no gid → ALL tabs.
+    """
+    sheets = meta.get("sheets") or []
+    result: Dict[str, Any] = {
+        "selected": [],
+        "sheet_count": len(sheets),
+        "requested_gid_not_found": False,
+    }
+    if gid not in (None, ""):
+        result["requested_gid"] = gid
+        for s in sheets:
+            props = s.get("properties") or {}
+            if str(props.get("sheetId")) == str(gid):
+                result["selected"] = [s]
+                return result
+        # gid was requested but matched nothing: do not fall back to other tabs.
+        result["requested_gid_not_found"] = True
+        return result
+    # No gid: read every tab.
+    result["selected"] = list(sheets)
+    return result
+
+
+def flag_truncation(
+    grid_properties: Dict[str, Any], max_rows: int, max_columns: int
+) -> Dict[str, Any]:
+    """Compare a tab's true grid size against the row/column caps.
+
+    Returns flags + true totals so the summary can surface silent truncation.
+    """
+    total_rows = grid_properties.get("rowCount")
+    total_columns = grid_properties.get("columnCount")
+    row_truncated = isinstance(total_rows, int) and total_rows > max_rows
+    column_truncated = isinstance(total_columns, int) and total_columns > max_columns
+    return {
+        "total_row_count": total_rows,
+        "total_column_count": total_columns,
+        "row_truncated": bool(row_truncated),
+        "column_truncated": bool(column_truncated),
+    }
+
+
 def fetch_sheet_via_sheets_api(
     session: requests.Session,
     spreadsheet_id: str,
@@ -440,27 +561,34 @@ def fetch_sheet_via_sheets_api(
             "fields": "spreadsheetId,properties(title),sheets(properties(sheetId,title,gridProperties(rowCount,columnCount)))"
         },
     )
-    sheets = meta.get("sheets") or []
-    selected = []
-    if gid:
-        for s in sheets:
-            props = s.get("properties") or {}
-            if str(props.get("sheetId")) == str(gid):
-                selected.append(s)
-                break
-    if not selected:
-        selected = sheets[:max_sheets_per_file]
+
+    selection = tab_selection(meta, gid)
+    selected = selection["selected"]
+    sheet_count = selection["sheet_count"]
+
+    fetch_meta: Dict[str, Any] = {
+        "spreadsheet_title": ((meta.get("properties") or {}).get("title") or ""),
+        "sheet_count": sheet_count,
+        "method": "sheets_api",
+        "requested_gid": gid,
+        "requested_gid_not_found": selection["requested_gid_not_found"],
+        "sheets_truncated": False,
+    }
+
+    # Default behavior: read ALL selected tabs. Keep an optional safety cap that,
+    # when exceeded, surfaces sheets_truncated=True + the true sheet_count rather
+    # than silently dropping tabs. A non-positive cap means "no cap".
+    if max_sheets_per_file and max_sheets_per_file > 0 and len(selected) > max_sheets_per_file:
+        fetch_meta["sheets_truncated"] = True
+        selected = selected[:max_sheets_per_file]
+
+    fetch_meta["selected_sheet_count"] = len(selected)
 
     out = []
-    fetch_meta = {
-        "spreadsheet_title": ((meta.get("properties") or {}).get("title") or ""),
-        "sheet_count": len(sheets),
-        "selected_sheet_count": len(selected),
-        "method": "sheets_api",
-    }
     for s in selected:
         props = s.get("properties") or {}
         title = props.get("title") or "Sheet1"
+        grid = props.get("gridProperties") or {}
         range_name = sheet_range(title, max_rows=max_rows, max_columns=max_columns)
         encoded_range = quote(range_name, safe="")
         values = (
@@ -479,6 +607,7 @@ def fetch_sheet_via_sheets_api(
                 "range": range_name,
             }
         )
+        summary.update(flag_truncation(grid, max_rows=max_rows, max_columns=max_columns))
         out.append(summary)
     return out, fetch_meta
 
@@ -488,7 +617,16 @@ def fetch_sheet_via_drive_export(
     spreadsheet_id: str,
     max_rows: int,
     max_columns: int,
+    gid_requested: bool = False,
+    known_sheet_count: Optional[int] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Last-resort CSV export. Serializes ONLY the first tab and cannot honor a gid.
+
+    When the spreadsheet has more than one tab, or a gid was requested, this is a
+    LOSSY capture: the resulting summary is flagged truncated_to_first_tab=True
+    (and gid_ignored=True when a gid was requested) so it is never mistaken for a
+    complete multi-tab capture.
+    """
     resp = session.get(
         DRIVE_EXPORT_URL.format(file_id=spreadsheet_id),
         params={"mimeType": "text/csv"},
@@ -501,20 +639,103 @@ def fetch_sheet_via_drive_export(
         values.append(row[:max_columns])
         if len(values) >= max_rows:
             break
+
+    multi_tab = bool(known_sheet_count and known_sheet_count > 1)
+    truncated_to_first_tab = multi_tab or bool(gid_requested)
+    gid_ignored = bool(gid_requested)
+
     summary = summarize_values(values)
     summary.update(
         {
             "sheet_id": None,
             "sheet_title": "Drive CSV export",
             "range": f"A1:{col_name(max_columns)}{max_rows}",
+            "truncated_to_first_tab": truncated_to_first_tab,
+            "gid_ignored": gid_ignored,
         }
     )
     return [summary], {
         "method": "drive_csv_export",
         "spreadsheet_title": "",
-        "sheet_count": None,
+        "sheet_count": known_sheet_count,
         "selected_sheet_count": 1,
+        "truncated_to_first_tab": truncated_to_first_tab,
+        "gid_ignored": gid_ignored,
     }
+
+
+def fetch_spreadsheet_with_policy(
+    session: requests.Session,
+    spreadsheet_id: str,
+    gid: Optional[str],
+    max_rows: int,
+    max_columns: int,
+    max_sheets_per_file: int,
+    retry_attempts: int = SHEETS_API_RETRY_ATTEMPTS,
+    backoff_seconds: float = SHEETS_API_RETRY_BACKOFF_SECONDS,
+    sleep_fn: Any = time.sleep,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Fetch a spreadsheet via the Sheets API, with a narrow, visible CSV fallback.
+
+    Policy:
+      * Primary path is the Sheets API (authorized by the existing drive.readonly
+        scope). No new OAuth scope is added.
+      * Transient errors (429, 5xx, timeouts) are RETRIED up to retry_attempts
+        with a short linear backoff.
+      * Only an API-DISABLED signal (should_fall_back_to_csv) triggers the lossy
+        Drive CSV export, which is flagged truncated_to_first_tab / gid_ignored
+        when it loses tabs.
+      * Any other failure (or exhausted transient retries) is re-raised as a HARD
+        error so the caller records status="error" rather than a silent success.
+    """
+    gid_requested = gid not in (None, "")
+    last_exc: Optional[BaseException] = None
+    for attempt in range(1, max(1, retry_attempts) + 1):
+        try:
+            sheets, fetch_meta = fetch_sheet_via_sheets_api(
+                session=session,
+                spreadsheet_id=spreadsheet_id,
+                gid=gid,
+                max_rows=max_rows,
+                max_columns=max_columns,
+                max_sheets_per_file=max_sheets_per_file,
+            )
+            fetch_meta["sheets_api_attempts"] = attempt
+            return sheets, fetch_meta
+        except Exception as exc:
+            last_exc = exc
+            status_code = http_status_from_exc(exc)
+            reason = str(exc)
+
+            # API genuinely unavailable for the project → narrow CSV fallback.
+            # The Sheets metadata is unreachable here (the API is disabled), and
+            # Drive metadata does not expose a tab count, so sheet_count is
+            # unknown; flag truncation conservatively based on gid_requested.
+            if should_fall_back_to_csv(status_code, reason):
+                sheets, fetch_meta = fetch_sheet_via_drive_export(
+                    session=session,
+                    spreadsheet_id=spreadsheet_id,
+                    max_rows=max_rows,
+                    max_columns=max_columns,
+                    gid_requested=gid_requested,
+                    known_sheet_count=None,
+                )
+                fetch_meta["sheets_api_error"] = f"{exc.__class__.__name__}:{exc}"
+                fetch_meta["fallback_reason"] = "sheets_api_disabled"
+                return sheets, fetch_meta
+
+            # Transient → retry (unless we've used our last attempt).
+            if is_transient_status(status_code) and attempt < max(1, retry_attempts):
+                sleep_fn(backoff_seconds * attempt)
+                continue
+
+            # Hard error: do NOT silently fall back to a first-tab CSV.
+            raise
+
+    # All retries exhausted on a transient error: surface a hard error.
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("fetch_spreadsheet_with_policy: no attempt was made")
 
 
 def render_evidence_text(record: Dict[str, Any]) -> str:
@@ -547,6 +768,30 @@ def render_evidence_text(record: Dict[str, Any]) -> str:
     return redact_text(" ".join(parts), limit=6000)
 
 
+def degradation_flags(sheets: List[Dict[str, Any]], fetch_meta: Dict[str, Any]) -> Dict[str, Any]:
+    """Roll up per-sheet + fetch-level degradation into status-artifact flags."""
+    truncated_to_first_tab = bool(fetch_meta.get("truncated_to_first_tab")) or any(
+        s.get("truncated_to_first_tab") for s in sheets
+    )
+    gid_ignored = bool(fetch_meta.get("gid_ignored")) or any(s.get("gid_ignored") for s in sheets)
+    return {
+        "truncated_to_first_tab": truncated_to_first_tab,
+        "gid_ignored": gid_ignored,
+        "requested_gid_not_found": bool(fetch_meta.get("requested_gid_not_found")),
+        "sheets_truncated": bool(fetch_meta.get("sheets_truncated")),
+        "row_truncated": any(s.get("row_truncated") for s in sheets),
+        "column_truncated": any(s.get("column_truncated") for s in sheets),
+        "degraded": bool(
+            truncated_to_first_tab
+            or gid_ignored
+            or fetch_meta.get("requested_gid_not_found")
+            or fetch_meta.get("sheets_truncated")
+            or any(s.get("row_truncated") for s in sheets)
+            or any(s.get("column_truncated") for s in sheets)
+        ),
+    }
+
+
 def build_sheet_records(
     links: List[Dict[str, Any]],
     access_token: str,
@@ -554,6 +799,7 @@ def build_sheet_records(
     max_rows: int,
     max_columns: int,
     max_sheets_per_file: int,
+    strict: bool = False,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     session = requests.Session()
     session.headers.update({"Authorization": f"Bearer {access_token}"})
@@ -594,23 +840,18 @@ def build_sheet_records(
             "linked_from_count": len(refs),
         }
         try:
-            try:
-                sheets, fetch_meta = fetch_sheet_via_sheets_api(
-                    session=session,
-                    spreadsheet_id=spreadsheet_id,
-                    gid=gid,
-                    max_rows=max_rows,
-                    max_columns=max_columns,
-                    max_sheets_per_file=max_sheets_per_file,
-                )
-            except Exception as sheets_exc:
-                sheets, fetch_meta = fetch_sheet_via_drive_export(
-                    session=session,
-                    spreadsheet_id=spreadsheet_id,
-                    max_rows=max_rows,
-                    max_columns=max_columns,
-                )
-                fetch_meta["sheets_api_error"] = f"{sheets_exc.__class__.__name__}:{sheets_exc}"
+            # Sheets API is primary; CSV fallback is narrow + visible. Transient
+            # errors are retried inside fetch_spreadsheet_with_policy; a hard
+            # failure raises and is recorded as status="error" below.
+            sheets, fetch_meta = fetch_spreadsheet_with_policy(
+                session=session,
+                spreadsheet_id=spreadsheet_id,
+                gid=gid,
+                max_rows=max_rows,
+                max_columns=max_columns,
+                max_sheets_per_file=max_sheets_per_file,
+            )
+            flags = degradation_flags(sheets, fetch_meta)
             status.update(
                 {
                     "status": "success",
@@ -618,10 +859,19 @@ def build_sheet_records(
                     "spreadsheet_title": fetch_meta.get("spreadsheet_title"),
                     "sheet_count": fetch_meta.get("sheet_count"),
                     "selected_sheet_count": fetch_meta.get("selected_sheet_count"),
+                    "sheets_api_attempts": fetch_meta.get("sheets_api_attempts"),
+                    "sheets_api_error": fetch_meta.get("sheets_api_error"),
+                    "fallback_reason": fetch_meta.get("fallback_reason"),
                     "numeric_value_count": sum(len(s.get("numeric_values") or []) for s in sheets),
                     "notable_row_count": sum(len(s.get("notable_rows") or []) for s in sheets),
+                    **flags,
                 }
             )
+            if strict and flags["degraded"]:
+                raise RuntimeError(
+                    "degraded_sheet_capture: "
+                    + ", ".join(k for k, v in flags.items() if v and k != "degraded")
+                )
             record = {
                 "source_type": "google_sheet_data_comparison",
                 "spreadsheet_id": spreadsheet_id,
@@ -765,17 +1015,26 @@ def main() -> None:
         default=int(os.environ.get("EXTERNAL_EVIDENCE_SHEET_FETCH_LIMIT", "20")),
     )
     ap.add_argument(
-        "--max-rows", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_ROWS", "80"))
+        "--max-rows", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_ROWS", "200"))
     )
     ap.add_argument(
         "--max-columns",
         type=int,
-        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_COLUMNS", "26")),
+        # Raised from 26 to cover real multi-attribute comparison sheets.
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_COLUMNS", "52")),
     )
     ap.add_argument(
         "--max-sheets-per-file",
         type=int,
-        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_SHEETS_PER_FILE", "5")),
+        # Safety cap only; <=0 means "no cap, fetch all tabs". When a positive
+        # cap is exceeded the status artifact carries sheets_truncated=true.
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_SHEETS_PER_FILE", "0")),
+    )
+    ap.add_argument(
+        "--strict",
+        action="store_true",
+        default=os.environ.get("EXTERNAL_EVIDENCE_STRICT", "0") == "1",
+        help="Treat degraded/truncated sheet captures as errors (default: non-blocking, flags only).",
     )
     args = ap.parse_args()
 
@@ -804,6 +1063,7 @@ def main() -> None:
         max_rows=args.max_rows,
         max_columns=args.max_columns,
         max_sheets_per_file=args.max_sheets_per_file,
+        strict=args.strict,
     )
     augment_summary = augment_deck_content(data_dir, evidence)
 
@@ -826,6 +1086,13 @@ def main() -> None:
             "success_count": len([s for s in statuses if s.get("status") == "success"]),
             "error_count": len([s for s in statuses if s.get("status") == "error"]),
             "skipped_limit_count": len([s for s in statuses if s.get("status") == "skipped_limit"]),
+            "degraded_count": len([s for s in statuses if s.get("degraded")]),
+            "truncated_to_first_tab_count": len(
+                [s for s in statuses if s.get("truncated_to_first_tab")]
+            ),
+            "requested_gid_not_found_count": len(
+                [s for s in statuses if s.get("requested_gid_not_found")]
+            ),
         },
         "fetches": statuses,
     }

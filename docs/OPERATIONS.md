@@ -81,6 +81,10 @@ A green build is **not** proof the source data is fresh. Before drafting:
 - If a fallback was used and the issue needs new Notion entries, obtain a fresh HTML snapshot
   or rerun once Notion is reachable. **Do not ship a fallback build as if it were current.**
 - Always cache-bust live artifact checks: append `?cb=<timestamp>` to GitHub Pages URLs.
+- Check linked-spreadsheet capture in `deck_link_fetch_status.json`: `degraded_count`,
+  `truncated_to_first_tab_count`, `requested_gid_not_found_count`, and per-sheet
+  `row_truncated` / `column_truncated` flags. Non-zero means a linked Google Sheet's evidence
+  is incomplete (a tab, gid, or rows/columns were dropped) — investigate before relying on it.
 
 Key artifacts to inspect: `status.json`, `weeks.json`, `evidence_packs_default_30d.json`,
 `concept_evidence_default_30d.json`, `deck_content.json`, `newsletter/default.json`,
