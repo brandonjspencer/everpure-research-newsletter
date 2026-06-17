@@ -60,7 +60,10 @@ There are two output layers: **stage-1** (deterministic JSON: evidence packs, co
 evidence) and **stage-2** (the hand-authored writers `render_stage2_*_current.js` that
 rewrite the static `newsletter/*` artifacts). Stage-2 writers are tightly scoped — the
 default writer touches only `newsletter/default.*` + `api/newsletter-default.*`; the
-marketing writer only its own artifact.
+marketing writer only its own artifact. The default brief's **per-issue editorial copy lives
+in `netlify/content/default-current.json`** (data, not code) — edit that JSON to change an
+issue; the renderer falls back to generic defaults for anything absent. See
+[docs/OPERATIONS.md](docs/OPERATIONS.md) "Editing the default brief's copy".
 
 ## Conventions & guardrails
 
