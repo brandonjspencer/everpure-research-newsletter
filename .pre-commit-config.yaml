@@ -1,0 +1,43 @@
+# Run locally before each commit. Install once with:  pre-commit install
+# Bump pinned versions any time with:  pre-commit autoupdate
+default_install_hook_types: [pre-commit]
+
+# Committed source snapshots, frozen issue archives, generated outputs, and the
+# verbatim handoff docs must never be auto-reformatted/whitespace-fixed.
+exclude: "^(data|issues|history|output|publish|emails|deck_artifacts)/|^docs/handoff/"
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-yaml
+      - id: check-added-large-files
+        # data/Everpure.html (the committed Notion snapshot) is legitimately ~2MB.
+        args: ["--maxkb=4096"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.17 # keep in sync with ruff in requirements-dev.txt
+    hooks:
+      - id: ruff # lint (with --fix)
+        args: ["--fix"]
+      - id: ruff-format # format
+
+  # Prettier + ESLint run through the project's local node_modules so versions
+  # match package.json. Requires `npm install` first.
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx --no-install prettier --write
+        language: system
+        types_or: [javascript, json, markdown, css, yaml]
+        # ignore patterns are honored from .prettierignore
+      - id: eslint
+        name: eslint
+        entry: npx --no-install eslint --fix
+        language: system
+        types: [javascript]

@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function writeJson(filePath, data) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf8');
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n", "utf8");
 }
 
 function writeText(filePath, text) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, text, 'utf8');
+  fs.writeFileSync(filePath, text, "utf8");
 }
 
 function loadFirstExisting(paths) {
@@ -24,111 +24,115 @@ function loadFirstExisting(paths) {
 }
 
 function stripConceptId(text) {
-  return String(text || '')
-    .replace(/^\s*\d+\s*[-–:]\s*/, '')
-    .replace(/^\s*Concept\s*\d+\s*[-–:]\s*/i, '')
-    .replace(/\(in process\)/ig, '')
-    .replace(/\s+/g, ' ')
+  return String(text || "")
+    .replace(/^\s*\d+\s*[-–:]\s*/, "")
+    .replace(/^\s*Concept\s*\d+\s*[-–:]\s*/i, "")
+    .replace(/\(in process\)/gi, "")
+    .replace(/\s+/g, " ")
     .trim()
-    .replace(/[:\-–]+$/, '')
+    .replace(/[:\-–]+$/, "")
     .trim();
 }
 
 function titleCase(text) {
-  return String(text || '')
+  return String(text || "")
     .toLowerCase()
     .split(/\s+/)
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(" ");
 }
 
 function pickWorkstream(label, parentLabel) {
   const raw = stripConceptId(label).toLowerCase();
-  const parent = stripConceptId(parentLabel || '').toLowerCase();
+  const parent = stripConceptId(parentLabel || "").toLowerCase();
 
   if (/event/.test(raw) || /event/.test(parent)) {
     return {
-      key: 'events',
-      name: 'Events',
-      unresolved_question: 'Which event-page structure and content framing should move forward after the baseline / V1 / V2 comparison?',
+      key: "events",
+      name: "Events",
+      unresolved_question:
+        "Which event-page structure and content framing should move forward after the baseline / V1 / V2 comparison?",
     };
   }
   if (/ai summary/.test(raw) || /homepage ai messaging/.test(raw)) {
     return {
-      key: 'ai-summary',
-      name: 'AI Summary & Messaging',
-      unresolved_question: 'Which one or two AI framings are strongest enough to take into the next comparison round?',
+      key: "ai-summary",
+      name: "AI Summary & Messaging",
+      unresolved_question:
+        "Which one or two AI framings are strongest enough to take into the next comparison round?",
     };
   }
   if (/evergreen rebrand/.test(raw)) {
     return {
-      key: 'evergreen-rebrand',
-      name: 'Evergreen Rebrand',
-      unresolved_question: 'Which visual pacing choices improve appeal without hurting comprehension?',
+      key: "evergreen-rebrand",
+      name: "Evergreen Rebrand",
+      unresolved_question:
+        "Which visual pacing choices improve appeal without hurting comprehension?",
     };
   }
   if (/knowledge portal/.test(raw) || /knowledge portal/.test(parent)) {
     return {
-      key: 'knowledge-portal',
-      name: 'Knowledge Portal',
-      unresolved_question: 'Which naming and domain framing makes the portal feel most intuitive and support-led?',
+      key: "knowledge-portal",
+      name: "Knowledge Portal",
+      unresolved_question:
+        "Which naming and domain framing makes the portal feel most intuitive and support-led?",
     };
   }
   if (/support taxonomy/.test(raw)) {
     return {
-      key: 'support-taxonomy',
-      name: 'Support Taxonomy',
-      unresolved_question: 'Which labels and navigation paths still break support expectations and need refinement?',
+      key: "support-taxonomy",
+      name: "Support Taxonomy",
+      unresolved_question:
+        "Which labels and navigation paths still break support expectations and need refinement?",
     };
   }
   if (/design\s*&\s*ux feedback/.test(raw)) {
     return {
-      key: 'design-ux-feedback',
-      name: 'Design & UX Feedback',
-      unresolved_question: 'Which page-level fixes should be prioritized across the reviewed surfaces?',
+      key: "design-ux-feedback",
+      name: "Design & UX Feedback",
+      unresolved_question:
+        "Which page-level fixes should be prioritized across the reviewed surfaces?",
     };
   }
   if (/pathfinder/.test(raw)) {
     return {
-      key: 'pathfinder',
-      name: 'Pathfinder',
-      unresolved_question: 'Which labels or journey cues need to become clearer before the next validation round?',
+      key: "pathfinder",
+      name: "Pathfinder",
+      unresolved_question:
+        "Which labels or journey cues need to become clearer before the next validation round?",
     };
   }
   if (/platform redesign/.test(raw) || /baselines?/.test(raw)) {
     return {
-      key: 'platform-redesign',
-      name: 'Platform Redesign',
-      unresolved_question: 'Which simplified structure improves comprehension and sentiment enough to justify the next design move?',
+      key: "platform-redesign",
+      name: "Platform Redesign",
+      unresolved_question:
+        "Which simplified structure improves comprehension and sentiment enough to justify the next design move?",
     };
   }
   if (/infinite scroll/.test(raw)) {
     return {
-      key: 'infinite-scroll',
-      name: 'Infinite Scroll',
-      unresolved_question: 'Does infinite scroll improve content discovery enough to warrant more testing?',
+      key: "infinite-scroll",
+      name: "Infinite Scroll",
+      unresolved_question:
+        "Does infinite scroll improve content discovery enough to warrant more testing?",
     };
   }
   return {
-    key: raw.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'misc',
+    key: raw.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "misc",
     name: titleCase(raw),
-    unresolved_question: 'What does this line of work need to prove in the next round of research?',
+    unresolved_question: "What does this line of work need to prove in the next round of research?",
   };
 }
 
 function parseWeeklyRecords(weeks) {
   const records = [];
-  const groupKeys = [
-    'findings',
-    'testing_concepts',
-    'in_process',
-    'weekly_progress',
-    'next_steps',
-  ];
+  const groupKeys = ["findings", "testing_concepts", "in_process", "weekly_progress", "next_steps"];
 
   for (const week of weeks) {
-    const weekLabel = week.week_label_raw || week.weekLabelRaw || week.week_date || week.weekDate || '';
+    const weekLabel =
+      week.week_label_raw || week.weekLabelRaw || week.week_date || week.weekDate || "";
     const groups = week.content_groups || week.contentGroups || {};
 
     for (const key of groupKeys) {
@@ -136,7 +140,7 @@ function parseWeeklyRecords(weeks) {
       if (!Array.isArray(items)) continue;
       for (const item of items) {
         if (!item) continue;
-        const text = typeof item === 'string' ? item : (item.text || item.title || '');
+        const text = typeof item === "string" ? item : item.text || item.title || "";
         const cleanText = stripConceptId(text);
         if (!cleanText) continue;
         if (/^view\b/i.test(cleanText)) continue;
@@ -148,10 +152,10 @@ function parseWeeklyRecords(weeks) {
               .filter((name) => !/^view\b/i.test(name))
           : [];
 
-        if (children.length && parentWs.key === 'design-ux-feedback') {
+        if (children.length && parentWs.key === "design-ux-feedback") {
           records.push({
             week_label: weekLabel,
-            week_date: week.week_date || week.weekDate || '',
+            week_date: week.week_date || week.weekDate || "",
             key: parentWs.key,
             name: parentWs.name,
             examples: children,
@@ -164,7 +168,7 @@ function parseWeeklyRecords(weeks) {
         const ws = pickWorkstream(cleanText, cleanText);
         records.push({
           week_label: weekLabel,
-          week_date: week.week_date || week.weekDate || '',
+          week_date: week.week_date || week.weekDate || "",
           key: ws.key,
           name: ws.name,
           examples: children.length ? children : [cleanText],
@@ -256,25 +260,29 @@ function buildThreadSummary(records) {
 
 function deriveSnapshot(summaryData, weeklyLog, deckSummary) {
   return {
-    window: '30d',
+    window: "30d",
     weekly_updates: weeklyLog.length,
-    tracked_items: summaryData.record_count || summaryData.item_count || summaryData.tracked_item_count || 0,
+    tracked_items:
+      summaryData.record_count || summaryData.item_count || summaryData.tracked_item_count || 0,
     linked_decks_in_window: summaryData.deck_count || summaryData.linked_deck_count || 0,
     decks_with_ingested_text_available:
-      deckSummary.ingested_pdf_count || deckSummary.deck_content_count || summaryData.deck_content_count || 0,
+      deckSummary.ingested_pdf_count ||
+      deckSummary.deck_content_count ||
+      summaryData.deck_content_count ||
+      0,
   };
 }
 
 function buildActiveWorkstreams(threads) {
   const priority = [
-    'events',
-    'evergreen-rebrand',
-    'knowledge-portal',
-    'support-taxonomy',
-    'design-ux-feedback',
-    'ai-summary',
-    'platform-redesign',
-    'pathfinder',
+    "events",
+    "evergreen-rebrand",
+    "knowledge-portal",
+    "support-taxonomy",
+    "design-ux-feedback",
+    "ai-summary",
+    "platform-redesign",
+    "pathfinder",
   ];
   const priorityMap = new Map(priority.map((k, i) => [k, i]));
   return threads
@@ -311,21 +319,41 @@ function buildComparisonWork(threads) {
 
   const byKey = new Map(threads.map((t) => [t.key, t]));
 
-  const events = byKey.get('events');
+  const events = byKey.get("events");
   if (events) {
-    const ex = unique(events.labels.concat(events.examples)).filter((x) => /baseline|v\d+/i.test(x) || /event/i.test(x));
-    add('events', 'Events', 'Pick the version that gives the clearest event-page direction with the fewest comprehension tradeoffs.', ex, events.weeks_seen);
+    const ex = unique(events.labels.concat(events.examples)).filter(
+      (x) => /baseline|v\d+/i.test(x) || /event/i.test(x)
+    );
+    add(
+      "events",
+      "Events",
+      "Pick the version that gives the clearest event-page direction with the fewest comprehension tradeoffs.",
+      ex,
+      events.weeks_seen
+    );
   }
 
-  const ai = byKey.get('ai-summary');
+  const ai = byKey.get("ai-summary");
   if (ai) {
     const ex = unique(ai.labels.concat(ai.examples));
-    add('ai-summary', 'AI Summary & Messaging', 'Reduce to the strongest one or two framings, then choose the version that is clearest and easiest to act on.', ex, ai.weeks_seen);
+    add(
+      "ai-summary",
+      "AI Summary & Messaging",
+      "Reduce to the strongest one or two framings, then choose the version that is clearest and easiest to act on.",
+      ex,
+      ai.weeks_seen
+    );
   }
 
-  const evergreen = byKey.get('evergreen-rebrand');
+  const evergreen = byKey.get("evergreen-rebrand");
   if (evergreen && evergreen.labels.some((x) => /r\d+/i.test(x))) {
-    add('evergreen-rebrand', 'Evergreen Rebrand', 'Keep the pacing and layout moves that improve appeal without making the page feel too technical too early.', unique(evergreen.labels), evergreen.weeks_seen);
+    add(
+      "evergreen-rebrand",
+      "Evergreen Rebrand",
+      "Keep the pacing and layout moves that improve appeal without making the page feel too technical too early.",
+      unique(evergreen.labels),
+      evergreen.weeks_seen
+    );
   }
 
   return items;
@@ -333,108 +361,127 @@ function buildComparisonWork(threads) {
 
 function buildHowToUseThisLog() {
   return [
-    'Use this page to show research cadence and volume across the last 30 days, not to make final ship / hold calls.',
-    'Treat repeated threads as signs of where research capacity is concentrating over multiple weekly updates.',
-    'Use comparison work in flight to understand which decisions are narrowing, even when a final winner is not chosen yet.',
+    "Use this page to show research cadence and volume across the last 30 days, not to make final ship / hold calls.",
+    "Treat repeated threads as signs of where research capacity is concentrating over multiple weekly updates.",
+    "Use comparison work in flight to understand which decisions are narrowing, even when a final winner is not chosen yet.",
   ];
 }
 
 function buildMarkdown(payload) {
   const lines = [];
   lines.push(`# ${payload.title}`);
-  lines.push('');
+  lines.push("");
   lines.push(payload.summary);
-  lines.push('');
-  lines.push('## Snapshot');
-  lines.push('');
+  lines.push("");
+  lines.push("## Snapshot");
+  lines.push("");
   lines.push(`- Weekly updates: ${payload.snapshot.weekly_updates}`);
   lines.push(`- Tracked items: ${payload.snapshot.tracked_items}`);
   lines.push(`- Linked decks in 30d window: ${payload.snapshot.linked_decks_in_window}`);
-  lines.push(`- Decks with ingested text in site corpus: ${payload.snapshot.decks_with_ingested_text_available}`);
-  lines.push('');
-  lines.push('## Weekly activity log');
-  lines.push('');
+  lines.push(
+    `- Decks with ingested text in site corpus: ${payload.snapshot.decks_with_ingested_text_available}`
+  );
+  lines.push("");
+  lines.push("## Weekly activity log");
+  lines.push("");
   for (const week of payload.weekly_activity_log) {
     lines.push(`### ${week.week_label}`);
     for (const ws of week.workstreams) {
       if (ws.examples.length) {
-        lines.push(`- **${ws.name}** — ${ws.examples.join('; ')}`);
+        lines.push(`- **${ws.name}** — ${ws.examples.join("; ")}`);
       } else {
         lines.push(`- **${ws.name}**`);
       }
     }
-    lines.push('');
+    lines.push("");
   }
-  lines.push('## Active workstreams');
-  lines.push('');
+  lines.push("## Active workstreams");
+  lines.push("");
   for (const item of payload.active_workstreams) {
     lines.push(`- **${item.name}** — ${item.unresolved_question}`);
     if (item.recent_examples.length) {
-      lines.push(`  - Recent examples: ${item.recent_examples.join('; ')}`);
+      lines.push(`  - Recent examples: ${item.recent_examples.join("; ")}`);
     }
   }
-  lines.push('');
-  lines.push('## Repeated research threads');
-  lines.push('');
+  lines.push("");
+  lines.push("## Repeated research threads");
+  lines.push("");
   for (const item of payload.repeated_research_threads) {
     lines.push(`- **${item.name}** — seen in ${item.weeks_seen_count} weekly updates`);
   }
-  lines.push('');
-  lines.push('## Comparison work in flight');
-  lines.push('');
+  lines.push("");
+  lines.push("## Comparison work in flight");
+  lines.push("");
   for (const item of payload.comparison_work_in_flight) {
     lines.push(`- **${item.name}** — ${item.decision_criteria}`);
     if (item.examples.length) {
-      lines.push(`  - Variants / examples: ${item.examples.join('; ')}`);
+      lines.push(`  - Variants / examples: ${item.examples.join("; ")}`);
     }
   }
-  lines.push('');
-  lines.push('## How to use this log');
-  lines.push('');
+  lines.push("");
+  lines.push("## How to use this log");
+  lines.push("");
   for (const tip of payload.how_to_use_this_log) {
     lines.push(`- ${tip}`);
   }
-  lines.push('');
-  return lines.join('\n');
+  lines.push("");
+  return lines.join("\n");
 }
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function buildHtml(payload) {
-  const weekSections = payload.weekly_activity_log.map((week) => {
-    const items = week.workstreams.map((ws) => {
-      const examples = ws.examples.length ? `<div class="subtle">Examples: ${escapeHtml(ws.examples.join(' · '))}</div>` : '';
-      return `<li><strong>${escapeHtml(ws.name)}</strong>${examples}</li>`;
-    }).join('');
-    return `
+  const weekSections = payload.weekly_activity_log
+    .map((week) => {
+      const items = week.workstreams
+        .map((ws) => {
+          const examples = ws.examples.length
+            ? `<div class="subtle">Examples: ${escapeHtml(ws.examples.join(" · "))}</div>`
+            : "";
+          return `<li><strong>${escapeHtml(ws.name)}</strong>${examples}</li>`;
+        })
+        .join("");
+      return `
       <section class="card">
         <h3>${escapeHtml(week.week_label)}</h3>
         <ul>${items}</ul>
       </section>`;
-  }).join('');
+    })
+    .join("");
 
-  const workstreams = payload.active_workstreams.map((item) => {
-    const examples = item.recent_examples.length ? `<div class="subtle">Recent examples: ${escapeHtml(item.recent_examples.join(' · '))}</div>` : '';
-    return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.unresolved_question)}</div>${examples}</li>`;
-  }).join('');
+  const workstreams = payload.active_workstreams
+    .map((item) => {
+      const examples = item.recent_examples.length
+        ? `<div class="subtle">Recent examples: ${escapeHtml(item.recent_examples.join(" · "))}</div>`
+        : "";
+      return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.unresolved_question)}</div>${examples}</li>`;
+    })
+    .join("");
 
-  const threads = payload.repeated_research_threads.map((item) =>
-    `<li><strong>${escapeHtml(item.name)}</strong> — seen in ${item.weeks_seen_count} weekly updates</li>`
-  ).join('');
+  const threads = payload.repeated_research_threads
+    .map(
+      (item) =>
+        `<li><strong>${escapeHtml(item.name)}</strong> — seen in ${item.weeks_seen_count} weekly updates</li>`
+    )
+    .join("");
 
-  const comparisons = payload.comparison_work_in_flight.map((item) => {
-    const examples = item.examples.length ? `<div class="subtle">Variants / examples: ${escapeHtml(item.examples.join(' · '))}</div>` : '';
-    return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.decision_criteria)}</div>${examples}</li>`;
-  }).join('');
+  const comparisons = payload.comparison_work_in_flight
+    .map((item) => {
+      const examples = item.examples.length
+        ? `<div class="subtle">Variants / examples: ${escapeHtml(item.examples.join(" · "))}</div>`
+        : "";
+      return `<li><strong>${escapeHtml(item.name)}</strong><div>${escapeHtml(item.decision_criteria)}</div>${examples}</li>`;
+    })
+    .join("");
 
-  const tips = payload.how_to_use_this_log.map((tip) => `<li>${escapeHtml(tip)}</li>`).join('');
+  const tips = payload.how_to_use_this_log.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("");
 
   return `<!doctype html>
 <html lang="en">
@@ -484,17 +531,25 @@ function buildHtml(payload) {
       <ul>${workstreams}</ul>
     </section>
 
-    ${payload.repeated_research_threads.length ? `
+    ${
+      payload.repeated_research_threads.length
+        ? `
     <section class="section card">
       <h2>Repeated research threads</h2>
       <ul>${threads}</ul>
-    </section>` : ''}
+    </section>`
+        : ""
+    }
 
-    ${payload.comparison_work_in_flight.length ? `
+    ${
+      payload.comparison_work_in_flight.length
+        ? `
     <section class="section card">
       <h2>Comparison work in flight</h2>
       <ul>${comparisons}</ul>
-    </section>` : ''}
+    </section>`
+        : ""
+    }
 
     <section class="section card">
       <h2>How to use this log</h2>
@@ -508,24 +563,24 @@ function buildHtml(payload) {
 function main() {
   const publishRoot = process.argv[2];
   if (!publishRoot) {
-    console.error('Usage: render_stage2_marketing_current.js <publish-root>');
+    console.error("Usage: render_stage2_marketing_current.js <publish-root>");
     process.exit(1);
   }
 
   const root = path.resolve(publishRoot);
-  const newsletterDir = path.join(root, 'newsletter');
-  const apiDir = path.join(root, 'api');
-  const dataDir = path.join(root, 'data');
+  const newsletterDir = path.join(root, "newsletter");
+  const apiDir = path.join(root, "api");
+  const dataDir = path.join(root, "data");
 
-  const weeksPath = loadFirstExisting([path.join(dataDir, 'weeks.json')]);
-  const summaryPath = loadFirstExisting([path.join(dataDir, 'summary.json')]);
+  const weeksPath = loadFirstExisting([path.join(dataDir, "weeks.json")]);
+  const summaryPath = loadFirstExisting([path.join(dataDir, "summary.json")]);
   const deckSummaryPath = loadFirstExisting([
-    path.join(dataDir, 'deck_summary.json'),
-    path.join(dataDir, 'deck-summary.json'),
+    path.join(dataDir, "deck_summary.json"),
+    path.join(dataDir, "deck-summary.json"),
   ]);
 
   if (!weeksPath || !summaryPath) {
-    console.error('Could not find required source data for marketing stage-2 writer.');
+    console.error("Could not find required source data for marketing stage-2 writer.");
     process.exit(1);
   }
 
@@ -533,13 +588,14 @@ function main() {
   const summaryData = readJson(summaryPath);
   const deckSummary = deckSummaryPath ? readJson(deckSummaryPath) : {};
 
-  const latestWeekDate = Array.isArray(weeks) && weeks.length ? String(weeks[0].week_date || '') : '';
-  const latest = latestWeekDate ? new Date(latestWeekDate + 'T00:00:00Z') : null;
+  const latestWeekDate =
+    Array.isArray(weeks) && weeks.length ? String(weeks[0].week_date || "") : "";
+  const latest = latestWeekDate ? new Date(latestWeekDate + "T00:00:00Z") : null;
   const cutoff = latest ? new Date(latest.getTime() - 29 * 24 * 60 * 60 * 1000) : null;
   const windowWeeks = Array.isArray(weeks)
     ? weeks.filter((week) => {
         if (!cutoff) return true;
-        const d = new Date(String(week.week_date || '') + 'T00:00:00Z');
+        const d = new Date(String(week.week_date || "") + "T00:00:00Z");
         return !Number.isNaN(d.getTime()) && d >= cutoff && d <= latest;
       })
     : [];
@@ -548,17 +604,18 @@ function main() {
   const weeklyActivityLog = groupByWeek(records);
   const threads = buildThreadSummary(records);
   const payload = {
-    title: 'Everpure research activity log (30d)',
-    summary: 'A 30-day operations view of research cadence, volume, and active workstreams. Use this log to show what moved this month, where research effort is concentrating, and which comparisons are still in flight.',
-    window: '30d',
-    audience: 'marketing',
-    tone: 'detailed',
-    preset: 'marketing_activity_30d',
+    title: "Everpure research activity log (30d)",
+    summary:
+      "A 30-day operations view of research cadence, volume, and active workstreams. Use this log to show what moved this month, where research effort is concentrating, and which comparisons are still in flight.",
+    window: "30d",
+    audience: "marketing",
+    tone: "detailed",
+    preset: "marketing_activity_30d",
     defaults: {
-      window: '30d',
-      audience: 'marketing',
-      tone: 'detailed',
-      preset: 'marketing_activity_30d',
+      window: "30d",
+      audience: "marketing",
+      tone: "detailed",
+      preset: "marketing_activity_30d",
     },
     generated_at: new Date().toISOString(),
     snapshot: deriveSnapshot(summaryData, weeklyActivityLog, deckSummary),
@@ -572,24 +629,30 @@ function main() {
   const md = buildMarkdown(payload);
   const html = buildHtml(payload);
 
-  writeJson(path.join(newsletterDir, 'marketing-activity-30d.json'), payload);
-  writeText(path.join(newsletterDir, 'marketing-activity-30d.md'), md + '\n');
-  writeText(path.join(newsletterDir, 'marketing-activity-30d.html'), html + '\n');
-  writeJson(path.join(apiDir, 'newsletter-marketing-activity-30d.json'), payload);
-  writeText(path.join(apiDir, 'newsletter-marketing-activity-30d.md'), md + '\n');
+  writeJson(path.join(newsletterDir, "marketing-activity-30d.json"), payload);
+  writeText(path.join(newsletterDir, "marketing-activity-30d.md"), md + "\n");
+  writeText(path.join(newsletterDir, "marketing-activity-30d.html"), html + "\n");
+  writeJson(path.join(apiDir, "newsletter-marketing-activity-30d.json"), payload);
+  writeText(path.join(apiDir, "newsletter-marketing-activity-30d.md"), md + "\n");
 
-  console.log(JSON.stringify({
-    written: [
-      path.join(newsletterDir, 'marketing-activity-30d.json'),
-      path.join(newsletterDir, 'marketing-activity-30d.md'),
-      path.join(newsletterDir, 'marketing-activity-30d.html'),
-      path.join(apiDir, 'newsletter-marketing-activity-30d.json'),
-      path.join(apiDir, 'newsletter-marketing-activity-30d.md'),
-    ],
-    weekly_updates: payload.snapshot.weekly_updates,
-    repeated_threads: payload.repeated_research_threads.length,
-    comparison_tracks: payload.comparison_work_in_flight.length,
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        written: [
+          path.join(newsletterDir, "marketing-activity-30d.json"),
+          path.join(newsletterDir, "marketing-activity-30d.md"),
+          path.join(newsletterDir, "marketing-activity-30d.html"),
+          path.join(apiDir, "newsletter-marketing-activity-30d.json"),
+          path.join(apiDir, "newsletter-marketing-activity-30d.md"),
+        ],
+        weekly_updates: payload.snapshot.weekly_updates,
+        repeated_threads: payload.repeated_research_threads.length,
+        comparison_tracks: payload.comparison_work_in_flight.length,
+      },
+      null,
+      2
+    )
+  );
 }
 
 main();

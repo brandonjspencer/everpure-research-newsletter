@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const root = process.argv[2] || path.resolve(process.cwd(), 'publish');
-const dataDir = path.join(root, 'data');
+const root = process.argv[2] || path.resolve(process.cwd(), "publish");
+const dataDir = path.join(root, "data");
 
 function readJson(name, fallback = null) {
   const fp = path.join(dataDir, name);
   try {
-    return JSON.parse(fs.readFileSync(fp, 'utf8'));
+    return JSON.parse(fs.readFileSync(fp, "utf8"));
   } catch {
     return fallback;
   }
@@ -21,12 +21,14 @@ function writeJson(name, data) {
 }
 
 function normalize(text) {
-  return String(text || '').replace(/\s+/g, ' ').trim();
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function flattenText(obj, out = []) {
   if (obj == null) return out;
-  if (typeof obj === 'string') {
+  if (typeof obj === "string") {
     out.push(normalize(obj));
     return out;
   }
@@ -34,9 +36,9 @@ function flattenText(obj, out = []) {
     for (const item of obj) flattenText(item, out);
     return out;
   }
-  if (typeof obj === 'object') {
+  if (typeof obj === "object") {
     for (const [k, v] of Object.entries(obj)) {
-      if (['raw_bytes', 'binary', 'buffer'].includes(k)) continue;
+      if (["raw_bytes", "binary", "buffer"].includes(k)) continue;
       flattenText(v, out);
     }
   }
@@ -46,7 +48,7 @@ function flattenText(obj, out = []) {
 function flattenDeckContent(raw) {
   if (!raw) return [];
   if (Array.isArray(raw)) return raw;
-  for (const key of ['items', 'decks', 'deck_content', 'deckContents', 'entries']) {
+  for (const key of ["items", "decks", "deck_content", "deckContents", "entries"]) {
     if (Array.isArray(raw[key])) return raw[key];
   }
   return [];
@@ -67,18 +69,39 @@ function uniq(arr) {
 }
 
 function titleTokens(title) {
-  const stop = new Set(['the','and','for','with','from','this','that','page','pages','flow','work','testing','concept','concepts','design','ux','review','analysis']);
+  const stop = new Set([
+    "the",
+    "and",
+    "for",
+    "with",
+    "from",
+    "this",
+    "that",
+    "page",
+    "pages",
+    "flow",
+    "work",
+    "testing",
+    "concept",
+    "concepts",
+    "design",
+    "ux",
+    "review",
+    "analysis",
+  ]);
   return uniq(
     normalize(title)
       .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
+      .replace(/[^a-z0-9\s]/g, " ")
       .split(/\s+/)
-      .filter(t => t && t.length >= 3 && !stop.has(t))
+      .filter((t) => t && t.length >= 3 && !stop.has(t))
   );
 }
 
 function numbers(text) {
-  return uniq(normalize(text).match(/\b\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?x\b|\b\d+(?:\.\d+)?\b/gi) || []);
+  return uniq(
+    normalize(text).match(/\b\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?x\b|\b\d+(?:\.\d+)?\b/gi) || []
+  );
 }
 
 const boilerplatePatterns = [
@@ -94,26 +117,35 @@ const boilerplatePatterns = [
   /this presentation/i,
   /for internal use/i,
   /^●/,
-  /^\.\.\.$/
+  /^\.\.\.$/,
 ];
 
 function looksBoilerplate(text) {
   const t = normalize(text);
   if (!t) return true;
   if (t.length < 18) return true;
-  if (boilerplatePatterns.some(rx => rx.test(t))) return true;
+  if (boilerplatePatterns.some((rx) => rx.test(t))) return true;
   if ((t.match(/●/g) || []).length >= 3) return true;
   return false;
 }
 
-
 function isBadEvidenceLine(text) {
   const t = normalize(text);
   if (!t) return true;
-  if (/HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export/i.test(t)) return true;
+  if (
+    /HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export/i.test(
+      t
+    )
+  )
+    return true;
   if (/\b(?:[A-Za-z0-9_-]{18,})\b/.test(t)) return true;
   if (/^https?:\/\//i.test(t)) return true;
-  if (/^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(t)) return true;
+  if (
+    /^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(
+      t
+    )
+  )
+    return true;
   return false;
 }
 
@@ -121,7 +153,7 @@ function conceptLineMatches(line, concept) {
   const tokens = concept.tokens || [];
   if (!tokens.length) return true;
   const low = normalize(line).toLowerCase();
-  return tokens.some(tok => low.includes(tok));
+  return tokens.some((tok) => low.includes(tok));
 }
 
 function sentenceSplit(text) {
@@ -147,9 +179,20 @@ function signalScore(text, concept) {
   if (concept.concept_id && new RegExp(`\\b${concept.concept_id}\\b`).test(t)) score += 8;
   const overlap = tokenOverlap(t, concept.tokens || []);
   score += overlap * 3;
-  if (/\b(v1|v2|r2|r3|baseline|variation|compare|comparison|preferred|winner|winning)\b/i.test(t)) score += 4;
-  if (/\b(increase|decrease|drop|lift|uplift|improved|reduced|reduction|more|less|better|worse)\b/i.test(t)) score += 3;
-  if (/\b(comprehension|sentiment|engagement|conversion|clarity|discoverability|confidence|success|preference)\b/i.test(t)) score += 4;
+  if (/\b(v1|v2|r2|r3|baseline|variation|compare|comparison|preferred|winner|winning)\b/i.test(t))
+    score += 4;
+  if (
+    /\b(increase|decrease|drop|lift|uplift|improved|reduced|reduction|more|less|better|worse)\b/i.test(
+      t
+    )
+  )
+    score += 3;
+  if (
+    /\b(comprehension|sentiment|engagement|conversion|clarity|discoverability|confidence|success|preference)\b/i.test(
+      t
+    )
+  )
+    score += 4;
   if (/\b(should|recommend|next|iterate|ship|retest|hold|narrow|focus)\b/i.test(t)) score += 1;
   if (numbers(t).length) score += 4;
   if (t.length < 24) score -= 2;
@@ -193,48 +236,51 @@ function inferSummary(concept, ranked) {
 }
 
 function inferNextStep(concept, ranked) {
-  if (!ranked.length) return 'Narrow the next round to one or two concrete choices and collect stronger concept-specific proof points.';
+  if (!ranked.length)
+    return "Narrow the next round to one or two concrete choices and collect stronger concept-specific proof points.";
   const best = ranked[0].text.toLowerCase();
   if (/\b(v1|v2|baseline|variation|comparison|preferred|winner)\b/.test(best)) {
-    return 'Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.';
+    return "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.";
   }
-  if (/\b(comprehension|clarity|messaging|label|taxonomy|discoverability|navigation)\b/.test(best)) {
-    return 'Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.';
+  if (
+    /\b(comprehension|clarity|messaging|label|taxonomy|discoverability|navigation)\b/.test(best)
+  ) {
+    return "Use the current evidence to simplify the message, label, or structure, then validate that the next pass improves comprehension and wayfinding.";
   }
   if (/\b(engagement|conversion|success|sentiment)\b/.test(best)) {
-    return 'Keep the strongest direction, remove the weakest competing elements, and validate the outcome on the primary engagement or conversion signal.';
+    return "Keep the strongest direction, remove the weakest competing elements, and validate the outcome on the primary engagement or conversion signal.";
   }
-  return 'Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.';
+  return "Use the current evidence to narrow scope and define one specific next iteration rather than broadening the concept area.";
 }
 
 function inferConfidence(ranked) {
-  if (!ranked.length) return 'low';
+  if (!ranked.length) return "low";
   const best = ranked[0];
-  if (best.score >= 16 && best.numbers.length) return 'moderate';
-  if (best.score >= 11) return 'moderate';
-  return 'low';
+  if (best.score >= 16 && best.numbers.length) return "moderate";
+  if (best.score >= 11) return "moderate";
+  return "low";
 }
 
 function inferDecision(ranked) {
-  if (!ranked.length) return 'watch';
+  if (!ranked.length) return "watch";
   const best = ranked[0].text.toLowerCase();
-  if (/\b(preferred|winner|winning)\b/.test(best) && /\b\d{1,3}%\b/.test(best)) return 'iterate';
-  if (/\b(drop|decrease|reduced|worse|lower)\b/.test(best)) return 'iterate';
-  if (/\b(increase|improved|lift|uplift|higher)\b/.test(best)) return 'iterate';
-  return 'watch';
+  if (/\b(preferred|winner|winning)\b/.test(best) && /\b\d{1,3}%\b/.test(best)) return "iterate";
+  if (/\b(drop|decrease|reduced|worse|lower)\b/.test(best)) return "iterate";
+  if (/\b(increase|improved|lift|uplift|higher)\b/.test(best)) return "iterate";
+  return "watch";
 }
 
 function main() {
-  const weeks = readJson('weeks.json', []);
-  const packPayload = packWindow(readJson('evidence_packs_default_30d.json', { packs: [] }));
-  const deckRaw = readJson('deck_content.json', readJson('deck-content.json', []));
+  const weeks = readJson("weeks.json", []);
+  const packPayload = packWindow(readJson("evidence_packs_default_30d.json", { packs: [] }));
+  const deckRaw = readJson("deck_content.json", readJson("deck-content.json", []));
   const deckItems = flattenDeckContent(deckRaw);
 
   const deckText = new Map();
   for (const item of deckItems) {
     const fileId = item.file_id || item.deck_file_id || item.id;
     if (!fileId) continue;
-    const textBlob = uniq(flattenText(item)).join(' ');
+    const textBlob = uniq(flattenText(item)).join(" ");
     deckText.set(fileId, textBlob);
   }
 
@@ -242,9 +288,9 @@ function main() {
   for (const pack of packPayload.packs || []) {
     const concept = {
       concept_id: pack.concept_id || null,
-      concept_title: pack.concept_title || '',
-      concept_display: pack.concept_display || pack.concept_title || '',
-      tokens: titleTokens(pack.concept_title || pack.concept_display || '')
+      concept_title: pack.concept_title || "",
+      concept_display: pack.concept_display || pack.concept_title || "",
+      tokens: titleTokens(pack.concept_title || pack.concept_display || ""),
     };
 
     const candidateLines = [];
@@ -259,12 +305,16 @@ function main() {
     for (const ref of pack.source_refs || []) {
       if (ref.text && !isBadEvidenceLine(ref.text)) candidateLines.push(ref.text);
       if (ref.week_date && weekSet.has(ref.week_date)) {
-        const week = (weeks || []).find(w => w.week_date === ref.week_date && w.record_id === ref.record_id) || (weeks || []).find(w => w.week_date === ref.week_date);
+        const week =
+          (weeks || []).find(
+            (w) => w.week_date === ref.week_date && w.record_id === ref.record_id
+          ) || (weeks || []).find((w) => w.week_date === ref.week_date);
         if (week) {
           const groups = week.content_groups || {};
           for (const items of Object.values(groups)) {
             for (const line of flattenText(items)) {
-              if (!isBadEvidenceLine(line) && conceptLineMatches(line, concept)) candidateLines.push(line);
+              if (!isBadEvidenceLine(line) && conceptLineMatches(line, concept))
+                candidateLines.push(line);
             }
           }
         }
@@ -275,13 +325,14 @@ function main() {
       if (!deckText.has(fileId)) continue;
       const text = deckText.get(fileId);
       for (const sentence of sentenceSplit(text)) {
-        if (!isBadEvidenceLine(sentence) && conceptLineMatches(sentence, concept)) candidateLines.push(sentence);
+        if (!isBadEvidenceLine(sentence) && conceptLineMatches(sentence, concept))
+          candidateLines.push(sentence);
       }
     }
 
     const ranked = rankLines(candidateLines, concept).slice(0, 8);
-    const matchedNumbers = uniq(ranked.flatMap(r => r.numbers)).slice(0, 6);
-    const matchedSignals = ranked.map(r => r.text).slice(0, 5);
+    const matchedNumbers = uniq(ranked.flatMap((r) => r.numbers)).slice(0, 6);
+    const matchedSignals = ranked.map((r) => r.text).slice(0, 5);
 
     conceptEvidence.push({
       concept_key: pack.concept_key,
@@ -299,30 +350,41 @@ function main() {
       matched_confidence: inferConfidence(ranked),
       matched_decision_status: inferDecision(ranked),
       evidence_strength_score: ranked.length ? ranked[0].score : 0,
-      evidence_found: ranked.length > 0
+      evidence_found: ranked.length > 0,
     });
   }
 
-  conceptEvidence.sort((a,b) => b.evidence_strength_score - a.evidence_strength_score || (b.weeks_seen || []).length - (a.weeks_seen || []).length || String(a.concept_display).localeCompare(String(b.concept_display)));
+  conceptEvidence.sort(
+    (a, b) =>
+      b.evidence_strength_score - a.evidence_strength_score ||
+      (b.weeks_seen || []).length - (a.weeks_seen || []).length ||
+      String(a.concept_display).localeCompare(String(b.concept_display))
+  );
 
   const payload = {
     generated_at: new Date().toISOString(),
     window: { days: 30 },
     concept_count: conceptEvidence.length,
-    with_evidence_count: conceptEvidence.filter(c => c.evidence_found).length,
-    concepts: conceptEvidence
+    with_evidence_count: conceptEvidence.filter((c) => c.evidence_found).length,
+    concepts: conceptEvidence,
   };
 
-  writeJson('concept_evidence_default_30d.json', payload);
-  writeJson('concept-evidence-default-30d.json', payload);
-  console.log(JSON.stringify({
-    concept_count: payload.concept_count,
-    with_evidence_count: payload.with_evidence_count,
-    outputs: [
-      path.join(dataDir, 'concept_evidence_default_30d.json'),
-      path.join(dataDir, 'concept-evidence-default-30d.json')
-    ]
-  }, null, 2));
+  writeJson("concept_evidence_default_30d.json", payload);
+  writeJson("concept-evidence-default-30d.json", payload);
+  console.log(
+    JSON.stringify(
+      {
+        concept_count: payload.concept_count,
+        with_evidence_count: payload.with_evidence_count,
+        outputs: [
+          path.join(dataDir, "concept_evidence_default_30d.json"),
+          path.join(dataDir, "concept-evidence-default-30d.json"),
+        ],
+      },
+      null,
+      2
+    )
+  );
 }
 
 main();

@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Python — lint, typecheck, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Node (pyright runtime)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Create venv and install dependencies
+        # Build ./.venv so Pyright resolves imports against it (matches local +
+        # pyproject's [tool.pyright] venv config).
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+          .venv/bin/pip install -r requirements-dev.txt
+
+      - name: Ruff lint
+        run: .venv/bin/ruff check .
+
+      - name: Ruff format check
+        run: .venv/bin/ruff format --check .
+
+      - name: Pyright
+        run: .venv/bin/pyright
+
+      - name: Pytest (smoke)
+        run: .venv/bin/pytest
+
+  node:
+    name: Node — lint, typecheck, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Typecheck (tsc --checkJs)
+        run: npm run typecheck
+
+      - name: Node smoke tests
+        run: npm test

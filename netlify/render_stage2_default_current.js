@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -8,7 +8,7 @@ function ensureDir(p) {
 
 function readJson(p, fallback) {
   try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
+    return JSON.parse(fs.readFileSync(p, "utf8"));
   } catch {
     return fallback;
   }
@@ -16,65 +16,75 @@ function readJson(p, fallback) {
 
 function writeText(p, text) {
   ensureDir(p);
-  fs.writeFileSync(p, text, 'utf8');
+  fs.writeFileSync(p, text, "utf8");
 }
 
 function escapeHtml(text) {
   return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function daysAgo(dateStr, days) {
-  const d = new Date(dateStr + 'T00:00:00Z');
+  const d = new Date(dateStr + "T00:00:00Z");
   d.setUTCDate(d.getUTCDate() - days);
   return d.toISOString().slice(0, 10);
 }
 
 function summarizeCounts(publishRoot) {
-  const weeks = readJson(path.join(publishRoot, 'data', 'weeks.json'), []);
-  const conceptEvidence = readJson(path.join(publishRoot, 'data', 'concept-evidence-default-30d.json'), []);
-  const weekDates = weeks.map((w) => w.week_date).filter(Boolean).sort();
+  const weeks = readJson(path.join(publishRoot, "data", "weeks.json"), []);
+  const conceptEvidence = readJson(
+    path.join(publishRoot, "data", "concept-evidence-default-30d.json"),
+    []
+  );
+  const weekDates = weeks
+    .map((w) => w.week_date)
+    .filter(Boolean)
+    .sort();
   const latestWeekDate = weekDates.length ? weekDates[weekDates.length - 1] : null;
   const cutoff = latestWeekDate ? daysAgo(latestWeekDate, 29) : null;
   const weeks30d = cutoff ? weeks.filter((w) => w.week_date && w.week_date >= cutoff) : weeks;
   return {
     latest_week_date: latestWeekDate,
     week_count_30d: new Set(weeks30d.map((w) => w.week_date)).size,
-    concept_evidence_count: Array.isArray(conceptEvidence) ? conceptEvidence.length : (Array.isArray(conceptEvidence?.concepts) ? conceptEvidence.concepts.length : 0),
+    concept_evidence_count: Array.isArray(conceptEvidence)
+      ? conceptEvidence.length
+      : Array.isArray(conceptEvidence?.concepts)
+        ? conceptEvidence.concepts.length
+        : 0,
   };
 }
 
-const publishRoot = path.resolve(process.argv[2] || 'publish');
+const publishRoot = path.resolve(process.argv[2] || "publish");
 const counts = summarizeCounts(publishRoot);
 const generatedAt = new Date().toISOString();
 
 function formatIssueDate(dateStr) {
-  if (!dateStr) return 'Current cycle';
+  if (!dateStr) return "Current cycle";
   const normalized = String(dateStr).slice(0, 10);
   try {
-    return new Date(normalized + 'T00:00:00Z').toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'UTC'
+    return new Date(normalized + "T00:00:00Z").toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
     });
   } catch {
-    return 'Current cycle';
+    return "Current cycle";
   }
 }
 
 function issueNumberForMonth(dateStr) {
-  if (!dateStr) return '01';
+  if (!dateStr) return "01";
   const match = String(dateStr).match(/^(\d{4})-(\d{2})/);
-  if (!match) return '01';
+  if (!match) return "01";
   const year = Number(match[1]);
   const month = Number(match[2]);
   // April 2026 was the first frozen/public issue. Keep future monthly issues monotonic from there.
   const issue = Math.max(1, (year - 2026) * 12 + (month - 4) + 1);
-  return String(issue).padStart(2, '0');
+  return String(issue).padStart(2, "0");
 }
 
 const issueDate = formatIssueDate(counts.latest_week_date || generatedAt.slice(0, 10));
@@ -90,42 +100,61 @@ function asArray(payload) {
 }
 
 function cleanText(value) {
-  return String(value || '').replace(/\s+/g, ' ').trim();
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function firstText(...values) {
   for (const value of values) {
     if (Array.isArray(value)) {
-      const joined = value.map(cleanText).filter(Boolean).slice(0, 2).join(' ');
+      const joined = value.map(cleanText).filter(Boolean).slice(0, 2).join(" ");
       if (joined) return joined;
     } else {
       const text = cleanText(value);
       if (text) return text;
     }
   }
-  return '';
+  return "";
 }
 
 function normalizeConfidence(value) {
-  const text = String(value || '').toLowerCase();
-  if (text.includes('high')) return 'high';
-  if (text.includes('low') || text.includes('directional')) return 'low';
-  return 'medium';
+  const text = String(value || "").toLowerCase();
+  if (text.includes("high")) return "high";
+  if (text.includes("low") || text.includes("directional")) return "low";
+  return "medium";
 }
 
 function titleFor(item) {
-  return cleanText(item.title || item.headline || item.workstream || item.theme || item.test || item.name || 'Research signal');
+  return cleanText(
+    item.title ||
+      item.headline ||
+      item.workstream ||
+      item.theme ||
+      item.test ||
+      item.name ||
+      "Research signal"
+  );
 }
 
 function sourceFor(item) {
-  if (item.source_href) return { label: item.source_label || 'Source deck', href: item.source_href };
+  if (item.source_href)
+    return { label: item.source_label || "Source deck", href: item.source_href };
   const refs = asArray(item.source_refs || item.sourceRefs);
-  const direct = refs.find((ref) => ref && (ref.canonical_url || ref.deck_url || ref.url || ref.href));
-  if (direct) return { label: 'Source deck', href: direct.canonical_url || direct.deck_url || direct.url || direct.href };
-  const deckRef = refs.find((ref) => ref && (ref.deck_id || ref.deckId || ref.file_id || ref.fileId));
+  const direct = refs.find(
+    (ref) => ref && (ref.canonical_url || ref.deck_url || ref.url || ref.href)
+  );
+  if (direct)
+    return {
+      label: "Source deck",
+      href: direct.canonical_url || direct.deck_url || direct.url || direct.href,
+    };
+  const deckRef = refs.find(
+    (ref) => ref && (ref.deck_id || ref.deckId || ref.file_id || ref.fileId)
+  );
   if (deckRef) {
     const id = deckRef.deck_id || deckRef.deckId || deckRef.file_id || deckRef.fileId;
-    return { label: 'Source deck', href: `https://docs.google.com/presentation/d/${id}/edit` };
+    return { label: "Source deck", href: `https://docs.google.com/presentation/d/${id}/edit` };
   }
   return { label: null, href: null };
 }
@@ -151,11 +180,33 @@ function toFinding(item) {
   const title = titleFor(item);
   return {
     title,
-    finding_statement: firstText(item.finding_statement, item.findingStatement, item.summary, item.evidence_snapshot, item.evidenceSnapshot) || fallbackFindingStatement(title),
-    proof_point: firstText(item.proof_point, item.proofPoint, item.evidence_snapshot, item.evidenceSnapshot, item.key_numbers, item.keyNumbers, item.supporting_signals, item.supportingSignals) || 'Evidence is present in the current weekly records, but the proof point should be tightened during the manual stage-2 review.',
-    next_step: firstText(item.next_step, item.nextStep, item.recommendation, item.implication) || 'Define the specific decision this signal should inform, then validate the strongest direction in the next research round.',
-    confidence: normalizeConfidence(item.confidence || item.confidence_level || item.confidenceLevel),
-    decision_status: cleanText(item.decision_status || item.decisionStatus || 'iterate'),
+    finding_statement:
+      firstText(
+        item.finding_statement,
+        item.findingStatement,
+        item.summary,
+        item.evidence_snapshot,
+        item.evidenceSnapshot
+      ) || fallbackFindingStatement(title),
+    proof_point:
+      firstText(
+        item.proof_point,
+        item.proofPoint,
+        item.evidence_snapshot,
+        item.evidenceSnapshot,
+        item.key_numbers,
+        item.keyNumbers,
+        item.supporting_signals,
+        item.supportingSignals
+      ) ||
+      "Evidence is present in the current weekly records, but the proof point should be tightened during the manual stage-2 review.",
+    next_step:
+      firstText(item.next_step, item.nextStep, item.recommendation, item.implication) ||
+      "Define the specific decision this signal should inform, then validate the strongest direction in the next research round.",
+    confidence: normalizeConfidence(
+      item.confidence || item.confidence_level || item.confidenceLevel
+    ),
+    decision_status: cleanText(item.decision_status || item.decisionStatus || "iterate"),
     source_label: source.label,
     source_href: source.href,
   };
@@ -164,14 +215,34 @@ function toFinding(item) {
 function toComparison(item) {
   const source = sourceFor(item);
   const title = titleFor(item);
-  const statement = firstText(item.finding_statement, item.findingStatement, item.summary, item.evidence_snapshot, item.evidenceSnapshot) || `${title} is best treated as a narrowed comparison problem in this issue.`;
+  const statement =
+    firstText(
+      item.finding_statement,
+      item.findingStatement,
+      item.summary,
+      item.evidence_snapshot,
+      item.evidenceSnapshot
+    ) || `${title} is best treated as a narrowed comparison problem in this issue.`;
   return {
     title,
     finding_statement: statement,
-    decision_criteria: firstText(item.decision_criteria, item.decisionCriteria, item.proof_point, item.proofPoint, item.evidence_snapshot, item.evidenceSnapshot) || 'Choose the strongest direction based on first-glance comprehension, user confidence, and clarity of the next step rather than preference alone.',
-    next_step: firstText(item.next_step, item.nextStep, item.recommendation, item.implication) || 'Run one decisive comparison round with explicit winning criteria before expanding the design space again.',
-    confidence: normalizeConfidence(item.confidence || item.confidence_level || item.confidenceLevel),
-    decision_status: cleanText(item.decision_status || item.decisionStatus || 'watch'),
+    decision_criteria:
+      firstText(
+        item.decision_criteria,
+        item.decisionCriteria,
+        item.proof_point,
+        item.proofPoint,
+        item.evidence_snapshot,
+        item.evidenceSnapshot
+      ) ||
+      "Choose the strongest direction based on first-glance comprehension, user confidence, and clarity of the next step rather than preference alone.",
+    next_step:
+      firstText(item.next_step, item.nextStep, item.recommendation, item.implication) ||
+      "Run one decisive comparison round with explicit winning criteria before expanding the design space again.",
+    confidence: normalizeConfidence(
+      item.confidence || item.confidence_level || item.confidenceLevel
+    ),
+    decision_status: cleanText(item.decision_status || item.decisionStatus || "watch"),
     source_label: source.label,
     source_href: source.href,
   };
@@ -181,66 +252,96 @@ function toQuestion(item) {
   const title = titleFor(item);
   return {
     title,
-    scope: cleanText(item.scope || item.area || ''),
-    question: firstText(item.question, item.open_question, item.openQuestion) || `What decision does ${title.toLowerCase()} need to unblock before the next iteration or release decision?`,
+    scope: cleanText(item.scope || item.area || ""),
+    question:
+      firstText(item.question, item.open_question, item.openQuestion) ||
+      `What decision does ${title.toLowerCase()} need to unblock before the next iteration or release decision?`,
   };
 }
 
 function looksLikeComparison(item) {
-  const text = `${titleFor(item)} ${item.finding_statement || ''} ${item.evidence_snapshot || ''}`.toLowerCase();
+  const text =
+    `${titleFor(item)} ${item.finding_statement || ""} ${item.evidence_snapshot || ""}`.toLowerCase();
   return /\b(v1|v2|v3|r2|r3|baseline|comparison|variant|variation|versus|vs\.?|test)\b/.test(text);
 }
 
 function evidencePackPayload() {
-  return readJson(path.join(publishRoot, 'data', 'evidence-packs-default-30d.json'), null)
-    || readJson(path.join(publishRoot, 'data', 'evidence_packs_default_30d.json'), null)
-    || { packs: [] };
+  return (
+    readJson(path.join(publishRoot, "data", "evidence-packs-default-30d.json"), null) ||
+    readJson(path.join(publishRoot, "data", "evidence_packs_default_30d.json"), null) || {
+      packs: [],
+    }
+  );
 }
 
 function readStatusPayload() {
-  return readJson(path.join(publishRoot, 'status.json'), {}) || {};
+  return readJson(path.join(publishRoot, "status.json"), {}) || {};
 }
 
 function deckContentCount(status) {
-  const value = status?._meta?.deck_content_count ?? status?.deck_content_count ?? status?.deckContentCount ?? 0;
+  const value =
+    status?._meta?.deck_content_count ??
+    status?.deck_content_count ??
+    status?.deckContentCount ??
+    0;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function cleanConceptTitle(value) {
   return cleanText(value)
-    .replace(/^concept\s+/i, '')
-    .replace(/^\d+\s*[-:–]\s*/i, '')
-    .replace(/\s+baseline$/i, ' baseline')
+    .replace(/^concept\s+/i, "")
+    .replace(/^\d+\s*[-:–]\s*/i, "")
+    .replace(/\s+baseline$/i, " baseline")
     .trim();
 }
 
 function canonicalTopicTitle(title) {
   const text = cleanConceptTitle(title).toLowerCase();
-  if (text.includes('events page') || text === 'events' || text.includes('events v1') || text.includes('events v2')) return 'Events Page';
-  if (text.includes('homepage ai')) return 'Homepage AI Messaging';
-  if (text.includes('pathfinder') && text.includes('cta')) return 'Pathfinder CTA Labels';
-  if (text.includes('webinar registration')) return 'Webinar Registration Page';
-  if (text.includes('book filter') || text.includes('this book')) return 'Reader Filter: “This Book”';
-  if (text.includes('virtualization')) return 'Virtualization Campaign';
-  return cleanConceptTitle(title) || 'Research signal';
+  if (
+    text.includes("events page") ||
+    text === "events" ||
+    text.includes("events v1") ||
+    text.includes("events v2")
+  )
+    return "Events Page";
+  if (text.includes("homepage ai")) return "Homepage AI Messaging";
+  if (text.includes("pathfinder") && text.includes("cta")) return "Pathfinder CTA Labels";
+  if (text.includes("webinar registration")) return "Webinar Registration Page";
+  if (text.includes("book filter") || text.includes("this book"))
+    return "Reader Filter: “This Book”";
+  if (text.includes("virtualization")) return "Virtualization Campaign";
+  return cleanConceptTitle(title) || "Research signal";
 }
 
 function topicKey(title) {
   const raw = cleanConceptTitle(title).toLowerCase();
-  if (raw.includes('book filter') || raw.includes('this book')) return 'this_book_filter';
-  return canonicalTopicTitle(title).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  if (raw.includes("book filter") || raw.includes("this book")) return "this_book_filter";
+  return canonicalTopicTitle(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function hasSentenceShape(text) {
   const value = cleanText(text);
-  return value.length >= 42 && /[.!?]/.test(value) && /\b(should|because|users?|participants?|customers?|evidence|signal|clear|confusing|prefer|understand|confidence|friction|trust|choose|validated|direction)\b/i.test(value);
+  return (
+    value.length >= 42 &&
+    /[.!?]/.test(value) &&
+    /\b(should|because|users?|participants?|customers?|evidence|signal|clear|confusing|prefer|understand|confidence|friction|trust|choose|validated|direction)\b/i.test(
+      value
+    )
+  );
 }
 
-function looksLabelOnly(text, title = '') {
+function looksLabelOnly(text, title = "") {
   const value = cleanText(text);
   if (!value) return true;
-  const normalized = value.toLowerCase().replace(/^concept\s+/i, '').replace(/^\d+\s*[-:–]\s*/i, '').trim();
+  const normalized = value
+    .toLowerCase()
+    .replace(/^concept\s+/i, "")
+    .replace(/^\d+\s*[-:–]\s*/i, "")
+    .trim();
   const normalizedTitle = cleanConceptTitle(title).toLowerCase();
   if (normalizedTitle && normalized === normalizedTitle) return true;
   if (/^(concept\s*)?\d+\s*[-:–]\s*[a-z0-9\s/&()]+$/i.test(value)) return true;
@@ -253,21 +354,35 @@ function substantiveText(...values) {
     const text = cleanText(value);
     if (text && !looksLabelOnly(text)) return text;
   }
-  return '';
+  return "";
 }
 
 function sourceFromPack(pack) {
   const refs = asArray(pack.source_refs || pack.sourceRefs);
-  const withDeck = refs.find((ref) => ref && (ref.deck_file_id || ref.deck_id || ref.file_id || ref.deckFileId));
-  const id = withDeck?.deck_file_id || withDeck?.deck_id || withDeck?.file_id || withDeck?.deckFileId || asArray(pack.deck_refs)[0];
-  if (id) return { label: 'Source deck', href: `https://docs.google.com/presentation/d/${id}/edit` };
+  const withDeck = refs.find(
+    (ref) => ref && (ref.deck_file_id || ref.deck_id || ref.file_id || ref.deckFileId)
+  );
+  const id =
+    withDeck?.deck_file_id ||
+    withDeck?.deck_id ||
+    withDeck?.file_id ||
+    withDeck?.deckFileId ||
+    asArray(pack.deck_refs)[0];
+  if (id)
+    return { label: "Source deck", href: `https://docs.google.com/presentation/d/${id}/edit` };
   return { label: null, href: null };
 }
 
 function groupEvidencePacks(packs) {
   const groups = new Map();
   for (const pack of packs || []) {
-    const title = canonicalTopicTitle(pack.concept_title || pack.concept_display || pack.concept_key || pack.title || 'Research signal');
+    const title = canonicalTopicTitle(
+      pack.concept_title ||
+        pack.concept_display ||
+        pack.concept_key ||
+        pack.title ||
+        "Research signal"
+    );
     const key = topicKey(title);
     if (!groups.has(key)) {
       groups.set(key, {
@@ -288,41 +403,58 @@ function groupEvidencePacks(packs) {
     const group = groups.get(key);
     for (const week of asArray(pack.weeks_seen)) if (week) group.weeks.add(week);
     for (const deck of asArray(pack.deck_refs)) if (deck) group.deckRefs.add(deck);
-    for (const cue of asArray(pack.comparison_cues)) if (cue) group.comparisonCues.add(String(cue).toLowerCase());
-    for (const signal of asArray(pack.behavioral_signals)) if (signal) group.behavioralSignals.add(String(signal).toLowerCase());
-    for (const excerpt of asArray(pack.raw_finding_excerpts)) if (excerpt) group.rawExcerpts.push(cleanText(excerpt));
-    for (const ref of asArray(pack.source_refs || pack.sourceRefs)) if (ref) group.sourceRefs.push(ref);
-    group.occurrence_count += Number(pack.occurrence_count || asArray(pack.source_refs || pack.sourceRefs).length || 1);
-    if (pack.first_seen_week && (!group.first_seen_week || pack.first_seen_week < group.first_seen_week)) group.first_seen_week = pack.first_seen_week;
-    if (pack.last_seen_week && (!group.last_seen_week || pack.last_seen_week > group.last_seen_week)) group.last_seen_week = pack.last_seen_week;
+    for (const cue of asArray(pack.comparison_cues))
+      if (cue) group.comparisonCues.add(String(cue).toLowerCase());
+    for (const signal of asArray(pack.behavioral_signals))
+      if (signal) group.behavioralSignals.add(String(signal).toLowerCase());
+    for (const excerpt of asArray(pack.raw_finding_excerpts))
+      if (excerpt) group.rawExcerpts.push(cleanText(excerpt));
+    for (const ref of asArray(pack.source_refs || pack.sourceRefs))
+      if (ref) group.sourceRefs.push(ref);
+    group.occurrence_count += Number(
+      pack.occurrence_count || asArray(pack.source_refs || pack.sourceRefs).length || 1
+    );
+    if (
+      pack.first_seen_week &&
+      (!group.first_seen_week || pack.first_seen_week < group.first_seen_week)
+    )
+      group.first_seen_week = pack.first_seen_week;
+    if (
+      pack.last_seen_week &&
+      (!group.last_seen_week || pack.last_seen_week > group.last_seen_week)
+    )
+      group.last_seen_week = pack.last_seen_week;
     if (pack.rule_based_status) group.statuses.add(pack.rule_based_status);
-    if (pack.rule_based_confidence) group.confidences.add(String(pack.rule_based_confidence).toLowerCase());
+    if (pack.rule_based_confidence)
+      group.confidences.add(String(pack.rule_based_confidence).toLowerCase());
   }
-  return [...groups.values()].map((group) => ({
-    ...group,
-    weeks_seen: [...group.weeks].sort(),
-    deck_refs: [...group.deckRefs],
-    comparison_cues: [...group.comparisonCues],
-    behavioral_signals: [...group.behavioralSignals],
-    source_refs: group.sourceRefs,
-    raw_finding_excerpts: [...new Set(group.rawExcerpts)].filter(Boolean),
-  })).sort((a, b) => {
-    if (b.occurrence_count !== a.occurrence_count) return b.occurrence_count - a.occurrence_count;
-    return String(b.last_seen_week || '').localeCompare(String(a.last_seen_week || ''));
-  });
+  return [...groups.values()]
+    .map((group) => ({
+      ...group,
+      weeks_seen: [...group.weeks].sort(),
+      deck_refs: [...group.deckRefs],
+      comparison_cues: [...group.comparisonCues],
+      behavioral_signals: [...group.behavioralSignals],
+      source_refs: group.sourceRefs,
+      raw_finding_excerpts: [...new Set(group.rawExcerpts)].filter(Boolean),
+    }))
+    .sort((a, b) => {
+      if (b.occurrence_count !== a.occurrence_count) return b.occurrence_count - a.occurrence_count;
+      return String(b.last_seen_week || "").localeCompare(String(a.last_seen_week || ""));
+    });
 }
 
 function weekPhrase(group) {
   const weeks = group.weeks_seen || [];
-  if (!weeks.length) return 'the current research cycle';
-  if (weeks.length === 1) return 'a recent weekly update';
+  if (!weeks.length) return "the current research cycle";
+  if (weeks.length === 1) return "a recent weekly update";
   return `${weeks.length} weekly updates`;
 }
 
 function deckPhrase(group) {
   const count = (group.deck_refs || []).length;
-  if (!count) return 'without a linked findings deck';
-  if (count === 1) return 'with 1 linked findings deck';
+  if (!count) return "without a linked findings deck";
+  if (count === 1) return "with 1 linked findings deck";
   return `with ${count} linked findings decks`;
 }
 
@@ -330,10 +462,9 @@ function groupSource(group) {
   return sourceFromPack({ source_refs: group.source_refs, deck_refs: group.deck_refs });
 }
 
-
 // Confidence labels are editorial evidence-readiness labels, not statistical confidence.
 // High = ready to decide, Medium = ready to run a decisive next round, Low = real signal that still needs proof.
-function confidenceForGroup(group, purpose = 'track') {
+function confidenceForGroup(group, purpose = "track") {
   const weeks = asArray(group?.weeks_seen || []);
   const deckRefs = asArray(group?.deck_refs || []);
   const comparisonCues = asArray(group?.comparison_cues || []);
@@ -342,79 +473,114 @@ function confidenceForGroup(group, purpose = 'track') {
     .map(cleanText)
     .filter((text) => text && !looksLabelOnly(text));
   const occurrenceCount = Number(group?.occurrence_count || 0);
-  const titleText = String(group?.title || '');
-  const allEvidenceText = `${titleText} ${behavioralSignals.join(' ')} ${excerpts.join(' ')}`.toLowerCase();
+  const titleText = String(group?.title || "");
+  const allEvidenceText =
+    `${titleText} ${behavioralSignals.join(" ")} ${excerpts.join(" ")}`.toLowerCase();
 
   const hasRepeatedSignal = weeks.length >= 2 || occurrenceCount >= 2;
   const hasSourceDetail = deckRefs.length >= 1 || excerpts.length >= 1;
-  const hasDecisionShape = comparisonCues.length >= 1 || /comparison|compare|v1|v2|variant|baseline|cta|label|messaging|registration|filter/i.test(titleText);
-  const hasBehaviorOutcome = /users?|participants?|customers?|visitors?|readers?/.test(allEvidenceText)
-    && /understood|preferred|missed|struggled|trusted|clicked|selected|chose|completed|abandoned|hesitated|confused|clearer|friction/.test(allEvidenceText);
-  const hasClearWinner = /clear winner|outperformed|ship|validated|ready to decide|ready to ship|stronger direction|confirmed/.test(allEvidenceText);
+  const hasDecisionShape =
+    comparisonCues.length >= 1 ||
+    /comparison|compare|v1|v2|variant|baseline|cta|label|messaging|registration|filter/i.test(
+      titleText
+    );
+  const hasBehaviorOutcome =
+    /users?|participants?|customers?|visitors?|readers?/.test(allEvidenceText) &&
+    /understood|preferred|missed|struggled|trusted|clicked|selected|chose|completed|abandoned|hesitated|confused|clearer|friction/.test(
+      allEvidenceText
+    );
+  const hasClearWinner =
+    /clear winner|outperformed|ship|validated|ready to decide|ready to ship|stronger direction|confirmed/.test(
+      allEvidenceText
+    );
 
-  if (purpose !== 'unresolved' && hasRepeatedSignal && hasSourceDetail && hasBehaviorOutcome && hasClearWinner) {
-    return 'high';
+  if (
+    purpose !== "unresolved" &&
+    hasRepeatedSignal &&
+    hasSourceDetail &&
+    hasBehaviorOutcome &&
+    hasClearWinner
+  ) {
+    return "high";
   }
 
   if (hasRepeatedSignal || hasDecisionShape || hasSourceDetail) {
-    return 'medium';
+    return "medium";
   }
 
-  return 'low';
+  return "low";
 }
 
 function confidenceForCycle(groups) {
-  const recurringCount = groups.filter((group) => (group.weeks_seen || []).length >= 2 || Number(group.occurrence_count || 0) >= 2).length;
-  const decisionShapedCount = groups.filter((group) => confidenceForGroup(group) !== 'low').length;
-  if (recurringCount >= 3 && decisionShapedCount >= 3) return 'medium';
-  return 'low';
+  const recurringCount = groups.filter(
+    (group) => (group.weeks_seen || []).length >= 2 || Number(group.occurrence_count || 0) >= 2
+  ).length;
+  const decisionShapedCount = groups.filter((group) => confidenceForGroup(group) !== "low").length;
+  if (recurringCount >= 3 && decisionShapedCount >= 3) return "medium";
+  return "low";
 }
 
 function actionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Use V4b as the Events implementation baseline, then quality-check the page against four rules: one clear search/filter model, lighter featured cards, event cards instead of dense lists, and no competing visual shapes that make the page feel busy.';
-  if (key === 'homepage_ai_messaging') return 'Adopt the lighter homepage AI direction: one-sentence hero copy, conversational language, and restrained AI emphasis. Validate that the copy improves comprehension and trust before increasing AI density again.';
-  if (key === 'pathfinder_cta_labels') return 'Keep “Personalize” as the safest homepage CTA for now, then test a hybrid that pairs its recognized meaning with start-language that attracts engagement. Avoid labels that imply users will receive instant recommendations before sharing inputs.';
-  if (key === 'webinar_registration_page') return 'Run the next webinar registration review as a barrier diagnosis. Separate value clarity, form effort, offer framing, and session detail so the team knows which part of the experience is blocking progression.';
-  if (key === 'this_book_filter') return 'Test “This Book” against plainer filter labels with readers who are trying to narrow content inside the current asset. Choose the label users can explain without knowing internal taxonomy.';
-  if (key === 'virtualization_campaign') return 'Refine the Virtualization Campaign by borrowing the stronger solution-page patterns: reduce narrow problem framing in the hero, move the buyer’s guide out of the hero, and give the demo video a clearer below-the-fold role.';
+  if (key === "events_page")
+    return "Use V4b as the Events implementation baseline, then quality-check the page against four rules: one clear search/filter model, lighter featured cards, event cards instead of dense lists, and no competing visual shapes that make the page feel busy.";
+  if (key === "homepage_ai_messaging")
+    return "Adopt the lighter homepage AI direction: one-sentence hero copy, conversational language, and restrained AI emphasis. Validate that the copy improves comprehension and trust before increasing AI density again.";
+  if (key === "pathfinder_cta_labels")
+    return "Keep “Personalize” as the safest homepage CTA for now, then test a hybrid that pairs its recognized meaning with start-language that attracts engagement. Avoid labels that imply users will receive instant recommendations before sharing inputs.";
+  if (key === "webinar_registration_page")
+    return "Run the next webinar registration review as a barrier diagnosis. Separate value clarity, form effort, offer framing, and session detail so the team knows which part of the experience is blocking progression.";
+  if (key === "this_book_filter")
+    return "Test “This Book” against plainer filter labels with readers who are trying to narrow content inside the current asset. Choose the label users can explain without knowing internal taxonomy.";
+  if (key === "virtualization_campaign")
+    return "Refine the Virtualization Campaign by borrowing the stronger solution-page patterns: reduce narrow problem framing in the hero, move the buyer’s guide out of the hero, and give the demo video a clearer below-the-fold role.";
   return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
 }
 
 function comparisonCriteriaForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.';
-  if (key === 'homepage_ai_messaging') return 'Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.';
-  if (key === 'pathfinder_cta_labels') return 'Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.';
-  return 'Choose the strongest direction based on comprehension, confidence, clarity of next step, and decision relevance rather than preference alone.';
+  if (key === "events_page")
+    return "Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.";
+  if (key === "homepage_ai_messaging")
+    return "Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.";
+  if (key === "pathfinder_cta_labels")
+    return "Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.";
+  return "Choose the strongest direction based on comprehension, confidence, clarity of next step, and decision relevance rather than preference alone.";
 }
 
 function comparisonDirectionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete.';
-  if (key === 'homepage_ai_messaging') return 'Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation.';
-  if (key === 'pathfinder_cta_labels') return 'Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow.';
-  return 'Use the next comparison round to choose a direction against explicit criteria rather than reopening broad exploration.';
+  if (key === "events_page")
+    return "Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete.";
+  if (key === "homepage_ai_messaging")
+    return "Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation.";
+  if (key === "pathfinder_cta_labels")
+    return "Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow.";
+  return "Use the next comparison round to choose a direction against explicit criteria rather than reopening broad exploration.";
 }
 
 function comparisonStatementForTopic(title, group) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems.';
-  if (key === 'homepage_ai_messaging') return 'The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion.';
-  if (key === 'pathfinder_cta_labels') return 'The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy.';
+  if (key === "events_page")
+    return "The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems.";
+  if (key === "homepage_ai_messaging")
+    return "The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion.";
+  if (key === "pathfinder_cta_labels")
+    return "The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy.";
   return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
 }
 
 function buildProgramFinding(groups, statusInfo) {
   const recurring = groups.filter((g) => g.occurrence_count >= 2).map((g) => g.title);
-  const recurringText = recurring.slice(0, 5).join(', ') || 'the current research workstreams';
+  const recurringText = recurring.slice(0, 5).join(", ") || "the current research workstreams";
   return {
-    title: 'Current research is narrowing around concrete user decisions',
+    title: "Current research is narrowing around concrete user decisions",
     finding_statement: `The active workstreams are becoming more specific. Rather than asking whether each concept is broadly appealing, the next round should clarify what users understand, trust, or feel ready to do.`,
     proof_point: `Recurring research tracks include ${recurringText}. Each one now needs a user-facing success criterion before it becomes stronger decision guidance.`,
-    next_step: 'For each active track, define the user behavior the study should clarify: comprehension, trust, discovery, commitment, or next-step confidence.',
+    next_step:
+      "For each active track, define the user behavior the study should clarify: comprehension, trust, discovery, commitment, or next-step confidence.",
     confidence: confidenceForCycle(groups),
-    decision_status: 'iterate',
+    decision_status: "iterate",
     source_label: null,
     source_href: null,
   };
@@ -422,47 +588,59 @@ function buildProgramFinding(groups, statusInfo) {
 
 function findingDirectionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'events_page') return 'Treat Events as the clearest page-decision track. The next study should test whether visitors understand the page purpose, can find a relevant event, and know which action to take next.';
-  if (key === 'homepage_ai_messaging') return 'Treat Homepage AI Messaging as a clarity-and-trust question. The next study should isolate whether AI language makes the homepage easier to understand or simply adds abstraction.';
-  if (key === 'pathfinder_cta_labels') return 'Treat Pathfinder CTA Labels as an expectation-setting problem. The next study should show whether the label makes the next step specific enough to reduce hesitation.';
+  if (key === "events_page")
+    return "Treat Events as the clearest page-decision track. The next study should test whether visitors understand the page purpose, can find a relevant event, and know which action to take next.";
+  if (key === "homepage_ai_messaging")
+    return "Treat Homepage AI Messaging as a clarity-and-trust question. The next study should isolate whether AI language makes the homepage easier to understand or simply adds abstraction.";
+  if (key === "pathfinder_cta_labels")
+    return "Treat Pathfinder CTA Labels as an expectation-setting problem. The next study should show whether the label makes the next step specific enough to reduce hesitation.";
   return actionForTopic(title);
 }
 
 function findingFromGroup(group) {
   const source = groupSource(group);
   const key = topicKey(group.title);
-  if (key === 'events_page') {
+  if (key === "events_page") {
     return {
-      title: 'Simpler Events layouts are outperforming visually busy versions',
-      finding_statement: 'Events research is no longer just asking whether the page needs a refresh. The clearest learning is that visitors need a more consistent visual system and a simpler path from “what is on this page?” to “which event should I choose?”',
-      proof_point: 'Testing showed the current page suffers from busy, inconsistent visual elements and lower findability. Later variations improved the path: card-based event presentation increased findability, a light featured-card treatment improved topic-finding success, and V4b produced the strongest overall experience signal.',
-      next_step: 'Move forward from the V4b direction, but protect the simplification: keep one clear search/filter model, preserve scannable event cards, and avoid reintroducing competing shapes or multiple search behaviors.',
-      confidence: 'high',
-      decision_status: 'ready to decide',
+      title: "Simpler Events layouts are outperforming visually busy versions",
+      finding_statement:
+        "Events research is no longer just asking whether the page needs a refresh. The clearest learning is that visitors need a more consistent visual system and a simpler path from “what is on this page?” to “which event should I choose?”",
+      proof_point:
+        "Testing showed the current page suffers from busy, inconsistent visual elements and lower findability. Later variations improved the path: card-based event presentation increased findability, a light featured-card treatment improved topic-finding success, and V4b produced the strongest overall experience signal.",
+      next_step:
+        "Move forward from the V4b direction, but protect the simplification: keep one clear search/filter model, preserve scannable event cards, and avoid reintroducing competing shapes or multiple search behaviors.",
+      confidence: "high",
+      decision_status: "ready to decide",
       source_label: source.label,
       source_href: source.href,
     };
   }
-  if (key === 'homepage_ai_messaging') {
+  if (key === "homepage_ai_messaging") {
     return {
-      title: 'Homepage AI messaging works best when it feels useful, not maximal',
-      finding_statement: 'The homepage AI work is pointing toward restrained, benefit-led AI language rather than heavier AI-forward copy. The opportunity is to make AI feel clear, credible, and connected to the offer without making visitors work to understand AI’s role.',
-      proof_point: 'The strongest pattern is not simply “more AI.” A conversational one-sentence hero improved the read, while the later 25% AI direction improved trust and confidence and made users less likely to describe the page only through the lens of AI.',
-      next_step: 'Use lighter AI emphasis and a more conversational one-sentence hero as the next homepage direction. Judge the next pass on comprehension and trust, not the amount of AI language on the page.',
-      confidence: 'high',
-      decision_status: 'ready to decide',
+      title: "Homepage AI messaging works best when it feels useful, not maximal",
+      finding_statement:
+        "The homepage AI work is pointing toward restrained, benefit-led AI language rather than heavier AI-forward copy. The opportunity is to make AI feel clear, credible, and connected to the offer without making visitors work to understand AI’s role.",
+      proof_point:
+        "The strongest pattern is not simply “more AI.” A conversational one-sentence hero improved the read, while the later 25% AI direction improved trust and confidence and made users less likely to describe the page only through the lens of AI.",
+      next_step:
+        "Use lighter AI emphasis and a more conversational one-sentence hero as the next homepage direction. Judge the next pass on comprehension and trust, not the amount of AI language on the page.",
+      confidence: "high",
+      decision_status: "ready to decide",
       source_label: source.label,
       source_href: source.href,
     };
   }
-  if (key === 'pathfinder_cta_labels') {
+  if (key === "pathfinder_cta_labels") {
     return {
-      title: 'Pathfinder CTA labels need to balance recognition with engagement',
-      finding_statement: 'Pathfinder CTA testing shows a real tradeoff: “Personalize” is better recognized as the place to get a custom solution, while “Start Here” does a better job attracting first-click engagement. The winning direction likely needs both clarity and momentum.',
-      proof_point: 'Participants were over twice as successful with “Personalize” than the new label variations, but “Start Here” attracted much more first-click engagement. Labels such as “Guide Me” and “Get Recommendations” risk setting the wrong expectation by implying users will receive value immediately.',
-      next_step: 'Maintain “Personalize” where recognition matters, then test a hybrid direction that borrows start-language without promising instant recommendations before users provide inputs.',
-      confidence: 'medium',
-      decision_status: 'ready for final comparison',
+      title: "Pathfinder CTA labels need to balance recognition with engagement",
+      finding_statement:
+        "Pathfinder CTA testing shows a real tradeoff: “Personalize” is better recognized as the place to get a custom solution, while “Start Here” does a better job attracting first-click engagement. The winning direction likely needs both clarity and momentum.",
+      proof_point:
+        "Participants were over twice as successful with “Personalize” than the new label variations, but “Start Here” attracted much more first-click engagement. Labels such as “Guide Me” and “Get Recommendations” risk setting the wrong expectation by implying users will receive value immediately.",
+      next_step:
+        "Maintain “Personalize” where recognition matters, then test a hybrid direction that borrows start-language without promising instant recommendations before users provide inputs.",
+      confidence: "medium",
+      decision_status: "ready for final comparison",
       source_label: source.label,
       source_href: source.href,
     };
@@ -472,8 +650,8 @@ function findingFromGroup(group) {
     finding_statement: `${group.title} is active in the current research cycle, but the available signal is still directional. The next pass should identify what users understood, missed, trusted, or acted on before promoting it as decision guidance.`,
     proof_point: `${group.title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a live workstream until the next round shows a clearer user behavior or preference signal.`,
     next_step: actionForTopic(group.title),
-    confidence: confidenceForGroup(group, 'track'),
-    decision_status: 'review evidence',
+    confidence: confidenceForGroup(group, "track"),
+    decision_status: "review evidence",
     source_label: source.label,
     source_href: source.href,
   };
@@ -481,7 +659,7 @@ function findingFromGroup(group) {
 
 function buildNarrativeFindings(groups, statusInfo) {
   const out = [];
-  for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels']) {
+  for (const title of ["Events Page", "Homepage AI Messaging", "Pathfinder CTA Labels"]) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) out.push(findingFromGroup(group));
   }
@@ -500,15 +678,15 @@ function comparisonFromGroup(group) {
     finding_statement: comparisonStatementForTopic(group.title, group),
     decision_criteria: comparisonCriteriaForTopic(group.title),
     next_step: comparisonDirectionForTopic(group.title),
-    confidence: confidenceForGroup(group, 'comparison'),
-    decision_status: 'compare',
+    confidence: confidenceForGroup(group, "comparison"),
+    decision_status: "compare",
     source_label: source.label,
     source_href: source.href,
   };
 }
 
 function buildComparisons(groups, sourceComparisons) {
-  const topicOrder = ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels'];
+  const topicOrder = ["Events Page", "Homepage AI Messaging", "Pathfinder CTA Labels"];
   const comparisons = [];
   for (const title of topicOrder) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
@@ -519,59 +697,87 @@ function buildComparisons(groups, sourceComparisons) {
 
 function buildUnresolvedQuestions(groups, statusInfo) {
   const questions = [];
-  for (const title of ['Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
+  for (const title of [
+    "Webinar Registration Page",
+    "This Book Filter",
+    "Virtualization Campaign",
+  ]) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (!group) continue;
     const key = topicKey(title);
-    if (key === 'webinar_registration_page') {
+    if (key === "webinar_registration_page") {
       questions.push({
-        title: 'Webinar Registration Page',
-        scope: 'Registration value and friction',
-        question: 'The research has surfaced webinar registration as a track, but the barrier still needs to be isolated. Are visitors hesitating because the value of registering is unclear, the form feels like too much effort, the offer is not compelling enough, or the page does not explain what they get after registering?'
+        title: "Webinar Registration Page",
+        scope: "Registration value and friction",
+        question:
+          "The research has surfaced webinar registration as a track, but the barrier still needs to be isolated. Are visitors hesitating because the value of registering is unclear, the form feels like too much effort, the offer is not compelling enough, or the page does not explain what they get after registering?",
       });
-    } else if (key === 'this_book_filter') {
+    } else if (key === "this_book_filter") {
       questions.push({
-        title: 'Reader Filter: “This Book”',
-        scope: 'Content filtering clarity',
-        question: 'The label “This Book” needs a plain-language check. Do readers understand that it narrows results inside the current content set, or does it sound like internal terminology that should become “Current book,” “This guide,” or another clearer scope label?'
+        title: "Reader Filter: “This Book”",
+        scope: "Content filtering clarity",
+        question:
+          "The label “This Book” needs a plain-language check. Do readers understand that it narrows results inside the current content set, or does it sound like internal terminology that should become “Current book,” “This guide,” or another clearer scope label?",
       });
-    } else if (key === 'virtualization_campaign') {
+    } else if (key === "virtualization_campaign") {
       questions.push({
-        title: 'Virtualization Campaign',
-        scope: 'Campaign-to-solution translation',
-        question: 'The solutions page is producing stronger engagement and sentiment than the campaign page, but the open question is how far to carry those patterns into the campaign. Which changes preserve campaign intent while improving below-the-fold engagement and reducing hero-offer friction?'
+        title: "Virtualization Campaign",
+        scope: "Campaign-to-solution translation",
+        question:
+          "The solutions page is producing stronger engagement and sentiment than the campaign page, but the open question is how far to carry those patterns into the campaign. Which changes preserve campaign intent while improving below-the-fold engagement and reducing hero-offer friction?",
       });
     }
   }
   if (!questions.length) {
-    questions.push({ title: 'Current research signals', scope: 'Decision readiness', question: 'Which current signals are strong enough to move from research activity into decision guidance?' });
+    questions.push({
+      title: "Current research signals",
+      scope: "Decision readiness",
+      question:
+        "Which current signals are strong enough to move from research activity into decision guidance?",
+    });
   }
   return questions.slice(0, 5);
 }
 
 function actionText(action) {
-  if (typeof action === 'string') return cleanText(action);
-  return cleanText(action?.action || action?.next_step || action?.nextStep || action?.recommendation || action?.body || action?.text || action?.title || action?.headline);
+  if (typeof action === "string") return cleanText(action);
+  return cleanText(
+    action?.action ||
+      action?.next_step ||
+      action?.nextStep ||
+      action?.recommendation ||
+      action?.body ||
+      action?.text ||
+      action?.title ||
+      action?.headline
+  );
 }
 
 function actionTopic(action) {
-  if (typeof action === 'string') return '';
-  return cleanText(action?.topic || action?.concept || action?.title || action?.scope || action?.category);
+  if (typeof action === "string") return "";
+  return cleanText(
+    action?.topic || action?.concept || action?.title || action?.scope || action?.category
+  );
 }
 
 function isNewsletterSelfTestAction(item) {
   const text = `${actionTopic(item)} ${actionText(item)}`.toLowerCase();
-  return /\b(research roundup|newsletter)\b/.test(text) && /\b(test|testing|validate|validation|research study|study)\b/.test(text);
+  return (
+    /\b(research roundup|newsletter)\b/.test(text) &&
+    /\b(test|testing|validate|validation|research study|study)\b/.test(text)
+  );
 }
 
 function isInternalOperationalAction(item) {
   const text = `${actionTopic(item)} ${actionText(item)}`.toLowerCase();
-  return /\b(deck-content|deck content|deck ingestion|deck-ingestion|evidence extraction|evidence-quality|evidence quality|artifact|build|pipeline|renderer|rendering|publish|publishing|freeze|frozen|email|emailed|stage-2|stage 2|source traceability|extraction)\b/.test(text);
+  return /\b(deck-content|deck content|deck ingestion|deck-ingestion|evidence extraction|evidence-quality|evidence quality|artifact|build|pipeline|renderer|rendering|publish|publishing|freeze|frozen|email|emailed|stage-2|stage 2|source traceability|extraction)\b/.test(
+    text
+  );
 }
 
-function topicAction(topic, action, scope = '') {
+function topicAction(topic, action, scope = "") {
   return {
-    topic: canonicalTopicTitle(topic || 'Recommended action'),
+    topic: canonicalTopicTitle(topic || "Recommended action"),
     scope: cleanText(scope),
     action: cleanText(action),
   };
@@ -579,13 +785,15 @@ function topicAction(topic, action, scope = '') {
 
 function actionFingerprint(text) {
   const value = cleanText(text).toLowerCase();
-  if (/events?/.test(value) && /decision|scorecard|v1|v2|page/.test(value)) return 'events_decision';
-  if (/homepage/.test(value) && /ai/.test(value)) return 'homepage_ai_decision';
-  if (/pathfinder/.test(value) && /cta|label/.test(value)) return 'pathfinder_cta_decision';
-  if (/webinar/.test(value) && /registration/.test(value)) return 'webinar_registration_decision';
-  if (/this book|book filter|reader filter/.test(value)) return 'this_book_filter_decision';
-  if (/virtualization/.test(value) && /campaign/.test(value)) return 'virtualization_campaign_decision';
-  return value.replace(/[^a-z0-9]+/g, ' ').trim();
+  if (/events?/.test(value) && /decision|scorecard|v1|v2|page/.test(value))
+    return "events_decision";
+  if (/homepage/.test(value) && /ai/.test(value)) return "homepage_ai_decision";
+  if (/pathfinder/.test(value) && /cta|label/.test(value)) return "pathfinder_cta_decision";
+  if (/webinar/.test(value) && /registration/.test(value)) return "webinar_registration_decision";
+  if (/this book|book filter|reader filter/.test(value)) return "this_book_filter_decision";
+  if (/virtualization/.test(value) && /campaign/.test(value))
+    return "virtualization_campaign_decision";
+  return value.replace(/[^a-z0-9]+/g, " ").trim();
 }
 
 function uniqueActions(actions) {
@@ -597,15 +805,22 @@ function uniqueActions(actions) {
     const key = actionFingerprint(`${actionTopic(item)} ${action}`);
     if (!key || seen.has(key)) continue;
     seen.add(key);
-    if (typeof item === 'string') out.push(topicAction('Recommended action', action));
-    else out.push({ ...item, action, topic: actionTopic(item) || 'Recommended action' });
+    if (typeof item === "string") out.push(topicAction("Recommended action", action));
+    else out.push({ ...item, action, topic: actionTopic(item) || "Recommended action" });
   }
   return out;
 }
 
 function buildRecommendedActions(groups, statusInfo, sourceActions) {
   const actions = [];
-  for (const title of ['Events Page', 'Homepage AI Messaging', 'Pathfinder CTA Labels', 'Webinar Registration Page', 'This Book Filter', 'Virtualization Campaign']) {
+  for (const title of [
+    "Events Page",
+    "Homepage AI Messaging",
+    "Pathfinder CTA Labels",
+    "Webinar Registration Page",
+    "This Book Filter",
+    "Virtualization Campaign",
+  ]) {
     const group = groups.find((g) => topicKey(g.title) === topicKey(title));
     if (group) actions.push(topicAction(title, actionForTopic(title)));
   }
@@ -613,8 +828,6 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
     .filter((item) => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
     .slice(0, 6);
 }
-
-
 
 // Dynamic issue synthesis guardrails. These definitions intentionally override the earlier
 // topic-specific Issue 02 helpers so each new issue is built from the current evidence window.
@@ -635,38 +848,57 @@ function uniquePublicValues(values) {
 function isContaminatedPublicText(text) {
   const value = cleanText(text);
   if (!value) return true;
-  if (/HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export|Data Comparison Framework/i.test(value)) return true;
+  if (
+    /HTTPError|Client Error|Forbidden for url|Traceback|Exception:|sheets\.googleapis\.com|drive_csv_export|Data Comparison Framework/i.test(
+      value
+    )
+  )
+    return true;
   if (/\b(?:[A-Za-z0-9_-]{18,})\b/.test(value)) return true;
   if (/^https?:\/\//i.test(value)) return true;
-  if (/^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(value)) return true;
-  if (/^\s*(?:view findings deck|view concepts in figma|events page findings:?|webinar landing page:?|on deck)\s*$/i.test(value)) return true;
+  if (
+    /^we have\s+(?:one|two|three|four|five|six|\d+)\s+new concept areas? to review for testing:?$/i.test(
+      value
+    )
+  )
+    return true;
+  if (
+    /^\s*(?:view findings deck|view concepts in figma|events page findings:?|webinar landing page:?|on deck)\s*$/i.test(
+      value
+    )
+  )
+    return true;
   return false;
 }
 
 function canonicalTopicTitle(title) {
   const original = cleanConceptTitle(title);
   const text = original.toLowerCase();
-  if (/\bedc\b|enterprise data cloud|blueprint/.test(text)) return 'EDC Blueprint Page';
-  if (/accelerate/.test(text) && /live|stream|keynote/.test(text)) return 'Accelerate Live Stream';
-  if (/contextual intelligence/.test(text)) return 'Contextual Intelligence PDP';
-  if (/platform diagram|platform story/.test(text)) return 'Platform Diagram Update';
-  if (/webinar registration/.test(text)) return 'Webinar Registration Page';
-  if (/webinar landing/.test(text)) return 'Webinar Landing Page';
-  if (/events page|\bevents\b|event page/.test(text)) return 'Events Page';
-  if (/homepage ai/.test(text)) return 'Homepage AI Messaging';
-  if (/pathfinder/.test(text) && /cta|label/.test(text)) return 'Pathfinder CTA Labels';
-  if (/book filter|this book/.test(text)) return 'Reader Filter: “This Book”';
-  if (/virtualization/.test(text)) return 'Virtualization Campaign';
-  return original || 'Research signal';
+  if (/\bedc\b|enterprise data cloud|blueprint/.test(text)) return "EDC Blueprint Page";
+  if (/accelerate/.test(text) && /live|stream|keynote/.test(text)) return "Accelerate Live Stream";
+  if (/contextual intelligence/.test(text)) return "Contextual Intelligence PDP";
+  if (/platform diagram|platform story/.test(text)) return "Platform Diagram Update";
+  if (/webinar registration/.test(text)) return "Webinar Registration Page";
+  if (/webinar landing/.test(text)) return "Webinar Landing Page";
+  if (/events page|\bevents\b|event page/.test(text)) return "Events Page";
+  if (/homepage ai/.test(text)) return "Homepage AI Messaging";
+  if (/pathfinder/.test(text) && /cta|label/.test(text)) return "Pathfinder CTA Labels";
+  if (/book filter|this book/.test(text)) return "Reader Filter: “This Book”";
+  if (/virtualization/.test(text)) return "Virtualization Campaign";
+  return original || "Research signal";
 }
 
 function publicEvidenceLines(group) {
-  return uniquePublicValues([
-    ...(group.raw_finding_excerpts || []),
-    ...(group.supporting_signals || []),
-    ...(group.key_synthesis_signals || []),
-    ...(group.source_refs || []).map(ref => ref && ref.text),
-  ].map(cleanText).filter(text => text && !isContaminatedPublicText(text)));
+  return uniquePublicValues(
+    [
+      ...(group.raw_finding_excerpts || []),
+      ...(group.supporting_signals || []),
+      ...(group.key_synthesis_signals || []),
+      ...(group.source_refs || []).map((ref) => ref && ref.text),
+    ]
+      .map(cleanText)
+      .filter((text) => text && !isContaminatedPublicText(text))
+  );
 }
 
 function evidenceLineScore(line, group) {
@@ -675,29 +907,45 @@ function evidenceLineScore(line, group) {
   let score = 0;
   if (/[.!?]/.test(text)) score += 2;
   if (/\b(users?|participants?|visitors?|readers?|customers?)\b/i.test(text)) score += 4;
-  if (/\b(understand|recognize|need|needs|unclear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|friction|differentiat|business value|watch live|assessment|workshop|platform story)\b/i.test(text)) score += 5;
+  if (
+    /\b(understand|recognize|need|needs|unclear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|friction|differentiat|business value|watch live|assessment|workshop|platform story)\b/i.test(
+      text
+    )
+  )
+    score += 5;
   if (/\b\d{1,3}%\b/.test(text)) score += 2;
   if (text.length >= 45 && text.length <= 260) score += 2;
   if (text.length > 340) score -= 3;
-  const title = cleanConceptTitle(group.title || '').toLowerCase();
-  const titleTokens = title.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(t => t.length >= 4);
-  if (titleTokens.some(t => text.toLowerCase().includes(t))) score += 2;
+  const title = cleanConceptTitle(group.title || "").toLowerCase();
+  const titleTokens = title
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 4);
+  if (titleTokens.some((t) => text.toLowerCase().includes(t))) score += 2;
   return score;
 }
 
 function bestEvidenceLine(group) {
-  const ranked = publicEvidenceLines(group).map(line => ({ line, score: evidenceLineScore(line, group) })).sort((a, b) => b.score - a.score || b.line.length - a.line.length);
-  return ranked[0]?.line || '';
+  const ranked = publicEvidenceLines(group)
+    .map((line) => ({ line, score: evidenceLineScore(line, group) }))
+    .sort((a, b) => b.score - a.score || b.line.length - a.line.length);
+  return ranked[0]?.line || "";
 }
 
 function topicSpecificFinding(title, evidenceLine) {
   const key = topicKey(title);
-  if (key === 'edc_blueprint_page') return 'Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.';
-  if (key === 'accelerate_live_stream') return 'The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.';
-  if (key === 'contextual_intelligence_pdp') return 'Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.';
-  if (key === 'platform_diagram_update') return 'The platform diagram work is really a positioning problem: the story needs to move perception from storage platform to intelligent, AI-ready data platform.';
-  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return 'The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.';
-  if (key === 'events_page') return 'Events-page work is pointing toward clearer hierarchy, simpler layouts, and more obvious paths into the full event set.';
+  if (key === "edc_blueprint_page")
+    return "Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.";
+  if (key === "accelerate_live_stream")
+    return "The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.";
+  if (key === "contextual_intelligence_pdp")
+    return "Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.";
+  if (key === "platform_diagram_update")
+    return "The platform diagram work is really a positioning problem: the story needs to move perception from storage platform to intelligent, AI-ready data platform.";
+  if (key === "webinar_landing_page" || key === "webinar_registration_page")
+    return "The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.";
+  if (key === "events_page")
+    return "Events-page work is pointing toward clearer hierarchy, simpler layouts, and more obvious paths into the full event set.";
   return evidenceLine && evidenceLine.length >= 40
     ? evidenceLine
     : `${title} is active in the current research window, but the most useful takeaway is the decision it needs to clarify next.`;
@@ -705,12 +953,18 @@ function topicSpecificFinding(title, evidenceLine) {
 
 function actionForTopic(title) {
   const key = topicKey(title);
-  if (key === 'edc_blueprint_page') return 'Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.';
-  if (key === 'accelerate_live_stream') return 'Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.';
-  if (key === 'contextual_intelligence_pdp') return 'Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.';
-  if (key === 'platform_diagram_update') return 'Simplify the platform diagram around one AI-ready data-platform story and test whether users describe the platform as intelligent and connected rather than only storage-oriented.';
-  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return 'Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.';
-  if (key === 'events_page') return 'Preserve the simplified hierarchy and clear “Explore All Events” path, then confirm the page still helps visitors find relevant events quickly.';
+  if (key === "edc_blueprint_page")
+    return "Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.";
+  if (key === "accelerate_live_stream")
+    return "Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.";
+  if (key === "contextual_intelligence_pdp")
+    return "Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.";
+  if (key === "platform_diagram_update")
+    return "Simplify the platform diagram around one AI-ready data-platform story and test whether users describe the platform as intelligent and connected rather than only storage-oriented.";
+  if (key === "webinar_landing_page" || key === "webinar_registration_page")
+    return "Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.";
+  if (key === "events_page")
+    return "Preserve the simplified hierarchy and clear “Explore All Events” path, then confirm the page still helps visitors find relevant events quickly.";
   return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
 }
 
@@ -718,15 +972,16 @@ function findingFromGroup(group) {
   const title = canonicalTopicTitle(group.title);
   const evidenceLine = bestEvidenceLine(group);
   const source = groupSource(group);
-  const confidence = topicKey(title) === 'accelerate_live_stream'
-    ? 'high'
-    : confidenceForGroup(group, 'track');
-  const decisionStatus = confidence === 'high' ? 'ready to decide' : 'iterate';
+  const confidence =
+    topicKey(title) === "accelerate_live_stream" ? "high" : confidenceForGroup(group, "track");
+  const decisionStatus = confidence === "high" ? "ready to decide" : "iterate";
 
   return {
     title,
     finding_statement: topicSpecificFinding(title, evidenceLine),
-    proof_point: evidenceLine || `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
+    proof_point:
+      evidenceLine ||
+      `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
     next_step: actionForTopic(title),
     confidence,
     decision_status: decisionStatus,
@@ -736,53 +991,69 @@ function findingFromGroup(group) {
 }
 
 function groupRankScore(group) {
-  const last = group.last_seen_week || (group.weeks_seen || []).slice(-1)[0] || '';
-  let score = Number(String(last).replace(/-/g, '')) || 0;
+  const last = group.last_seen_week || (group.weeks_seen || []).slice(-1)[0] || "";
+  let score = Number(String(last).replace(/-/g, "")) || 0;
   score += Math.min(50, Number(group.occurrence_count || 0) * 5);
   score += publicEvidenceLines(group).length * 10;
-  if (/edc|blueprint|accelerate|contextual|platform diagram|webinar|events/i.test(group.title || '')) score += 25;
+  if (
+    /edc|blueprint|accelerate|contextual|platform diagram|webinar|events/i.test(group.title || "")
+  )
+    score += 25;
   return score;
 }
 
 function eligibleGroups(groups) {
-  return uniqueByTitle((groups || [])
-    .filter(group => group && group.title && !isContaminatedPublicText(group.title))
-    .map(group => ({ ...group, title: canonicalTopicTitle(group.title) })))
-    .sort((a, b) => groupRankScore(b) - groupRankScore(a));
+  return uniqueByTitle(
+    (groups || [])
+      .filter((group) => group && group.title && !isContaminatedPublicText(group.title))
+      .map((group) => ({ ...group, title: canonicalTopicTitle(group.title) }))
+  ).sort((a, b) => groupRankScore(b) - groupRankScore(a));
 }
 
 function buildNarrativeFindings(groups, statusInfo) {
-  const preferredOrder = ['EDC Blueprint Page', 'Accelerate Live Stream', 'Contextual Intelligence PDP', 'Platform Diagram Update', 'Webinar Landing Page', 'Events Page'];
+  const preferredOrder = [
+    "EDC Blueprint Page",
+    "Accelerate Live Stream",
+    "Contextual Intelligence PDP",
+    "Platform Diagram Update",
+    "Webinar Landing Page",
+    "Events Page",
+  ];
   const candidates = eligibleGroups(groups);
   const picked = [];
   for (const title of preferredOrder) {
-    const group = candidates.find(g => topicKey(g.title) === topicKey(title));
+    const group = candidates.find((g) => topicKey(g.title) === topicKey(title));
     if (group && picked.length < 3) picked.push(findingFromGroup(group));
   }
   for (const group of candidates) {
     if (picked.length >= 3) break;
-    if (!picked.some(item => topicKey(item.title) === topicKey(group.title))) picked.push(findingFromGroup(group));
+    if (!picked.some((item) => topicKey(item.title) === topicKey(group.title)))
+      picked.push(findingFromGroup(group));
   }
   return picked.slice(0, 3);
 }
 
 function buildComparisons(groups, sourceComparisons) {
   const candidates = eligibleGroups(groups)
-    .filter(group => {
-      const text = `${group.title} ${(group.comparison_cues || []).join(' ')} ${publicEvidenceLines(group).join(' ')}`.toLowerCase();
-      return /compare|comparison|variant|variation|v\d|baseline|outperformed|higher contrast|simpler layout|platform diagram|events/.test(text);
+    .filter((group) => {
+      const text =
+        `${group.title} ${(group.comparison_cues || []).join(" ")} ${publicEvidenceLines(group).join(" ")}`.toLowerCase();
+      return /compare|comparison|variant|variation|v\d|baseline|outperformed|higher contrast|simpler layout|platform diagram|events/.test(
+        text
+      );
     })
     .slice(0, 2);
-  return candidates.map(group => {
+  return candidates.map((group) => {
     const source = groupSource(group);
     const title = canonicalTopicTitle(group.title);
     return {
       title,
       finding_statement: `${title} is best treated as a narrowed comparison problem: the next decision should protect the clearest user behavior rather than reopen broad creative exploration.`,
-      decision_criteria: 'Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task.',
+      decision_criteria:
+        "Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task.",
       next_step: actionForTopic(title),
-      confidence: confidenceForGroup(group, 'comparison'),
-      decision_status: 'compare',
+      confidence: confidenceForGroup(group, "comparison"),
+      decision_status: "compare",
       source_label: source.label,
       source_href: source.href,
     };
@@ -792,25 +1063,66 @@ function buildComparisons(groups, sourceComparisons) {
 function unresolvedQuestionForGroup(group) {
   const title = canonicalTopicTitle(group.title);
   const key = topicKey(title);
-  if (key === 'edc_blueprint_page') return { title, scope: 'Assessment value and workshop clarity', question: 'Do visitors understand what they get from the assessment and why the workshop is worth engaging with before they have enough context?' };
-  if (key === 'accelerate_live_stream') return { title, scope: 'Live-state orientation', question: 'Can visitors immediately tell the event is live, what they should watch now, and what action matters most?' };
-  if (key === 'contextual_intelligence_pdp') return { title, scope: 'Differentiation and business value', question: 'Can users explain what contextual intelligence does differently and why that difference matters operationally?' };
-  if (key === 'platform_diagram_update') return { title, scope: 'Platform story and perception shift', question: 'Does the simplified diagram shift perception toward an intelligent AI-ready data platform, or does it still read like a storage architecture diagram?' };
-  if (key === 'webinar_landing_page' || key === 'webinar_registration_page') return { title, scope: 'Value clarity and registration effort', question: 'Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?' };
-  return { title, scope: 'Decision readiness', question: `What user behavior does ${title.toLowerCase()} need to clarify before it can become stronger decision guidance?` };
+  if (key === "edc_blueprint_page")
+    return {
+      title,
+      scope: "Assessment value and workshop clarity",
+      question:
+        "Do visitors understand what they get from the assessment and why the workshop is worth engaging with before they have enough context?",
+    };
+  if (key === "accelerate_live_stream")
+    return {
+      title,
+      scope: "Live-state orientation",
+      question:
+        "Can visitors immediately tell the event is live, what they should watch now, and what action matters most?",
+    };
+  if (key === "contextual_intelligence_pdp")
+    return {
+      title,
+      scope: "Differentiation and business value",
+      question:
+        "Can users explain what contextual intelligence does differently and why that difference matters operationally?",
+    };
+  if (key === "platform_diagram_update")
+    return {
+      title,
+      scope: "Platform story and perception shift",
+      question:
+        "Does the simplified diagram shift perception toward an intelligent AI-ready data platform, or does it still read like a storage architecture diagram?",
+    };
+  if (key === "webinar_landing_page" || key === "webinar_registration_page")
+    return {
+      title,
+      scope: "Value clarity and registration effort",
+      question:
+        "Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?",
+    };
+  return {
+    title,
+    scope: "Decision readiness",
+    question: `What user behavior does ${title.toLowerCase()} need to clarify before it can become stronger decision guidance?`,
+  };
 }
 
 function buildUnresolvedQuestions(groups, statusInfo) {
   const candidates = eligibleGroups(groups);
   const questions = [];
-  const preferred = ['Platform Diagram Update', 'Webinar Landing Page', 'EDC Blueprint Page', 'Contextual Intelligence PDP', 'Accelerate Live Stream'];
+  const preferred = [
+    "Platform Diagram Update",
+    "Webinar Landing Page",
+    "EDC Blueprint Page",
+    "Contextual Intelligence PDP",
+    "Accelerate Live Stream",
+  ];
   for (const title of preferred) {
-    const group = candidates.find(g => topicKey(g.title) === topicKey(title));
+    const group = candidates.find((g) => topicKey(g.title) === topicKey(title));
     if (group && questions.length < 3) questions.push(unresolvedQuestionForGroup(group));
   }
   for (const group of candidates) {
     if (questions.length >= 3) break;
-    if (!questions.some(q => topicKey(q.title) === topicKey(group.title))) questions.push(unresolvedQuestionForGroup(group));
+    if (!questions.some((q) => topicKey(q.title) === topicKey(group.title)))
+      questions.push(unresolvedQuestionForGroup(group));
   }
   return questions.slice(0, 3);
 }
@@ -821,20 +1133,23 @@ function buildRecommendedActions(groups, statusInfo, sourceActions) {
     actions.push(topicAction(group.title, actionForTopic(group.title)));
   }
   return uniqueActions(actions)
-    .filter(item => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
+    .filter((item) => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
     .slice(0, 5);
 }
 
 function buildExecutiveSummaryFromBrief(findings, comparisons, unresolved) {
-  const findingTitles = (findings || []).map(item => item.title).slice(0, 3);
-  const unresolvedTitles = (unresolved || []).map(item => item.title).filter(title => !findingTitles.includes(title)).slice(0, 2);
+  const findingTitles = (findings || []).map((item) => item.title).slice(0, 3);
+  const unresolvedTitles = (unresolved || [])
+    .map((item) => item.title)
+    .filter((title) => !findingTitles.includes(title))
+    .slice(0, 2);
   if (findingTitles.length) {
-    return `This month’s research is centered on ${findingTitles.join(', ')}. The strongest value is decision-shaping rather than broad launch approval: each track points to a clearer question about what users understand, trust, or know how to do next.${unresolvedTitles.length ? ` The next cycle should resolve the remaining uncertainty around ${unresolvedTitles.join(' and ')}.` : ''}`;
+    return `This month’s research is centered on ${findingTitles.join(", ")}. The strongest value is decision-shaping rather than broad launch approval: each track points to a clearer question about what users understand, trust, or know how to do next.${unresolvedTitles.length ? ` The next cycle should resolve the remaining uncertainty around ${unresolvedTitles.join(" and ")}.` : ""}`;
   }
-  return 'The current 30-day window is more useful for prioritizing what to test next than for making a broad rollout decision.';
+  return "The current 30-day window is more useful for prioritizing what to test next than for making a broad rollout decision.";
 }
 function buildStage2Brief() {
-  const sourcePath = path.join(publishRoot, 'newsletter', 'default.json');
+  const sourcePath = path.join(publishRoot, "newsletter", "default.json");
   const source = readJson(sourcePath, {});
   const statusInfo = readStatusPayload();
   const sections = source.sections || {};
@@ -844,7 +1159,11 @@ function buildStage2Brief() {
 
   const rawFindings = asArray(sections.top_findings).length
     ? asArray(sections.top_findings)
-    : asArray(source.surfaced_findings || sections.validated_findings || source.sections?.validated_findings);
+    : asArray(
+        source.surfaced_findings ||
+          sections.validated_findings ||
+          source.sections?.validated_findings
+      );
 
   const rawComparisons = [
     ...asArray(sections.comparison_tests),
@@ -855,7 +1174,11 @@ function buildStage2Brief() {
 
   const sourceFindings = uniqueByTitle(rawFindings)
     .map(toFinding)
-    .filter((item) => !looksLabelOnly(item.finding_statement, item.title) && !looksLabelOnly(item.proof_point, item.title));
+    .filter(
+      (item) =>
+        !looksLabelOnly(item.finding_statement, item.title) &&
+        !looksLabelOnly(item.proof_point, item.title)
+    );
 
   const useSourceFindings = false;
   const surfacedFindings = useSourceFindings
@@ -868,29 +1191,57 @@ function buildStage2Brief() {
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
   const deckCount = deckContentCount(statusInfo);
 
-  const executiveSummary = buildExecutiveSummaryFromBrief(surfacedFindings, comparisonTests, unresolvedQuestions);
+  const executiveSummary = buildExecutiveSummaryFromBrief(
+    surfacedFindings,
+    comparisonTests,
+    unresolvedQuestions
+  );
 
-  const note = 'The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.';
+  const note =
+    "The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.";
 
   return {
-    title: 'Everpure monthly research roundup (30d)',
+    title: "Everpure monthly research roundup (30d)",
     generated_at: generatedAt,
-    window: '30d',
-    audience: 'exec',
-    tone: 'strategic',
+    window: "30d",
+    audience: "exec",
+    tone: "strategic",
     issue: { number: issueNumber, label: issueLabel, date: issueDate },
-    summary: { ...counts, evidence_pack_count: evidenceGroups.length, deck_content_count: deckCount },
+    summary: {
+      ...counts,
+      evidence_pack_count: evidenceGroups.length,
+      deck_content_count: deckCount,
+    },
     executive_summary: executiveSummary,
-    surfaced_findings: surfacedFindings.length ? surfacedFindings : [
-      toFinding({ title: 'Current research signal', finding_statement: 'The current research window contains active signals, but each should be tied to a user behavior before it becomes decision guidance.', next_step: 'Use the next research review to decide which signals are strong enough to guide a design, content, or product decision.' })
-    ],
+    surfaced_findings: surfacedFindings.length
+      ? surfacedFindings
+      : [
+          toFinding({
+            title: "Current research signal",
+            finding_statement:
+              "The current research window contains active signals, but each should be tied to a user behavior before it becomes decision guidance.",
+            next_step:
+              "Use the next research review to decide which signals are strong enough to guide a design, content, or product decision.",
+          }),
+        ],
     comparison_tests: comparisonTests,
     unresolved_questions: unresolvedQuestions,
-    next_actions: nextActions.length ? nextActions : [
-      topicAction('Current research signals', 'Review the refreshed evidence and promote only the strongest decision-relevant findings.'),
-      topicAction('Comparison tracks', 'Use one focused comparison round for narrowed alternatives before choosing a direction.'),
-      topicAction('Unresolved workstreams', 'Keep unresolved workstreams out of the findings section until the evidence is decision-grade.')
-    ],
+    next_actions: nextActions.length
+      ? nextActions
+      : [
+          topicAction(
+            "Current research signals",
+            "Review the refreshed evidence and promote only the strongest decision-relevant findings."
+          ),
+          topicAction(
+            "Comparison tracks",
+            "Use one focused comparison round for narrowed alternatives before choosing a direction."
+          ),
+          topicAction(
+            "Unresolved workstreams",
+            "Keep unresolved workstreams out of the findings section until the evidence is decision-grade."
+          ),
+        ],
     note,
   };
 }
@@ -898,93 +1249,98 @@ function buildStage2Brief() {
 const brief = buildStage2Brief();
 
 function labelConfidence(level) {
-  switch (String(level || '').toLowerCase()) {
-    case 'high': return 'High confidence';
-    case 'low': return 'Low confidence';
-    default: return 'Medium confidence';
+  switch (String(level || "").toLowerCase()) {
+    case "high":
+      return "High confidence";
+    case "low":
+      return "Low confidence";
+    default:
+      return "Medium confidence";
   }
 }
 
 function renderMarkdown(data) {
   const out = [];
   out.push(`# ${data.title}`);
-  out.push('');
+  out.push("");
   out.push(`Generated ${data.generated_at} · ${data.window} · ${data.audience} · ${data.tone}`);
-  out.push('');
-  out.push('## Executive summary');
-  out.push('');
+  out.push("");
+  out.push("## Executive summary");
+  out.push("");
   out.push(data.executive_summary);
-  out.push('');
-  out.push('## Research Findings');
-  out.push('');
+  out.push("");
+  out.push("## Research Findings");
+  out.push("");
   for (const item of data.surfaced_findings) {
     out.push(`### ${item.title}`);
-    out.push('');
+    out.push("");
     out.push(item.finding_statement);
-    out.push('');
-    out.push('#### Evidence');
-    out.push('');
+    out.push("");
+    out.push("#### Evidence");
+    out.push("");
     out.push(item.proof_point);
-    out.push('');
+    out.push("");
     if (item.source_href) {
-      out.push(`[${item.source_label || 'Source deck'}](${item.source_href})`);
-      out.push('');
+      out.push(`[${item.source_label || "Source deck"}](${item.source_href})`);
+      out.push("");
     }
-    out.push('#### Direction');
-    out.push('');
+    out.push("#### Direction");
+    out.push("");
     out.push(item.next_step);
-    out.push('');
-    out.push('#### Confidence');
-    out.push('');
+    out.push("");
+    out.push("#### Confidence");
+    out.push("");
     out.push(labelConfidence(item.confidence));
-    out.push('');
+    out.push("");
   }
-  out.push('## Meaningful Comparisons');
-  out.push('');
+  out.push("## Meaningful Comparisons");
+  out.push("");
   for (const item of data.comparison_tests) {
     out.push(`### ${item.title}`);
-    out.push('');
+    out.push("");
     out.push(item.finding_statement);
-    out.push('');
-    out.push('#### Criteria');
-    out.push('');
+    out.push("");
+    out.push("#### Criteria");
+    out.push("");
     out.push(item.decision_criteria);
-    out.push('');
+    out.push("");
     if (item.source_href) {
-      out.push(`[${item.source_label || 'Source deck'}](${item.source_href})`);
-      out.push('');
+      out.push(`[${item.source_label || "Source deck"}](${item.source_href})`);
+      out.push("");
     }
-    out.push('#### Direction');
-    out.push('');
+    out.push("#### Direction");
+    out.push("");
     out.push(item.next_step);
-    out.push('');
-    out.push('#### Confidence');
-    out.push('');
+    out.push("");
+    out.push("#### Confidence");
+    out.push("");
     out.push(labelConfidence(item.confidence));
-    out.push('');
+    out.push("");
   }
-  out.push('## What Is Still Unresolved');
-  out.push('');
+  out.push("## What Is Still Unresolved");
+  out.push("");
   for (const item of data.unresolved_questions) {
     const head = item.scope ? `**${item.title}** — ${item.scope}` : `**${item.title}**`;
     out.push(`- ${head}: ${item.question}`);
   }
-  out.push('');
-  out.push('## Recommended Actions');
-  out.push('');
+  out.push("");
+  out.push("## Recommended Actions");
+  out.push("");
   for (const item of data.next_actions) {
     const topic = actionTopic(item);
     const action = actionText(item);
     out.push(topic ? `- **${topic}:** ${action}` : `- ${action}`);
   }
-  out.push('');
-  out.push('## Note');
-  out.push('');
+  out.push("");
+  out.push("## Note");
+  out.push("");
   out.push(data.note);
-  out.push('');
-  out.push('Feedback: Have feedback on how to improve the newsletter? Share it in [#research-and-discovery](https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ).');
-  out.push('');
-  return out.join('\n');
+  out.push("");
+  out.push(
+    "Feedback: Have feedback on how to improve the newsletter? Share it in [#research-and-discovery](https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ)."
+  );
+  out.push("");
+  return out.join("\n");
 }
 
 function sectionLabel(title) {
@@ -992,26 +1348,41 @@ function sectionLabel(title) {
 }
 
 function confidenceBadge(level, dark = false) {
-  const key = String(level || '').toLowerCase();
+  const key = String(level || "").toLowerCase();
   const map = {
-    high: { bg: dark ? 'rgba(207,232,212,0.15)' : 'rgba(90,99,89,0.12)', fg: dark ? 'var(--mint-400)' : 'var(--secondary)', dot: dark ? 'var(--mint-400)' : 'var(--secondary)', label: 'High confidence' },
-    medium: { bg: dark ? 'rgba(213,93,29,0.14)' : 'rgba(213,93,29,0.12)', fg: 'var(--primary)', dot: 'var(--primary)', label: 'Medium confidence' },
-    low: { bg: dark ? 'rgba(255,245,227,0.12)' : 'rgba(143,165,150,0.18)', fg: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted-fg)', dot: dark ? 'rgba(255,245,227,0.72)' : 'var(--muted)', label: 'Low confidence' },
+    high: {
+      bg: dark ? "rgba(207,232,212,0.15)" : "rgba(90,99,89,0.12)",
+      fg: dark ? "var(--mint-400)" : "var(--secondary)",
+      dot: dark ? "var(--mint-400)" : "var(--secondary)",
+      label: "High confidence",
+    },
+    medium: {
+      bg: dark ? "rgba(213,93,29,0.14)" : "rgba(213,93,29,0.12)",
+      fg: "var(--primary)",
+      dot: "var(--primary)",
+      label: "Medium confidence",
+    },
+    low: {
+      bg: dark ? "rgba(255,245,227,0.12)" : "rgba(143,165,150,0.18)",
+      fg: dark ? "rgba(255,245,227,0.72)" : "var(--muted-fg)",
+      dot: dark ? "rgba(255,245,227,0.72)" : "var(--muted)",
+      label: "Low confidence",
+    },
   };
   const c = map[key] || map.medium;
   return `<div class="confidence" style="background:${c.bg};color:${c.fg};">${escapeHtml(c.label)}</div>`;
 }
 
 function sourceLinkInline(label, href, dark = false) {
-  if (!href) return '';
-  return `<a class="source-link-inline ${dark ? 'source-link-inline--dark' : ''}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || 'Source deck')} ↗</a>`;
+  if (!href) return "";
+  return `<a class="source-link-inline ${dark ? "source-link-inline--dark" : ""}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || "Source deck")} ↗</a>`;
 }
 
 function renderFinding(item, idx, isLast) {
   return `
-  <div class="dispatch-finding ${isLast ? 'is-last' : ''}">
+  <div class="dispatch-finding ${isLast ? "is-last" : ""}">
     <div class="finding-row">
-      <span class="finding-index">${String(idx + 1).padStart(2, '0')}</span>
+      <span class="finding-index">${String(idx + 1).padStart(2, "0")}</span>
       <div class="finding-title">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence)}
     </div>
@@ -1031,9 +1402,9 @@ function renderFinding(item, idx, isLast) {
 
 function renderComparison(item, idx, isLast) {
   return `
-  <div class="dispatch-finding dispatch-finding--dark ${isLast ? 'is-last' : ''}">
+  <div class="dispatch-finding dispatch-finding--dark ${isLast ? "is-last" : ""}">
     <div class="finding-row">
-      <span class="finding-index finding-index--dark">${String(idx + 1).padStart(2, '0')}</span>
+      <span class="finding-index finding-index--dark">${String(idx + 1).padStart(2, "0")}</span>
       <div class="finding-title finding-title--dark">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence, true)}
     </div>
@@ -1053,15 +1424,17 @@ function renderComparison(item, idx, isLast) {
 
 function renderHtml(data) {
   const html = [];
-  html.push('<!doctype html>');
+  html.push("<!doctype html>");
   html.push('<html lang="en">');
-  html.push('<head>');
+  html.push("<head>");
   html.push('<meta charset="utf-8" />');
   html.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
   html.push(`<title>${escapeHtml(data.title)}</title>`);
   html.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
   html.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
-  html.push('<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">');
+  html.push(
+    '<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">'
+  );
   html.push(`
 <style>
 :root {
@@ -1214,101 +1587,126 @@ a { color: inherit; }
       }
     }
   </style>`);
-  html.push('</head>');
-  html.push('<body>');
+  html.push("</head>");
+  html.push("<body>");
   html.push('<header class="masthead">');
   html.push('<div class="wrapper">');
   html.push('<a class="back-link" href="../">Back to homepage</a>');
   html.push('<div class="meta-bar">');
   html.push('<span class="meta-left">Everpure User Research Program</span>');
-  html.push(`<div class="meta-right"><span class="meta-issue">${escapeHtml(data.issue?.label || issueLabel)}</span><span style="opacity:.2">·</span><span class="meta-date">${escapeHtml(data.issue?.date || issueDate)}</span></div>`);
-  html.push('</div>');
+  html.push(
+    `<div class="meta-right"><span class="meta-issue">${escapeHtml(data.issue?.label || issueLabel)}</span><span style="opacity:.2">·</span><span class="meta-date">${escapeHtml(data.issue?.date || issueDate)}</span></div>`
+  );
+  html.push("</div>");
   html.push('<div class="masthead-grid">');
   html.push('<div class="title-pane">');
   html.push(`<div class="ghost">${escapeHtml(data.issue?.number || issueNumber)}</div>`);
   html.push('<div class="monthly-tag">Monthly</div>');
   html.push('<h1 class="h1">Research<br/>Roundup</h1>');
   html.push('<div class="cycle-note">30-day research cycle</div>');
-  html.push('</div>');
+  html.push("</div>");
   html.push('<div class="stats-grid">');
   const stats = [
-    [String(data.surfaced_findings.length), 'Research\nFindings'],
-    [String(data.comparison_tests.length), 'Comparison\nTests'],
-    [String(data.unresolved_questions.length), 'Open\nQuestions'],
-    [String(data.next_actions.length), 'Recommended\nActions'],
+    [String(data.surfaced_findings.length), "Research\nFindings"],
+    [String(data.comparison_tests.length), "Comparison\nTests"],
+    [String(data.unresolved_questions.length), "Open\nQuestions"],
+    [String(data.next_actions.length), "Recommended\nActions"],
   ];
   for (const [value, label] of stats) {
-    html.push(`<div class="stat"><span class="stat-value">${escapeHtml(value)}</span><span class="stat-label">${escapeHtml(label)}</span></div>`);
+    html.push(
+      `<div class="stat"><span class="stat-value">${escapeHtml(value)}</span><span class="stat-label">${escapeHtml(label)}</span></div>`
+    );
   }
-  html.push('</div></div></div></header>');
+  html.push("</div></div></div></header>");
 
   html.push('<section class="brief-band"><div class="wrapper brief-grid">');
-  html.push('<div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Roundup</div></div>');
+  html.push(
+    '<div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Roundup</div></div>'
+  );
   html.push(`<div class="brief-copy">${escapeHtml(data.executive_summary)}</div>`);
-  html.push('</div></section>');
+  html.push("</div></section>");
 
   html.push('<section class="section"><div class="wrapper">');
-  html.push(sectionLabel('Research Findings'));
+  html.push(sectionLabel("Research Findings"));
   html.push('<div class="findings">');
-  data.surfaced_findings.forEach((item, idx) => html.push(renderFinding(item, idx, idx === data.surfaced_findings.length - 1)));
-  html.push('</div></div></section>');
+  data.surfaced_findings.forEach((item, idx) =>
+    html.push(renderFinding(item, idx, idx === data.surfaced_findings.length - 1))
+  );
+  html.push("</div></div></section>");
 
   html.push('<section class="section section-dark"><div class="wrapper">');
-  html.push(sectionLabel('Meaningful Comparisons'));
+  html.push(sectionLabel("Meaningful Comparisons"));
   html.push('<div class="findings">');
-  data.comparison_tests.forEach((item, idx) => html.push(renderComparison(item, idx, idx === data.comparison_tests.length - 1)));
-  html.push('</div></div></section>');
+  data.comparison_tests.forEach((item, idx) =>
+    html.push(renderComparison(item, idx, idx === data.comparison_tests.length - 1))
+  );
+  html.push("</div></div></section>");
 
   html.push('<section class="section section-mint"><div class="wrapper">');
-  html.push(sectionLabel('What Is Still Unresolved'));
+  html.push(sectionLabel("What Is Still Unresolved"));
   const unresolvedCount = data.unresolved_questions.length;
-  const unresolvedLayoutClass = unresolvedCount > 1
-    ? ` questions--two-up${unresolvedCount % 2 === 1 ? ' questions--odd' : ''}`
-    : '';
+  const unresolvedLayoutClass =
+    unresolvedCount > 1
+      ? ` questions--two-up${unresolvedCount % 2 === 1 ? " questions--odd" : ""}`
+      : "";
   html.push(`<div class="questions${unresolvedLayoutClass}">`);
   data.unresolved_questions.forEach((item, idx) => {
-    html.push(`<div class="question"><span class="question-num">${String(idx + 1).padStart(2, '0')}</span><div><div class="question-head"><div class="question-title">${escapeHtml(item.title)}</div>${item.scope ? `<div class="question-scope">${escapeHtml(item.scope)}</div>` : ''}</div><p>${escapeHtml(item.question)}</p></div></div>`);
+    html.push(
+      `<div class="question"><span class="question-num">${String(idx + 1).padStart(2, "0")}</span><div><div class="question-head"><div class="question-title">${escapeHtml(item.title)}</div>${item.scope ? `<div class="question-scope">${escapeHtml(item.scope)}</div>` : ""}</div><p>${escapeHtml(item.question)}</p></div></div>`
+    );
   });
-  html.push('</div></div></section>');
+  html.push("</div></div></section>");
 
   html.push('<section class="section"><div class="wrapper">');
-  html.push(sectionLabel('Recommended Actions'));
+  html.push(sectionLabel("Recommended Actions"));
   html.push('<div class="actions">');
   data.next_actions.forEach((item, idx) => {
     const topic = actionTopic(item);
     const action = actionText(item);
-    html.push(`<div class="action-row"><span class="action-index">${String(idx + 1).padStart(2, '0')}</span><div class="action-content">${topic ? `<span class="action-topic">${escapeHtml(topic)}</span>` : ''}<p>${escapeHtml(action)}</p></div></div>`);
+    html.push(
+      `<div class="action-row"><span class="action-index">${String(idx + 1).padStart(2, "0")}</span><div class="action-content">${topic ? `<span class="action-topic">${escapeHtml(topic)}</span>` : ""}<p>${escapeHtml(action)}</p></div></div>`
+    );
   });
-  html.push('</div>');
+  html.push("</div>");
   html.push(`<p class="note">${escapeHtml(data.note)}</p>`);
-  html.push('<p class="feedback-note">Have feedback on how to improve the newsletter? Share it in <a href="https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ">#research-and-discovery</a>.</p>');
-  html.push('</div></section>');
+  html.push(
+    '<p class="feedback-note">Have feedback on how to improve the newsletter? Share it in <a href="https://purestorage.enterprise.slack.com/archives/C03NSK4PCHJ">#research-and-discovery</a>.</p>'
+  );
+  html.push("</div></section>");
 
   html.push('<footer class="footer"><div class="wrapper footer-inner">');
-  html.push('<span>Everpure User Research Program</span>');
-  html.push(`<span>Monthly Research Roundup · ${escapeHtml(data.issue?.label || issueLabel)} · ${escapeHtml(data.issue?.date || issueDate)}</span>`);
-  html.push('</div></footer>');
-  html.push('</body></html>');
-  return html.join('');
+  html.push("<span>Everpure User Research Program</span>");
+  html.push(
+    `<span>Monthly Research Roundup · ${escapeHtml(data.issue?.label || issueLabel)} · ${escapeHtml(data.issue?.date || issueDate)}</span>`
+  );
+  html.push("</div></footer>");
+  html.push("</body></html>");
+  return html.join("");
 }
 
 const markdown = renderMarkdown(brief);
 const html = renderHtml(brief);
-const json = JSON.stringify(brief, null, 2) + '\n';
+const json = JSON.stringify(brief, null, 2) + "\n";
 
-writeText(path.join(publishRoot, 'newsletter', 'default.md'), markdown);
-writeText(path.join(publishRoot, 'newsletter', 'default.html'), html);
-writeText(path.join(publishRoot, 'newsletter', 'default.json'), json);
-writeText(path.join(publishRoot, 'api', 'newsletter-default.md'), markdown);
-writeText(path.join(publishRoot, 'api', 'newsletter-default.json'), json);
+writeText(path.join(publishRoot, "newsletter", "default.md"), markdown);
+writeText(path.join(publishRoot, "newsletter", "default.html"), html);
+writeText(path.join(publishRoot, "newsletter", "default.json"), json);
+writeText(path.join(publishRoot, "api", "newsletter-default.md"), markdown);
+writeText(path.join(publishRoot, "api", "newsletter-default.json"), json);
 
-console.log(JSON.stringify({
-  generated_at: generatedAt,
-  outputs: [
-    path.join(publishRoot, 'newsletter', 'default.md'),
-    path.join(publishRoot, 'newsletter', 'default.html'),
-    path.join(publishRoot, 'newsletter', 'default.json'),
-    path.join(publishRoot, 'api', 'newsletter-default.md'),
-    path.join(publishRoot, 'api', 'newsletter-default.json')
-  ]
-}, null, 2));
+console.log(
+  JSON.stringify(
+    {
+      generated_at: generatedAt,
+      outputs: [
+        path.join(publishRoot, "newsletter", "default.md"),
+        path.join(publishRoot, "newsletter", "default.html"),
+        path.join(publishRoot, "newsletter", "default.json"),
+        path.join(publishRoot, "api", "newsletter-default.md"),
+        path.join(publishRoot, "api", "newsletter-default.json"),
+      ],
+    },
+    null,
+    2
+  )
+);

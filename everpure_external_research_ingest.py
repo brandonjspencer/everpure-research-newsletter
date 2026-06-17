@@ -21,7 +21,7 @@ import re
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, quote, unquote, urlparse
 
 import requests
@@ -30,7 +30,9 @@ from everpure_deck_ingest import load_json, write_json
 from everpure_google_fetch import resolve_access_token
 
 SHEETS_META_URL = "https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}"
-SHEETS_VALUES_URL = "https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}/values/{range_name}"
+SHEETS_VALUES_URL = (
+    "https://sheets.googleapis.com/v4/spreadsheets/{spreadsheet_id}/values/{range_name}"
+)
 DRIVE_EXPORT_URL = "https://www.googleapis.com/drive/v3/files/{file_id}/export"
 
 GOOGLE_SHEET_ID_RE = re.compile(r"/spreadsheets/d/([a-zA-Z0-9_-]+)")
@@ -152,7 +154,7 @@ def extract_gid(url: str) -> Optional[str]:
 
 def extract_shape_text(element: Dict[str, Any]) -> str:
     parts: List[str] = []
-    text_elements = (((element.get("shape") or {}).get("text") or {}).get("textElements") or [])
+    text_elements = ((element.get("shape") or {}).get("text") or {}).get("textElements") or []
     for te in text_elements:
         run = te.get("textRun") or {}
         content = run.get("content")
@@ -172,7 +174,7 @@ def slide_text_excerpt(slide: Dict[str, Any], limit: int = 260) -> str:
 
 def collect_link_runs_from_element(element: Dict[str, Any]) -> List[Tuple[str, str]]:
     out: List[Tuple[str, str]] = []
-    text_elements = (((element.get("shape") or {}).get("text") or {}).get("textElements") or [])
+    text_elements = ((element.get("shape") or {}).get("text") or {}).get("textElements") or []
     for te in text_elements:
         run = te.get("textRun") or {}
         content = normalize_space(run.get("content") or "")
@@ -199,7 +201,9 @@ def walk_for_link_urls(obj: Any, out: List[str]) -> None:
         link = obj.get("link")
         if isinstance(link, dict) and isinstance(link.get("url"), str):
             out.append(link["url"])
-        if isinstance(obj.get("url"), str) and any(k in obj for k in ("link", "title", "description")):
+        if isinstance(obj.get("url"), str) and any(
+            k in obj for k in ("link", "title", "description")
+        ):
             out.append(obj["url"])
         for value in obj.values():
             walk_for_link_urls(value, out)
@@ -230,7 +234,9 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
         return [{"file_id": meta_path.stem, "error": f"metadata_load_failed:{exc}"}]
 
     deck_id = meta_path.stem
-    deck_title = meta.get("title") or deck_info.get("title") or deck_info.get("canonical_url") or deck_id
+    deck_title = (
+        meta.get("title") or deck_info.get("title") or deck_info.get("canonical_url") or deck_id
+    )
     slides = meta.get("slides") or []
     records: List[Dict[str, Any]] = []
     seen = set()
@@ -249,24 +255,27 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
                 seen.add(key)
                 source_type = classify_url(target_url, link_text)
                 concept_context = " ".join([deck_title, slide_excerpt, link_text, element_text])
-                records.append({
-                    "link_id": make_link_id(deck_id, idx, target_url, link_text),
-                    "deck_file_id": deck_id,
-                    "deck_title": normalize_space(deck_title),
-                    "slide_number": idx,
-                    "slide_object_id": slide_id,
-                    "link_text": normalize_space(link_text) or normalize_space(element_text)[:120],
-                    "slide_text_excerpt": slide_excerpt,
-                    "raw_url": raw_url,
-                    "target_url": target_url,
-                    "domain": domain_for(target_url),
-                    "source_type": source_type,
-                    "google_file_id": extract_google_id(target_url, source_type),
-                    "google_gid": extract_gid(target_url),
-                    "associated_weeks": deck_info.get("associated_weeks", []),
-                    "associated_record_ids": deck_info.get("associated_record_ids", []),
-                    "inferred_concepts": infer_concepts(concept_context),
-                })
+                records.append(
+                    {
+                        "link_id": make_link_id(deck_id, idx, target_url, link_text),
+                        "deck_file_id": deck_id,
+                        "deck_title": normalize_space(deck_title),
+                        "slide_number": idx,
+                        "slide_object_id": slide_id,
+                        "link_text": normalize_space(link_text)
+                        or normalize_space(element_text)[:120],
+                        "slide_text_excerpt": slide_excerpt,
+                        "raw_url": raw_url,
+                        "target_url": target_url,
+                        "domain": domain_for(target_url),
+                        "source_type": source_type,
+                        "google_file_id": extract_google_id(target_url, source_type),
+                        "google_gid": extract_gid(target_url),
+                        "associated_weeks": deck_info.get("associated_weeks", []),
+                        "associated_record_ids": deck_info.get("associated_record_ids", []),
+                        "inferred_concepts": infer_concepts(concept_context),
+                    }
+                )
             walk_for_link_urls(element, generic_urls)
             for raw_url in generic_urls:
                 target_url = clean_url(raw_url)
@@ -276,24 +285,26 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
                 seen.add(key)
                 source_type = classify_url(target_url, "")
                 concept_context = " ".join([deck_title, slide_excerpt, element_text])
-                records.append({
-                    "link_id": make_link_id(deck_id, idx, target_url, ""),
-                    "deck_file_id": deck_id,
-                    "deck_title": normalize_space(deck_title),
-                    "slide_number": idx,
-                    "slide_object_id": slide_id,
-                    "link_text": "",
-                    "slide_text_excerpt": slide_excerpt,
-                    "raw_url": raw_url,
-                    "target_url": target_url,
-                    "domain": domain_for(target_url),
-                    "source_type": source_type,
-                    "google_file_id": extract_google_id(target_url, source_type),
-                    "google_gid": extract_gid(target_url),
-                    "associated_weeks": deck_info.get("associated_weeks", []),
-                    "associated_record_ids": deck_info.get("associated_record_ids", []),
-                    "inferred_concepts": infer_concepts(concept_context),
-                })
+                records.append(
+                    {
+                        "link_id": make_link_id(deck_id, idx, target_url, ""),
+                        "deck_file_id": deck_id,
+                        "deck_title": normalize_space(deck_title),
+                        "slide_number": idx,
+                        "slide_object_id": slide_id,
+                        "link_text": "",
+                        "slide_text_excerpt": slide_excerpt,
+                        "raw_url": raw_url,
+                        "target_url": target_url,
+                        "domain": domain_for(target_url),
+                        "source_type": source_type,
+                        "google_file_id": extract_google_id(target_url, source_type),
+                        "google_gid": extract_gid(target_url),
+                        "associated_weeks": deck_info.get("associated_weeks", []),
+                        "associated_record_ids": deck_info.get("associated_record_ids", []),
+                        "inferred_concepts": infer_concepts(concept_context),
+                    }
+                )
     return records
 
 
@@ -304,7 +315,12 @@ def dedupe_links(links: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         if link.get("error"):
             out.append(link)
             continue
-        key = (link.get("deck_file_id"), link.get("slide_number"), link.get("target_url"), link.get("link_text"))
+        key = (
+            link.get("deck_file_id"),
+            link.get("slide_number"),
+            link.get("target_url"),
+            link.get("link_text"),
+        )
         if key in seen:
             continue
         seen.add(key)
@@ -357,7 +373,10 @@ def score_row(row: List[str], header_terms: str = "") -> int:
     if "%" in row_text:
         score += 4
     score += min(len(NUMBER_RE.findall(row_text)), 5)
-    if any(term in row_text.lower() for term in ["winner", "preferred", "quote", "summary", "finding", "recommend"]):
+    if any(
+        term in row_text.lower()
+        for term in ["winner", "preferred", "quote", "summary", "finding", "recommend"]
+    ):
         score += 3
     if header_terms and any(t in row_text.lower() for t in header_terms.split()[:10]):
         score += 1
@@ -365,7 +384,11 @@ def score_row(row: List[str], header_terms: str = "") -> int:
 
 
 def summarize_values(values: List[List[Any]], max_notable_rows: int = 10) -> Dict[str, Any]:
-    rows = [[redact_text(cell, limit=240) for cell in row] for row in values if any(normalize_space(c) for c in row)]
+    rows = [
+        [redact_text(cell, limit=240) for cell in row]
+        for row in values
+        if any(normalize_space(c) for c in row)
+    ]
     headers = rows[0] if rows else []
     body = rows[1:] if len(rows) > 1 else []
     header_terms = " ".join(h.lower() for h in headers if h)
@@ -440,17 +463,22 @@ def fetch_sheet_via_sheets_api(
         title = props.get("title") or "Sheet1"
         range_name = sheet_range(title, max_rows=max_rows, max_columns=max_columns)
         encoded_range = quote(range_name, safe="")
-        values = get_json(
-            session,
-            SHEETS_VALUES_URL.format(spreadsheet_id=spreadsheet_id, range_name=encoded_range),
-            params={"majorDimension": "ROWS"},
-        ).get("values") or []
+        values = (
+            get_json(
+                session,
+                SHEETS_VALUES_URL.format(spreadsheet_id=spreadsheet_id, range_name=encoded_range),
+                params={"majorDimension": "ROWS"},
+            ).get("values")
+            or []
+        )
         summary = summarize_values(values)
-        summary.update({
-            "sheet_id": props.get("sheetId"),
-            "sheet_title": title,
-            "range": range_name,
-        })
+        summary.update(
+            {
+                "sheet_id": props.get("sheetId"),
+                "sheet_title": title,
+                "range": range_name,
+            }
+        )
         out.append(summary)
     return out, fetch_meta
 
@@ -474,8 +502,19 @@ def fetch_sheet_via_drive_export(
         if len(values) >= max_rows:
             break
     summary = summarize_values(values)
-    summary.update({"sheet_id": None, "sheet_title": "Drive CSV export", "range": f"A1:{col_name(max_columns)}{max_rows}"})
-    return [summary], {"method": "drive_csv_export", "spreadsheet_title": "", "sheet_count": None, "selected_sheet_count": 1}
+    summary.update(
+        {
+            "sheet_id": None,
+            "sheet_title": "Drive CSV export",
+            "range": f"A1:{col_name(max_columns)}{max_rows}",
+        }
+    )
+    return [summary], {
+        "method": "drive_csv_export",
+        "spreadsheet_title": "",
+        "sheet_count": None,
+        "selected_sheet_count": 1,
+    }
 
 
 def render_evidence_text(record: Dict[str, Any]) -> str:
@@ -532,13 +571,15 @@ def build_sheet_records(
     for idx, ((spreadsheet_id, gid), refs) in enumerate(unique.items()):
         if idx >= max_fetches:
             for ref in refs:
-                statuses.append({
-                    "status": "skipped_limit",
-                    "spreadsheet_id": spreadsheet_id,
-                    "gid": gid,
-                    "link_id": ref.get("link_id"),
-                    "source_url": ref.get("target_url"),
-                })
+                statuses.append(
+                    {
+                        "status": "skipped_limit",
+                        "spreadsheet_id": spreadsheet_id,
+                        "gid": gid,
+                        "link_id": ref.get("link_id"),
+                        "source_url": ref.get("target_url"),
+                    }
+                )
             continue
 
         primary = refs[0]
@@ -570,15 +611,17 @@ def build_sheet_records(
                     max_columns=max_columns,
                 )
                 fetch_meta["sheets_api_error"] = f"{sheets_exc.__class__.__name__}:{sheets_exc}"
-            status.update({
-                "status": "success",
-                "method": fetch_meta.get("method"),
-                "spreadsheet_title": fetch_meta.get("spreadsheet_title"),
-                "sheet_count": fetch_meta.get("sheet_count"),
-                "selected_sheet_count": fetch_meta.get("selected_sheet_count"),
-                "numeric_value_count": sum(len(s.get("numeric_values") or []) for s in sheets),
-                "notable_row_count": sum(len(s.get("notable_rows") or []) for s in sheets),
-            })
+            status.update(
+                {
+                    "status": "success",
+                    "method": fetch_meta.get("method"),
+                    "spreadsheet_title": fetch_meta.get("spreadsheet_title"),
+                    "sheet_count": fetch_meta.get("sheet_count"),
+                    "selected_sheet_count": fetch_meta.get("selected_sheet_count"),
+                    "numeric_value_count": sum(len(s.get("numeric_values") or []) for s in sheets),
+                    "notable_row_count": sum(len(s.get("notable_rows") or []) for s in sheets),
+                }
+            )
             record = {
                 "source_type": "google_sheet_data_comparison",
                 "spreadsheet_id": spreadsheet_id,
@@ -591,7 +634,9 @@ def build_sheet_records(
                 "slide_text_excerpt": primary.get("slide_text_excerpt"),
                 "associated_weeks": primary.get("associated_weeks", []),
                 "associated_record_ids": primary.get("associated_record_ids", []),
-                "inferred_concepts": sorted({c for ref in refs for c in (ref.get("inferred_concepts") or [])}),
+                "inferred_concepts": sorted(
+                    {c for ref in refs for c in (ref.get("inferred_concepts") or [])}
+                ),
                 "linked_from": [
                     {
                         "link_id": ref.get("link_id"),
@@ -608,10 +653,12 @@ def build_sheet_records(
             record["evidence_text"] = render_evidence_text(record)
             evidence.append(record)
         except Exception as exc:
-            status.update({
-                "status": "error",
-                "error": f"{exc.__class__.__name__}:{exc}",
-            })
+            status.update(
+                {
+                    "status": "error",
+                    "error": f"{exc.__class__.__name__}:{exc}",
+                }
+            )
         statuses.append(status)
     return statuses, evidence
 
@@ -654,7 +701,9 @@ def augment_deck_content(data_dir: Path, evidence: List[Dict[str, Any]]) -> Dict
         if fid in by_file:
             item = by_file[fid]
             existing = normalize_space(item.get("external_research_evidence_text") or "")
-            item["external_research_evidence_text"] = normalize_space((existing + "\n\n" + text).strip())
+            item["external_research_evidence_text"] = normalize_space(
+                (existing + "\n\n" + text).strip()
+            )
             item["external_research_evidence_count"] = len(recs)
         else:
             item = {
@@ -676,7 +725,11 @@ def augment_deck_content(data_dir: Path, evidence: List[Dict[str, Any]]) -> Dict
         updated = items
     write_json(data_dir / "deck_content.json", updated)
     write_json(data_dir / "deck-content.json", updated)
-    return {"deck_content_items": len(items), "augmented_deck_count": len(grouped), "source_path": str(source_path)}
+    return {
+        "deck_content_items": len(items),
+        "augmented_deck_count": len(grouped),
+        "source_path": str(source_path),
+    }
 
 
 def write_aliases(data_dir: Path, name: str, payload: Any) -> None:
@@ -685,25 +738,54 @@ def write_aliases(data_dir: Path, name: str, payload: Any) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Fetch external research evidence linked from Google Slides decks")
+    ap = argparse.ArgumentParser(
+        description="Fetch external research evidence linked from Google Slides decks"
+    )
     ap.add_argument("--data-dir", required=True, help="Directory containing deck_details.json")
-    ap.add_argument("--artifact-dir", required=True, help="Directory containing fetched Slides metadata JSON files")
+    ap.add_argument(
+        "--artifact-dir",
+        required=True,
+        help="Directory containing fetched Slides metadata JSON files",
+    )
     ap.add_argument("--access-token", default=None)
     ap.add_argument("--client-id", default=None)
     ap.add_argument("--client-secret", default=None)
     ap.add_argument("--refresh-token", default=None)
     ap.add_argument("--service-account-json", default=None)
     ap.add_argument("--subject", default=None)
-    ap.add_argument("--limit", type=int, default=None, help="Accepted for build compatibility; link discovery uses local metadata files")
-    ap.add_argument("--max-google-sheet-fetches", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_SHEET_FETCH_LIMIT", "20")))
-    ap.add_argument("--max-rows", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_ROWS", "80")))
-    ap.add_argument("--max-columns", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_COLUMNS", "26")))
-    ap.add_argument("--max-sheets-per-file", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_SHEETS_PER_FILE", "5")))
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Accepted for build compatibility; link discovery uses local metadata files",
+    )
+    ap.add_argument(
+        "--max-google-sheet-fetches",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_SHEET_FETCH_LIMIT", "20")),
+    )
+    ap.add_argument(
+        "--max-rows", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_ROWS", "80"))
+    )
+    ap.add_argument(
+        "--max-columns",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_COLUMNS", "26")),
+    )
+    ap.add_argument(
+        "--max-sheets-per-file",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_MAX_SHEETS_PER_FILE", "5")),
+    )
     args = ap.parse_args()
 
     data_dir = Path(args.data_dir)
     artifact_dir = Path(args.artifact_dir)
-    deck_details = load_json(data_dir / "deck_details.json") if (data_dir / "deck_details.json").exists() else []
+    deck_details = (
+        load_json(data_dir / "deck_details.json")
+        if (data_dir / "deck_details.json").exists()
+        else []
+    )
     by_deck = associated_map(deck_details)
 
     links: List[Dict[str, Any]] = []
@@ -734,8 +816,12 @@ def main() -> None:
     status_payload = {
         "generated_at": utc_now(),
         "summary": {
-            "google_sheet_link_count": len([l for l in links if l.get("source_type") == "google_sheet"]),
-            "helio_link_count": len([l for l in links if str(l.get("source_type", "")).startswith("helio")]),
+            "google_sheet_link_count": len(
+                [l for l in links if l.get("source_type") == "google_sheet"]
+            ),
+            "helio_link_count": len(
+                [l for l in links if str(l.get("source_type", "")).startswith("helio")]
+            ),
             "attempted_count": len([s for s in statuses if s.get("status") != "skipped_limit"]),
             "success_count": len([s for s in statuses if s.get("status") == "success"]),
             "error_count": len([s for s in statuses if s.get("status") == "error"]),
@@ -774,18 +860,24 @@ def main() -> None:
     write_aliases(data_dir, "external_research_evidence.json", evidence_payload)
     write_aliases(data_dir, "external_research_evidence_summary.json", summary_payload)
 
-    print(json.dumps({
-        "link_summary": link_payload["summary"],
-        "fetch_summary": status_payload["summary"],
-        "augmentation": augment_summary,
-        "outputs": [
-            str(data_dir / "deck_links.json"),
-            str(data_dir / "deck_link_fetch_status.json"),
-            str(data_dir / "external_research_evidence.json"),
-            str(data_dir / "external_research_evidence_summary.json"),
-            str(data_dir / "deck_content.json"),
-        ],
-    }, indent=2, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "link_summary": link_payload["summary"],
+                "fetch_summary": status_payload["summary"],
+                "augmentation": augment_summary,
+                "outputs": [
+                    str(data_dir / "deck_links.json"),
+                    str(data_dir / "deck_link_fetch_status.json"),
+                    str(data_dir / "external_research_evidence.json"),
+                    str(data_dir / "external_research_evidence_summary.json"),
+                    str(data_dir / "deck_content.json"),
+                ],
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":
