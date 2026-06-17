@@ -12,7 +12,7 @@ const {
   monthLabel,
   truncate,
 } = require("../netlify/build_trends");
-const { render } = require("../netlify/render_trends_dashboard");
+const { render, helioComparisons } = require("../netlify/render_trends_dashboard");
 
 function writeJson(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -56,6 +56,14 @@ function fixtureRepo() {
       },
     ])
   );
+  // An earlier issue with NO explicit issue number — exercises the chronological
+  // fallback (oldest = Issue 01).
+  writeJson(path.join(root, "issues", "2026-04", "default.json"), {
+    title: "Everpure monthly research roundup (30d)",
+    executive_summary: "April set three direction calls.",
+    surfaced_findings: [],
+    comparison_tests: [],
+  });
   // A frozen issue with a finding count, a respondent quote, issue metadata,
   // and the prose executive summary used by the hero card.
   writeJson(path.join(root, "issues", "2026-05", "default.json"), {
@@ -78,6 +86,7 @@ function fixtureRepo() {
     evidence: [
       {
         source_type: "helio_compare",
+        compare_id: "cmpEvents",
         comparison_title: "Events Baseline vs V1",
         inferred_concepts: ["Events Page"],
         variants: [
@@ -173,6 +182,9 @@ test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () 
     const may = t.issues.find((i) => i.month === "2026-05");
     assert.equal(may.label, "May 2026");
     assert.equal(may.issue_label, "Issue 02");
+    // Chronological fallback: April has no explicit issue number → Issue 01.
+    const apr = t.issues.find((i) => i.month === "2026-04");
+    assert.equal(apr.issue_label, "Issue 01");
     assert.equal(may.finding_count, 2);
     assert.match(may.summary, /events page/i);
     assert.equal(may.href, "issues/2026-05/default.html");
@@ -226,4 +238,64 @@ test("render produces a self-contained dashboard with all sections + charts", ()
 test("render shows a friendly empty state when no Helio data exists", () => {
   const html = render({ cycles: [], concepts: [], helio_metrics: [], quotes: [], metric_keys: [] });
   assert.match(html, /No Helio comparisons captured yet/);
+});
+
+test("helioComparisons groups by compare page, titles by concept, never a raw id", () => {
+  const rows = [
+    // One compare page (2 variants) with no comparison_title but a concept.
+    {
+      compare_id: "c1",
+      comparison_title: null,
+      concept: "Events Page",
+      test_id: "A",
+      test_name: "Baseline",
+      n: 100,
+      metrics: { engagement: 60 },
+    },
+    {
+      compare_id: "c1",
+      comparison_title: null,
+      concept: "Events Page",
+      test_id: "B",
+      test_name: "V1",
+      n: 100,
+      metrics: { engagement: 66 },
+    },
+    // A second comparison sharing the concept → disambiguated "(2)".
+    {
+      compare_id: "c2",
+      comparison_title: null,
+      concept: "Events Page",
+      test_id: "C",
+      test_name: "V1",
+      n: 90,
+      metrics: { success: 55 },
+    },
+    {
+      compare_id: "c2",
+      comparison_title: null,
+      concept: "Events Page",
+      test_id: "D",
+      test_name: "V2",
+      n: 90,
+      metrics: { success: 71 },
+    },
+    // No concept and no title → must NOT title by the test_id (ULID).
+    {
+      compare_id: "c3",
+      comparison_title: null,
+      concept: null,
+      test_id: "01ULIDONLYXXXXXXXXXXXXXXXX",
+      test_name: "Variant 1",
+      n: 50,
+      metrics: { sentiment: 30 },
+    },
+  ];
+  const cmps = helioComparisons(rows);
+  const byKey = Object.fromEntries(cmps.map((c) => [c.key, c]));
+  assert.equal(byKey.c1.variants.length, 2); // grouped, not split per variant
+  assert.equal(byKey.c1.label, "Events Page (1)");
+  assert.equal(byKey.c2.label, "Events Page (2)");
+  assert.equal(byKey.c3.label, "Helio comparison"); // never the ULID
+  assert.ok(!cmps.some((c) => /^01[0-9A-Z]{24}/.test(c.title)), "no comparison titled by a ULID");
 });

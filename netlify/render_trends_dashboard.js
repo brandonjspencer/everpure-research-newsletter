@@ -79,8 +79,15 @@ function confidenceChart(cycles) {
 }
 
 // Grouped bars (baseline vs later variant) across UX metrics for one comparison.
-function comparisonChart(title, n, variants, metricKeys) {
-  const metrics = metricKeys.filter((m) => variants.some((v) => typeof v.metrics[m] === "number"));
+function comparisonChart(title, n, variants, metricKeys, key) {
+  // Render every metric actually present (live tests use success/satisfaction/
+  // effort too), ordered by the canonical list, then any extras alphabetically.
+  const present = new Set();
+  for (const v of variants) for (const k of Object.keys(v.metrics || {})) present.add(k);
+  const metrics = [
+    ...metricKeys.filter((m) => present.has(m)),
+    ...[...present].filter((m) => !metricKeys.includes(m)).sort(),
+  ];
   if (!metrics.length) return "";
   const W = 720;
   const rowH = 30;
@@ -107,23 +114,94 @@ function comparisonChart(title, n, variants, metricKeys) {
     .slice(0, 2)
     .map((v) => esc(v.test_name))
     .join(" → ");
-  return `<div class="cmp"><div class="cmp-h"><strong>${esc(title)}</strong><span>${names}${n ? ` · n=${n}` : ""}</span></div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong><span>${names}${n ? ` · n=${n}` : ""}</span></div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+}
+
+function helioComparisons(helioMetrics) {
+  // Group by the compare page (compare_id) so each block is one real comparison
+  // (its baseline + variant), not a concept-wide pile. Fall back to test_id.
+  const byKey = new Map();
+  for (const row of helioMetrics) {
+    const key = row.compare_id || row.test_id;
+    if (!byKey.has(key)) byKey.set(key, { key, rows: [] });
+    byKey.get(key).rows.push(row);
+  }
+  const pick = (rows, field) => (rows.find((r) => r[field]) || {})[field];
+  const comparisons = [...byKey.values()].map((g) => {
+    // Title preference: real "X vs Y" → concept → deck link text → generic.
+    // Never the raw ULID.
+    const title =
+      pick(g.rows, "comparison_title") ||
+      pick(g.rows, "concept") ||
+      pick(g.rows, "link_text") ||
+      "Helio comparison";
+    const seen = new Set();
+    const variants = [];
+    for (const r of g.rows) {
+      if (seen.has(r.test_id)) continue;
+      seen.add(r.test_id);
+      variants.push(r);
+    }
+    const ns = variants.map((v) => v.n).filter((x) => typeof x === "number");
+    return { key: g.key, title, label: title, variants, n: ns.length ? Math.max(...ns) : null };
+  });
+  // Disambiguate duplicate titles (e.g. several "Pathfinder CTA Labels").
+  const total = {};
+  comparisons.forEach((c) => (total[c.title] = (total[c.title] || 0) + 1));
+  const used = {};
+  comparisons.forEach((c) => {
+    if (total[c.title] > 1) {
+      used[c.title] = (used[c.title] || 0) + 1;
+      c.label = `${c.title} (${used[c.title]})`;
+    } else {
+      c.label = c.title;
+    }
+  });
+  return comparisons;
 }
 
 function helioSection(helioMetrics, metricKeys) {
   if (!helioMetrics.length) {
     return `<p class="empty">No Helio comparisons captured yet — they appear here as the build ingests compare pages from the decks. Helio UX-metric trends start now and grow each cycle.</p>`;
   }
-  const byCmp = new Map();
-  for (const row of helioMetrics) {
-    const key = row.comparison_title || row.concept || row.test_id;
-    if (!byCmp.has(key)) byCmp.set(key, { title: key, n: row.n, variants: [] });
-    byCmp.get(key).variants.push(row);
-  }
-  return [...byCmp.values()]
-    .map((c) => comparisonChart(c.title, c.n, c.variants, metricKeys))
+  const comparisons = helioComparisons(helioMetrics);
+  const options = comparisons
+    .map(
+      (c) =>
+        `<label class="ms-opt"><input type="checkbox" class="ms-cb" value="${esc(c.key)}" checked> <span>${esc(c.label)}</span></label>`
+    )
+    .join("");
+  const control = `<div class="ms" data-ms="helio">
+  <div class="ms-head"><span class="ms-title">Show comparisons</span><span class="ms-actions"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></span></div>
+  <div class="ms-opts">${options}</div>
+</div>`;
+  const blocks = comparisons
+    .map((c) => comparisonChart(c.label, c.n, c.variants, metricKeys, c.key))
     .filter(Boolean)
     .join("\n");
+  return `${control}<div class="cmp-list">${blocks}</div>${helioFilterScript()}`;
+}
+
+// Client-side filter: show only the checked comparisons, persisted to localStorage.
+function helioFilterScript() {
+  return `<script>(function(){
+  var KEY="everpure-helio-show";
+  var ms=document.querySelector('[data-ms="helio"]'); if(!ms) return;
+  var cbs=[].slice.call(ms.querySelectorAll('.ms-cb'));
+  function apply(){
+    var sel={}; cbs.forEach(function(c){sel[c.value]=c.checked;});
+    document.querySelectorAll('.cmp-list .cmp[data-cmp]').forEach(function(b){
+      b.style.display = sel[b.getAttribute('data-cmp')]===false ? 'none' : '';
+    });
+    try{localStorage.setItem(KEY,JSON.stringify(sel));}catch(e){}
+  }
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s){cbs.forEach(function(c){if(c.value in s)c.checked=!!s[c.value];});}}catch(e){}
+  cbs.forEach(function(c){c.addEventListener('change',apply);});
+  var all=ms.querySelector('.ms-all'),none=ms.querySelector('.ms-none');
+  if(all)all.addEventListener('click',function(){cbs.forEach(function(c){c.checked=true;});apply();});
+  if(none)none.addEventListener('click',function(){cbs.forEach(function(c){c.checked=false;});apply();});
+  apply();
+})();</script>`;
 }
 
 function quotesSection(quotes) {
@@ -235,4 +313,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { render, confidenceChart, comparisonChart, helioSection };
+module.exports = { render, confidenceChart, comparisonChart, helioSection, helioComparisons };
