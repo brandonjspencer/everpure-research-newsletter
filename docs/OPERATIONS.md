@@ -20,25 +20,54 @@ The canonical, longer-form context lives in [`handoff/`](handoff/) — especiall
 - The Pages deploy (`deploy-pages.yml`) reads these GitHub Actions **secrets**: `SOURCE_URL`,
   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` — and the **variable**
   `GOOGLE_FETCH_LIMIT`. The Notion source is a public page fetched via `SOURCE_URL`; no Notion
-  API token or database id is used.
+  API token or database id is used. `GOOGLE_REFRESH_TOKEN` should be a long-lived token from a
+  published OAuth app — see [Google auth](#google-auth-one-time-setup-not-a-monthly-chore);
+  rotating it monthly is a symptom, not the routine.
 - `scripts/export_ai_context.sh` is read-only and excludes secrets/keys/certs; verify the
   manifest inside the ZIP before sharing.
 
 ---
 
+## Google auth (one-time setup, not a monthly chore)
+
+The deck fetch needs a Google OAuth credential with `drive.readonly` (+ `presentations.readonly`).
+**If you are re-minting the refresh token every month, the OAuth app is almost certainly still in
+"Testing" mode** — refresh tokens for testing-mode apps expire in ~7 days. The fix is a one-time
+setup, after which the token persists.
+
+**Recommended (no code, durable):** publish the OAuth app.
+
+1. GCP Console → APIs & Services → **OAuth consent screen**.
+2. Set **User type = Internal** if the project lives in Pure's Workspace org (Internal apps skip
+   Google verification and their tokens don't expire) — **or** click **Publish app** to move it
+   from "Testing" to "In production".
+3. Mint **one** new refresh token (OAuth 2.0 Playground, scopes `drive.readonly` +
+   `presentations.readonly`) and set it as the `GOOGLE_REFRESH_TOKEN` Actions secret.
+4. It now persists indefinitely (until revoked, password change, ~6 months unused, or >50 live
+   tokens for the client). No monthly rotation.
+
+**If expiry still recurs** (e.g. a Workspace admin policy enforces short OAuth token lifetimes),
+switch to a **service account** — already supported by `everpure_google_fetch.py`
+(`--service-account-json`, plus domain-wide delegation via `--subject`). Create a service account,
+store its JSON key as a GitHub secret, wire it into `build.sh`'s fetch args, and either use DWD or
+share the deck Drive folder with the service-account email. Service accounts don't use refresh
+tokens, so nothing expires. (A third option, no stored secret at all: GitHub OIDC → Workload
+Identity Federation, exporting a short-lived `GOOGLE_ACCESS_TOKEN`, which `build.sh` already consumes.)
+
+---
+
 ## Monthly new-issue ritual
 
-Do **not** start a new issue with editorial synthesis or code patching. Start with token
-rotation and build verification.
+Do **not** start a new issue with editorial synthesis or code patching. Start with build
+verification.
 
 1. Remind the user not to paste credentials/tokens into chat.
-2. User generates a new Google OAuth refresh token (OAuth 2.0 Playground, Drive/Slides
-   read-only scopes).
-3. User updates the GitHub Actions secret `GOOGLE_REFRESH_TOKEN`.
-4. Trigger a build (push to `main`, `workflow_dispatch`, or the weekly cron). With no
-   GitHub CLI: `git commit --allow-empty -m "Refresh token and run monthly build" && git push`.
-5. **Verify build freshness before synthesis** (see below).
-6. Only after the build is fresh, run the agent / QC sequence.
+2. Confirm Google auth is healthy. With a published OAuth app (see above) there is **no monthly
+   token rotation** — only re-check `GOOGLE_REFRESH_TOKEN` if a build's deck fetch fails on auth.
+3. Trigger a build (push to `main`, `workflow_dispatch`, or the weekly cron). With no
+   GitHub CLI: `git commit --allow-empty -m "Run monthly build" && git push`.
+4. **Verify build freshness before synthesis** (see below).
+5. Only after the build is fresh, run the agent / QC sequence.
 
 ### Verify build freshness
 
