@@ -12,6 +12,8 @@ This month’s research is centered on EDC Blueprint Page, Accelerate Live Strea
 
 Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.
 
+> Respondent quote: “Why would you assume I'd start an assessment straight away?”
+
 #### Evidence
 
 In the 10-second first impression, most respondents called the page "data cloud storage" and fewer than 5 named the Success Blueprint unprompted; half clicked "Start Your Assessment," but expectations were inconsistent and 29% weren't sure it was for them.
@@ -29,6 +31,8 @@ Medium confidence
 ### Accelerate Live Stream
 
 The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.
+
+> Respondent quote: “I am not sure if this promotes an event or if it enables me to view it on stream.”
 
 #### Evidence
 

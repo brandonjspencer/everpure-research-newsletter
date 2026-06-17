@@ -168,6 +168,13 @@ metrics, observations) over the finding restatement, joins distinct signals, and
 per topic (aim ~250 chars, ceiling ~295) — that always wins over the auto-composed fallback.
 Keep EVIDENCE a _surfaced signal_, not a paraphrase of the finding.
 
+A topic may also carry a `respondent_quote` — a verbatim participant quote rendered after the
+finding summary (before the source-deck link), labeled "Respondent quote:". Set it per topic for
+a vetted quote; otherwise the renderer auto-pulls a genuine quote (`text_utils.extractRespondentQuote`)
+and shows nothing when none qualifies. Use **only real participant words** — never a CTA label
+(e.g. "Watch a Demo"), product tagline, or analyst paraphrase. Omit the field for topics without
+a compelling quote.
+
 ---
 
 ## Archive freeze workflow
