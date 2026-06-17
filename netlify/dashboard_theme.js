@@ -14,6 +14,8 @@
  */
 
 const ICONS = {
+  brand:
+    '<svg viewBox="0 0 29 26" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M19.9941 0H8.82056C7.66536 0 6.59756 0.61636 6.01996 1.61728L0.4332 11.2936C-0.1444 12.2945 -0.1444 13.5272 0.4332 14.5274L6.11268 24.3922C6.69028 25.3931 7.7976 25.9821 8.95356 25.9821H14.516L6.96768 12.9101L10.6871 6.4676H18.1268L21.8462 12.9101L17.3576 20.6842H24.8262L28.3807 14.5274C28.9583 13.5272 28.9583 12.2945 28.3807 11.2936L22.7939 1.61728C22.2163 0.61636 21.1485 0 19.9933 0L19.9941 0Z" fill="#FF7023"/></svg>',
   dashboard:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
   issues:
@@ -62,7 +64,7 @@ function brandCss() {
   .rail:hover,.rail:focus-within{width:212px;box-shadow:2px 0 18px rgba(0,0,0,.18)}
   .rail .brand{display:flex;align-items:center;gap:12px;color:var(--rail-ink);text-decoration:none;
     padding:6px 8px 14px;font-weight:700;letter-spacing:-.01em}
-  .rail .brand .dot{min-width:24px;width:24px;height:24px;border-radius:7px;background:var(--accent);display:inline-block}
+  .rail .brand svg{min-width:26px;width:26px;height:auto;display:block}
   .rail a.navlink,.rail button.themebtn{display:flex;align-items:center;gap:14px;color:var(--rail-ink);
     text-decoration:none;padding:10px 8px;border-radius:10px;font-size:15px;border:0;background:none;
     cursor:pointer;width:100%;text-align:left;font:inherit}
@@ -139,7 +141,7 @@ function sidebar(activeKey, prefix = "") {
     return `<a class="navlink${active}" href="${href}"${item.key === activeKey ? ' aria-current="page"' : ""} title="${item.label}">${item.icon}<span class="label">${item.label}</span></a>`;
   }).join("");
   return `<nav class="rail" aria-label="Primary">
-  <a class="brand" href="${home}" aria-label="Everpure Research home"><span class="dot" aria-hidden="true"></span><span class="label">Everpure Research</span></a>
+  <a class="brand" href="${home}" aria-label="Everpure Research home">${ICONS.brand}<span class="label">Everpure Research</span></a>
   ${links}
   <span class="spacer"></span>
   <button class="themebtn" id="themeToggle" type="button" aria-label="Toggle light or dark theme"><span class="sun">${ICONS.sun}</span><span class="moon">${ICONS.moon}</span><span class="label">Theme</span></button>
