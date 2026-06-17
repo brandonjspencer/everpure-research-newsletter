@@ -186,6 +186,15 @@ if [ -f "$ROOT/netlify/build_concept_evidence.js" ]; then
   node "$ROOT/netlify/build_concept_evidence.js" "$ROOT/publish"
 fi
 
+# Roll the committed longitudinal record (history/ + issues/) plus the current
+# Helio metrics into publish/data/trends.json for the static trends dashboard.
+if [ -f "$ROOT/netlify/build_trends.js" ]; then
+  node "$ROOT/netlify/build_trends.js" "$ROOT"
+fi
+if [ -f "$ROOT/netlify/render_trends_dashboard.js" ]; then
+  node "$ROOT/netlify/render_trends_dashboard.js" "$ROOT"
+fi
+
 node "$ROOT/netlify/generate_static_newsletters.js"
 if [ -f "$ROOT/netlify/external_evidence_observability.js" ]; then
   node "$ROOT/netlify/external_evidence_observability.js" "$ROOT/publish"

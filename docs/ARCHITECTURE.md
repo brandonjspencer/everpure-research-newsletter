@@ -85,6 +85,9 @@ by reordering — keep them in this sequence:
 5. `merge_external_evidence_packs.js`
 6. `clean_evidence_signals.js`
 7. `build_concept_evidence.js`
+   - `build_trends.js` → `render_trends_dashboard.js` — roll the committed history (+ current
+     Helio metrics) into `trends.json` and render the static trends dashboard. Reads frozen
+     `history/` + `issues/`, so order only requires the current `helio_evidence.json` to exist.
 8. `generate_static_newsletters.js` — **must run after** evidence packs / clean evidence /
    concept evidence so the default brief can use the deterministic substrate.
 9. `external_evidence_observability.js`
@@ -121,6 +124,8 @@ by reordering — keep them in this sequence:
 - **`merge_external_evidence_packs.js`** — Matches external Sheet signals back to concept packs and merges them into the four evidence-pack files (+ match report).
 - **`clean_evidence_signals.js`** — Strips deck boilerplate/OCR junk; prioritizes concrete metric lines; writes `clean_supporting_signals` / `clean_key_numbers`.
 - **`build_concept_evidence.js`** — Emits `concept_evidence_default_30d.json`: per-concept matched evidence, numbers, summary/next-step hints, confidence, decision status. The strongest stage-1 substrate.
+- **`build_trends.js`** — Rolls the committed longitudinal record (`history/concept_evidence/*`, `issues/*/default.json`, `history/helio/*` + the current `helio_evidence.json`) into `publish/data/trends.json`: per-cycle research outcomes (confidence/decision/strength/findings), per-concept trajectories, the Helio UX-metric time series, and respondent quotes. The repo _is_ the database — versioned, diffable, auditable. Exports `buildTrends` for tests.
+- **`render_trends_dashboard.js`** — Renders the static trends dashboard (`publish/trends/index.html`) from `trends.json`: self-contained on-brand HTML with hand-rolled SVG charts (no chart lib, no React/Vite). Linked from the homepage.
 - **`generate_static_newsletters.js`** — Generates the per-build static `newsletter/*` artifacts + discovery links.
 - **`refine_default_newsletter.js`** / **`fix_default_bottom.js`** — Post-generation refinement of `default.{json,md,html}` (promote strong-proof concepts, de-dupe "What we should do next", strip debug blocks). Does **not** touch the API.
 - **`render_stage2_default_current.js`** — Hand-authored current-cycle writer for the default brief (also holds the on-brand "Figma Make" HTML design). Touches only `newsletter/default.*` + `api/newsletter-default.*`.

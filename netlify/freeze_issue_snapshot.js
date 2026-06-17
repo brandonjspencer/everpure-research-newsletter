@@ -56,6 +56,7 @@ function main() {
   const historyEvidenceDir = path.join(root, "history", "evidence_packs");
   const historyConceptDir = path.join(root, "history", "concept_evidence");
   const historyDeckDir = path.join(root, "history", "deck_content");
+  const historyHelioDir = path.join(root, "history", "helio");
 
   const filesToCopy = [
     ["default.html", path.join(newsletterDir, "default.html")],
@@ -100,6 +101,13 @@ function main() {
     ensureDir(historyDeckDir);
     copyFile(deckContent, path.join(historyDeckDir, `${issueMonth}.json`));
   }
+  // Helio UX metrics for this cycle → the longitudinal store the trends
+  // dashboard reads. Captured per freeze so Helio trends accumulate over time.
+  const helioEvidence = path.join(dataDir, "helio_evidence.json");
+  if (exists(helioEvidence)) {
+    ensureDir(historyHelioDir);
+    copyFile(helioEvidence, path.join(historyHelioDir, `${issueMonth}.json`));
+  }
 
   const manifest = {
     issue_id: `everpure-${issueMonth}`,
@@ -135,6 +143,9 @@ function main() {
         : null,
       deck_content: exists(path.join(root, "history", "deck_content", `${issueMonth}.json`))
         ? `history/deck_content/${issueMonth}.json`
+        : null,
+      helio: exists(path.join(root, "history", "helio", `${issueMonth}.json`))
+        ? `history/helio/${issueMonth}.json`
         : null,
     },
   };
