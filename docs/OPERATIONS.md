@@ -58,6 +58,11 @@ Identity Federation, exporting a short-lived `GOOGLE_ACCESS_TOKEN`, which `build
 
 ## Monthly new-issue ritual
 
+> The **`/new-issue` skill** (`.claude/skills/new-issue/SKILL.md`) runs this entire ritual
+> end-to-end with the freshness gate and two approval gates (before freeze, before send) built
+> in, using `scripts/check_build_freshness.py` and `scripts/scaffold_issue_content.py`. The steps
+> below are what it automates — and the manual fallback if you run it by hand.
+
 Do **not** start a new issue with editorial synthesis or code patching. Start with build
 verification.
 
