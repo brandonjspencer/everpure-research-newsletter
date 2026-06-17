@@ -99,7 +99,9 @@ private keys, or recipient spreadsheets. The Notion source is a **public page** 
 the `SOURCE_URL` secret (no Notion API token or database id is used). Google deck fetch needs
 a `drive.readonly` OAuth token. The Pages deploy (`deploy-pages.yml`) reads secrets
 `SOURCE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` and the
-variable `GOOGLE_FETCH_LIMIT`.
+variable `GOOGLE_FETCH_LIMIT`. `GOOGLE_REFRESH_TOKEN` should be a long-lived token from a
+published (Production/Internal) OAuth app — it does not need monthly rotation; see
+[docs/OPERATIONS.md](docs/OPERATIONS.md) "Google auth".
 
 ## Environment notes
 
