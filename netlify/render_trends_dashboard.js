@@ -1,30 +1,17 @@
 #!/usr/bin/env node
 /**
- * Render the static trends dashboard from publish/data/trends.json.
+ * Render the trends dashboard (the site homepage) from publish/data/trends.json.
  *
- * Self-contained HTML: inline CSS + hand-rolled SVG charts + the data baked in
- * (no runtime fetch, no chart library, no React/Vite) — consistent with the
- * rest of the static builder. Writes publish/trends/index.html.
+ * Self-contained HTML: shared branded theme (light/dark + collapsible sidebar)
+ * from dashboard_theme.js + hand-rolled SVG charts whose fills are CSS variables
+ * so they adapt to the active theme. No chart library, no React/Vite. Writes
+ * publish/index.html (the homepage).
  *
  * Run: node netlify/render_trends_dashboard.js <repo-root>
  */
 const fs = require("fs");
 const path = require("path");
-
-const C = {
-  paper: "#fbf7f2",
-  card: "#ffffff",
-  ink: "#1d1d1f",
-  muted: "#6b6b6b",
-  line: "#ece6df",
-  accent: "#ef5b25",
-  high: "#2e7d57",
-  medium: "#d98a00",
-  low: "#c2410c",
-  unknown: "#b8b2aa",
-  baseline: "#9aa7b1",
-  variant: "#ef5b25",
-};
+const { docHead, sidebar } = require("./dashboard_theme");
 
 function esc(s) {
   return String(s == null ? "" : s).replace(
@@ -59,10 +46,10 @@ function confidenceChart(cycles) {
     })
   );
   const order = [
-    ["high", C.high],
-    ["medium", C.medium],
-    ["low", C.low],
-    ["unknown", C.unknown],
+    ["high", "var(--c-high)"],
+    ["medium", "var(--c-medium)"],
+    ["low", "var(--c-low)"],
+    ["unknown", "var(--c-unknown)"],
   ];
   let bars = "";
   cycles.forEach((c, i) => {
@@ -88,7 +75,7 @@ function confidenceChart(cycles) {
         `<span class="lg"><i style="background:${col}"></i>${k[0].toUpperCase() + k.slice(1)} confidence</span>`
     )
     .join("");
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Confidence mix per cycle">${bars}</svg><div class="legend">${legend}</div>`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Confidence mix per cycle">${bars}</svg><div class="legend">${legend}</div>`;
 }
 
 // Grouped bars (baseline vs later variant) across UX metrics for one comparison.
@@ -109,8 +96,8 @@ function comparisonChart(title, n, variants, metricKeys) {
       const barH = 9;
       const by = y + vi * (barH + 2);
       const w = (trackW * score) / 100;
-      const color = vi === 0 ? C.baseline : C.variant;
-      rows += `<rect x="${labelW}" y="${by}" width="${trackW}" height="${barH}" fill="${C.line}" rx="2"></rect>`;
+      const color = vi === 0 ? "var(--bar-base)" : "var(--bar-variant)";
+      rows += `<rect x="${labelW}" y="${by}" width="${trackW}" height="${barH}" fill="var(--track)" rx="2"></rect>`;
       rows += `<rect x="${labelW}" y="${by}" width="${w.toFixed(1)}" height="${barH}" fill="${color}" rx="2"><title>${esc(v.test_name)} — ${m}: ${score}%</title></rect>`;
       rows += `<text x="${labelW + trackW + 6}" y="${by + barH}" class="mval">${score}%</text>`;
     });
@@ -120,7 +107,7 @@ function comparisonChart(title, n, variants, metricKeys) {
     .slice(0, 2)
     .map((v) => esc(v.test_name))
     .join(" → ");
-  return `<div class="cmp"><div class="cmp-h"><strong>${esc(title)}</strong><span>${names}${n ? ` · n=${n}` : ""}</span></div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+  return `<div class="cmp"><div class="cmp-h"><strong>${esc(title)}</strong><span>${names}${n ? ` · n=${n}` : ""}</span></div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
 }
 
 function helioSection(helioMetrics, metricKeys) {
@@ -175,69 +162,40 @@ function render(trends) {
 
   return `<!doctype html>
 <html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Everpure Research — Trends</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{--ink:${C.ink};--muted:${C.muted};--paper:${C.paper};--card:${C.card};--line:${C.line};--accent:${C.accent}}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Familjen Grotesk',system-ui,-apple-system,sans-serif;line-height:1.5}
-  .wrap{max-width:880px;margin:0 auto;padding:32px 20px 64px}
-  header h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em}
-  header p{color:var(--muted);margin:0 0 24px}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 28px}
-  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .kpi-v{font-size:26px;font-weight:700;letter-spacing:-.02em}
-  .kpi-l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:0 0 20px}
-  section h2{font-size:18px;margin:0 0 4px;letter-spacing:-.01em}
-  section .desc{color:var(--muted);font-size:13px;margin:0 0 16px}
-  svg{width:100%;height:auto;display:block}
-  text.axis{font-size:12px;fill:var(--ink);font-weight:600}
-  text.sub{font-size:10px;fill:var(--muted)}
-  text.mlabel{font-size:12px;fill:var(--ink);text-transform:capitalize}
-  text.mval{font-size:11px;fill:var(--muted)}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12px;color:var(--muted)}
-  .lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-  .cmp{padding:14px 0;border-top:1px solid var(--line)}
-  .cmp:first-child{border-top:0}
-  .cmp-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
-  .cmp-h span{color:var(--muted);font-size:12px}
-  .quote{margin:0 0 14px;padding:0 0 14px;border-bottom:1px solid var(--line)}
-  .quote blockquote{margin:0 0 4px;font-size:15px}
-  .quote figcaption{color:var(--muted);font-size:12px}
-  .empty{color:var(--muted);font-size:14px;font-style:italic}
-  footer{color:var(--muted);font-size:12px;margin-top:8px}
-  a{color:var(--accent)}
-</style></head>
-<body><div class="wrap">
+${docHead("Everpure Research — Trends")}
+</head>
+<body>
+${sidebar("dashboard", "")}
+<div class="shell"><div class="wrap">
 <header>
   <h1>Research Trends</h1>
-  <p>How the Everpure research program and its Helio UX signals move over time.${generated ? ` Built ${esc(generated)}.` : ""}</p>
+  <p class="sub">How the Everpure research program and its Helio UX signals move over time.${generated ? ` Built ${esc(generated)}.` : ""}</p>
 </header>
 <div class="kpis">${kpis}</div>
 
-<section>
+<section class="panel">
   <h2>Research program by cycle</h2>
   <p class="desc">Concepts evaluated each 30-day cycle, by evidence-backed confidence. Findings and average evidence strength noted beneath each column.</p>
   ${confidenceChart(cycles)}
 </section>
 
-<section>
+<section class="panel">
   <h2>Helio UX metrics</h2>
   <p class="desc">Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better.</p>
   ${helioSection(trends.helio_metrics || [], metricKeys)}
 </section>
 
-<section>
+<section class="panel">
   <h2>Voice of the user</h2>
   <p class="desc">Verbatim respondent quotes carried through from the monthly issues.</p>
   ${quotesSection(trends.quotes || [])}
 </section>
 
-<footer>Source: committed <code>history/</code> + <code>issues/</code> + Helio compare evidence, rolled up by <code>build_trends.js</code>. Helio UX-metric trends begin June 2026 and grow as comparisons are run.</footer>
-</div></body></html>`;
+<footer>
+  <a class="pagelink" href="issues/">Browse the published issues →</a><br><br>
+  Source: committed <code>history/</code> + <code>issues/</code> + Helio compare evidence, rolled up by <code>build_trends.js</code>. Helio UX-metric trends begin June 2026 and grow as comparisons are run.
+</footer>
+</div></div></body></html>`;
 }
 
 function main() {
@@ -247,10 +205,10 @@ function main() {
     console.error("No trends.json found; run build_trends.js first.");
     return;
   }
-  const outDir = path.join(root, "publish", "trends");
+  const outDir = path.join(root, "publish");
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, "index.html"), render(trends), "utf8");
-  console.log(`Wrote ${path.join(outDir, "index.html")}`);
+  console.log(`Wrote ${path.join(outDir, "index.html")} (homepage)`);
 }
 
 if (require.main === module) main();

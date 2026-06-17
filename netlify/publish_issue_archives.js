@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { docHead, sidebar } = require("./dashboard_theme");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -106,37 +107,22 @@ function buildIssuesCatalog(publishDir) {
     : "<li>No archived issues yet.</li>";
 
   const html = `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Everpure Issue Archive</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 40px 24px; background: #f6f2e6; color: #1f1f1f; }
-    .wrap { max-width: 960px; margin: 0 auto; }
-    h1 { margin: 0 0 8px; font-size: 40px; }
-    p { color: #4a4a4a; line-height: 1.5; }
-    .top-links { margin: 0 0 24px; }
-    .top-links a { color: #165a7a; }
-    ul { list-style: none; padding: 0; margin: 32px 0 0; }
-    li { background: white; border-radius: 14px; padding: 18px 20px; margin: 0 0 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-    strong { font-size: 22px; display: block; margin-bottom: 6px; }
-    .meta { display: block; color: #666; font-size: 14px; margin-bottom: 10px; }
-    .links { display: flex; flex-wrap: wrap; gap: 12px 16px; }
-    .links a { color: #165a7a; text-decoration: none; }
-    .links a:hover { text-decoration: underline; }
-  </style>
+<html lang="en"><head>
+${docHead("Everpure Research — Issue Archive")}
 </head>
 <body>
-  <div class="wrap">
-    <div class="top-links"><a href="../">Back to homepage</a></div>
-    <h1>Issue Archive</h1>
-    <p>Frozen monthly issues and manifests preserved from approved builds.</p>
-    <ul>${items}
-    </ul>
-  </div>
-</body>
-</html>`;
+${sidebar("issues", "../")}
+<div class="shell"><div class="wrap">
+<header>
+  <h1>Issue Archive</h1>
+  <p class="sub">Frozen monthly issues and manifests preserved from approved builds.</p>
+</header>
+<section class="panel">
+  <ul class="issuelist">${items}
+  </ul>
+</section>
+</div></div>
+</body></html>`;
 
   ensureDir(path.join(publishDir, "issues"));
   fs.writeFileSync(path.join(publishDir, "issues", "index.html"), html, "utf8");
