@@ -47,12 +47,11 @@ eval "$(ssh-agent -s)".pub
 # publish/index.html is a hand-maintained source page and IS tracked.
 # ---------------------------------------------------------------------------
 
-# Generated site data (rebuilt by netlify/build.sh)
-/publish/data/
-/publish/api/
-/publish/newsletter/
-/publish/status.json
-/publish/.nojekyll
+# Everything under publish/ is rebuilt by netlify/build.sh (data, api, newsletter,
+# issues, history, status.json, .nojekyll, ...). Only publish/index.html is a
+# hand-maintained source page that stays tracked.
+/publish/*
+!/publish/index.html
 
 # Locally fetched deck artifacts (PDF/PPTX pulled from Google Slides)
 /deck_artifacts/

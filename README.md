@@ -48,7 +48,7 @@ CI (`.github/workflows/ci.yml`) runs the same checks on every push and PR. See
 ```
 data/Everpure.html      Committed Notion HTML snapshot (source-of-truth fallback)
 everpure_*.py           Python ingestion / normalization / read API
-netlify/                Node evidence + rendering pipeline (build.sh orchestrator)
+netlify/                Node build pipeline (build.sh orchestrator + renderers); GitHub Pages only
 issues/ history/        Frozen monthly archives + history snapshots (committed)
 emails/                 Email HTML artifacts for distribution (committed)
 publish/                Deployable site — rebuilt in CI (generated, gitignored)

@@ -150,7 +150,7 @@ user asks to merge). Start from
 - **Mobile email layout:** test the small breakpoint for horizontal scroll.
 - **Auth:** never ask the user to paste secrets, tokens, `.env` files, or credentials.
 - **Build freshness:** cache-bust live checks before interpreting content.
-- **API logic:** prefer post-generation static rewriting over editing `netlify/functions/api.js`.
+- **API logic:** prefer post-generation static rewriting over editing the build-time API render module (`netlify/api.js`); there is no live/serverless API (GitHub Pages only).
 
 ---
 

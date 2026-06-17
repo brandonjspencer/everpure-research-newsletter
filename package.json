@@ -1,11 +1,11 @@
 {
-  "name": "everpure-netlify-site",
+  "name": "everpure-research-newsletter",
   "version": "1.0.0",
   "private": true,
-  "description": "Netlify deployment bundle for the Everpure research parser and API",
+  "description": "Everpure Research Newsletter Builder — Notion/Slides ingestion + static Research Roundup generator (deployed to GitHub Pages)",
   "scripts": {
     "build": "bash netlify/build.sh",
-    "dev": "netlify dev",
+    "serve": "python3 -m http.server -d publish 8000",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

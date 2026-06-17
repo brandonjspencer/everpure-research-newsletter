@@ -97,7 +97,6 @@ copy_glob "*.sh"
 copy_glob "*.md"
 copy_glob "package*.json"
 copy_glob "requirements*.txt"
-copy_path "netlify.toml"
 copy_path ".nvmrc"
 
 # Add a small manifest so the uploaded ZIP has review context.
