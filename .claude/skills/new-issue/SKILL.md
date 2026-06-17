@@ -128,8 +128,16 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    `/newsletter/default.html`. Include the Zscaler authentication note and the
    `#research-and-discovery` Slack feedback link.
 3. Test in Gmail desktop **and** phone; watch the small breakpoint for horizontal scroll.
-4. **Ask the user to approve sending. Do not send/distribute without explicit approval.** Then
-   test-send before final distribution (see OPERATIONS.md "Apps Script / spreadsheet sending").
+4. Send via the consolidated Apps Script in [`appsscript/`](../../../appsscript/README.md) (the
+   user runs it under their own Google auth — you never send). It is **batched**, so there is no
+   50-recipient cap. Sequence:
+   - Upload the approved email HTML to Drive and update the `ISSUE_HTML_FILE_ID` (or
+     `UXTIP_HTML_FILE_ID`) Script Property.
+   - **Preview**: `dryRunIssue` — confirm the recipient count, batch count, and remaining quota.
+   - **Test**: `sendIssueTest` (goes to `REVIEWERS` only) — review in Gmail desktop + phone.
+   - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
+   - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
+   - UX-tip emails use `dryRunUxTip` / `sendUxTipTest` / `sendUxTipBroadcast`.
 
 ---
 
@@ -137,5 +145,6 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
 
 - Runbook & editorial rules: [docs/OPERATIONS.md](../../../docs/OPERATIONS.md)
 - Pipeline & components: [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md)
+- Email send (batched, version-controlled): [appsscript/README.md](../../../appsscript/README.md)
 - Helpers: `scripts/check_build_freshness.py`, `scripts/scaffold_issue_content.py`,
   `netlify/freeze_issue_snapshot.js`
