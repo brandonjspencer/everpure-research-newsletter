@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -eo pipefail
+# nounset is intentionally disabled for macOS Bash 3.2 because empty arrays can fail on ${matches[@]}.
 
 # Export a clean, ChatGPT-friendly repository context ZIP.
 # This script is intentionally read-only: it does not commit, push, or modify repo files.
