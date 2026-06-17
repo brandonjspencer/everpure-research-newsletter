@@ -175,7 +175,7 @@ def cli() -> None:
     )
     ap.add_argument(
         "--data-dir",
-        default="/mnt/data/everpure_parsed",
+        default="output",
         help="Directory containing weeks.json and decks.json",
     )
     ap.add_argument(

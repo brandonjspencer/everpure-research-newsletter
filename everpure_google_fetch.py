@@ -200,12 +200,12 @@ def cli() -> None:
     )
     ap.add_argument(
         "--data-dir",
-        default="/mnt/data/everpure_parsed",
+        default="output",
         help="Directory containing deck_details.json and weeks.json",
     )
     ap.add_argument(
         "--artifact-dir",
-        default="/mnt/data/everpure_raw/decks",
+        default="deck_artifacts",
         help="Directory to store downloaded artifacts named <file_id>.<ext>",
     )
     ap.add_argument(

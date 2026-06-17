@@ -349,7 +349,7 @@ def cli():
     ap = argparse.ArgumentParser(description="Everpure parsed-data API and summary helpers")
     ap.add_argument(
         "--data-dir",
-        default="/mnt/data/everpure_parsed",
+        default="output",
         help="Directory containing metadata.json, weeks.json, decks.json, summary.json",
     )
     sub = ap.add_subparsers(dest="cmd", required=True)
