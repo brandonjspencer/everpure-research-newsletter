@@ -8,6 +8,7 @@ const {
   sanitizeEvidenceSegments,
   pickBestEvidence,
   composeEvidenceSummary,
+  extractRespondentQuote,
 } = require("../netlify/text_utils");
 
 test("strips a duplicated concept label from the front of an evidence line", () => {
@@ -121,6 +122,27 @@ test("composeEvidenceSummary joins distinct signals and respects the length cap"
   assert.ok(out.length <= 220, `exceeded cap: ${out.length}`);
   assert.ok(/fragmented/.test(out) && /Autoplay/.test(out), `missing a signal: ${out}`);
   assert.ok(!/Concept\s*\d+|Source:/i.test(out), `scaffolding leaked: ${out}`);
+});
+
+test("extractRespondentQuote pulls a genuine participant quote and rejects CTAs/taglines", () => {
+  const candidates = [
+    'EDC Blueprint Page Signal Concept 191 One respondent asked directly: "Why would you assume I\'d start an assessment straight away?"',
+    'CTA options were "Watch a Demo" and "Start Y our Assessment"',
+    'the product framing "transforming fragmented data into AI-ready contextual intelligence"',
+  ];
+  assert.strictEqual(
+    extractRespondentQuote(candidates),
+    "Why would you assume I'd start an assessment straight away?"
+  );
+});
+
+test("extractRespondentQuote returns empty when only CTA labels / taglines are quoted", () => {
+  const candidates = [
+    'Buttons read "Watch a Demo" and "Learn More".',
+    'Tagline: "transforming fragmented data into AI-ready contextual intelligence".',
+    'Emotional tags were "Overwhelming" and "Helpful".',
+  ];
+  assert.strictEqual(extractRespondentQuote(candidates), "");
 });
 
 test("composeEvidenceSummary truncates an overlong single segment at a boundary", () => {

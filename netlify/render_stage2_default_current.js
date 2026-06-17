@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { stripLeadingConceptLabel, composeEvidenceSummary } = require("./text_utils");
+const {
+  stripLeadingConceptLabel,
+  composeEvidenceSummary,
+  extractRespondentQuote,
+} = require("./text_utils");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -156,6 +160,12 @@ function bestConceptEvidence(title, findingStatement) {
   const candidates = conceptEvidenceCandidates.get(topicKey(title)) || [];
   if (!candidates.length) return "";
   return composeEvidenceSummary(candidates, { title, findingStatement });
+}
+
+function bestRespondentQuote(title) {
+  const candidates = conceptEvidenceCandidates.get(topicKey(title)) || [];
+  if (!candidates.length) return "";
+  return extractRespondentQuote(candidates);
 }
 
 function formatIssueDate(dateStr) {
@@ -832,6 +842,10 @@ function findingFromGroup(group) {
       bestConceptEvidence(title, findingStatement) ||
       stripLeadingConceptLabel(evidenceLine, title) ||
       `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
+    // Optional verbatim respondent quote: curated override wins, else auto-pull
+    // a genuine participant quote from the substrate ("" when none qualifies).
+    respondent_quote:
+      content.topics[topicKey(title)]?.respondent_quote || bestRespondentQuote(title) || "",
     next_step: actionForTopic(title),
     confidence,
     decision_status: decisionStatus,
@@ -1082,6 +1096,10 @@ function renderMarkdown(data) {
     out.push("");
     out.push(item.finding_statement);
     out.push("");
+    if (item.respondent_quote) {
+      out.push(`> Respondent quote: “${item.respondent_quote}”`);
+      out.push("");
+    }
     out.push("#### Evidence");
     out.push("");
     out.push(item.proof_point);
@@ -1185,6 +1203,8 @@ function sourceLinkInline(label, href, dark = false) {
 }
 
 function renderFinding(item, idx, isLast) {
+  const quote = item.respondent_quote;
+  const sourceInline = sourceLinkInline(item.source_label, item.source_href);
   return `
   <div class="dispatch-finding ${isLast ? "is-last" : ""}">
     <div class="finding-row">
@@ -1192,7 +1212,8 @@ function renderFinding(item, idx, isLast) {
       <div class="finding-title">${escapeHtml(item.title).toUpperCase()}</div>
       ${confidenceBadge(item.confidence)}
     </div>
-    <p class="finding-copy">${escapeHtml(item.finding_statement)} ${sourceLinkInline(item.source_label, item.source_href)}</p>
+    <p class="finding-copy${quote ? " finding-copy--quoted" : ""}">${escapeHtml(item.finding_statement)}${quote ? "" : ` ${sourceInline}`}</p>
+    ${quote ? `<p class="finding-quote"><span class="finding-quote-label">Respondent quote:</span> &ldquo;${escapeHtml(quote)}&rdquo; ${sourceInline}</p>` : ""}
     <div class="finding-columns">
       <div class="finding-col evidence-col">
         <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
@@ -1318,7 +1339,10 @@ a { color: inherit; }
 .source-link-inline--dark { color:rgba(255,245,227,0.76); border-bottom-color:rgba(255,245,227,0.32); }
 .source-link-inline--dark:hover { color:var(--orange-100); border-bottom-color:var(--orange-100); }
 .finding-copy { margin:0 0 36px; font-size:var(--text-h4); line-height:1.82; }
+.finding-copy--quoted { margin-bottom:16px; }
 .finding-copy--dark { color: var(--sidebar-fg); }
+.finding-quote { margin:0 0 36px; padding-left:16px; border-left:3px solid var(--orange-100); font-size:var(--text-base); line-height:1.7; font-style:italic; color:rgba(45,42,39,0.9); }
+.finding-quote-label { font-style:normal; font-weight:700; color:var(--muted-fg); letter-spacing:.04em; text-transform:uppercase; font-size:0.78em; margin-right:6px; }
 .finding-columns { display:grid; grid-template-columns:1fr 1fr; gap:0; }
 .finding-columns--dark { column-gap:0; }
 .finding-col p { margin:0; font-size:var(--text-base); line-height:1.7; }

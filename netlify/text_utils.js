@@ -281,6 +281,53 @@ function composeEvidenceSummary(rawCandidates, ctx = {}, maxLen = 295) {
   return capLength(result, maxLen);
 }
 
+// Quoted strings that are CTA labels / marketing taglines, not respondent words.
+const QUOTE_DENY =
+  /^(watch a demo|start your assessment|book a workshop|learn more|get started|contact (us|sales)|sign up|register now|explore|read more|view all|download|request a demo)\b/i;
+// First-person / reaction language that marks a genuine participant utterance.
+const UTTERANCE =
+  /\b(i|i'?d|i'?m|i'?ve|my|me|we|us|why|what|how|not sure|unclear|confus\w*|assume|expect\w*|think|feel|wish|want|don'?t|can'?t|would|should)\b/i;
+
+function looksLikeRespondentQuote(q) {
+  if (q.length < 15 || q.length > 200) return false;
+  if (QUOTE_DENY.test(q)) return false;
+  // Marketing/product framing with no first-person voice is not a respondent quote.
+  if (
+    /transform\w*|enrich\w*|governance|ai-ready|fragmented data/i.test(q) &&
+    !/\b(i|we|my|me|you)\b/i.test(q)
+  )
+    return false;
+  return /\?/.test(q) || UTTERANCE.test(q);
+}
+
+/**
+ * Pull the most compelling genuine respondent quote from raw candidate strings,
+ * or "" if none qualifies. Deliberately conservative — a curated
+ * `respondent_quote` override should win over this. Verbatim, with OCR spacing
+ * ("Start Y our" → "Start Your") and ligatures repaired.
+ */
+function extractRespondentQuote(rawCandidates) {
+  const found = [];
+  const re = /[“"]([^“”"]{12,200})[”"]/g;
+  for (const raw of rawCandidates || []) {
+    const norm = normalizeLigatures(String(raw || ""))
+      .replace(/\s+/g, " ")
+      .replace(/\bY our\b/g, "Your");
+    let m;
+    re.lastIndex = 0;
+    while ((m = re.exec(norm)) !== null) {
+      const q = m[1].trim();
+      if (looksLikeRespondentQuote(q)) found.push(q);
+    }
+  }
+  const score = (q) =>
+    (/\?/.test(q) ? 3 : 0) +
+    (/\b(i|i'?d|i'?m|i'?ve|my|me)\b/i.test(q) ? 3 : 0) +
+    (q.length >= 25 && q.length <= 140 ? 2 : 0);
+  found.sort((a, b) => score(b) - score(a) || a.length - b.length);
+  return found[0] || "";
+}
+
 module.exports = {
   stripLeadingConceptLabel,
   stripTrailingConceptLabel,
@@ -289,4 +336,5 @@ module.exports = {
   scoreEvidence,
   pickBestEvidence,
   composeEvidenceSummary,
+  extractRespondentQuote,
 };
