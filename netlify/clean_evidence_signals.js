@@ -1,19 +1,21 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const root = process.argv[2] || path.resolve(process.cwd(), 'publish');
-const dataDir = path.join(root, 'data');
+const root = process.argv[2] || path.resolve(process.cwd(), "publish");
+const dataDir = path.join(root, "data");
 
 const files = [
-  'evidence_packs.json',
-  'evidence-packs.json',
-  'evidence_packs_default_30d.json',
-  'evidence-packs-default-30d.json',
+  "evidence_packs.json",
+  "evidence-packs.json",
+  "evidence_packs_default_30d.json",
+  "evidence-packs-default-30d.json",
 ];
 
 function normalize(value) {
-  return String(value || '').replace(/\s+/g, ' ').trim();
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function uniq(values) {
@@ -75,7 +77,7 @@ function isBoilerplate(value) {
   const text = normalize(value);
   if (!text) return true;
   if (text.length < 12) return true;
-  if (BOILERPLATE_PATTERNS.some(rx => rx.test(text))) return true;
+  if (BOILERPLATE_PATTERNS.some((rx) => rx.test(text))) return true;
   if ((text.match(/●/g) || []).length >= 3) return true;
   return false;
 }
@@ -83,7 +85,7 @@ function isBoilerplate(value) {
 function isBadText(value) {
   const text = normalize(value);
   if (!text) return true;
-  if (BAD_TEXT_PATTERNS.some(rx => rx.test(text))) return true;
+  if (BAD_TEXT_PATTERNS.some((rx) => rx.test(text))) return true;
   return false;
 }
 
@@ -91,7 +93,7 @@ function isPublicEvidence(value) {
   const text = normalize(value);
   if (isBoilerplate(text) || isBadText(text)) return false;
   if (text.length < 24 || text.length > 360) return false;
-  return EVIDENCE_PATTERNS.some(rx => rx.test(text));
+  return EVIDENCE_PATTERNS.some((rx) => rx.test(text));
 }
 
 function scoreSignal(value) {
@@ -107,15 +109,18 @@ function scoreSignal(value) {
 
 function cleanTitle(value) {
   let title = normalize(value)
-    .replace(/^\d{2,4}\s*[-:–]\s*/, '')
-    .replace(/\b\(in process\)\b/ig, '')
-    .replace(/\s+/g, ' ')
+    .replace(/^\d{2,4}\s*[-:–]\s*/, "")
+    .replace(/\b\(in process\)\b/gi, "")
+    .replace(/\s+/g, " ")
     .trim();
-  title = title.replace(/\s*[-–:]\s*Exploring\b.*$/i, '');
-  title = title.replace(/\s+Users?\s+(?:understand|recognize|need|are|can|cannot|don'?t|do not)\b.*$/i, '');
-  title = title.replace(/\s+The biggest opportunity\b.*$/i, '');
-  title = title.replace(/\s+Needs? to\b.*$/i, '');
-  return title.replace(/\s*[:–-]\s*$/g, '').trim();
+  title = title.replace(/\s*[-–:]\s*Exploring\b.*$/i, "");
+  title = title.replace(
+    /\s+Users?\s+(?:understand|recognize|need|are|can|cannot|don'?t|do not)\b.*$/i,
+    ""
+  );
+  title = title.replace(/\s+The biggest opportunity\b.*$/i, "");
+  title = title.replace(/\s+Needs? to\b.*$/i, "");
+  return title.replace(/\s*[:–-]\s*$/g, "").trim();
 }
 
 function deckIdsForPack(pack) {
@@ -123,28 +128,36 @@ function deckIdsForPack(pack) {
 }
 
 function externalRefAligned(pack, ref) {
-  if (!ref || String(ref.group || '') !== 'external_research_evidence') return true;
+  if (!ref || String(ref.group || "") !== "external_research_evidence") return true;
   const deckIds = deckIdsForPack(pack);
   if (!deckIds.size) return false;
-  const refDeck = normalize(ref.deck_file_id || ref.deck_id || ref.file_id || ref.deckFileId || ref.deckId);
+  const refDeck = normalize(
+    ref.deck_file_id || ref.deck_id || ref.file_id || ref.deckFileId || ref.deckId
+  );
   return refDeck && deckIds.has(refDeck);
 }
 
 function cleanArray(values, limit = 8) {
   return uniq(values)
     .filter(isPublicEvidence)
-    .map(value => ({ value, score: scoreSignal(value) }))
+    .map((value) => ({ value, score: scoreSignal(value) }))
     .sort((a, b) => b.score - a.score || b.value.length - a.value.length)
-    .map(item => item.value)
+    .map((item) => item.value)
     .slice(0, limit);
 }
 
 function extractNumbers(values) {
-  return uniq((values || []).flatMap(value => normalize(value).match(/\b\d{1,3}%\b|\b\d+(?:\.\d+)?x\b/gi) || [])).slice(0, 8);
+  return uniq(
+    (values || []).flatMap(
+      (value) => normalize(value).match(/\b\d{1,3}%\b|\b\d+(?:\.\d+)?x\b/gi) || []
+    )
+  ).slice(0, 8);
 }
 
 function shouldDropPack(pack) {
-  const title = normalize(pack.concept_title || pack.concept_display || pack.concept_key || pack.title);
+  const title = normalize(
+    pack.concept_title || pack.concept_display || pack.concept_key || pack.title
+  );
   if (!title) return true;
   if (isBoilerplate(title)) return true;
   if (/^we have\s+/i.test(title)) return true;
@@ -154,17 +167,20 @@ function shouldDropPack(pack) {
 function cleanSourceRefs(pack) {
   const refs = [];
   for (const ref of pack.source_refs || pack.sourceRefs || []) {
-    if (!ref || typeof ref !== 'object') continue;
+    if (!ref || typeof ref !== "object") continue;
     if (!externalRefAligned(pack, ref)) continue;
-    const text = normalize(ref.text || ref.label || '');
-    if (String(ref.group || '') === 'external_research_evidence' && !isPublicEvidence(text)) continue;
+    const text = normalize(ref.text || ref.label || "");
+    if (String(ref.group || "") === "external_research_evidence" && !isPublicEvidence(text))
+      continue;
     refs.push(ref);
   }
   return refs.slice(0, 14);
 }
 
 function cleanPack(pack) {
-  const cleanedTitle = cleanTitle(pack.concept_title || pack.concept_display || pack.concept_key || pack.title);
+  const cleanedTitle = cleanTitle(
+    pack.concept_title || pack.concept_display || pack.concept_key || pack.title
+  );
   const sourceRefs = cleanSourceRefs(pack);
   const candidateSignals = [
     ...(pack.clean_supporting_signals || []),
@@ -172,12 +188,12 @@ function cleanPack(pack) {
     ...(pack.key_synthesis_signals || []),
     ...(pack.evidence_snapshot_rule_based || []),
     ...(pack.raw_finding_excerpts || []),
-    ...sourceRefs.map(ref => ref.text),
+    ...sourceRefs.map((ref) => ref.text),
   ];
   const publicSignals = cleanArray(candidateSignals, 8);
 
   const externalRefs = (pack.external_evidence_refs || [])
-    .filter(ref => {
+    .filter((ref) => {
       const deckIds = deckIdsForPack(pack);
       if (!deckIds.size) return false;
       const refDeck = normalize(ref.deck_id || ref.deck_file_id || ref.deckId || ref.deckFileId);
@@ -188,7 +204,10 @@ function cleanPack(pack) {
   return {
     ...pack,
     concept_title: cleanedTitle || pack.concept_title,
-    concept_display: pack.concept_id && cleanedTitle ? `${pack.concept_id} - ${cleanedTitle}` : (cleanedTitle || pack.concept_display),
+    concept_display:
+      pack.concept_id && cleanedTitle
+        ? `${pack.concept_id} - ${cleanedTitle}`
+        : cleanedTitle || pack.concept_display,
     raw_finding_excerpts: cleanArray(pack.raw_finding_excerpts || [], 6),
     source_refs: sourceRefs,
     supporting_signals: publicSignals,
@@ -199,19 +218,21 @@ function cleanPack(pack) {
     supporting_numbers: extractNumbers(publicSignals),
     external_evidence_refs: externalRefs,
     external_evidence_count: externalRefs.length,
-    external_evidence_merge_status: externalRefs.length ? 'matched' : undefined,
+    external_evidence_merge_status: externalRefs.length ? "matched" : undefined,
   };
 }
 
 function payloadPacks(payload) {
-  if (Array.isArray(payload)) return { kind: 'array', packs: payload, wrapper: null };
-  if (payload && Array.isArray(payload.packs)) return { kind: 'object', packs: payload.packs, wrapper: payload };
-  return { kind: 'object', packs: [], wrapper: payload || {} };
+  if (Array.isArray(payload)) return { kind: "array", packs: payload, wrapper: null };
+  if (payload && Array.isArray(payload.packs))
+    return { kind: "object", packs: payload.packs, wrapper: payload };
+  return { kind: "object", packs: [], wrapper: payload || {} };
 }
 
 function writePayload(file, meta, packs) {
-  const output = meta.kind === 'array' ? packs : { ...(meta.wrapper || {}), packs, pack_count: packs.length };
-  fs.writeFileSync(file, JSON.stringify(output, null, 2) + '\n', 'utf8');
+  const output =
+    meta.kind === "array" ? packs : { ...(meta.wrapper || {}), packs, pack_count: packs.length };
+  fs.writeFileSync(file, JSON.stringify(output, null, 2) + "\n", "utf8");
 }
 
 const report = {
@@ -223,12 +244,17 @@ for (const name of files) {
   const fp = path.join(dataDir, name);
   if (!fs.existsSync(fp)) continue;
   try {
-    const raw = JSON.parse(fs.readFileSync(fp, 'utf8'));
+    const raw = JSON.parse(fs.readFileSync(fp, "utf8"));
     const meta = payloadPacks(raw);
     const before = meta.packs.length;
-    const cleaned = meta.packs.filter(pack => !shouldDropPack(pack)).map(cleanPack);
+    const cleaned = meta.packs.filter((pack) => !shouldDropPack(pack)).map(cleanPack);
     writePayload(fp, meta, cleaned);
-    report.files.push({ file: name, before, after: cleaned.length, dropped: before - cleaned.length });
+    report.files.push({
+      file: name,
+      before,
+      after: cleaned.length,
+      dropped: before - cleaned.length,
+    });
     console.log(`Cleaned ${name}: ${before} -> ${cleaned.length}`);
   } catch (err) {
     console.error(`Failed ${name}: ${err.message}`);
@@ -236,4 +262,8 @@ for (const name of files) {
   }
 }
 
-fs.writeFileSync(path.join(dataDir, 'evidence_quality_report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+fs.writeFileSync(
+  path.join(dataDir, "evidence_quality_report.json"),
+  JSON.stringify(report, null, 2) + "\n",
+  "utf8"
+);

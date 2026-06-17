@@ -1,0 +1,84 @@
+[project]
+name = "everpure-research-newsletter"
+version = "1.0.0"
+description = "Everpure Research Newsletter Builder — Notion/Slides ingestion + static Research Roundup generator"
+# Floor is 3.9 to match the local dev venv; CI runs 3.12.
+requires-python = ">=3.9"
+
+# ---------------------------------------------------------------------------
+# Ruff — linter + formatter for the Python ingestion/API scripts
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+# py39 floor: avoids rewriting `Optional[X]` -> `X | None`, which is a runtime
+# error on 3.9 in evaluated (signature) annotations.
+target-version = "py39"
+extend-exclude = [
+    ".venv",
+    "output",
+    "publish",
+    "deck_artifacts",
+    "deck_artifacts_empty",
+    "docs/handoff",
+]
+
+[tool.ruff.lint]
+# A pragmatic set: pyflakes (F), pycodestyle (E/W), import order (I),
+# pyupgrade (UP), bugbear (B), comprehensions (C4).
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+ignore = [
+    "E501",   # line length is handled by the formatter; don't fail on long URLs/strings
+    "B008",   # function calls in argument defaults (common in argparse-style code)
+    "E741",   # ambiguous 1-char names: legacy churn, low value to rename
+    # PEP585/604 typing modernization: skipped on this 3.9-floor legacy code —
+    # `Optional[X]` -> `X | None` is a runtime error on 3.9 in evaluated annotations.
+    "UP006",  # non-pep585-annotation (Dict -> dict)
+    "UP035",  # deprecated typing import
+    "UP045",  # non-pep604-annotation-optional (Optional[X] -> X | None)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+# Intentional sys.path.insert(...) before importing the sibling everpure_api module.
+"everpure_refresh.py" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# ---------------------------------------------------------------------------
+# Pyright — lenient ("basic") static type checking
+# Catches real errors (undefined names, bad attribute access, unbound vars)
+# without forcing annotations across the legacy scripts.
+# ---------------------------------------------------------------------------
+[tool.pyright]
+include = ["everpure_parser.py", "everpure_refresh.py", "everpure_api.py",
+           "everpure_deck_ingest.py", "everpure_deck_content_ingest.py",
+           "everpure_google_fetch.py", "everpure_deck_link_smoke.py",
+           "everpure_external_research_ingest.py", "tests"]
+exclude = [".venv", "output", "publish", "deck_artifacts", "deck_artifacts_empty",
+           "node_modules", "**/__pycache__"]
+typeCheckingMode = "basic"
+pythonVersion = "3.9"
+# Resolve imports against the project venv (CI also builds ./.venv).
+venvPath = "."
+venv = ".venv"
+# Third-party deps (bs4, pdfplumber, playwright, ...) ship without type stubs;
+# don't treat the missing-stub case as a finding.
+reportMissingModuleSource = "none"
+reportMissingTypeStubs = "none"
+# Lenient calibration for legacy untyped code: keep these visible as warnings
+# (they don't fail CI) rather than errors. The flask try/except-None guard and
+# unannotated dict builders trip these without indicating real bugs. Tighten to
+# "error" as annotations are added.
+reportOptionalMemberAccess = "warning"
+reportOptionalCall = "warning"
+reportArgumentType = "warning"
+reportReturnType = "warning"
+
+# ---------------------------------------------------------------------------
+# Pytest — smoke tests
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

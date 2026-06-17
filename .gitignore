@@ -1,0 +1,59 @@
+# ---------------------------------------------------------------------------
+# Everpure Research Newsletter Builder — ignore rules
+# ---------------------------------------------------------------------------
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / JS tooling
+node_modules/
+.eslintcache
+*.tsbuildinfo
+
+# OS / editor cruft
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Backups & scratch files
+*.backup.*
+*.bak
+*.orig
+/raw/
+
+# Stray SSH keypair accidentally created in-tree from a botched ssh-keygen
+eval "$(ssh-agent -s)"
+eval "$(ssh-agent -s)".pub
+
+# ---------------------------------------------------------------------------
+# Generated build artifacts
+#
+# The live site is rebuilt fresh in CI by netlify/build.sh and uploaded as the
+# GitHub Pages artifact, so generated outputs do NOT need to be committed.
+# publish/index.html is a hand-maintained source page and IS tracked.
+# ---------------------------------------------------------------------------
+
+# Generated site data (rebuilt by netlify/build.sh)
+/publish/data/
+/publish/api/
+/publish/newsletter/
+/publish/status.json
+/publish/.nojekyll
+
+# Locally fetched deck artifacts (PDF/PPTX pulled from Google Slides)
+/deck_artifacts/
+/deck_artifacts_empty/

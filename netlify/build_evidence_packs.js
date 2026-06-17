@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function readJson(p, fallback = null) {
   try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
+    return JSON.parse(fs.readFileSync(p, "utf8"));
   } catch {
     return fallback;
   }
@@ -27,7 +27,7 @@ function flattenDeckContent(raw) {
 
 function extractTextStrings(obj, acc = []) {
   if (obj == null) return acc;
-  if (typeof obj === 'string') {
+  if (typeof obj === "string") {
     acc.push(obj);
     return acc;
   }
@@ -35,9 +35,9 @@ function extractTextStrings(obj, acc = []) {
     for (const item of obj) extractTextStrings(item, acc);
     return acc;
   }
-  if (typeof obj === 'object') {
+  if (typeof obj === "object") {
     for (const [k, v] of Object.entries(obj)) {
-      if (['raw_bytes', 'binary', 'buffer'].includes(k)) continue;
+      if (["raw_bytes", "binary", "buffer"].includes(k)) continue;
       extractTextStrings(v, acc);
     }
   }
@@ -45,14 +45,13 @@ function extractTextStrings(obj, acc = []) {
 }
 
 function normalizeWhitespace(s) {
-  return (s || '').replace(/\s+/g, ' ').trim();
+  return (s || "").replace(/\s+/g, " ").trim();
 }
 
 function extractNumbers(text) {
   const matches = normalizeWhitespace(text).match(/\b\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?\b/g);
   return matches ? [...new Set(matches)].slice(0, 8) : [];
 }
-
 
 const BAD_EVIDENCE_PATTERNS = [
   /HTTPError|Client Error|Forbidden for url|Traceback|Exception:/i,
@@ -73,33 +72,38 @@ const INTRO_PATTERNS = [
 function isBadEvidenceText(text) {
   const t = normalizeWhitespace(text);
   if (!t) return true;
-  if (BAD_EVIDENCE_PATTERNS.some(rx => rx.test(t))) return true;
+  if (BAD_EVIDENCE_PATTERNS.some((rx) => rx.test(t))) return true;
   return false;
 }
 
 function isIntroLine(text) {
   const t = normalizeWhitespace(text).replace(/[“”]/g, '"');
-  return INTRO_PATTERNS.some(rx => rx.test(t));
+  return INTRO_PATTERNS.some((rx) => rx.test(t));
 }
 
 function hasSentenceEvidenceShape(text) {
   const t = normalizeWhitespace(text);
   if (isBadEvidenceText(t) || isIntroLine(t)) return false;
-  return t.length >= 32 && /\b(users?|participants?|visitors?|readers?|customers?|need|needs|understand|recognize|clear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|registration|assessment|workshop|live|watch live|differentiat|business value|platform story)\b/i.test(t);
+  return (
+    t.length >= 32 &&
+    /\b(users?|participants?|visitors?|readers?|customers?|need|needs|understand|recognize|clear|clearer|credible|useful|worth|engagement|improved?|increased?|outperformed|opportunity|communicate|value|trust|confidence|registration|assessment|workshop|live|watch live|differentiat|business value|platform story)\b/i.test(
+      t
+    )
+  );
 }
 
 function cleanupConceptTitle(title) {
   return normalizeWhitespace(title)
-    .replace(/^👉\s*/, '')
-    .replace(/^🧠\s*/, '')
-    .replace(/^📈\s*/, '')
-    .replace(/^💜\s*/, '')
-    .replace(/^→\s*/, '')
-    .replace(/^[-•]\s*/, '')
-    .replace(/\b\(in process\)\b/ig, '')
-    .replace(/\s+R\d+$/i, '')
-    .replace(/\s+V\d+$/i, '')
-    .replace(/\s*[:–-]\s*$/g, '')
+    .replace(/^👉\s*/, "")
+    .replace(/^🧠\s*/, "")
+    .replace(/^📈\s*/, "")
+    .replace(/^💜\s*/, "")
+    .replace(/^→\s*/, "")
+    .replace(/^[-•]\s*/, "")
+    .replace(/\b\(in process\)\b/gi, "")
+    .replace(/\s+R\d+$/i, "")
+    .replace(/\s+V\d+$/i, "")
+    .replace(/\s*[:–-]\s*$/g, "")
     .trim();
 }
 
@@ -123,15 +127,36 @@ function structuredConceptFromLine(text) {
 }
 
 function conceptTokens(title) {
-  const stop = new Set(['the','and','for','with','from','this','that','page','pages','test','testing','concept','concepts','update','landing','registration']);
-  return normalizeWhitespace(title).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(t => t.length >= 3 && !stop.has(t));
+  const stop = new Set([
+    "the",
+    "and",
+    "for",
+    "with",
+    "from",
+    "this",
+    "that",
+    "page",
+    "pages",
+    "test",
+    "testing",
+    "concept",
+    "concepts",
+    "update",
+    "landing",
+    "registration",
+  ]);
+  return normalizeWhitespace(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 3 && !stop.has(t));
 }
 
 function snippetMatchesConcept(snippet, concept) {
-  const tokens = conceptTokens(concept.title || concept.concept_title || concept.raw_label || '');
+  const tokens = conceptTokens(concept.title || concept.concept_title || concept.raw_label || "");
   if (!tokens.length) return false;
   const low = normalizeWhitespace(snippet).toLowerCase();
-  return tokens.some(tok => low.includes(tok));
+  return tokens.some((tok) => low.includes(tok));
 }
 
 function extractConcept(text) {
@@ -159,12 +184,15 @@ function extractConcept(text) {
     };
   }
 
-  const candidate = cleanupConceptTitle(cleaned.replace(/:$/,''));
+  const candidate = cleanupConceptTitle(cleaned.replace(/:$/, ""));
   if (!candidate || candidate.length > 90) return null;
   if (/^(make|rewrite|improve|reduce|clarify|keep|move|add|remove)\b/i.test(candidate)) return null;
   if (/^(higher contrast|simpler layouts?|a more prominent)\b/i.test(candidate)) return null;
 
-  const useful = /baseline|comparison|review|analysis|messaging|labels|navigation|portal|homepage|events|taxonomy|knowledge|platform|journey|rebrand|landing page|reader page|search page|header|feedback|edc|blueprint|accelerate|live stream|contextual intelligence|diagram|webinar|registration|assessment|workshop|pdp|campaign|virtualization/i.test(candidate);
+  const useful =
+    /baseline|comparison|review|analysis|messaging|labels|navigation|portal|homepage|events|taxonomy|knowledge|platform|journey|rebrand|landing page|reader page|search page|header|feedback|edc|blueprint|accelerate|live stream|contextual intelligence|diagram|webinar|registration|assessment|workshop|pdp|campaign|virtualization/i.test(
+      candidate
+    );
   if (!useful) return null;
   return {
     concept_id: null,
@@ -175,8 +203,8 @@ function extractConcept(text) {
 
 function walkItems(items, out = []) {
   for (const item of items || []) {
-    if (!item || typeof item !== 'object') continue;
-    if (typeof item.text === 'string') out.push({ text: item.text, level: item.level ?? 0 });
+    if (!item || typeof item !== "object") continue;
+    if (typeof item.text === "string") out.push({ text: item.text, level: item.level ?? 0 });
     if (Array.isArray(item.children) && item.children.length) walkItems(item.children, out);
   }
   return out;
@@ -184,24 +212,30 @@ function walkItems(items, out = []) {
 
 function ratingForPack(pack) {
   let score = 0;
-  if (pack.groups_seen.has('findings')) score += 3;
+  if (pack.groups_seen.has("findings")) score += 3;
   if (pack.weeks_seen.size >= 2) score += 3;
   if (pack.supporting_numbers.size > 0) score += 2;
   if (pack.comparison_cues.length > 0) score += 1;
   if (pack.deck_refs.size > 0) score += 1;
-  if (score >= 7) return { confidence: 'high', status: 'validated_finding', next_step: 'ship_or_finalize' };
-  if (score >= 4) return { confidence: 'moderate', status: 'directional_signal', next_step: 'iterate' };
-  return { confidence: 'low', status: 'work_in_motion', next_step: 'watch' };
+  if (score >= 7)
+    return { confidence: "high", status: "validated_finding", next_step: "ship_or_finalize" };
+  if (score >= 4)
+    return { confidence: "moderate", status: "directional_signal", next_step: "iterate" };
+  return { confidence: "low", status: "work_in_motion", next_step: "watch" };
 }
 
 function buildPack(rec, group, text, concept, deckTextById, packs) {
-  const key = concept.concept_id ? `${concept.concept_id}__${concept.title.toLowerCase()}` : concept.title.toLowerCase();
+  const key = concept.concept_id
+    ? `${concept.concept_id}__${concept.title.toLowerCase()}`
+    : concept.title.toLowerCase();
   if (!packs.has(key)) {
     packs.set(key, {
       concept_key: key,
       concept_id: concept.concept_id,
       concept_title: concept.title,
-      concept_display: concept.concept_id ? `${concept.concept_id} - ${concept.title}` : concept.title,
+      concept_display: concept.concept_id
+        ? `${concept.concept_id} - ${concept.title}`
+        : concept.title,
       weeks_seen: new Set(),
       source_refs: [],
       raw_finding_excerpts: [],
@@ -223,11 +257,18 @@ function buildPack(rec, group, text, concept, deckTextById, packs) {
     text: normalizeWhitespace(text),
     deck_file_id: rec.deck?.file_id || null,
   });
-  if (group === 'findings' || hasSentenceEvidenceShape(text)) pack.raw_finding_excerpts.push(normalizeWhitespace(text));
+  if (group === "findings" || hasSentenceEvidenceShape(text))
+    pack.raw_finding_excerpts.push(normalizeWhitespace(text));
   for (const n of extractNumbers(text)) pack.supporting_numbers.add(n);
-  const cueMatches = normalizeWhitespace(text).match(/\b(?:baseline|comparison|review|analysis|variant|variation|V\d+|R\d+|A\/B|winner|preferred|lift|increase|decrease|improved?|reduced?)\b/ig) || [];
+  const cueMatches =
+    normalizeWhitespace(text).match(
+      /\b(?:baseline|comparison|review|analysis|variant|variation|V\d+|R\d+|A\/B|winner|preferred|lift|increase|decrease|improved?|reduced?)\b/gi
+    ) || [];
   if (cueMatches.length) pack.comparison_cues.push(...cueMatches);
-  const signalTerms = normalizeWhitespace(text).match(/\b(?:clarity|comprehension|sentiment|engagement|discoverability|navigation|labeling|messaging|taxonomy|preference|confidence|friction)\b/ig) || [];
+  const signalTerms =
+    normalizeWhitespace(text).match(
+      /\b(?:clarity|comprehension|sentiment|engagement|discoverability|navigation|labeling|messaging|taxonomy|preference|confidence|friction)\b/gi
+    ) || [];
   for (const s of signalTerms) pack.behavioral_signals.add(s.toLowerCase());
   if (rec.deck?.file_id) {
     pack.deck_refs.add(rec.deck.file_id);
@@ -236,8 +277,8 @@ function buildPack(rec, group, text, concept, deckTextById, packs) {
       const snippets = deckBlob
         .split(/(?<=[.!?])\s+/)
         .map(normalizeWhitespace)
-        .filter(s => hasSentenceEvidenceShape(s))
-        .filter(s => snippetMatchesConcept(s, concept))
+        .filter((s) => hasSentenceEvidenceShape(s))
+        .filter((s) => snippetMatchesConcept(s, concept))
         .slice(0, 3);
       for (const snippet of snippets) {
         for (const n of extractNumbers(snippet)) pack.supporting_numbers.add(n);
@@ -264,9 +305,11 @@ function finalizePack(pack) {
     raw_finding_excerpts: pack.raw_finding_excerpts.slice(0, 6),
     source_refs: pack.source_refs.slice(0, 12),
     supporting_numbers: [...pack.supporting_numbers],
-    comparison_cues: [...new Set(pack.comparison_cues.map(c => c.toLowerCase()))],
+    comparison_cues: [...new Set(pack.comparison_cues.map((c) => c.toLowerCase()))],
     behavioral_signals: [...pack.behavioral_signals],
-    evidence_snapshot_rule_based: [...new Set(pack.evidence_snapshot_rule_based.filter(Boolean))].slice(0, 4),
+    evidence_snapshot_rule_based: [
+      ...new Set(pack.evidence_snapshot_rule_based.filter(Boolean)),
+    ].slice(0, 4),
     rule_based_status: rating.status,
     rule_based_next_step: rating.next_step,
     rule_based_confidence: rating.confidence,
@@ -274,13 +317,21 @@ function finalizePack(pack) {
 }
 
 function main() {
-  const publishRoot = process.argv[2] || 'publish';
-  const dataDir = path.join(publishRoot, 'data');
-  const weeks = readJson(path.join(dataDir, 'weeks.json'), []);
-  const deckRaw = readJson(path.join(dataDir, 'deck_content.json'), readJson(path.join(dataDir, 'deck-content.json'), []));
+  const publishRoot = process.argv[2] || "publish";
+  const dataDir = path.join(publishRoot, "data");
+  const weeks = readJson(path.join(dataDir, "weeks.json"), []);
+  const deckRaw = readJson(
+    path.join(dataDir, "deck_content.json"),
+    readJson(path.join(dataDir, "deck-content.json"), [])
+  );
   const deckItems = flattenDeckContent(deckRaw);
 
-  const latestWeek = [...weeks].map(w => w.week_date).filter(Boolean).sort().slice(-1)[0] || null;
+  const latestWeek =
+    [...weeks]
+      .map((w) => w.week_date)
+      .filter(Boolean)
+      .sort()
+      .slice(-1)[0] || null;
   const latestDate = latestWeek ? new Date(`${latestWeek}T00:00:00Z`) : new Date();
   const cutoff = new Date(latestDate);
   cutoff.setUTCDate(cutoff.getUTCDate() - 30);
@@ -289,7 +340,7 @@ function main() {
   for (const item of deckItems) {
     const fileId = item.file_id || item.deck_file_id || item.id || null;
     if (!fileId) continue;
-    const textBlob = normalizeWhitespace(extractTextStrings(item).join(' '));
+    const textBlob = normalizeWhitespace(extractTextStrings(item).join(" "));
     if (textBlob) deckTextById.set(fileId, textBlob);
   }
 
@@ -301,18 +352,20 @@ function main() {
     for (const [group, groupItems] of Object.entries(groups)) {
       const flat = walkItems(groupItems);
       for (const entry of flat) {
-        const concept = extractConcept(entry.text || '');
+        const concept = extractConcept(entry.text || "");
         if (!concept) continue;
         buildPack(rec, group, entry.text, concept, deckTextById, packs);
       }
     }
   }
 
-  const allPacks = [...packs.values()].map(finalizePack).sort((a,b) => {
+  const allPacks = [...packs.values()].map(finalizePack).sort((a, b) => {
     if (b.occurrence_count !== a.occurrence_count) return b.occurrence_count - a.occurrence_count;
     return a.concept_display.localeCompare(b.concept_display);
   });
-  const default30 = allPacks.filter(p => p.weeks_seen.some(w => new Date(`${w}T00:00:00Z`) >= cutoff));
+  const default30 = allPacks.filter((p) =>
+    p.weeks_seen.some((w) => new Date(`${w}T00:00:00Z`) >= cutoff)
+  );
 
   const fullPayload = {
     generated_at: new Date().toISOString(),
@@ -330,29 +383,35 @@ function main() {
     latest_week_date: latestWeek,
     window: {
       days: 30,
-      start: cutoff.toISOString().slice(0,10),
+      start: cutoff.toISOString().slice(0, 10),
       end: latestWeek,
     },
     pack_count: default30.length,
     packs: default30,
   };
 
-  writeJson(path.join(dataDir, 'evidence_packs.json'), fullPayload);
-  writeJson(path.join(dataDir, 'evidence-packs.json'), fullPayload);
-  writeJson(path.join(dataDir, 'evidence_packs_default_30d.json'), defaultPayload);
-  writeJson(path.join(dataDir, 'evidence-packs-default-30d.json'), defaultPayload);
+  writeJson(path.join(dataDir, "evidence_packs.json"), fullPayload);
+  writeJson(path.join(dataDir, "evidence-packs.json"), fullPayload);
+  writeJson(path.join(dataDir, "evidence_packs_default_30d.json"), defaultPayload);
+  writeJson(path.join(dataDir, "evidence-packs-default-30d.json"), defaultPayload);
 
-  console.log(JSON.stringify({
-    latest_week_date: latestWeek,
-    pack_count: allPacks.length,
-    default_30d_pack_count: default30.length,
-    outputs: [
-      path.join(dataDir, 'evidence_packs.json'),
-      path.join(dataDir, 'evidence-packs.json'),
-      path.join(dataDir, 'evidence_packs_default_30d.json'),
-      path.join(dataDir, 'evidence-packs-default-30d.json'),
-    ]
-  }, null, 2));
+  console.log(
+    JSON.stringify(
+      {
+        latest_week_date: latestWeek,
+        pack_count: allPacks.length,
+        default_30d_pack_count: default30.length,
+        outputs: [
+          path.join(dataDir, "evidence_packs.json"),
+          path.join(dataDir, "evidence-packs.json"),
+          path.join(dataDir, "evidence_packs_default_30d.json"),
+          path.join(dataDir, "evidence-packs-default-30d.json"),
+        ],
+      },
+      null,
+      2
+    )
+  );
 }
 
 main();

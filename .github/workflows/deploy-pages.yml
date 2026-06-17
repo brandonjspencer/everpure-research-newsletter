@@ -2,10 +2,10 @@ name: Deploy static site to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '0 14 * * 1'
+    - cron: "0 14 * * 1"
 
 permissions:
   contents: read
@@ -22,7 +22,7 @@ jobs:
     env:
       SOURCE_URL: ${{ secrets.SOURCE_URL }}
       NOTION_FETCH_METHOD: auto
-      NOTION_FETCH_TIMEOUT: '180'
+      NOTION_FETCH_TIMEOUT: "180"
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
@@ -34,12 +34,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

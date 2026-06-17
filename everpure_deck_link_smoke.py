@@ -6,6 +6,7 @@ Slides metadata, classifies them, and smoke-tests Google Sheet/Data Comparison l
 Drive export with the same OAuth token used for deck fetching. It does not fetch Helio data;
 Helio links are inventoried for follow-up.
 """
+
 import argparse
 import csv
 import hashlib
@@ -16,7 +17,7 @@ import re
 import time
 from collections import Counter
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import parse_qs, unquote, urlparse
 
 import requests
@@ -110,7 +111,7 @@ def classify_url(url: str, link_text: str = "") -> str:
 
 def extract_shape_text(element: Dict[str, Any]) -> str:
     parts: List[str] = []
-    text_elements = (((element.get("shape") or {}).get("text") or {}).get("textElements") or [])
+    text_elements = ((element.get("shape") or {}).get("text") or {}).get("textElements") or []
     for te in text_elements:
         run = te.get("textRun") or {}
         content = run.get("content")
@@ -130,7 +131,7 @@ def slide_text_excerpt(slide: Dict[str, Any], limit: int = 220) -> str:
 
 def collect_link_runs_from_element(element: Dict[str, Any]) -> List[Tuple[str, str]]:
     out: List[Tuple[str, str]] = []
-    text_elements = (((element.get("shape") or {}).get("text") or {}).get("textElements") or [])
+    text_elements = ((element.get("shape") or {}).get("text") or {}).get("textElements") or []
     for te in text_elements:
         run = te.get("textRun") or {}
         content = normalize_space(run.get("content") or "")
@@ -157,7 +158,9 @@ def walk_for_link_urls(obj: Any, out: List[str]) -> None:
         link = obj.get("link")
         if isinstance(link, dict) and isinstance(link.get("url"), str):
             out.append(link["url"])
-        if isinstance(obj.get("url"), str) and any(k in obj for k in ("link", "title", "description")):
+        if isinstance(obj.get("url"), str) and any(
+            k in obj for k in ("link", "title", "description")
+        ):
             out.append(obj["url"])
         for value in obj.values():
             walk_for_link_urls(value, out)
@@ -176,13 +179,17 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
     try:
         meta = load_json(meta_path)
     except Exception as exc:
-        return [{
-            "file_id": meta_path.stem,
-            "error": f"metadata_load_failed:{exc}",
-        }]
+        return [
+            {
+                "file_id": meta_path.stem,
+                "error": f"metadata_load_failed:{exc}",
+            }
+        ]
 
     deck_id = meta_path.stem
-    deck_title = meta.get("title") or deck_info.get("title") or deck_info.get("canonical_url") or deck_id
+    deck_title = (
+        meta.get("title") or deck_info.get("title") or deck_info.get("canonical_url") or deck_id
+    )
     slides = meta.get("slides") or []
     records: List[Dict[str, Any]] = []
     seen = set()
@@ -201,23 +208,26 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
                     continue
                 seen.add(key)
                 source_type = classify_url(target_url, link_text)
-                records.append({
-                    "link_id": link_id(deck_id, idx, target_url, link_text),
-                    "deck_file_id": deck_id,
-                    "deck_title": normalize_space(deck_title),
-                    "slide_number": idx,
-                    "slide_object_id": slide_id,
-                    "link_text": normalize_space(link_text) or normalize_space(element_text)[:120],
-                    "slide_text_excerpt": slide_excerpt,
-                    "raw_url": raw_url,
-                    "target_url": target_url,
-                    "domain": domain_for(target_url),
-                    "source_type": source_type,
-                    "google_file_id": extract_google_id(target_url, source_type),
-                    "google_gid": extract_gid(target_url),
-                    "associated_weeks": deck_info.get("associated_weeks", []),
-                    "associated_record_ids": deck_info.get("associated_record_ids", []),
-                })
+                records.append(
+                    {
+                        "link_id": link_id(deck_id, idx, target_url, link_text),
+                        "deck_file_id": deck_id,
+                        "deck_title": normalize_space(deck_title),
+                        "slide_number": idx,
+                        "slide_object_id": slide_id,
+                        "link_text": normalize_space(link_text)
+                        or normalize_space(element_text)[:120],
+                        "slide_text_excerpt": slide_excerpt,
+                        "raw_url": raw_url,
+                        "target_url": target_url,
+                        "domain": domain_for(target_url),
+                        "source_type": source_type,
+                        "google_file_id": extract_google_id(target_url, source_type),
+                        "google_gid": extract_gid(target_url),
+                        "associated_weeks": deck_info.get("associated_weeks", []),
+                        "associated_record_ids": deck_info.get("associated_record_ids", []),
+                    }
+                )
 
             walk_for_link_urls(element, generic_urls)
 
@@ -228,23 +238,25 @@ def extract_links_from_metadata(meta_path: Path, deck_info: Dict[str, Any]) -> L
                 continue
             seen.add(key)
             source_type = classify_url(target_url, "")
-            records.append({
-                "link_id": link_id(deck_id, idx, target_url, ""),
-                "deck_file_id": deck_id,
-                "deck_title": normalize_space(deck_title),
-                "slide_number": idx,
-                "slide_object_id": slide_id,
-                "link_text": "",
-                "slide_text_excerpt": slide_excerpt,
-                "raw_url": raw_url,
-                "target_url": target_url,
-                "domain": domain_for(target_url),
-                "source_type": source_type,
-                "google_file_id": extract_google_id(target_url, source_type),
-                "google_gid": extract_gid(target_url),
-                "associated_weeks": deck_info.get("associated_weeks", []),
-                "associated_record_ids": deck_info.get("associated_record_ids", []),
-            })
+            records.append(
+                {
+                    "link_id": link_id(deck_id, idx, target_url, ""),
+                    "deck_file_id": deck_id,
+                    "deck_title": normalize_space(deck_title),
+                    "slide_number": idx,
+                    "slide_object_id": slide_id,
+                    "link_text": "",
+                    "slide_text_excerpt": slide_excerpt,
+                    "raw_url": raw_url,
+                    "target_url": target_url,
+                    "domain": domain_for(target_url),
+                    "source_type": source_type,
+                    "google_file_id": extract_google_id(target_url, source_type),
+                    "google_gid": extract_gid(target_url),
+                    "associated_weeks": deck_info.get("associated_weeks", []),
+                    "associated_record_ids": deck_info.get("associated_record_ids", []),
+                }
+            )
 
     return records
 
@@ -279,13 +291,19 @@ def extract_numbers_from_text(text: str, limit: int = 40) -> List[str]:
     return list(dict.fromkeys(matches))[:limit]
 
 
-def fetch_google_sheet_csv(session: requests.Session, spreadsheet_id: str, timeout: int = 60) -> Tuple[int, str, str]:
+def fetch_google_sheet_csv(
+    session: requests.Session, spreadsheet_id: str, timeout: int = 60
+) -> Tuple[int, str, str]:
     params = {"mimeType": "text/csv"}
-    resp = session.get(DRIVE_EXPORT_URL.format(file_id=spreadsheet_id), params=params, timeout=timeout)
+    resp = session.get(
+        DRIVE_EXPORT_URL.format(file_id=spreadsheet_id), params=params, timeout=timeout
+    )
     return resp.status_code, resp.text, resp.headers.get("content-type", "")
 
 
-def summarize_csv(csv_text: str, include_rows: bool, max_rows: int, max_columns: int) -> Dict[str, Any]:
+def summarize_csv(
+    csv_text: str, include_rows: bool, max_rows: int, max_columns: int
+) -> Dict[str, Any]:
     rows: List[List[str]] = []
     reader = csv.reader(io.StringIO(csv_text))
     for row in reader:
@@ -305,8 +323,7 @@ def summarize_csv(csv_text: str, include_rows: bool, max_rows: int, max_columns:
     }
     if include_rows:
         summary["sample_rows"] = [
-            [redact_text(cell, limit=120) for cell in row]
-            for row in body[: min(5, len(body))]
+            [redact_text(cell, limit=120) for cell in row] for row in body[: min(5, len(body))]
         ]
     return summary
 
@@ -333,13 +350,15 @@ def smoke_fetch_google_sheets(
         if not spreadsheet_id or spreadsheet_id in seen_sheets:
             continue
         if attempted >= max_fetches:
-            fetches.append({
-                "link_id": link.get("link_id"),
-                "source_type": "google_sheet",
-                "status": "skipped_limit",
-                "spreadsheet_id": spreadsheet_id,
-                "source_url": link.get("target_url"),
-            })
+            fetches.append(
+                {
+                    "link_id": link.get("link_id"),
+                    "source_type": "google_sheet",
+                    "status": "skipped_limit",
+                    "spreadsheet_id": spreadsheet_id,
+                    "source_url": link.get("target_url"),
+                }
+            )
             continue
         seen_sheets.add(spreadsheet_id)
         attempted += 1
@@ -360,25 +379,29 @@ def smoke_fetch_google_sheets(
                 fetch["status"] = "error"
                 fetch["error"] = redact_text(body, limit=500)
             else:
-                csv_summary = summarize_csv(body, include_rows=include_rows, max_rows=max_rows, max_columns=max_columns)
+                csv_summary = summarize_csv(
+                    body, include_rows=include_rows, max_rows=max_rows, max_columns=max_columns
+                )
                 fetch["status"] = "success"
                 fetch.update(csv_summary)
-                evidence.append({
-                    "source_type": "google_sheet_csv_smoke",
-                    "link_id": link.get("link_id"),
-                    "deck_file_id": link.get("deck_file_id"),
-                    "deck_title": link.get("deck_title"),
-                    "slide_number": link.get("slide_number"),
-                    "link_text": link.get("link_text"),
-                    "source_url": link.get("target_url"),
-                    "associated_weeks": link.get("associated_weeks", []),
-                    "associated_record_ids": link.get("associated_record_ids", []),
-                    "headers": csv_summary.get("headers", []),
-                    "numeric_values": csv_summary.get("numeric_values", []),
-                    "text_excerpt": csv_summary.get("text_excerpt", ""),
-                    "sampled_row_count": csv_summary.get("sampled_row_count", 0),
-                    "sampled_column_count": csv_summary.get("sampled_column_count", 0),
-                })
+                evidence.append(
+                    {
+                        "source_type": "google_sheet_csv_smoke",
+                        "link_id": link.get("link_id"),
+                        "deck_file_id": link.get("deck_file_id"),
+                        "deck_title": link.get("deck_title"),
+                        "slide_number": link.get("slide_number"),
+                        "link_text": link.get("link_text"),
+                        "source_url": link.get("target_url"),
+                        "associated_weeks": link.get("associated_weeks", []),
+                        "associated_record_ids": link.get("associated_record_ids", []),
+                        "headers": csv_summary.get("headers", []),
+                        "numeric_values": csv_summary.get("numeric_values", []),
+                        "text_excerpt": csv_summary.get("text_excerpt", ""),
+                        "sampled_row_count": csv_summary.get("sampled_row_count", 0),
+                        "sampled_column_count": csv_summary.get("sampled_column_count", 0),
+                    }
+                )
         except Exception as exc:
             fetch["status"] = "error"
             fetch["error"] = f"{exc.__class__.__name__}:{exc}"
@@ -407,25 +430,75 @@ def write_aliases(data_dir: Path, name: str, payload: Any) -> None:
 
 
 def cli() -> None:
-    ap = argparse.ArgumentParser(description="Discover evidence links inside fetched Google Slides metadata and smoke-test Google Sheet access")
+    ap = argparse.ArgumentParser(
+        description="Discover evidence links inside fetched Google Slides metadata and smoke-test Google Sheet access"
+    )
     ap.add_argument("--data-dir", required=True, help="Directory containing deck_details.json")
-    ap.add_argument("--artifact-dir", required=True, help="Directory containing fetched Slides metadata JSON files")
-    ap.add_argument("--access-token", default=None, help="OAuth bearer token with Drive/Slides read scopes")
-    ap.add_argument("--client-id", default=None, help="OAuth client ID used with refresh-token flow")
-    ap.add_argument("--client-secret", default=None, help="OAuth client secret used with refresh-token flow")
-    ap.add_argument("--refresh-token", default=None, help="OAuth refresh token used to mint a fresh access token")
-    ap.add_argument("--service-account-json", default=None, help="Path to service account JSON for server-to-server auth")
-    ap.add_argument("--subject", default=None, help="Optional user email for domain-wide delegation impersonation")
-    ap.add_argument("--limit", type=int, default=None, help="Accepted for build compatibility; link extraction uses all local metadata files")
-    ap.add_argument("--max-google-sheet-fetches", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_SHEET_FETCH_LIMIT", "8")))
-    ap.add_argument("--max-rows", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_SMOKE_MAX_ROWS", "40")))
-    ap.add_argument("--max-columns", type=int, default=int(os.environ.get("EXTERNAL_EVIDENCE_SMOKE_MAX_COLUMNS", "16")))
-    ap.add_argument("--include-rows", action="store_true", default=os.environ.get("EXTERNAL_EVIDENCE_SMOKE_INCLUDE_ROWS", "0") == "1", help="Store up to five redacted sample rows. Off by default.")
+    ap.add_argument(
+        "--artifact-dir",
+        required=True,
+        help="Directory containing fetched Slides metadata JSON files",
+    )
+    ap.add_argument(
+        "--access-token", default=None, help="OAuth bearer token with Drive/Slides read scopes"
+    )
+    ap.add_argument(
+        "--client-id", default=None, help="OAuth client ID used with refresh-token flow"
+    )
+    ap.add_argument(
+        "--client-secret", default=None, help="OAuth client secret used with refresh-token flow"
+    )
+    ap.add_argument(
+        "--refresh-token",
+        default=None,
+        help="OAuth refresh token used to mint a fresh access token",
+    )
+    ap.add_argument(
+        "--service-account-json",
+        default=None,
+        help="Path to service account JSON for server-to-server auth",
+    )
+    ap.add_argument(
+        "--subject",
+        default=None,
+        help="Optional user email for domain-wide delegation impersonation",
+    )
+    ap.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Accepted for build compatibility; link extraction uses all local metadata files",
+    )
+    ap.add_argument(
+        "--max-google-sheet-fetches",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_SHEET_FETCH_LIMIT", "8")),
+    )
+    ap.add_argument(
+        "--max-rows",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_SMOKE_MAX_ROWS", "40")),
+    )
+    ap.add_argument(
+        "--max-columns",
+        type=int,
+        default=int(os.environ.get("EXTERNAL_EVIDENCE_SMOKE_MAX_COLUMNS", "16")),
+    )
+    ap.add_argument(
+        "--include-rows",
+        action="store_true",
+        default=os.environ.get("EXTERNAL_EVIDENCE_SMOKE_INCLUDE_ROWS", "0") == "1",
+        help="Store up to five redacted sample rows. Off by default.",
+    )
     args = ap.parse_args()
 
     data_dir = Path(args.data_dir)
     artifact_dir = Path(args.artifact_dir)
-    deck_details = load_json(data_dir / "deck_details.json") if (data_dir / "deck_details.json").exists() else []
+    deck_details = (
+        load_json(data_dir / "deck_details.json")
+        if (data_dir / "deck_details.json").exists()
+        else []
+    )
     by_deck = associated_map(deck_details)
 
     links: List[Dict[str, Any]] = []
@@ -456,20 +529,35 @@ def cli() -> None:
             max_columns=args.max_columns,
         )
     except Exception as exc:
-        fetches.append({
-            "status": "auth_or_fetch_setup_error",
-            "error": f"{exc.__class__.__name__}:{exc}",
-        })
+        fetches.append(
+            {
+                "status": "auth_or_fetch_setup_error",
+                "error": f"{exc.__class__.__name__}:{exc}",
+            }
+        )
 
     fetch_status = {
         "generated_at": utc_now(),
         "summary": {
-            "attempted_count": len([f for f in fetches if f.get("status") not in {"skipped_limit"}]),
+            "attempted_count": len(
+                [f for f in fetches if f.get("status") not in {"skipped_limit"}]
+            ),
             "success_count": len([f for f in fetches if f.get("status") == "success"]),
-            "error_count": len([f for f in fetches if str(f.get("status", "")).startswith("error") or f.get("status") == "auth_or_fetch_setup_error"]),
+            "error_count": len(
+                [
+                    f
+                    for f in fetches
+                    if str(f.get("status", "")).startswith("error")
+                    or f.get("status") == "auth_or_fetch_setup_error"
+                ]
+            ),
             "skipped_limit_count": len([f for f in fetches if f.get("status") == "skipped_limit"]),
-            "google_sheet_link_count": len([l for l in links if l.get("source_type") == "google_sheet"]),
-            "helio_link_count": len([l for l in links if str(l.get("source_type", "")).startswith("helio")]),
+            "google_sheet_link_count": len(
+                [l for l in links if l.get("source_type") == "google_sheet"]
+            ),
+            "helio_link_count": len(
+                [l for l in links if str(l.get("source_type", "")).startswith("helio")]
+            ),
         },
         "fetches": fetches,
     }
@@ -486,16 +574,22 @@ def cli() -> None:
     write_aliases(data_dir, "deck_link_fetch_status.json", fetch_status)
     write_aliases(data_dir, "external_research_evidence_smoke.json", evidence_payload)
 
-    print(json.dumps({
-        "deck_link_count": link_payload["summary"]["link_count"],
-        "by_source_type": link_payload["summary"].get("by_source_type", {}),
-        "sheet_fetch_summary": fetch_status["summary"],
-        "outputs": [
-            str(data_dir / "deck_links.json"),
-            str(data_dir / "deck_link_fetch_status.json"),
-            str(data_dir / "external_research_evidence_smoke.json"),
-        ],
-    }, indent=2, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "deck_link_count": link_payload["summary"]["link_count"],
+                "by_source_type": link_payload["summary"].get("by_source_type", {}),
+                "sheet_fetch_summary": fetch_status["summary"],
+                "outputs": [
+                    str(data_dir / "deck_links.json"),
+                    str(data_dir / "deck_link_fetch_status.json"),
+                    str(data_dir / "external_research_evidence_smoke.json"),
+                ],
+            },
+            indent=2,
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

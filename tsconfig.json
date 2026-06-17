@@ -1,0 +1,19 @@
+{
+  "//": "Lenient JS type checking via `tsc --noEmit`. No emit, no TS migration — just catches real bugs in the Node renderers.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": ["node"]
+  },
+  "include": ["netlify/**/*.js", "tests/**/*.js"],
+  "exclude": ["node_modules", "output", "publish", "deck_artifacts", "deck_artifacts_empty", "docs"]
+}

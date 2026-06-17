@@ -1,0 +1,16 @@
+# Generated / vendored — never format
+node_modules/
+publish/
+output/
+deck_artifacts/
+deck_artifacts_empty/
+.venv/
+package-lock.json
+
+# Committed source snapshots, frozen archives, and verbatim handoff — do not reformat
+data/
+issues/
+history/
+emails/
+docs/handoff/
+*.min.js
