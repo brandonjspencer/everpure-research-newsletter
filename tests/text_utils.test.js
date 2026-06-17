@@ -2,7 +2,12 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const { stripLeadingConceptLabel } = require("../netlify/text_utils");
+const {
+  stripLeadingConceptLabel,
+  normalizeLigatures,
+  sanitizeEvidenceSegments,
+  pickBestEvidence,
+} = require("../netlify/text_utils");
 
 test("strips a duplicated concept label from the front of an evidence line", () => {
   // The three real June findings that surfaced the bug.
@@ -58,4 +63,50 @@ test("never returns empty and tolerates missing inputs", () => {
   );
   assert.strictEqual(stripLeadingConceptLabel("Some text", ""), "Some text");
   assert.strictEqual(stripLeadingConceptLabel(undefined, "Title"), undefined);
+});
+
+test("normalizeLigatures repairs PDF ligature artifacts", () => {
+  assert.strictEqual(
+    normalizeLigatures("In the ﬁrst impression, diﬀerentiation and beneﬁt"),
+    "In the first impression, differentiation and benefit"
+  );
+});
+
+test("sanitizeEvidenceSegments splits off pipeline scaffolding", () => {
+  const raw =
+    "Action intent is fragmented and no single CTA dominates. Accelerate Live Stream Signal Concept 192 Source: Data Comparison";
+  const segs = sanitizeEvidenceSegments(raw, "Accelerate Live Stream");
+  assert.ok(
+    segs.includes("Action intent is fragmented and no single CTA dominates."),
+    JSON.stringify(segs)
+  );
+  // No segment should still carry scaffolding tokens.
+  for (const s of segs) {
+    assert.ok(!/Concept\s*\d+|Source:|Data Comparison/i.test(s), `scaffolding leaked: ${s}`);
+  }
+});
+
+test("pickBestEvidence prefers a concrete signal over a hunch restatement", () => {
+  const finding = "Users understand the category, but the page needs to make the outcome clearer.";
+  const candidates = [
+    // Hunch / near-restatement of the finding (should lose):
+    "EDC Blueprint Page Exploring whether the assessment positioning feels credible and worth engaging with.",
+    // Concrete surfaced signal with a verbatim quote (should win):
+    'One respondent asked directly: "Why would you assume I\'d start an assessment straight away?" EDC Blueprint Page Signal Concept 191 Source: Data Comparison',
+  ];
+  const best = pickBestEvidence(candidates, {
+    title: "EDC Blueprint Page",
+    findingStatement: finding,
+  });
+  assert.strictEqual(
+    best,
+    'One respondent asked directly: "Why would you assume I\'d start an assessment straight away?"'
+  );
+});
+
+test("pickBestEvidence returns empty when nothing is concrete enough", () => {
+  const candidates = [
+    "EDC Blueprint Page Exploring whether the positioning feels credible and worth engaging with.",
+  ];
+  assert.strictEqual(pickBestEvidence(candidates, { title: "EDC Blueprint Page" }), "");
 });

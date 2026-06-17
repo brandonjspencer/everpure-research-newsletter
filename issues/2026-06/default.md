@@ -14,7 +14,7 @@ Users understand the Enterprise Data Cloud category, but the Blueprint page stil
 
 #### Evidence
 
-Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.
+One respondent asked directly: "Why would you assume I'd start an assessment straight away?"
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -32,7 +32,7 @@ The live stream experience needs to make the event feel live immediately and gui
 
 #### Evidence
 
-The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant "Watch Live" action.
+Autoplay expectation mismatch creates friction for the keynote CTA
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -50,7 +50,7 @@ Contextual Intelligence is recognizable as an AI and data management topic, but 
 
 #### Evidence
 
-Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.
+Most visitors grasp the category but miss the differentiation Responses clustered around generic labels, "AI," "data storage," "data transformation." Only after extended exposure did respondents use the product's own framing: "transforming fragmented data into AI-ready contextual intelligence."
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 

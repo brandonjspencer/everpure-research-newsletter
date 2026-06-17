@@ -21,7 +21,7 @@
     {
       "title": "EDC Blueprint Page",
       "finding_statement": "Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.",
-      "proof_point": "Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.",
+      "proof_point": "One respondent asked directly: \"Why would you assume I'd start an assessment straight away?\"",
       "next_step": "Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.",
       "confidence": "medium",
       "decision_status": "iterate",
@@ -31,7 +31,7 @@
     {
       "title": "Accelerate Live Stream",
       "finding_statement": "The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.",
-      "proof_point": "The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant \"Watch Live\" action.",
+      "proof_point": "Autoplay expectation mismatch creates friction for the keynote CTA",
       "next_step": "Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.",
       "confidence": "high",
       "decision_status": "ready to decide",
@@ -41,7 +41,7 @@
     {
       "title": "Contextual Intelligence PDP",
       "finding_statement": "Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.",
-      "proof_point": "Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.",
+      "proof_point": "Most visitors grasp the category but miss the differentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\"",
       "next_step": "Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.",
       "confidence": "medium",
       "decision_status": "iterate",

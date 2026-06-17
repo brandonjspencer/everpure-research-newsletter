@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { stripLeadingConceptLabel } = require("./text_utils");
+const { stripLeadingConceptLabel, pickBestEvidence } = require("./text_utils");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -124,6 +124,39 @@ function summarizeCounts(publishRoot) {
 const publishRoot = path.resolve(process.argv[2] || "publish");
 const counts = summarizeCounts(publishRoot);
 const generatedAt = new Date().toISOString();
+
+// Concrete research signals (quotes, metrics, first-impression observations)
+// live in concept-evidence, not the evidence-packs the findings are built from.
+// Index them by topic so the EVIDENCE column can surface a real signal instead
+// of restating the finding (the "hunch"). See pickBestEvidence in text_utils.
+const conceptEvidenceCandidates = loadConceptEvidenceCandidates(publishRoot);
+
+function loadConceptEvidenceCandidates(root) {
+  const payload = readJson(path.join(root, "data", "concept-evidence-default-30d.json"), []);
+  const concepts = asArray(payload.concepts || payload);
+  const byKey = new Map();
+  for (const concept of concepts) {
+    const title = concept.concept_display || concept.concept_title || concept.concept_key;
+    if (!title) continue;
+    const key = topicKey(title);
+    const candidates = [
+      ...asArray(concept.matched_evidence),
+      ...asArray(concept.clean_supporting_signals),
+    ]
+      .map((c) => (typeof c === "string" ? c : c && (c.text || c.line)))
+      .filter(Boolean);
+    if (!candidates.length) continue;
+    const existing = byKey.get(key) || [];
+    byKey.set(key, existing.concat(candidates));
+  }
+  return byKey;
+}
+
+function bestConceptEvidence(title, findingStatement) {
+  const candidates = conceptEvidenceCandidates.get(topicKey(title)) || [];
+  if (!candidates.length) return "";
+  return pickBestEvidence(candidates, { title, findingStatement });
+}
 
 function formatIssueDate(dateStr) {
   if (!dateStr) return "Current cycle";
@@ -787,10 +820,15 @@ function findingFromGroup(group) {
   const confidence = ov || confidenceForGroup(group, "track");
   const decisionStatus = confidence === "high" ? "ready to decide" : "iterate";
 
+  const findingStatement = topicSpecificFinding(title, evidenceLine);
   return {
     title,
-    finding_statement: topicSpecificFinding(title, evidenceLine),
+    finding_statement: findingStatement,
+    // EVIDENCE should show a concrete surfaced signal, not restate the finding:
+    // prefer a real concept-evidence signal, then the group's best line, then a
+    // generic fallback.
     proof_point:
+      bestConceptEvidence(title, findingStatement) ||
       stripLeadingConceptLabel(evidenceLine, title) ||
       `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
     next_step: actionForTopic(title),
