@@ -125,6 +125,16 @@ What still needs clarity? What should happen next?**
   generic lines like `UX Metrics ● …`.
 - Public artifacts must not contain internal editorial/debug recommendation blocks.
 
+### Editing the default brief's copy (data, not code)
+
+The default brief's per-issue editorial copy lives in `netlify/content/default-current.json` —
+finding statements, next steps, unresolved questions, comparison framing, per-topic confidence
+overrides, section ordering, and the closing note. **Edit that JSON to change an issue; no code
+change is needed.** Topics are keyed by the renderer's `topicKey()` value; any absent field
+falls back to a generic default in `render_stage2_default_current.js`, and a per-month copy can
+be selected with `STAGE2_CONTENT_FILE=netlify/content/default-2026-07.json`. Confidence is now
+data-driven (`confidence_override`) — do **not** reintroduce a hardcoded `"high"` in the renderer.
+
 ---
 
 ## Archive freeze workflow

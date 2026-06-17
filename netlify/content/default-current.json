@@ -1,0 +1,98 @@
+{
+  "note": "The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.",
+  "comparison_defaults": {
+    "statement_template": "{title} is best treated as a narrowed comparison problem: the next decision should protect the clearest user behavior rather than reopen broad creative exploration.",
+    "decision_criteria": "Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task."
+  },
+  "selection": {
+    "findings_preferred_order": [
+      "EDC Blueprint Page",
+      "Accelerate Live Stream",
+      "Contextual Intelligence PDP",
+      "Platform Diagram Update",
+      "Webinar Landing Page",
+      "Events Page"
+    ],
+    "unresolved_preferred_order": [
+      "Platform Diagram Update",
+      "Webinar Landing Page",
+      "EDC Blueprint Page",
+      "Contextual Intelligence PDP",
+      "Accelerate Live Stream"
+    ]
+  },
+  "topics": {
+    "edc_blueprint_page": {
+      "finding_statement": "Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.",
+      "next_step": "Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.",
+      "unresolved": {
+        "scope": "Assessment value and workshop clarity",
+        "question": "Do visitors understand what they get from the assessment and why the workshop is worth engaging with before they have enough context?"
+      }
+    },
+    "accelerate_live_stream": {
+      "confidence_override": "high",
+      "finding_statement": "The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.",
+      "next_step": "Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.",
+      "unresolved": {
+        "scope": "Live-state orientation",
+        "question": "Can visitors immediately tell the event is live, what they should watch now, and what action matters most?"
+      }
+    },
+    "contextual_intelligence_pdp": {
+      "finding_statement": "Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.",
+      "next_step": "Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.",
+      "unresolved": {
+        "scope": "Differentiation and business value",
+        "question": "Can users explain what contextual intelligence does differently and why that difference matters operationally?"
+      }
+    },
+    "platform_diagram_update": {
+      "finding_statement": "The platform diagram work is really a positioning problem: the story needs to move perception from storage platform to intelligent, AI-ready data platform.",
+      "next_step": "Simplify the platform diagram around one AI-ready data-platform story and test whether users describe the platform as intelligent and connected rather than only storage-oriented.",
+      "unresolved": {
+        "scope": "Platform story and perception shift",
+        "question": "Does the simplified diagram shift perception toward an intelligent AI-ready data platform, or does it still read like a storage architecture diagram?"
+      }
+    },
+    "webinar_landing_page": {
+      "finding_statement": "The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.",
+      "next_step": "Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.",
+      "unresolved": {
+        "scope": "Value clarity and registration effort",
+        "question": "Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?"
+      }
+    },
+    "webinar_registration_page": {
+      "finding_statement": "The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.",
+      "next_step": "Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.",
+      "unresolved": {
+        "scope": "Value clarity and registration effort",
+        "question": "Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?"
+      }
+    },
+    "events_page": {
+      "finding_statement": "Events-page work is pointing toward clearer hierarchy, simpler layouts, and more obvious paths into the full event set.",
+      "next_step": "Preserve the simplified hierarchy and clear “Explore All Events” path, then confirm the page still helps visitors find relevant events quickly.",
+      "comparison": {
+        "finding_statement": "The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems.",
+        "decision_criteria": "Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.",
+        "next_step": "Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete."
+      }
+    },
+    "homepage_ai_messaging": {
+      "comparison": {
+        "finding_statement": "The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion.",
+        "decision_criteria": "Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.",
+        "next_step": "Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation."
+      }
+    },
+    "pathfinder_cta_labels": {
+      "comparison": {
+        "finding_statement": "The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy.",
+        "decision_criteria": "Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.",
+        "next_step": "Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow."
+      }
+    }
+  }
+}

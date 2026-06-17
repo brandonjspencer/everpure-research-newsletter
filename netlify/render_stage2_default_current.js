@@ -14,6 +14,68 @@ function readJson(p, fallback) {
   }
 }
 
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function deepMerge(base, override) {
+  if (!isPlainObject(base)) return override === undefined ? base : override;
+  if (!isPlainObject(override)) return override === undefined ? base : override;
+  const out = { ...base };
+  for (const key of Object.keys(override)) {
+    out[key] = deepMerge(base[key], override[key]);
+  }
+  return out;
+}
+
+// GENERIC editorial fallbacks (safety net). The per-issue editorial copy lives in
+// netlify/content/default-current.json and is layered on top via deepMerge.
+const BUILT_IN_DEFAULTS = {
+  note: "The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.",
+  comparison_defaults: {
+    statement_template:
+      "{title} is best treated as a narrowed comparison problem: the next decision should protect the clearest user behavior rather than reopen broad creative exploration.",
+    decision_criteria:
+      "Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task.",
+  },
+  selection: {
+    findings_preferred_order: [
+      "EDC Blueprint Page",
+      "Accelerate Live Stream",
+      "Contextual Intelligence PDP",
+      "Platform Diagram Update",
+      "Webinar Landing Page",
+      "Events Page",
+    ],
+    unresolved_preferred_order: [
+      "Platform Diagram Update",
+      "Webinar Landing Page",
+      "EDC Blueprint Page",
+      "Contextual Intelligence PDP",
+      "Accelerate Live Stream",
+    ],
+  },
+  topics: {},
+};
+
+let content = BUILT_IN_DEFAULTS;
+
+function loadContent() {
+  const contentFile =
+    process.env.STAGE2_CONTENT_FILE || path.join(__dirname, "content", "default-current.json");
+  if (!fs.existsSync(contentFile)) {
+    console.warn(
+      `[render_stage2_default_current] content file not found at ${contentFile}; using built-in generic defaults.`
+    );
+    content = BUILT_IN_DEFAULTS;
+    return content;
+  }
+  content = deepMerge(BUILT_IN_DEFAULTS, readJson(contentFile, {}));
+  return content;
+}
+
+loadContent();
+
 function writeText(p, text) {
   ensureDir(p);
   fs.writeFileSync(p, text, "utf8");
@@ -484,36 +546,24 @@ function confidenceForCycle(groups) {
 }
 
 function comparisonCriteriaForTopic(title) {
-  const key = topicKey(title);
-  if (key === "events_page")
-    return "Pick the winner based on first-glance comprehension, clarity of available events, primary CTA clarity, and whether users know how to move from the page into event detail or registration.";
-  if (key === "homepage_ai_messaging")
-    return "Compare versions on comprehension, credibility, relevance, and whether AI language explains a real user benefit without adding abstraction.";
-  if (key === "pathfinder_cta_labels")
-    return "Compare labels on expectation-setting, perceived effort, specificity of the next step, and whether the label reduces hesitation at the point of commitment.";
-  return "Choose the strongest direction based on comprehension, confidence, clarity of next step, and decision relevance rather than preference alone.";
+  return (
+    content.topics[topicKey(title)]?.comparison?.decision_criteria ||
+    "Choose the strongest direction based on comprehension, confidence, clarity of next step, and decision relevance rather than preference alone."
+  );
 }
 
 function comparisonDirectionForTopic(title) {
-  const key = topicKey(title);
-  if (key === "events_page")
-    return "Use V4b as the lead direction and evaluate any remaining changes against simplification: fewer competing shapes, clearer featured-event treatment, scannable cards, and no search/CTA pattern that pulls users away from the task they are trying to complete.";
-  if (key === "homepage_ai_messaging")
-    return "Compare the next homepage copy against two guardrails: visitors should understand the offer faster, and AI should increase confidence rather than become a vague claim that needs extra explanation.";
-  if (key === "pathfinder_cta_labels")
-    return "Compare a “Personalize” baseline against a start-language hybrid. Pick the label that explains what happens next while still inviting people into the flow.";
-  return "Use the next comparison round to choose a direction against explicit criteria rather than reopening broad exploration.";
+  return (
+    content.topics[topicKey(title)]?.comparison?.next_step ||
+    "Use the next comparison round to choose a direction against explicit criteria rather than reopening broad exploration."
+  );
 }
 
 function comparisonStatementForTopic(title, group) {
-  const key = topicKey(title);
-  if (key === "events_page")
-    return "The Events decision is less about choosing the prettiest layout and more about preserving the behaviors that improved the page: easier scanning, clearer event discovery, and fewer competing visual systems.";
-  if (key === "homepage_ai_messaging")
-    return "The Homepage AI comparison should protect the balance between AI relevance and human readability. The decision is how much AI language is enough to clarify the offer without making AI itself the object of confusion.";
-  if (key === "pathfinder_cta_labels")
-    return "The Pathfinder comparison should resolve the tradeoff between recognition and click attraction. “Personalize” explains the outcome better, while start-language creates more entry-point energy.";
-  return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
+  return (
+    content.topics[topicKey(title)]?.comparison?.finding_statement ||
+    `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`
+  );
 }
 
 function comparisonFromGroup(group) {
@@ -704,47 +754,26 @@ function bestEvidenceLine(group) {
 }
 
 function topicSpecificFinding(title, evidenceLine) {
-  const key = topicKey(title);
-  if (key === "edc_blueprint_page")
-    return "Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.";
-  if (key === "accelerate_live_stream")
-    return "The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.";
-  if (key === "contextual_intelligence_pdp")
-    return "Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.";
-  if (key === "platform_diagram_update")
-    return "The platform diagram work is really a positioning problem: the story needs to move perception from storage platform to intelligent, AI-ready data platform.";
-  if (key === "webinar_landing_page" || key === "webinar_registration_page")
-    return "The webinar experience needs to communicate value faster and make registration feel easier before it can carry more conversion weight.";
-  if (key === "events_page")
-    return "Events-page work is pointing toward clearer hierarchy, simpler layouts, and more obvious paths into the full event set.";
+  const specific = content.topics[topicKey(title)]?.finding_statement;
+  if (specific) return specific;
   return evidenceLine && evidenceLine.length >= 40
     ? evidenceLine
     : `${title} is active in the current research window, but the most useful takeaway is the decision it needs to clarify next.`;
 }
 
 function actionForTopic(title) {
-  const key = topicKey(title);
-  if (key === "edc_blueprint_page")
-    return "Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.";
-  if (key === "accelerate_live_stream")
-    return "Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.";
-  if (key === "contextual_intelligence_pdp")
-    return "Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.";
-  if (key === "platform_diagram_update")
-    return "Simplify the platform diagram around one AI-ready data-platform story and test whether users describe the platform as intelligent and connected rather than only storage-oriented.";
-  if (key === "webinar_landing_page" || key === "webinar_registration_page")
-    return "Run the next webinar review as a barrier diagnosis: separate value clarity, form effort, session detail, and post-registration expectation so the team knows what is blocking progression.";
-  if (key === "events_page")
-    return "Preserve the simplified hierarchy and clear “Explore All Events” path, then confirm the page still helps visitors find relevant events quickly.";
-  return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
+  return (
+    content.topics[topicKey(title)]?.next_step ||
+    `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`
+  );
 }
 
 function findingFromGroup(group) {
   const title = canonicalTopicTitle(group.title);
   const evidenceLine = bestEvidenceLine(group);
   const source = groupSource(group);
-  const confidence =
-    topicKey(title) === "accelerate_live_stream" ? "high" : confidenceForGroup(group, "track");
+  const ov = content.topics[topicKey(title)]?.confidence_override;
+  const confidence = ov || confidenceForGroup(group, "track");
   const decisionStatus = confidence === "high" ? "ready to decide" : "iterate";
 
   return {
@@ -782,14 +811,7 @@ function eligibleGroups(groups) {
 }
 
 function buildNarrativeFindings(groups, statusInfo) {
-  const preferredOrder = [
-    "EDC Blueprint Page",
-    "Accelerate Live Stream",
-    "Contextual Intelligence PDP",
-    "Platform Diagram Update",
-    "Webinar Landing Page",
-    "Events Page",
-  ];
+  const preferredOrder = content.selection.findings_preferred_order;
   const candidates = eligibleGroups(groups);
   const picked = [];
   for (const title of preferredOrder) {
@@ -819,9 +841,8 @@ function buildComparisons(groups, sourceComparisons) {
     const title = canonicalTopicTitle(group.title);
     return {
       title,
-      finding_statement: `${title} is best treated as a narrowed comparison problem: the next decision should protect the clearest user behavior rather than reopen broad creative exploration.`,
-      decision_criteria:
-        "Choose the strongest direction based on first-glance comprehension, clarity of the next step, user confidence, and whether the page helps visitors complete the intended task.",
+      finding_statement: content.comparison_defaults.statement_template.replace("{title}", title),
+      decision_criteria: content.comparison_defaults.decision_criteria,
       next_step: actionForTopic(title),
       confidence: confidenceForGroup(group, "comparison"),
       decision_status: "compare",
@@ -833,41 +854,12 @@ function buildComparisons(groups, sourceComparisons) {
 
 function unresolvedQuestionForGroup(group) {
   const title = canonicalTopicTitle(group.title);
-  const key = topicKey(title);
-  if (key === "edc_blueprint_page")
+  const unresolved = content.topics[topicKey(title)]?.unresolved;
+  if (unresolved)
     return {
       title,
-      scope: "Assessment value and workshop clarity",
-      question:
-        "Do visitors understand what they get from the assessment and why the workshop is worth engaging with before they have enough context?",
-    };
-  if (key === "accelerate_live_stream")
-    return {
-      title,
-      scope: "Live-state orientation",
-      question:
-        "Can visitors immediately tell the event is live, what they should watch now, and what action matters most?",
-    };
-  if (key === "contextual_intelligence_pdp")
-    return {
-      title,
-      scope: "Differentiation and business value",
-      question:
-        "Can users explain what contextual intelligence does differently and why that difference matters operationally?",
-    };
-  if (key === "platform_diagram_update")
-    return {
-      title,
-      scope: "Platform story and perception shift",
-      question:
-        "Does the simplified diagram shift perception toward an intelligent AI-ready data platform, or does it still read like a storage architecture diagram?",
-    };
-  if (key === "webinar_landing_page" || key === "webinar_registration_page")
-    return {
-      title,
-      scope: "Value clarity and registration effort",
-      question:
-        "Are visitors hesitating because the value of registering is unclear, the form feels too heavy, or the page does not explain what happens after registration?",
+      scope: unresolved.scope,
+      question: unresolved.question,
     };
   return {
     title,
@@ -879,13 +871,7 @@ function unresolvedQuestionForGroup(group) {
 function buildUnresolvedQuestions(groups, statusInfo) {
   const candidates = eligibleGroups(groups);
   const questions = [];
-  const preferred = [
-    "Platform Diagram Update",
-    "Webinar Landing Page",
-    "EDC Blueprint Page",
-    "Contextual Intelligence PDP",
-    "Accelerate Live Stream",
-  ];
+  const preferred = content.selection.unresolved_preferred_order;
   for (const title of preferred) {
     const group = candidates.find((g) => topicKey(g.title) === topicKey(title));
     if (group && questions.length < 3) questions.push(unresolvedQuestionForGroup(group));
@@ -968,8 +954,7 @@ function buildStage2Brief() {
     unresolvedQuestions
   );
 
-  const note =
-    "The next cycle should keep each active workstream tied to a concrete user behavior: what people understand, trust, find, choose, or feel ready to do next.";
+  const note = content.note;
 
   return {
     title: "Everpure monthly research roundup (30d)",
