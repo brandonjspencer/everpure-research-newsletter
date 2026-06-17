@@ -108,8 +108,5 @@ variable `GOOGLE_FETCH_LIMIT`.
   it: `python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt`.
 - The Node renderers are plain CommonJS using only Node built-ins (no runtime npm deps);
   `node_modules/` is dev-tooling only.
-- Two files (`netlify/render_stage2_default_current.js`, `netlify/functions/api.js`) carry a
-  known superseded block of duplicate function definitions; `no-redeclare` is a warning there
-  pending a dead-code cleanup. It stays a hard error everywhere else.
 - Typecheck is intentionally **lenient** — Pyright `basic` mode and `tsc --checkJs` with
   `strict: false`. It's there to catch real bugs, not to force a typed migration.
