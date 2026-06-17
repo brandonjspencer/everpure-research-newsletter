@@ -8,6 +8,10 @@ your own keys to capture the real shape. It prints a redacted *skeleton* (field
 names, types, tiny samples) — never your API keys, and it truncates long strings
 so you are not pasting all 100 participant responses.
 
+Networking goes through **curl** (subprocess), not Python's `ssl`, because the
+local venv Python is linked against an old LibreSSL that Cloudflare-fronted hosts
+reject (TLSV1_ALERT_PROTOCOL_VERSION). System curl negotiates modern TLS fine.
+
 Usage (keys never leave your machine; nothing is written to disk):
 
     HELIO_APP_ID=xxxx HELIO_API_TOKEN=yyyy \\
@@ -21,10 +25,10 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import sys
-from typing import Any
-
-import requests
+import tempfile
+from typing import Any, Tuple
 
 API_BASE = "https://my.helio.app/api/public"
 DEFAULT_TEST_ID = "01KSV38T74ZYR3V9E19E6JYJMC"
@@ -57,21 +61,50 @@ def skeleton(obj: Any, depth: int = 0) -> Any:
     return f"{type(obj).__name__}"
 
 
-def call(session: requests.Session, url: str) -> None:
+def curl_json(url: str, app_id: str, token: str) -> Tuple[str, str, str]:
+    """Fetch via curl. Headers go in a temp config file so the keys never appear
+    in the process args (`ps`). Returns (status_code, body, stderr)."""
+    cfg = tempfile.NamedTemporaryFile("w", suffix=".curlcfg", delete=False)
+    try:
+        cfg.write(f'header = "X-API-ID: {app_id}"\n')
+        cfg.write(f'header = "X-API-TOKEN: {token}"\n')
+        cfg.write(f'header = "Authorization: Bearer {token}"\n')
+        cfg.write('header = "Accept: application/json"\n')
+        cfg.close()
+        os.chmod(cfg.name, 0o600)
+        proc = subprocess.run(
+            ["curl", "-sS", "-K", cfg.name, "-w", "\n%{http_code}", url],
+            capture_output=True,
+            text=True,
+            timeout=90,
+        )
+    finally:
+        try:
+            os.unlink(cfg.name)
+        except OSError:
+            pass
+    out = proc.stdout
+    if "\n" in out:
+        body, _, code = out.rpartition("\n")
+    else:
+        body, code = "", out
+    return code.strip(), body, proc.stderr.strip()
+
+
+def call(url: str, app_id: str, token: str) -> None:
     print(f"\n=== GET {url} ===")
-    try:
-        resp = session.get(url, timeout=60)
-    except Exception as exc:  # noqa: BLE001 - probe is best-effort
-        print(f"  request error: {exc.__class__.__name__}: {exc}")
+    code, body, err = curl_json(url, app_id, token)
+    if not code:
+        print(f"  curl failed: {err or 'no response'}")
         return
-    print(f"  status: {resp.status_code}  content-type: {resp.headers.get('content-type')}")
-    if resp.status_code != 200:
-        print(f"  body (first 300 chars): {resp.text[:300]!r}")
+    print(f"  status: {code}")
+    if code != "200":
+        print(f"  body (first 300 chars): {body[:300]!r}")
         return
     try:
-        data = resp.json()
+        data = json.loads(body)
     except ValueError:
-        print(f"  non-JSON body (first 300 chars): {resp.text[:300]!r}")
+        print(f"  non-JSON body (first 300 chars): {body[:300]!r}")
         return
     print("  shape:")
     print(json.dumps(skeleton(data), indent=2, ensure_ascii=False)[:6000])
@@ -80,27 +113,19 @@ def call(session: requests.Session, url: str) -> None:
 def main() -> int:
     app_id = os.environ.get("HELIO_APP_ID", "").strip()
     token = os.environ.get("HELIO_API_TOKEN", "").strip()
-    if not app_id or not token:
-        print("Set HELIO_APP_ID and HELIO_API_TOKEN in the environment first.", file=sys.stderr)
+    if not app_id or not token or app_id.startswith("your-") or token.startswith("your-"):
+        print(
+            "Set HELIO_APP_ID and HELIO_API_TOKEN to your REAL Helio keys first "
+            "(the placeholders were not replaced).",
+            file=sys.stderr,
+        )
         return 2
 
     test_id = (sys.argv[1] if len(sys.argv) > 1 else DEFAULT_TEST_ID).strip()
 
-    session = requests.Session()
-    # Send the documented headers; the official Ruby gem also mirrors the token
-    # as a Bearer Authorization header, so include it for the widest compatibility.
-    session.headers.update(
-        {
-            "X-API-ID": app_id,
-            "X-API-TOKEN": token,
-            "Authorization": f"Bearer {token}",
-            "Accept": "application/json",
-        }
-    )
-
-    print("Probing Helio public API (keys redacted; samples truncated)…")
-    call(session, f"{API_BASE}/tests")
-    call(session, f"{API_BASE}/tests/{test_id}")
+    print("Probing Helio public API via curl (keys redacted; samples truncated)…")
+    call(f"{API_BASE}/tests", app_id, token)
+    call(f"{API_BASE}/tests/{test_id}", app_id, token)
     print("\nDone. The output above is safe to paste back (no keys; values truncated).")
     return 0
 
