@@ -14,7 +14,7 @@ Users understand the Enterprise Data Cloud category, but the Blueprint page stil
 
 #### Evidence
 
-EDC Blueprint Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.
+Users understand the Enterprise Data Cloud category, but they don't clearly understand what the Blueprint delivers or why they should start the assessment.
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -32,7 +32,7 @@ The live stream experience needs to make the event feel live immediately and gui
 
 #### Evidence
 
-Accelerate Live Stream The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant "Watch Live" action.
+The biggest opportunity is making it immediately obvious that the event is live and guiding users toward a single dominant "Watch Live" action.
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
@@ -50,7 +50,7 @@ Contextual Intelligence is recognizable as an AI and data management topic, but 
 
 #### Evidence
 
-Contextual Intelligence Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.
+Users recognize the AI and data management category, but the differentiation and business value of contextual intelligence need to be clearer and easier to understand.
 
 [Source deck](https://docs.google.com/presentation/d/1SxEYxMimuzal4p8PXfjBKLWsSEMJKHpIK0ix--nxt9c/edit)
 
