@@ -33,6 +33,10 @@ jobs:
       GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
       GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
       GOOGLE_FETCH_LIMIT: ${{ vars.GOOGLE_FETCH_LIMIT || '17' }}
+      # Helio public-API keys (Enterprise) for report-detail evidence (Tier B).
+      # Tier A (compare share pages) needs no auth; these are read when present.
+      HELIO_APP_ID: ${{ secrets.HELIO_APP_ID }}
+      HELIO_API_TOKEN: ${{ secrets.HELIO_API_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

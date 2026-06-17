@@ -50,7 +50,19 @@ def check_freshness(data_dir: Path) -> Dict[str, Any]:
     degraded = int(deck.get("degraded_count") or 0)
     truncated = int(deck.get("truncated_to_first_tab_count") or 0)
     gid_missing = int(deck.get("requested_gid_not_found_count") or 0)
-    capture_degraded = degraded + truncated + gid_missing
+
+    # Helio capture (compare share pages + report API). A failed/empty Helio fetch
+    # is a degradation signal, the same way a degraded sheet capture is.
+    helio = (
+        _load(data_dir / "helio_fetch_status.json")
+        or _load(data_dir.parent / "helio_fetch_status.json")
+        or {}
+    )
+    helio_summary = helio.get("summary") or {}
+    helio_errors = int(helio_summary.get("error_count") or 0)
+    helio_empty = int(helio_summary.get("empty_count") or 0)
+
+    capture_degraded = degraded + truncated + gid_missing + helio_errors + helio_empty
 
     live = method in LIVE_FETCH_METHODS
     if not live:
@@ -72,6 +84,12 @@ def check_freshness(data_dir: Path) -> Dict[str, Any]:
             "truncated_to_first_tab_count": truncated,
             "requested_gid_not_found_count": gid_missing,
         },
+        "helio_capture": {
+            "error_count": helio_errors,
+            "empty_count": helio_empty,
+            "evidence_count": int(helio_summary.get("evidence_count") or 0),
+            "tier_b_report_api": helio_summary.get("tier_b_report_api"),
+        },
     }
 
 
@@ -92,6 +110,14 @@ def _print_human(result: Dict[str, Any]) -> None:
         f"degraded={dc['degraded_count']} "
         f"truncated_to_first_tab={dc['truncated_to_first_tab_count']} "
         f"gid_not_found={dc['requested_gid_not_found_count']}"
+    )
+    hc = result.get("helio_capture") or {}
+    print(
+        "helio_capture: "
+        f"evidence={hc.get('evidence_count', 0)} "
+        f"errors={hc.get('error_count', 0)} "
+        f"empty={hc.get('empty_count', 0)} "
+        f"report_api={hc.get('tier_b_report_api')}"
     )
     if status == "live_clean":
         print("✅ Live fetch, clean capture — safe to draft.")
