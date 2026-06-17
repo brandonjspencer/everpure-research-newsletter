@@ -44,14 +44,13 @@ eval "$(ssh-agent -s)".pub
 #
 # The live site is rebuilt fresh in CI by netlify/build.sh and uploaded as the
 # GitHub Pages artifact, so generated outputs do NOT need to be committed.
-# publish/index.html is a hand-maintained source page and IS tracked.
 # ---------------------------------------------------------------------------
 
 # Everything under publish/ is rebuilt by netlify/build.sh (data, api, newsletter,
-# issues, history, status.json, .nojekyll, ...). Only publish/index.html is a
-# hand-maintained source page that stays tracked.
+# issues, history, status.json, .nojekyll, ...). The homepage (publish/index.html)
+# is now GENERATED too — it's the trends dashboard (render_trends_dashboard.js,
+# the build's last writer of index.html) — so nothing under publish/ is tracked.
 /publish/*
-!/publish/index.html
 
 # Locally fetched deck artifacts (PDF/PPTX pulled from Google Slides)
 /deck_artifacts/

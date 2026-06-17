@@ -73,9 +73,16 @@ issue; the renderer falls back to generic defaults for anything absent. See
 
 ## Conventions & guardrails
 
-- **Generated artifacts are not committed.** `publish/` (except `publish/index.html`) and
-  fetched `deck_artifacts/` are rebuilt; they're gitignored. `output/` holds committed
-  legacy sample data used as test fixtures.
+- **Generated artifacts are not committed.** All of `publish/` and fetched `deck_artifacts/`
+  are rebuilt; they're gitignored. The homepage `publish/index.html` is now **generated** too —
+  it's the trends dashboard (`render_trends_dashboard.js`, the build's last writer of
+  `index.html`). `output/` holds committed legacy sample data used as test fixtures.
+- **Branded pages share one theme.** `netlify/dashboard_theme.js` is the single source of the
+  branded look (light/dark CSS variables, the collapsible hover-expand icon sidebar, the theme
+  toggle). The dashboard (homepage), `render_sitemap.js`, the issues archive
+  (`publish_issue_archives.js`), and the activity log (`render_stage2_marketing_current.js`) all
+  pull from it. Nav links are **relative** with a per-page `prefix` (`""` root, `"../"` one level
+  deep) to survive the Pages subpath. SVG chart fills are CSS variables so charts follow the theme.
 - **Prefer post-generation static rewriting over editing the API render module**
   (`netlify/api.js`, imported at build time by `generate_static_newsletters.js` to emit the
   static API JSON). There is no live/serverless API — the site is **static on GitHub Pages**

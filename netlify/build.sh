@@ -186,6 +186,12 @@ if [ -f "$ROOT/netlify/build_concept_evidence.js" ]; then
   node "$ROOT/netlify/build_concept_evidence.js" "$ROOT/publish"
 fi
 
+# Roll the committed longitudinal record (history/ + issues/) plus the current
+# Helio metrics into publish/data/trends.json for the static trends dashboard.
+if [ -f "$ROOT/netlify/build_trends.js" ]; then
+  node "$ROOT/netlify/build_trends.js" "$ROOT"
+fi
+
 node "$ROOT/netlify/generate_static_newsletters.js"
 if [ -f "$ROOT/netlify/external_evidence_observability.js" ]; then
   node "$ROOT/netlify/external_evidence_observability.js" "$ROOT/publish"
@@ -199,6 +205,16 @@ node "$ROOT/netlify/render_stage2_marketing_current.js" "$ROOT/publish"
 node "$ROOT/netlify/publish_issue_archives.js" "$ROOT"
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
   node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
+fi
+
+# Dashboard is the site homepage, so it must be the LAST writer of publish/index.html
+# (generate_static_newsletters.js + external_evidence_observability.js write/inject it
+# earlier). The sitemap runs dead last so it scans every page that shipped.
+if [ -f "$ROOT/netlify/render_trends_dashboard.js" ]; then
+  node "$ROOT/netlify/render_trends_dashboard.js" "$ROOT"
+fi
+if [ -f "$ROOT/netlify/render_sitemap.js" ]; then
+  node "$ROOT/netlify/render_sitemap.js" "$ROOT"
 fi
 
 touch "$ROOT/publish/.nojekyll"

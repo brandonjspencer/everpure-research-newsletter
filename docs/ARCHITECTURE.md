@@ -85,6 +85,7 @@ by reordering — keep them in this sequence:
 5. `merge_external_evidence_packs.js`
 6. `clean_evidence_signals.js`
 7. `build_concept_evidence.js`
+   - `build_trends.js` — roll the committed history (+ current Helio metrics) into `trends.json`.
 8. `generate_static_newsletters.js` — **must run after** evidence packs / clean evidence /
    concept evidence so the default brief can use the deterministic substrate.
 9. `external_evidence_observability.js`
@@ -92,6 +93,10 @@ by reordering — keep them in this sequence:
 11. `render_stage2_default_current.js`, `render_stage2_marketing_current.js`
 12. `publish_issue_archives.js`
 13. `fix_static_aliases.js` (near the very end, after static artifacts exist)
+14. `render_trends_dashboard.js` — writes the homepage `publish/index.html`; **must run after**
+    `generate_static_newsletters.js` + `external_evidence_observability.js` (which write/inject
+    `index.html`) so the dashboard is the final homepage.
+15. `render_sitemap.js` — **dead last**, so it scans every page that shipped.
 
 ---
 
@@ -121,12 +126,16 @@ by reordering — keep them in this sequence:
 - **`merge_external_evidence_packs.js`** — Matches external Sheet signals back to concept packs and merges them into the four evidence-pack files (+ match report).
 - **`clean_evidence_signals.js`** — Strips deck boilerplate/OCR junk; prioritizes concrete metric lines; writes `clean_supporting_signals` / `clean_key_numbers`.
 - **`build_concept_evidence.js`** — Emits `concept_evidence_default_30d.json`: per-concept matched evidence, numbers, summary/next-step hints, confidence, decision status. The strongest stage-1 substrate.
+- **`build_trends.js`** — Rolls the committed longitudinal record (`history/concept_evidence/*`, `issues/*/default.json`, `history/helio/*` + the current `helio_evidence.json`) into `publish/data/trends.json`: per-cycle research outcomes (confidence/decision/strength/findings), per-concept trajectories, the Helio UX-metric time series, and respondent quotes. The repo _is_ the database — versioned, diffable, auditable. Exports `buildTrends` for tests.
+- **`dashboard_theme.js`** — Single source of the branded theme shared by all human-facing pages: light/dark CSS variables (`[data-theme]`, with a no-flash head init that respects OS preference + persists to localStorage), the collapsible hover-expand icon sidebar (`sidebar(active, prefix)` — relative links via `prefix`), and inline SVG icons. Exports `brandCss`/`sidebar`/`themeInit`/`docHead`.
+- **`render_trends_dashboard.js`** — Renders the trends dashboard, which **is the site homepage** (`publish/index.html`), from `trends.json`: shared theme + sidebar + hand-rolled SVG charts whose fills are CSS variables (so they follow light/dark). No chart lib, no React/Vite. Must be the **last** writer of `index.html` (see build order). Footer links to the published issues.
+- **`render_sitemap.js`** — Renders a branded, comprehensive sitemap (`publish/sitemap/index.html`) by **scanning the built `publish/` tree**, so it lists every page + API/data artifact that actually shipped and can't drift. Runs last.
 - **`generate_static_newsletters.js`** — Generates the per-build static `newsletter/*` artifacts + discovery links.
 - **`refine_default_newsletter.js`** / **`fix_default_bottom.js`** — Post-generation refinement of `default.{json,md,html}` (promote strong-proof concepts, de-dupe "What we should do next", strip debug blocks). Does **not** touch the API.
 - **`render_stage2_default_current.js`** — Hand-authored current-cycle writer for the default brief (also holds the on-brand "Figma Make" HTML design). Touches only `newsletter/default.*` + `api/newsletter-default.*`.
-- **`render_stage2_marketing_current.js`** — Current-cycle writer for the marketing "activity log 30d" artifact. Touches only `newsletter/marketing-activity-30d.*` + `api/newsletter-marketing-activity-30d.*`.
+- **`render_stage2_marketing_current.js`** — Current-cycle writer for the marketing "activity log 30d" artifact (the "Research activity log"). Touches only `newsletter/marketing-activity-30d.*` + `api/newsletter-marketing-activity-30d.*`; its HTML shell uses the shared `dashboard_theme.js` (sidebar + light/dark), but its data-driven content is unchanged.
 - **`external_evidence_observability.js`** — Injects external-evidence counts into `status.json`, `api/status.json`, and index HTML.
-- **`publish_issue_archives.js`** — Copies repo-tracked `issues/` + `history/` into `publish/`, generates `publish/issues/index.html` + `publish/data/issues.json`.
+- **`publish_issue_archives.js`** — Copies repo-tracked `issues/` + `history/` into `publish/`, generates `publish/issues/index.html` (branded via `dashboard_theme.js`) + `publish/data/issues.json`.
 - **`freeze_issue_snapshot.js`** — Manual post-approval freeze of the current issue into repo-tracked `issues/YYYY-MM/` + `history/`. See [OPERATIONS.md](OPERATIONS.md).
 - **`fix_static_aliases.js`** — Publishes hyphenated aliases (`deck-content.json`) alongside underscore files; updates homepage links.
 - **`fix_default_bottom.js`** — see above.

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
+const { brandCss, sidebar, themeInit, FONT_LINK } = require("./dashboard_theme");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -489,27 +490,19 @@ function buildHtml(payload) {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(payload.title)}</title>
+  ${FONT_LINK}
+  ${brandCss()}
+  ${themeInit()}
   <style>
-    body { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; padding: 0; background: #fafafa; color: #1f2937; }
-    main { max-width: 980px; margin: 0 auto; padding: 40px 20px 60px; }
-    h1 { font-size: 2rem; margin: 0 0 8px; }
-    h2 { font-size: 1.3rem; margin-top: 0; }
-    h3 { font-size: 1.05rem; margin: 0 0 8px; }
-    p { line-height: 1.6; }
-    .lede { color: #4b5563; margin-bottom: 28px; }
-    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 24px 0 32px; }
-    .stat { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; }
-    .stat .label { font-size: 0.85rem; color: #6b7280; margin-bottom: 6px; }
-    .stat .value { font-size: 1.4rem; font-weight: 700; }
-    .section { margin-top: 36px; }
-    .cards { display: grid; gap: 14px; }
-    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; }
-    ul { margin: 10px 0 0 18px; padding: 0; }
-    li { margin: 10px 0; line-height: 1.5; }
-    .subtle { color: #6b7280; font-size: 0.95rem; margin-top: 4px; }
+    main ul { margin: 10px 0 0 18px; padding: 0; }
+    main li { margin: 10px 0; line-height: 1.5; }
+    main h2 { font-size: 1.3rem; }
+    main h3 { font-size: 1.05rem; margin: 0 0 8px; }
   </style>
 </head>
 <body>
+  ${sidebar("activity", "../")}
+  <div class="shell">
   <main>
     <h1>${escapeHtml(payload.title)}</h1>
     <p class="lede">${escapeHtml(payload.summary)}</p>
@@ -556,6 +549,7 @@ function buildHtml(payload) {
       <ul>${tips}</ul>
     </section>
   </main>
+  </div>
 </body>
 </html>`;
 }
