@@ -137,6 +137,17 @@ def curl_json(url: str, app_id: str, token: str) -> Tuple[str, str, str]:
     return code.strip(), body, proc.stderr.strip()
 
 
+def fetch_parsed(url: str, app_id: str, token: str):
+    """Fetch + json.loads, or None. Used to pull a section id for scoped probes."""
+    code, body, _ = curl_json(url, app_id, token)
+    if code != "200":
+        return None
+    try:
+        return json.loads(body)
+    except ValueError:
+        return None
+
+
 def call(url: str, app_id: str, token: str, find: bool = False) -> None:
     print(f"\n=== GET {url} ===")
     code, body, err = curl_json(url, app_id, token)
@@ -187,12 +198,27 @@ def main() -> int:
     call(f"{API_BASE}/tests", app_id, token)
     call(f"{API_BASE}/tests/{test_id}", app_id, token, find=True)
 
-    # /tests/:id/responses is REAL (it 504'd, not 404/406) but times out dumping all
-    # 100 responses. Page it small so it returns, and show the full structure (skeleton)
-    # so we can see where per-question scores / open text live.
-    print("\n--- Helio /responses, paginated small to dodge the 504 ---")
-    call(f"{API_BASE}/tests/{test_id}/responses?per=2&page=1", app_id, token)
-    call(f"{API_BASE}/tests/{test_id}/responses?per=2&page=1&expand=true", app_id, token)
+    # /tests/:id/responses is REAL (504, not 404/406) but times out even at per=2.
+    # The internal app always scoped /responses by section_id (one question at a
+    # time). Grab a real section id from the test config, then probe scoped.
+    detail = fetch_parsed(f"{API_BASE}/tests/{test_id}", app_id, token)
+    sections = ((detail or {}).get("test") or {}).get("sections") or []
+    section_id = sections[0].get("id") if sections else None
+
+    print(f"\n--- Helio /responses scoped by section_id={section_id} ---")
+    if section_id is None:
+        print("  (no section id found in test config; cannot scope)")
+    else:
+        call(
+            f"{API_BASE}/tests/{test_id}/responses?section_id={section_id}&per=3&page=1",
+            app_id,
+            token,
+        )
+        call(
+            f"{API_BASE}/tests/{test_id}/responses?section_id={section_id}&per=3&page=1&expand=true",
+            app_id,
+            token,
+        )
 
     print("\nDone. The output above is safe to paste back (no keys; values truncated).")
     return 0
