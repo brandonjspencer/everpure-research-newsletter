@@ -229,6 +229,58 @@ function pickBestEvidence(rawCandidates, ctx = {}) {
   return bestScore >= 4 ? best : "";
 }
 
+function ensureSentenceEnd(text) {
+  return /[.?!”"]$/.test(text) ? text : `${text}.`;
+}
+
+// Trim to a max length at the nearest sentence boundary (preferred) or word
+// boundary, so evidence stays within a consistent ceiling.
+function capLength(text, maxLen) {
+  if (text.length <= maxLen) return text;
+  const slice = text.slice(0, maxLen + 1);
+  const sentenceEnd = Math.max(
+    slice.lastIndexOf(". "),
+    slice.lastIndexOf("? "),
+    slice.lastIndexOf("! ")
+  );
+  if (sentenceEnd >= 80) return text.slice(0, sentenceEnd + 1);
+  const space = slice.lastIndexOf(" ");
+  const cut = space >= 80 ? space : maxLen;
+  return `${text.slice(0, cut).replace(/[\s,;:—-]+$/, "")}…`;
+}
+
+/**
+ * Compose a concise evidence summary from raw candidate strings: take the
+ * strongest concrete segment, then append further *distinct* concrete segments
+ * while they fit under `maxLen`. This gives the EVIDENCE column a richer,
+ * multi-signal line (the convention curated overrides also follow) with a
+ * consistent length ceiling. Returns "" when nothing clears the bar.
+ */
+function composeEvidenceSummary(rawCandidates, ctx = {}, maxLen = 295) {
+  const title = ctx.title || "";
+  const segMap = new Map();
+  for (const raw of rawCandidates || []) {
+    for (const seg of sanitizeEvidenceSegments(raw, title)) {
+      const key = seg.toLowerCase();
+      if (!segMap.has(key)) segMap.set(key, seg);
+    }
+  }
+  const ranked = [...segMap.values()]
+    .map((seg) => ({ seg, score: scoreEvidence(seg, ctx) }))
+    .filter((x) => x.score >= 4)
+    .sort((a, b) => b.score - a.score || a.seg.length - b.seg.length);
+  if (!ranked.length) return "";
+
+  let result = capLength(ranked[0].seg, maxLen);
+  for (let i = 1; i < ranked.length; i += 1) {
+    const cand = ranked[i].seg;
+    if (overlapRatio(cand, result) >= 0.4) continue; // must add a distinct signal
+    const joined = `${ensureSentenceEnd(result)} ${cand}`;
+    if (joined.length <= maxLen) result = joined;
+  }
+  return capLength(result, maxLen);
+}
+
 module.exports = {
   stripLeadingConceptLabel,
   stripTrailingConceptLabel,
@@ -236,4 +288,5 @@ module.exports = {
   sanitizeEvidenceSegments,
   scoreEvidence,
   pickBestEvidence,
+  composeEvidenceSummary,
 };

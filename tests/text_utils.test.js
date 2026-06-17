@@ -7,6 +7,7 @@ const {
   normalizeLigatures,
   sanitizeEvidenceSegments,
   pickBestEvidence,
+  composeEvidenceSummary,
 } = require("../netlify/text_utils");
 
 test("strips a duplicated concept label from the front of an evidence line", () => {
@@ -109,4 +110,24 @@ test("pickBestEvidence returns empty when nothing is concrete enough", () => {
     "EDC Blueprint Page Exploring whether the positioning feels credible and worth engaging with.",
   ];
   assert.strictEqual(pickBestEvidence(candidates, { title: "EDC Blueprint Page" }), "");
+});
+
+test("composeEvidenceSummary joins distinct signals and respects the length cap", () => {
+  const candidates = [
+    "Action intent is fragmented and no single CTA dominates. Signal Concept 192 Source: Data Comparison",
+    "Autoplay expectation mismatch creates friction for the keynote. Concept 192 Source: Figma File",
+  ];
+  const out = composeEvidenceSummary(candidates, { title: "Accelerate Live Stream" }, 220);
+  assert.ok(out.length <= 220, `exceeded cap: ${out.length}`);
+  assert.ok(/fragmented/.test(out) && /Autoplay/.test(out), `missing a signal: ${out}`);
+  assert.ok(!/Concept\s*\d+|Source:/i.test(out), `scaffolding leaked: ${out}`);
+});
+
+test("composeEvidenceSummary truncates an overlong single segment at a boundary", () => {
+  const long =
+    "Respondents described the page as data cloud storage in the first impression test, " +
+    "and many asked what the assessment would actually produce before starting it, " +
+    "while others clicked through without understanding the outcome at all.";
+  const out = composeEvidenceSummary([long], { title: "EDC Blueprint Page" }, 120);
+  assert.ok(out.length <= 121, `exceeded cap: ${out.length}`);
 });

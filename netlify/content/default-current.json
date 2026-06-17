@@ -24,6 +24,7 @@
   "topics": {
     "edc_blueprint_page": {
       "finding_statement": "Users understand the Enterprise Data Cloud category, but the Blueprint page still needs to make the assessment and workshop outcome clearer before asking visitors to start.",
+      "proof_point": "In the 10-second first impression, most respondents called the page \"data cloud storage\" and fewer than 5 named the Success Blueprint unprompted; half clicked \"Start Your Assessment,\" but expectations were inconsistent and 29% weren't sure it was for them.",
       "next_step": "Clarify what the assessment produces, preview the value of the workshop or output, and validate whether visitors understand why starting the assessment is worth their time.",
       "unresolved": {
         "scope": "Assessment value and workshop clarity",
@@ -33,6 +34,7 @@
     "accelerate_live_stream": {
       "confidence_override": "high",
       "finding_statement": "The live stream experience needs to make the event feel live immediately and guide visitors toward one dominant “Watch Live” action.",
+      "proof_point": "Action intent is fragmented — no single CTA dominates — and an autoplay expectation mismatch creates friction for the keynote (\"Very unclear that this would autoplay\"). The emotional baseline reads only \"ok,\" strongest on \"Innovative\" and \"Helpful.\"",
       "next_step": "Make “Watch Live” the dominant action, add immediate live-state cues, and test whether visitors can tell what is happening now versus what is available later.",
       "unresolved": {
         "scope": "Live-state orientation",
@@ -41,6 +43,7 @@
     },
     "contextual_intelligence_pdp": {
       "finding_statement": "Contextual Intelligence is recognizable as an AI and data management topic, but the differentiation and business value need to become clearer and more operational.",
+      "proof_point": "Most visitors grasp the category but miss the differentiation — responses clustered around generic labels (\"AI,\" \"data storage\"). After a plain-language value statement was added, 66% understood it most or very well; \"Watch a Demo\" dominated in testing.",
       "next_step": "Translate contextual intelligence into concrete business value and operational trust cues, then validate whether users can explain what makes the capability different.",
       "unresolved": {
         "scope": "Differentiation and business value",

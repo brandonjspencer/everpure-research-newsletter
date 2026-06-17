@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { stripLeadingConceptLabel, pickBestEvidence } = require("./text_utils");
+const { stripLeadingConceptLabel, composeEvidenceSummary } = require("./text_utils");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -155,7 +155,7 @@ function loadConceptEvidenceCandidates(root) {
 function bestConceptEvidence(title, findingStatement) {
   const candidates = conceptEvidenceCandidates.get(topicKey(title)) || [];
   if (!candidates.length) return "";
-  return pickBestEvidence(candidates, { title, findingStatement });
+  return composeEvidenceSummary(candidates, { title, findingStatement });
 }
 
 function formatIssueDate(dateStr) {
@@ -825,9 +825,10 @@ function findingFromGroup(group) {
     title,
     finding_statement: findingStatement,
     // EVIDENCE should show a concrete surfaced signal, not restate the finding:
-    // prefer a real concept-evidence signal, then the group's best line, then a
-    // generic fallback.
+    // prefer the curated per-topic line, then an auto-composed concept-evidence
+    // signal, then the group's best line, then a generic fallback.
     proof_point:
+      content.topics[topicKey(title)]?.proof_point ||
       bestConceptEvidence(title, findingStatement) ||
       stripLeadingConceptLabel(evidenceLine, title) ||
       `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
