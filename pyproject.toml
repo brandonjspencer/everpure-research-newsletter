@@ -82,3 +82,7 @@ reportReturnType = "warning"
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-q"
+# Put the repo root on sys.path so tests can import the root modules
+# (e.g. everpure_external_research_ingest) regardless of whether pytest is
+# invoked as `pytest` (CI) or `python -m pytest` (Makefile).
+pythonpath = ["."]
