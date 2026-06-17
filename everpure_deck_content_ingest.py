@@ -121,7 +121,7 @@ def cli() -> None:
     )
     ap.add_argument(
         "--data-dir",
-        default="/mnt/data/everpure_parsed",
+        default="output",
         help="Directory containing deck_details.json",
     )
     ap.add_argument(

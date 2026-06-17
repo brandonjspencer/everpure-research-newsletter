@@ -397,12 +397,8 @@ def cli() -> None:
     ap.add_argument(
         "--html-path", default=None, help="Use an existing HTML snapshot instead of fetching"
     )
-    ap.add_argument(
-        "--output-dir", default="/mnt/data/everpure_parsed", help="Directory for normalized outputs"
-    )
-    ap.add_argument(
-        "--raw-dir", default="/mnt/data/everpure_raw", help="Directory for fetched HTML snapshots"
-    )
+    ap.add_argument("--output-dir", default="output", help="Directory for normalized outputs")
+    ap.add_argument("--raw-dir", default="raw", help="Directory for fetched HTML snapshots")
     ap.add_argument("--since", default=None, help="Newsletter pack start date (YYYY-MM-DD)")
     ap.add_argument("--until", default=None, help="Newsletter pack end date (YYYY-MM-DD)")
     ap.add_argument(
