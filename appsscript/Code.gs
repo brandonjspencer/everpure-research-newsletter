@@ -31,9 +31,13 @@ var DEFAULTS = {
   FROM_NAME: "Everpure User Research Program",
 };
 
-// Property keys that MUST be set (no safe default): see README.md.
-//   RECIPIENTS_SHEET_ID, ISSUE_HTML_FILE_ID, UXTIP_HTML_FILE_ID,
-//   ISSUE_SUBJECT, UXTIP_SUBJECT, REPLY_TO, REVIEWERS, UNSUBSCRIBE_URL (optional)
+// Property keys to set (see README.md):
+//   Required: RECIPIENTS_SHEET_ID, ISSUE_SUBJECT, UXTIP_SUBJECT, REPLY_TO, REVIEWERS
+//   Email HTML source (per type, pick one):
+//     - ISSUE_EMAIL_FOLDER_ID / UXTIP_EMAIL_FOLDER_ID  → auto-pick newest .html (recommended)
+//     - ISSUE_HTML_FILE_ID / UXTIP_HTML_FILE_ID         → pin an exact file (overrides the folder)
+//   Optional: ISSUE_HTML_PATTERN / UXTIP_HTML_PATTERN (name substring filter),
+//             UNSUBSCRIBE_URL
 
 function prop_(key) {
   var v = PropertiesService.getScriptProperties().getProperty(key);
@@ -74,12 +78,10 @@ function send_(opts) {
   var dryRun = !!opts.dryRun;
 
   var subject = requireProp_(type === "issue" ? "ISSUE_SUBJECT" : "UXTIP_SUBJECT");
-  var htmlFileId = requireProp_(type === "issue" ? "ISSUE_HTML_FILE_ID" : "UXTIP_HTML_FILE_ID");
   var replyTo = requireProp_("REPLY_TO");
   var fromName = prop_("FROM_NAME");
 
-  var html = DriveApp.getFileById(htmlFileId).getBlob().getDataAsString();
-  html = injectUnsubscribeFooter_(html, prop_("UNSUBSCRIBE_URL"));
+  var html = injectUnsubscribeFooter_(resolveHtml_(type), prop_("UNSUBSCRIBE_URL"));
 
   var recipients = mode === "test" ? reviewers_() : activeRecipients_();
   recipients = dedupeValid_(recipients);
@@ -141,6 +143,54 @@ function send_(opts) {
     batches.length
   );
   return { dryRun: false, recipients: sent, batches: batches.length };
+}
+
+// ---- Email content ----------------------------------------------------------
+// Resolve the HTML body for an email type. Prefer an explicit file id
+// (ISSUE_HTML_FILE_ID / UXTIP_HTML_FILE_ID) if set; otherwise auto-pick the
+// newest matching .html in the configured Drive folder (ISSUE_EMAIL_FOLDER_ID /
+// UXTIP_EMAIL_FOLDER_ID) so there's no per-issue file-id to update — just drop
+// the new email HTML in the folder. Optional name filter: ISSUE_HTML_PATTERN /
+// UXTIP_HTML_PATTERN (case-insensitive substring).
+function resolveHtml_(type) {
+  var isIssue = type === "issue";
+  var explicitId = prop_(isIssue ? "ISSUE_HTML_FILE_ID" : "UXTIP_HTML_FILE_ID");
+  if (explicitId) return DriveApp.getFileById(explicitId).getBlob().getDataAsString();
+
+  var folderId = prop_(isIssue ? "ISSUE_EMAIL_FOLDER_ID" : "UXTIP_EMAIL_FOLDER_ID");
+  if (!folderId) {
+    throw new Error(
+      "Set " +
+        (isIssue
+          ? "ISSUE_EMAIL_FOLDER_ID (or ISSUE_HTML_FILE_ID)"
+          : "UXTIP_EMAIL_FOLDER_ID (or UXTIP_HTML_FILE_ID)") +
+        " in Script Properties."
+    );
+  }
+  var pattern = prop_(isIssue ? "ISSUE_HTML_PATTERN" : "UXTIP_HTML_PATTERN");
+  var file = newestHtmlInFolder_(folderId, pattern);
+  if (!file) {
+    throw new Error(
+      "No .html found in folder " + folderId + (pattern ? " matching '" + pattern + "'" : "") + "."
+    );
+  }
+  Logger.log("Using email HTML: %s (%s)", file.getName(), file.getId());
+  return file.getBlob().getDataAsString();
+}
+
+function newestHtmlInFolder_(folderId, pattern) {
+  var files = DriveApp.getFolderById(folderId).getFiles();
+  var pat = String(pattern || "").toLowerCase();
+  var best = null;
+  while (files.hasNext()) {
+    var f = files.next();
+    var lower = f.getName().toLowerCase();
+    var isHtml = /\.html?$/.test(lower) || f.getMimeType() === "text/html";
+    if (!isHtml) continue;
+    if (pat && lower.indexOf(pat) === -1) continue;
+    if (!best || f.getLastUpdated() > best.getLastUpdated()) best = f;
+  }
+  return best;
 }
 
 // ---- Recipient sourcing -----------------------------------------------------

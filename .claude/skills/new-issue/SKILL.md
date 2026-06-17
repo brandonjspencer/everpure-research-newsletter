@@ -131,9 +131,12 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
 4. Send via the consolidated Apps Script in [`appsscript/`](../../../appsscript/README.md) (the
    user runs it under their own Google auth — you never send). It is **batched**, so there is no
    50-recipient cap. Sequence:
-   - Upload the approved email HTML to Drive and update the `ISSUE_HTML_FILE_ID` (or
-     `UXTIP_HTML_FILE_ID`) Script Property.
-   - **Preview**: `dryRunIssue` — confirm the recipient count, batch count, and remaining quota.
+   - Put the approved email HTML in the issue email **folder** (`ISSUE_EMAIL_FOLDER_ID`). If the
+     Drive connector is available you can create it there directly (`text/html`, no Google-Doc
+     conversion); otherwise the user drops it in. The script auto-uses the **newest `.html`** in
+     that folder — no file-id to update.
+   - **Preview**: `dryRunIssue` — confirm the email-HTML file picked, recipient count, batch
+     count, and remaining quota.
    - **Test**: `sendIssueTest` (goes to `REVIEWERS` only) — review in Gmail desktop + phone.
    - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
    - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
