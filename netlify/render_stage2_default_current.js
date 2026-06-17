@@ -6,6 +6,7 @@ const {
   composeEvidenceSummary,
   extractRespondentQuote,
 } = require("./text_utils");
+const { FAVICON_LINK } = require("./dashboard_theme");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -1257,6 +1258,7 @@ function renderHtml(data) {
   html.push('<meta charset="utf-8" />');
   html.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
   html.push(`<title>${escapeHtml(data.title)}</title>`);
+  if (FAVICON_LINK) html.push(FAVICON_LINK);
   html.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
   html.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
   html.push(
