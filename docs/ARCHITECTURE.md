@@ -97,6 +97,10 @@ by reordering — keep them in this sequence:
 
 ### Node — evidence & rendering (`netlify/`)
 
+> The directory is named `netlify/` for historical reasons. The project deploys to
+> **GitHub Pages only** — the Netlify integration, `netlify.toml`, and serverless functions
+> were removed; what remains is the static build pipeline.
+
 - **`build.sh`** — The orchestrator (see build order above).
 - **`build_evidence_packs.js`** — Emits `evidence_packs.json` / `evidence_packs_default_30d.json`: the auditable, rule-based evidence substrate per concept.
 - **`merge_external_evidence_packs.js`** — Matches external Sheet signals back to concept packs and merges them into the four evidence-pack files (+ match report).
@@ -111,8 +115,7 @@ by reordering — keep them in this sequence:
 - **`freeze_issue_snapshot.js`** — Manual post-approval freeze of the current issue into repo-tracked `issues/YYYY-MM/` + `history/`. See [OPERATIONS.md](OPERATIONS.md).
 - **`fix_static_aliases.js`** — Publishes hyphenated aliases (`deck-content.json`) alongside underscore files; updates homepage links.
 - **`fix_default_bottom.js`** — see above.
-- **`functions/api.js`** — Netlify Function serving the read API + named routes. **Avoid editing** — the project deliberately moved to post-generation static rewriting (see CHANGE_HISTORY.md).
-- **`functions/trigger-build.js`** — Netlify build-hook trigger (undocumented legacy helper).
+- **`api.js`** — Build-time API render module: `generate_static_newsletters.js` imports its `handler` to emit the static API JSON mirror. Formerly a Netlify Function (`netlify/functions/api.js`), now build-only — there is no serverless runtime. **Avoid editing** — prefer post-generation static rewriting (see CHANGE_HISTORY.md).
 
 ---
 
@@ -121,8 +124,8 @@ by reordering — keep them in this sequence:
 ```
 data/Everpure.html          Committed Notion HTML snapshot (source-of-truth fallback)
 everpure_*.py               Python ingestion/normalization/API scripts
-netlify/                    Node evidence + rendering pipeline (+ build.sh orchestrator)
-netlify/functions/          Netlify Functions (read API, build trigger)
+netlify/                    Node build pipeline: build.sh orchestrator, evidence builders,
+                            renderers, and api.js (build-time API render module)
 output/                     Local sample outputs from run_all.sh (legacy, committed)
 publish/                    Deployable site — REBUILT in CI (generated, gitignored)
   publish/index.html        Hand-maintained landing page (TRACKED)

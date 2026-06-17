@@ -67,9 +67,10 @@ marketing writer only its own artifact.
 - **Generated artifacts are not committed.** `publish/` (except `publish/index.html`) and
   fetched `deck_artifacts/` are rebuilt; they're gitignored. `output/` holds committed
   legacy sample data used as test fixtures.
-- **Prefer post-generation static rewriting over editing the live API**
-  (`netlify/functions/api.js`). The project deliberately moved away from re-patching API
-  logic.
+- **Prefer post-generation static rewriting over editing the API render module**
+  (`netlify/api.js`, imported at build time by `generate_static_newsletters.js` to emit the
+  static API JSON). There is no live/serverless API — the site is **static on GitHub Pages**
+  (the Netlify integration and serverless functions were removed).
 - **Do not introduce a React/Vite build path.** On-brand styling is ported into the static
   HTML writer (`render_stage2_default_current.js`) on purpose.
 - **Frozen issues are immutable.** Approved months live in `issues/YYYY-MM/` and `history/`

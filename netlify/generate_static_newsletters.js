@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { handler } = require("./functions/api.js");
+const { handler } = require("./api.js");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLISH_DIR = path.join(ROOT, "publish");

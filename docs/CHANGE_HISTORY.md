@@ -93,3 +93,9 @@ A freeze layer was added so approved monthly issues become immutable, repo-track
 - **Filename aliases** (`netlify/fix_static_aliases.js`): publishes hyphenated aliases (e.g. `deck-content.json`) alongside underscore files because the site/review workflow expected hyphenated names; updates homepage links to the hyphenated paths. Runs near the end of the build.
 - **GitHub Pages relative links:** changed generated static links from root-relative (`/newsletter/default.html`) to relative (`newsletter/default.html`) so they work under the GitHub Pages project subpath `/<repo-name>/` (and on Netlify).
 - **AI context export** (`scripts/export_ai_context.sh`): a read-only ZIP exporter used when ChatGPT needed repo visibility but the GitHub app was blocked by admin policy. Bundles source, build scripts, generated artifacts, archives, email artifacts, and a manifest with git state; excludes `.git`, `node_modules`, `.env`, OS junk, caches, ZIPs, and key/cert patterns. (Less central now that Claude Code works directly from the local checkout, but retained.)
+
+## Deployment consolidation — GitHub Pages only
+
+- The project deploys via `.github/workflows/deploy-pages.yml` (builds `publish/` and uploads it to GitHub Pages). The earlier **Netlify** integration was removed: deleted `netlify.toml` and the `netlify dev` script.
+- `netlify/functions/api.js` was **not** deleted — the build imports its `handler` to render the static API JSON mirror — so it was moved to `netlify/api.js` (a build-time render module, not a serverless function) and the `require` in `generate_static_newsletters.js` was updated. `netlify/functions/trigger-build.js` (a Netlify build-hook trigger, used by nothing in the build) was removed.
+- The `netlify/` directory name is retained for now (it holds the build pipeline) to avoid a churny path rename across `build.sh`, the workflow, and docs.
