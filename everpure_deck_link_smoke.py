@@ -294,6 +294,9 @@ def extract_numbers_from_text(text: str, limit: int = 40) -> List[str]:
 def fetch_google_sheet_csv(
     session: requests.Session, spreadsheet_id: str, timeout: int = 60
 ) -> Tuple[int, str, str]:
+    # NOTE: Drive CSV export serializes ONLY the first tab and cannot honor a gid.
+    # This smoke script is first-tab-only by design; everpure_external_research_ingest.py
+    # supersedes it for full multi-tab capture via the Sheets API.
     params = {"mimeType": "text/csv"}
     resp = session.get(
         DRIVE_EXPORT_URL.format(file_id=spreadsheet_id), params=params, timeout=timeout
@@ -320,6 +323,10 @@ def summarize_csv(
         "headers": headers,
         "numeric_values": extract_numbers_from_text(joined),
         "text_excerpt": redact_text(joined, limit=1200),
+        # Drive CSV export captures only the first tab and ignores any gid; this
+        # smoke artifact must never be mistaken for complete multi-tab capture.
+        "first_tab_only": True,
+        "smoke_only": True,
     }
     if include_rows:
         summary["sample_rows"] = [
@@ -383,10 +390,17 @@ def smoke_fetch_google_sheets(
                     body, include_rows=include_rows, max_rows=max_rows, max_columns=max_columns
                 )
                 fetch["status"] = "success"
+                fetch["first_tab_only"] = True
+                fetch["smoke_only"] = True
                 fetch.update(csv_summary)
                 evidence.append(
                     {
                         "source_type": "google_sheet_csv_smoke",
+                        # Smoke capture: first tab only, gid ignored. The richer
+                        # everpure_external_research_ingest.py supersedes this for
+                        # full multi-tab capture.
+                        "first_tab_only": True,
+                        "smoke_only": True,
                         "link_id": link.get("link_id"),
                         "deck_file_id": link.get("deck_file_id"),
                         "deck_title": link.get("deck_title"),
@@ -565,7 +579,14 @@ def cli() -> None:
     evidence_payload = {
         "generated_at": utc_now(),
         "source": "deck_link_smoke",
-        "note": "Discovery artifact. Google Sheet rows are summarized conservatively; Helio links are inventoried but not fetched.",
+        "note": (
+            "Smoke/discovery artifact. Google Sheets are captured FIRST-TAB-ONLY via "
+            "Drive CSV export (gid ignored); this is NOT complete multi-tab capture. "
+            "Use everpure_external_research_ingest.py (Sheets API) for full capture. "
+            "Helio links are inventoried but not fetched."
+        ),
+        "first_tab_only": True,
+        "smoke_only": True,
         "evidence_count": len(evidence),
         "evidence": evidence,
     }
