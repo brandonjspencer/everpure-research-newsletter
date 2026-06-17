@@ -248,17 +248,6 @@ function toComparison(item) {
   };
 }
 
-function toQuestion(item) {
-  const title = titleFor(item);
-  return {
-    title,
-    scope: cleanText(item.scope || item.area || ""),
-    question:
-      firstText(item.question, item.open_question, item.openQuestion) ||
-      `What decision does ${title.toLowerCase()} need to unblock before the next iteration or release decision?`,
-  };
-}
-
 function looksLikeComparison(item) {
   const text =
     `${titleFor(item)} ${item.finding_statement || ""} ${item.evidence_snapshot || ""}`.toLowerCase();
@@ -296,24 +285,6 @@ function cleanConceptTitle(value) {
     .trim();
 }
 
-function canonicalTopicTitle(title) {
-  const text = cleanConceptTitle(title).toLowerCase();
-  if (
-    text.includes("events page") ||
-    text === "events" ||
-    text.includes("events v1") ||
-    text.includes("events v2")
-  )
-    return "Events Page";
-  if (text.includes("homepage ai")) return "Homepage AI Messaging";
-  if (text.includes("pathfinder") && text.includes("cta")) return "Pathfinder CTA Labels";
-  if (text.includes("webinar registration")) return "Webinar Registration Page";
-  if (text.includes("book filter") || text.includes("this book"))
-    return "Reader Filter: “This Book”";
-  if (text.includes("virtualization")) return "Virtualization Campaign";
-  return cleanConceptTitle(title) || "Research signal";
-}
-
 function topicKey(title) {
   const raw = cleanConceptTitle(title).toLowerCase();
   if (raw.includes("book filter") || raw.includes("this book")) return "this_book_filter";
@@ -347,14 +318,6 @@ function looksLabelOnly(text, title = "") {
   if (/^(concept\s*)?\d+\s*[-:–]\s*[a-z0-9\s/&()]+$/i.test(value)) return true;
   if (/^[a-z0-9\s/&()]+\s+v\d$/i.test(value)) return true;
   return !hasSentenceShape(value) && value.length < 48;
-}
-
-function substantiveText(...values) {
-  for (const value of values.flat()) {
-    const text = cleanText(value);
-    if (text && !looksLabelOnly(text)) return text;
-  }
-  return "";
 }
 
 function sourceFromPack(pack) {
@@ -520,23 +483,6 @@ function confidenceForCycle(groups) {
   return "low";
 }
 
-function actionForTopic(title) {
-  const key = topicKey(title);
-  if (key === "events_page")
-    return "Use V4b as the Events implementation baseline, then quality-check the page against four rules: one clear search/filter model, lighter featured cards, event cards instead of dense lists, and no competing visual shapes that make the page feel busy.";
-  if (key === "homepage_ai_messaging")
-    return "Adopt the lighter homepage AI direction: one-sentence hero copy, conversational language, and restrained AI emphasis. Validate that the copy improves comprehension and trust before increasing AI density again.";
-  if (key === "pathfinder_cta_labels")
-    return "Keep “Personalize” as the safest homepage CTA for now, then test a hybrid that pairs its recognized meaning with start-language that attracts engagement. Avoid labels that imply users will receive instant recommendations before sharing inputs.";
-  if (key === "webinar_registration_page")
-    return "Run the next webinar registration review as a barrier diagnosis. Separate value clarity, form effort, offer framing, and session detail so the team knows which part of the experience is blocking progression.";
-  if (key === "this_book_filter")
-    return "Test “This Book” against plainer filter labels with readers who are trying to narrow content inside the current asset. Choose the label users can explain without knowing internal taxonomy.";
-  if (key === "virtualization_campaign")
-    return "Refine the Virtualization Campaign by borrowing the stronger solution-page patterns: reduce narrow problem framing in the hero, move the buyer’s guide out of the hero, and give the demo video a clearer below-the-fold role.";
-  return `Define the user behavior ${title} is meant to change, then run a focused validation pass with explicit success criteria.`;
-}
-
 function comparisonCriteriaForTopic(title) {
   const key = topicKey(title);
   if (key === "events_page")
@@ -570,107 +516,6 @@ function comparisonStatementForTopic(title, group) {
   return `${title} is a narrowed research track in ${weekPhrase(group)}. The next step should define the winning criteria before more variants are introduced.`;
 }
 
-function buildProgramFinding(groups, statusInfo) {
-  const recurring = groups.filter((g) => g.occurrence_count >= 2).map((g) => g.title);
-  const recurringText = recurring.slice(0, 5).join(", ") || "the current research workstreams";
-  return {
-    title: "Current research is narrowing around concrete user decisions",
-    finding_statement: `The active workstreams are becoming more specific. Rather than asking whether each concept is broadly appealing, the next round should clarify what users understand, trust, or feel ready to do.`,
-    proof_point: `Recurring research tracks include ${recurringText}. Each one now needs a user-facing success criterion before it becomes stronger decision guidance.`,
-    next_step:
-      "For each active track, define the user behavior the study should clarify: comprehension, trust, discovery, commitment, or next-step confidence.",
-    confidence: confidenceForCycle(groups),
-    decision_status: "iterate",
-    source_label: null,
-    source_href: null,
-  };
-}
-
-function findingDirectionForTopic(title) {
-  const key = topicKey(title);
-  if (key === "events_page")
-    return "Treat Events as the clearest page-decision track. The next study should test whether visitors understand the page purpose, can find a relevant event, and know which action to take next.";
-  if (key === "homepage_ai_messaging")
-    return "Treat Homepage AI Messaging as a clarity-and-trust question. The next study should isolate whether AI language makes the homepage easier to understand or simply adds abstraction.";
-  if (key === "pathfinder_cta_labels")
-    return "Treat Pathfinder CTA Labels as an expectation-setting problem. The next study should show whether the label makes the next step specific enough to reduce hesitation.";
-  return actionForTopic(title);
-}
-
-function findingFromGroup(group) {
-  const source = groupSource(group);
-  const key = topicKey(group.title);
-  if (key === "events_page") {
-    return {
-      title: "Simpler Events layouts are outperforming visually busy versions",
-      finding_statement:
-        "Events research is no longer just asking whether the page needs a refresh. The clearest learning is that visitors need a more consistent visual system and a simpler path from “what is on this page?” to “which event should I choose?”",
-      proof_point:
-        "Testing showed the current page suffers from busy, inconsistent visual elements and lower findability. Later variations improved the path: card-based event presentation increased findability, a light featured-card treatment improved topic-finding success, and V4b produced the strongest overall experience signal.",
-      next_step:
-        "Move forward from the V4b direction, but protect the simplification: keep one clear search/filter model, preserve scannable event cards, and avoid reintroducing competing shapes or multiple search behaviors.",
-      confidence: "high",
-      decision_status: "ready to decide",
-      source_label: source.label,
-      source_href: source.href,
-    };
-  }
-  if (key === "homepage_ai_messaging") {
-    return {
-      title: "Homepage AI messaging works best when it feels useful, not maximal",
-      finding_statement:
-        "The homepage AI work is pointing toward restrained, benefit-led AI language rather than heavier AI-forward copy. The opportunity is to make AI feel clear, credible, and connected to the offer without making visitors work to understand AI’s role.",
-      proof_point:
-        "The strongest pattern is not simply “more AI.” A conversational one-sentence hero improved the read, while the later 25% AI direction improved trust and confidence and made users less likely to describe the page only through the lens of AI.",
-      next_step:
-        "Use lighter AI emphasis and a more conversational one-sentence hero as the next homepage direction. Judge the next pass on comprehension and trust, not the amount of AI language on the page.",
-      confidence: "high",
-      decision_status: "ready to decide",
-      source_label: source.label,
-      source_href: source.href,
-    };
-  }
-  if (key === "pathfinder_cta_labels") {
-    return {
-      title: "Pathfinder CTA labels need to balance recognition with engagement",
-      finding_statement:
-        "Pathfinder CTA testing shows a real tradeoff: “Personalize” is better recognized as the place to get a custom solution, while “Start Here” does a better job attracting first-click engagement. The winning direction likely needs both clarity and momentum.",
-      proof_point:
-        "Participants were over twice as successful with “Personalize” than the new label variations, but “Start Here” attracted much more first-click engagement. Labels such as “Guide Me” and “Get Recommendations” risk setting the wrong expectation by implying users will receive value immediately.",
-      next_step:
-        "Maintain “Personalize” where recognition matters, then test a hybrid direction that borrows start-language without promising instant recommendations before users provide inputs.",
-      confidence: "medium",
-      decision_status: "ready for final comparison",
-      source_label: source.label,
-      source_href: source.href,
-    };
-  }
-  return {
-    title: group.title,
-    finding_statement: `${group.title} is active in the current research cycle, but the available signal is still directional. The next pass should identify what users understood, missed, trusted, or acted on before promoting it as decision guidance.`,
-    proof_point: `${group.title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a live workstream until the next round shows a clearer user behavior or preference signal.`,
-    next_step: actionForTopic(group.title),
-    confidence: confidenceForGroup(group, "track"),
-    decision_status: "review evidence",
-    source_label: source.label,
-    source_href: source.href,
-  };
-}
-
-function buildNarrativeFindings(groups, statusInfo) {
-  const out = [];
-  for (const title of ["Events Page", "Homepage AI Messaging", "Pathfinder CTA Labels"]) {
-    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
-    if (group) out.push(findingFromGroup(group));
-  }
-  if (!out.length) {
-    for (const group of groups.slice(0, 3)) {
-      out.push(findingFromGroup(group));
-    }
-  }
-  return out.slice(0, 3);
-}
-
 function comparisonFromGroup(group) {
   const source = groupSource(group);
   return {
@@ -683,60 +528,6 @@ function comparisonFromGroup(group) {
     source_label: source.label,
     source_href: source.href,
   };
-}
-
-function buildComparisons(groups, sourceComparisons) {
-  const topicOrder = ["Events Page", "Homepage AI Messaging", "Pathfinder CTA Labels"];
-  const comparisons = [];
-  for (const title of topicOrder) {
-    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
-    if (group) comparisons.push(comparisonFromGroup(group));
-  }
-  return uniqueByTitle(comparisons).slice(0, 3);
-}
-
-function buildUnresolvedQuestions(groups, statusInfo) {
-  const questions = [];
-  for (const title of [
-    "Webinar Registration Page",
-    "This Book Filter",
-    "Virtualization Campaign",
-  ]) {
-    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
-    if (!group) continue;
-    const key = topicKey(title);
-    if (key === "webinar_registration_page") {
-      questions.push({
-        title: "Webinar Registration Page",
-        scope: "Registration value and friction",
-        question:
-          "The research has surfaced webinar registration as a track, but the barrier still needs to be isolated. Are visitors hesitating because the value of registering is unclear, the form feels like too much effort, the offer is not compelling enough, or the page does not explain what they get after registering?",
-      });
-    } else if (key === "this_book_filter") {
-      questions.push({
-        title: "Reader Filter: “This Book”",
-        scope: "Content filtering clarity",
-        question:
-          "The label “This Book” needs a plain-language check. Do readers understand that it narrows results inside the current content set, or does it sound like internal terminology that should become “Current book,” “This guide,” or another clearer scope label?",
-      });
-    } else if (key === "virtualization_campaign") {
-      questions.push({
-        title: "Virtualization Campaign",
-        scope: "Campaign-to-solution translation",
-        question:
-          "The solutions page is producing stronger engagement and sentiment than the campaign page, but the open question is how far to carry those patterns into the campaign. Which changes preserve campaign intent while improving below-the-fold engagement and reducing hero-offer friction?",
-      });
-    }
-  }
-  if (!questions.length) {
-    questions.push({
-      title: "Current research signals",
-      scope: "Decision readiness",
-      question:
-        "Which current signals are strong enough to move from research activity into decision guidance?",
-    });
-  }
-  return questions.slice(0, 5);
 }
 
 function actionText(action) {
@@ -811,26 +602,6 @@ function uniqueActions(actions) {
   return out;
 }
 
-function buildRecommendedActions(groups, statusInfo, sourceActions) {
-  const actions = [];
-  for (const title of [
-    "Events Page",
-    "Homepage AI Messaging",
-    "Pathfinder CTA Labels",
-    "Webinar Registration Page",
-    "This Book Filter",
-    "Virtualization Campaign",
-  ]) {
-    const group = groups.find((g) => topicKey(g.title) === topicKey(title));
-    if (group) actions.push(topicAction(title, actionForTopic(title)));
-  }
-  return uniqueActions(actions)
-    .filter((item) => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
-    .slice(0, 6);
-}
-
-// Dynamic issue synthesis guardrails. These definitions intentionally override the earlier
-// topic-specific Issue 02 helpers so each new issue is built from the current evidence window.
 function uniquePublicValues(values) {
   const seen = new Set();
   const out = [];

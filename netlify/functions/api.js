@@ -705,69 +705,6 @@ function buildRecommendedHighlights(windowedWeeks, audience, limit = 6) {
   return out;
 }
 
-function buildEditorialRecommendations(
-  strategicThemes,
-  validatedFindings,
-  workstreamsToWatch,
-  deckBackedInsights,
-  audience,
-  mode,
-  comparisonTests,
-  shipRecommendations
-) {
-  const recommendations = [];
-  if (mode === "activity_log") {
-    recommendations.push(
-      "Lead with cadence and volume first so stakeholders can see how consistently the research program is operating."
-    );
-    recommendations.push(
-      "Use a week-by-week log after the opening summary to make the monthly research rhythm visible."
-    );
-    recommendations.push(
-      "Keep concept IDs in the marketing activity view where they help show throughput and testing volume."
-    );
-    return recommendations;
-  }
-  if (!shipRecommendations.length)
-    recommendations.push(
-      "Say explicitly that the strongest evidence supports iteration, not an immediate ship decision, when that is the truth of the month."
-    );
-  if (comparisonTests.length)
-    recommendations.push(
-      "Give comparison-style work its own section so baseline and variation results are easier to interpret."
-    );
-  if (validatedFindings.length)
-    recommendations.push(
-      "Keep confirmed findings separate from exploratory concepts so the issue reads as a decision brief instead of a raw activity log."
-    );
-  if (workstreamsToWatch.length)
-    recommendations.push(
-      `Reserve a short “watch next” section for ${workstreamsToWatch
-        .slice(0, 2)
-        .map((row) => row.workstream)
-        .join(" and ")}.`
-    );
-  if (deckBackedInsights.length)
-    recommendations.push(
-      "Use deck-backed evidence only when the excerpt adds a concrete insight, not when it repeats document boilerplate."
-    );
-  if (audience === "exec")
-    recommendations.push(
-      "Keep internal concept IDs in source references, but remove them from the main narrative wherever possible."
-    );
-  return recommendations;
-}
-
-function buildAudienceHeadline(audience, bounds) {
-  const map = {
-    exec: "Everpure research leadership brief",
-    ux: "Everpure UX research digest",
-    product: "Everpure product insight digest",
-    marketing: "Everpure research newsletter draft",
-  };
-  return `${map[audience] || map.marketing} (${bounds.window_label})`;
-}
-
 function resolveNewsletterOptions(params = {}) {
   const preset = safeLower(params.preset || params.variant || "");
   const options = {
@@ -1676,9 +1613,7 @@ function buildNewsletter(windowedWeeks, deckContentIndex, bounds, options = {}) 
     workstreamsToWatch,
     deckBackedInsights,
     audience,
-    mode,
-    comparisonTests,
-    shipRecommendations
+    mode
   );
   const sectionTitles = audienceSectionTitles(audience);
   const topFindings = mode === "activity_log" ? issueHighlights : validatedFindings;

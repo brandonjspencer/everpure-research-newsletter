@@ -35,15 +35,5 @@ module.exports = [
       "no-empty": ["warn", { allowEmptyCatch: true }],
     },
   },
-  {
-    // These two files carry a superseded block of duplicate function
-    // definitions (the later defs win at runtime; the earlier block is dead).
-    // Cleaning it out is a separate, reviewed change — until then, don't fail CI
-    // on the known redeclarations here. no-redeclare stays an ERROR everywhere else.
-    files: ["netlify/render_stage2_default_current.js", "netlify/functions/api.js"],
-    rules: {
-      "no-redeclare": "warn",
-    },
-  },
   prettier,
 ];
