@@ -96,7 +96,7 @@ function brandCss() {
   h2{font-size:18px;margin:0 0 4px;letter-spacing:-.01em}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 26px}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .kpi-v{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .kpi-v{font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
   .kpi-l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:0 0 20px}
   .panel .desc,.desc{color:var(--muted);font-size:13px;margin:0 0 16px}
@@ -107,6 +107,16 @@ function brandCss() {
   text.mval{font-size:11px;fill:var(--muted)}
   .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12px;color:var(--muted)}
   .lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  /* Variant legend item with a hover thumbnail (the Helio compare screenshot). */
+  .lg.has-thumb{position:relative}
+  .thumb-pop{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:20;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+  .thumb-pop img{display:block;width:260px;max-width:min(260px,calc(100vw - 90px));height:auto;border-radius:6px}
+  /* Hover-only, and only advertised on hover-capable devices (the variant name is
+     always visible text, so touch/keyboard users aren't shown a dead affordance). */
+  @media (hover:hover){
+    .lg.has-thumb{cursor:zoom-in;text-decoration:underline dotted var(--line);text-underline-offset:3px}
+    .lg.has-thumb:hover .thumb-pop{display:block}
+  }
   .cmp{padding:14px 0;border-top:1px solid var(--line)}
   .cmp:first-of-type{border-top:0}
   .cmp-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}

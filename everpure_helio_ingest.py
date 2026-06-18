@@ -72,6 +72,14 @@ ENTRY_RE = re.compile(
 REPORT_MAP_RE = re.compile(r'"([0-9A-Z]{26})":\s*"https://my\.helio\.app/report/([0-9A-Z]{26})')
 # Comparison title is the "<A> vs <B>" name carried in the page metadata.
 TITLE_RE = re.compile(r'"(?:name|title)":\s*"([^"]*\bvs\b[^"]*)"', re.I)
+# Per-variant screenshots live in two take_id->asset-URL maps: `testThumbnails`
+# (medium previews) and `testImages` (full size). The asset URLs are time-signed
+# (?Expires=&Signature=), so a fresh build re-fetches fresh ones each cycle.
+THUMB_MAP_RE = re.compile(r'"testThumbnails":\s*\{([^{}]*)\}')
+IMAGE_MAP_RE = re.compile(r'"testImages":\s*\{([^{}]*)\}')
+ASSET_PAIR_RE = re.compile(
+    r'"([0-9A-Z]{26})"\s*:\s*"(https://assets\.helio\.app/asset/[^"]+?\.(?:png|jpe?g|webp)[^"]*)"'
+)
 
 # Metrics worth surfacing, in the order we want them to read.
 METRIC_ORDER = [
@@ -94,14 +102,26 @@ def _unescape_payload(html: str) -> str:
         .replace("\\u003e", ">")
         .replace("\\n", " ")
         .replace("\\/", "/")
+        .replace("\\u002F", "/")
     )
+
+
+def _asset_map(text: str, block_re: re.Pattern[str]) -> Dict[str, str]:
+    """Parse a `{"<take_id>":"<assets.helio.app URL>"}` map into take_id -> URL."""
+    out: Dict[str, str] = {}
+    for block in block_re.findall(text):
+        for take_id, url in ASSET_PAIR_RE.findall(block):
+            out.setdefault(take_id, url)
+    return out
 
 
 def parse_compare_html(html: str) -> Dict[str, Any]:
     """Parse a Helio compare share page into a structured comparison.
 
-    Returns: {comparison_title, variants[{take_id, report_id, name}], report_ids[],
-    metrics[{label, values[{take_id, score, qual_label}]}]}. Pure; unit-tested.
+    Returns: {comparison_title, variants[{take_id, report_id, name, thumbnail}],
+    report_ids[], metrics[{label, values[{take_id, score, qual_label}]}]}. The
+    thumbnail is the variant's (time-signed) Helio screenshot URL, or None. Pure;
+    unit-tested.
     """
     text = _unescape_payload(html)
 
@@ -119,12 +139,23 @@ def parse_compare_html(html: str) -> Dict[str, Any]:
         seen_takes.add(take_id)
         report_map.append((take_id, report_id))
 
+    # take_id -> screenshot URL (prefer the medium thumbnail, fall back to full).
+    thumbs = _asset_map(text, THUMB_MAP_RE)
+    fulls = _asset_map(text, IMAGE_MAP_RE)
+
     take_name: Dict[str, str] = {}
     variants: List[Dict[str, Any]] = []
     for idx, (take_id, report_id) in enumerate(report_map):
         name = names[idx] if idx < len(names) else f"Variant {idx + 1}"
         take_name[take_id] = name
-        variants.append({"take_id": take_id, "report_id": report_id, "name": name})
+        variants.append(
+            {
+                "take_id": take_id,
+                "report_id": report_id,
+                "name": name,
+                "thumbnail": thumbs.get(take_id) or fulls.get(take_id) or None,
+            }
+        )
 
     metrics: List[Dict[str, Any]] = []
     rows = list(ROW_RE.finditer(text))
