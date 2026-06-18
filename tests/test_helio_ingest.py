@@ -99,6 +99,42 @@ def test_parse_compare_html_thumbnail_is_none_without_asset_maps():
     assert parsed["variants"][0]["thumbnail"] is None
 
 
+def test_parse_compare_html_names_variants_and_title_from_screens_when_untitled():
+    # No "<A> vs B" title — variant names and the derived title come from the actual
+    # screenshot filenames (ground truth) rather than generic "Variant N".
+    clean = json.dumps(
+        {
+            "rows": [
+                {
+                    "label": "Comprehension",
+                    "values": {
+                        BASELINE_TAKE: {"score": 60, "label": "Good"},
+                        V1_TAKE: {"score": 64, "label": "Good"},
+                    },
+                }
+            ],
+            "links": {
+                BASELINE_TAKE: f"https://my.helio.app/report/{BASELINE_REPORT}",
+                V1_TAKE: f"https://my.helio.app/report/{V1_REPORT}",
+            },
+            "testThumbnails": {
+                BASELINE_TAKE: f"https://assets.helio.app/asset/{BASELINE_ASSET}/medium_2_-_VMware_Platform_Guides.png?Expires=1&Signature=a",
+                V1_TAKE: f"https://assets.helio.app/asset/{V1_ASSET}/medium_3b_-_Book_filter_default.jpg?Expires=1&Signature=b",
+            },
+        },
+        separators=(",", ":"),
+    )
+    parsed = helio.parse_compare_html(
+        f'<script>self.__next_f.push([1,"{clean.replace(chr(34), chr(92) + chr(34))}"])</script>'
+    )
+    assert parsed["comparison_title"] == ""
+    assert [v["name"] for v in parsed["variants"]] == [
+        "VMware Platform Guides",
+        "Book Filter Default",
+    ]
+    assert parsed["derived_title"] == "VMware Platform Guides vs Book Filter Default"
+
+
 def test_parse_compare_html_extracts_title_variants_metrics():
     parsed = helio.parse_compare_html(_escaped_payload())
 

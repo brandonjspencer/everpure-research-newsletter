@@ -182,6 +182,52 @@ function comparisonChart(title, n, variants, metricKeys, key, url) {
   return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
 }
 
+// Trust a slide-inferred concept as the comparison's label ONLY when the page's own
+// screen-derived title corroborates it (shares a meaningful word). With no derived
+// title we trust the concept (legacy behavior); when the derived title contradicts
+// the concept (e.g. a Knowledge-Portal page mis-inferred as "EDC Success Blueprint")
+// we don't — the page-derived title wins instead.
+const TITLE_STOPWORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "vs",
+  "and",
+  "or",
+  "of",
+  "for",
+  "to",
+  "page",
+  "v1",
+  "v2",
+  "v3",
+  "baseline",
+  "variant",
+  "default",
+  "new",
+  "old",
+  "test",
+  "data",
+  "comparison",
+]);
+function titleWords(s) {
+  return new Set(
+    (
+      String(s || "")
+        .toLowerCase()
+        .match(/[a-z0-9]+/g) || []
+    ).filter((w) => w.length > 2 && !TITLE_STOPWORDS.has(w))
+  );
+}
+function conceptTrusted(concept, derivedTitle) {
+  if (!concept) return false;
+  if (!derivedTitle) return true; // no page evidence either way → trust the concept
+  const cw = titleWords(concept);
+  const dw = titleWords(derivedTitle);
+  for (const w of cw) if (dw.has(w)) return true;
+  return false;
+}
+
 function helioComparisons(helioMetrics) {
   // 1. Assemble compare pages (one per compare_id), deduping variants by test_id.
   const pages = new Map();
@@ -195,6 +241,7 @@ function helioComparisons(helioMetrics) {
   for (const p of pages.values()) {
     const comparisonTitle = pick(p.rows, "comparison_title") || null;
     const concept = pick(p.rows, "concept") || null;
+    const derivedTitle = pick(p.rows, "derived_title") || null;
     const sourceUrl = pick(p.rows, "source_url") || null;
     // Drop comparisons with no real label — the generic "Data Comparison" /
     // unlabeled records are confusing, so they're omitted rather than shown.
@@ -215,6 +262,8 @@ function helioComparisons(helioMetrics) {
       key: p.id,
       comparisonTitle,
       concept,
+      derivedTitle,
+      trusted: conceptTrusted(concept, derivedTitle),
       url: sourceUrl,
       variants,
       rows: p.rows,
@@ -229,7 +278,11 @@ function helioComparisons(helioMetrics) {
   // cycle).
   const groups = new Map();
   for (const b of built) {
-    const groupKey = b.comparisonTitle ? `T:${b.key}` : `C:${b.concept}`;
+    // Real "<A> vs B" titles stay distinct (T:); a trusted concept collapses its
+    // duplicates (C:); an untrusted concept-only page (the label doesn't match the
+    // page) stays distinct under its own key (D:) so it isn't merged under a wrong
+    // concept and is labeled from the page itself.
+    const groupKey = b.comparisonTitle ? `T:${b.key}` : b.trusted ? `C:${b.concept}` : `D:${b.key}`;
     const cur = groups.get(groupKey);
     if (!cur) {
       groups.set(groupKey, { rep: b, rows: [...b.rows] });
@@ -239,7 +292,9 @@ function helioComparisons(helioMetrics) {
     }
   }
   return [...groups.values()].map(({ rep, rows }) => {
-    const title = succinctTitle(rep.comparisonTitle || rep.concept);
+    const title = succinctTitle(
+      rep.comparisonTitle || (rep.trusted ? rep.concept : rep.derivedTitle || rep.concept)
+    );
     return {
       key: rep.key,
       title,

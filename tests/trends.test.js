@@ -444,6 +444,50 @@ test("helioComparisons builds comprehension/sentiment trends (variants now, cycl
   );
 });
 
+test("helioComparisons relabels a comparison whose page contradicts the inferred concept", () => {
+  const r = (compare_id, concept, derived_title, test_id, name) => ({
+    month: "2026-06",
+    compare_id,
+    source_url: `https://glare-playground.helio.app/share/compare/${compare_id}`,
+    comparison_title: null,
+    derived_title,
+    concept,
+    test_id,
+    test_name: name,
+    n: 73,
+    metrics: { sentiment: 40 },
+  });
+  const cmps = helioComparisons([
+    // Knowledge-Portal page mis-inferred as "EDC Success Blueprint": the page-derived
+    // title shares no word with the concept → distrust it, label from the page.
+    r(
+      "kp",
+      "EDC Success Blueprint",
+      "VMware Platform Guides vs Book Filter Default",
+      "k1",
+      "VMware Platform Guides"
+    ),
+    r(
+      "kp",
+      "EDC Success Blueprint",
+      "VMware Platform Guides vs Book Filter Default",
+      "k2",
+      "Book Filter Default"
+    ),
+    // Two Pathfinder pages whose derived titles corroborate the concept → still collapse.
+    r("p1", "Pathfinder CTA Labels", "Pathfinder CTA v0 vs Pathfinder CTA v1", "a", "v0"),
+    r("p2", "Pathfinder CTA Labels", "Pathfinder CTA v0 vs Pathfinder CTA v2", "b", "v2"),
+  ]);
+  assert.deepEqual(cmps.map((c) => c.title).sort(), [
+    "Pathfinder CTA Labels",
+    "VMware Platform Guides vs Book Filter Default",
+  ]);
+  assert.ok(
+    !cmps.some((c) => /EDC Success Blueprint/.test(c.title)),
+    "the wrong slide-inferred concept label is not shown"
+  );
+});
+
 test("sparkline renders a dot for one point and a polyline for many", () => {
   const one = sparkline([50]);
   assert.match(one, /<circle/);
