@@ -201,6 +201,18 @@ function brandCss() {
   .q-dot{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:var(--line);cursor:pointer;transition:background .15s ease}
   .q-dot:hover{background:var(--muted)}
   .q-dot.is-active{background:var(--accent)}
+  /* Comprehension & sentiment trend rows (sparklines) */
+  .mtrends{display:flex;flex-direction:column}
+  .mt-row{padding:12px 0;border-top:1px solid var(--line)}
+  .mt-row:first-child{border-top:0}
+  .mt-name{font-size:14px;font-weight:600;margin-bottom:6px}
+  .mt-metric{display:flex;align-items:center;gap:12px;padding:3px 0;flex-wrap:wrap}
+  .mt-label{width:118px;font-size:13px;color:var(--muted)}
+  svg.spark{width:84px;height:22px;display:block;flex:none}
+  .mt-val{font-size:13px;min-width:118px}
+  .mt-delta{font-weight:600;margin-left:2px}
+  .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
+  .mt-soon{font-style:italic;opacity:.85}
   @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}

@@ -217,22 +217,137 @@ function helioComparisons(helioMetrics) {
       concept,
       url: sourceUrl,
       variants,
+      rows: p.rows,
       n: ns.length ? Math.max(...ns) : null,
       rank: withMetrics * 100 + metricCount,
     });
   }
   // 2. Titled comparisons (e.g. the EDC compare page) stay distinct; concept-only
-  // ones collapse to a single block per concept — keep the most informative.
+  // ones collapse to a single block per concept — keep the most informative one for
+  // display, but aggregate ALL rows in the group so the cross-cycle metric series
+  // spans every month the concept was measured (often a different compare page each
+  // cycle).
   const groups = new Map();
   for (const b of built) {
     const groupKey = b.comparisonTitle ? `T:${b.key}` : `C:${b.concept}`;
     const cur = groups.get(groupKey);
-    if (!cur || b.rank > cur.rank) groups.set(groupKey, b);
+    if (!cur) {
+      groups.set(groupKey, { rep: b, rows: [...b.rows] });
+    } else {
+      cur.rows.push(...b.rows);
+      if (b.rank > cur.rep.rank) cur.rep = b;
+    }
   }
-  return [...groups.values()].map((b) => {
-    const title = succinctTitle(b.comparisonTitle || b.concept);
-    return { key: b.key, title, label: title, variants: b.variants, n: b.n, url: b.url };
+  return [...groups.values()].map(({ rep, rows }) => {
+    const title = succinctTitle(rep.comparisonTitle || rep.concept);
+    return {
+      key: rep.key,
+      title,
+      label: title,
+      variants: rep.variants,
+      n: rep.n,
+      url: rep.url,
+      trends: metricTrends(rep.variants, rows),
+    };
   });
+}
+
+// The two UX signals tracked as sparklines (per the dashboard's editorial focus).
+const METRIC_TREND_KEYS = ["comprehension", "sentiment"];
+const METRIC_TREND_LABELS = { comprehension: "Comprehension", sentiment: "Sentiment" };
+
+// For each tracked metric, two series: `variants` = baseline→latest within the most
+// recent cycle (populated now); `cycles` = one point per month (max across that
+// month's variants), which fills in as Helio history accrues.
+function metricTrends(variants, rows) {
+  const out = {};
+  for (const m of METRIC_TREND_KEYS) {
+    const variantVals = (variants || [])
+      .map((v) => (v.metrics || {})[m])
+      .filter((x) => typeof x === "number");
+    const byMonth = new Map();
+    for (const r of rows || []) {
+      const val = (r.metrics || {})[m];
+      if (typeof val !== "number" || !r.month) continue;
+      byMonth.set(r.month, Math.max(byMonth.get(r.month) ?? -Infinity, val));
+    }
+    const cycles = [...byMonth.entries()]
+      .sort((a, b) => String(a[0]).localeCompare(String(b[0])))
+      .map(([month, value]) => ({ month, value }));
+    out[m] = { variants: variantVals, cycles };
+  }
+  return out;
+}
+
+// Tiny inline-SVG sparkline for a 0–100 series. A single point renders as a dot.
+function sparkline(values, color) {
+  const vals = (values || []).filter((v) => typeof v === "number");
+  if (!vals.length) return "";
+  const W = 84;
+  const H = 22;
+  const pad = 3;
+  const stroke = color || "var(--muted)";
+  const x = (i) => (vals.length === 1 ? W / 2 : pad + ((W - pad * 2) * i) / (vals.length - 1));
+  const y = (v) => H - pad - ((H - pad * 2) * Math.max(0, Math.min(100, v))) / 100;
+  const last = vals[vals.length - 1];
+  const dot = `<circle cx="${x(vals.length - 1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="2.4" fill="${stroke}"></circle>`;
+  if (vals.length === 1) {
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="single reading ${last}">${dot}</svg>`;
+  }
+  const pts = vals.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="trend ${vals[0]} to ${last}"><polyline points="${pts}" fill="none" stroke="${stroke}" stroke-width="1.6"></polyline>${dot}</svg>`;
+}
+
+function metricTrendsSection(comparisons) {
+  const rows = comparisons.filter(
+    (c) =>
+      c.trends &&
+      METRIC_TREND_KEYS.some((m) => c.trends[m].variants.length || c.trends[m].cycles.length)
+  );
+  if (!rows.length) {
+    return `<p class="empty">No comprehension or sentiment scores captured yet — they appear as Helio comparisons are ingested.</p>`;
+  }
+  const blocks = rows
+    .map((c) => {
+      const metricRows = METRIC_TREND_KEYS.map((m) => {
+        const t = c.trends[m];
+        if (!t.variants.length && !t.cycles.length) return "";
+        const vals = t.variants;
+        const first = vals[0];
+        const last = vals[vals.length - 1];
+        const delta = vals.length >= 2 ? Math.round(last - first) : null;
+        const dColor =
+          delta == null
+            ? "var(--muted)"
+            : delta > 0
+              ? "var(--c-high)"
+              : delta < 0
+                ? "var(--c-low)"
+                : "var(--muted)";
+        const arrow = delta == null ? "" : delta > 0 ? "▲" : delta < 0 ? "▼" : "–";
+        const deltaStr =
+          delta == null
+            ? ""
+            : ` <span class="mt-delta" style="color:${dColor}">${arrow} ${delta > 0 ? "+" : ""}${delta}</span>`;
+        const valStr = vals.length ? (vals.length > 1 ? `${first} → ${last}` : `${last}`) : "—";
+        const cyc =
+          t.cycles.length >= 2
+            ? `<span class="mt-cyc" title="${t.cycles.length} cycles">${sparkline(
+                t.cycles.map((p) => p.value),
+                "var(--accent)"
+              )}<span>${t.cycles.length} cycles</span></span>`
+            : `<span class="mt-cyc mt-soon">trend accrues monthly</span>`;
+        return `<div class="mt-metric"><span class="mt-label">${METRIC_TREND_LABELS[m]}</span>${sparkline(
+          vals,
+          dColor
+        )}<span class="mt-val">${valStr}${deltaStr}</span>${cyc}</div>`;
+      })
+        .filter(Boolean)
+        .join("");
+      return `<div class="mt-row"><div class="mt-name">${esc(c.title)}</div>${metricRows}</div>`;
+    })
+    .join("\n");
+  return `<div class="mtrends">${blocks}</div>`;
 }
 
 function helioSection(helioMetrics, metricKeys) {
@@ -416,6 +531,12 @@ ${sidebar("dashboard", "")}
 </section>
 
 <section class="panel">
+  <h2>Comprehension &amp; sentiment</h2>
+  <p class="desc">The two signals to watch — how each comparison moves from baseline to the latest variant (left), and across cycles as Helio history accrues (right).</p>
+  ${metricTrendsSection(helioComparisons(trends.helio_metrics || []))}
+</section>
+
+<section class="panel">
   <h2>Voice of the user</h2>
   <p class="desc">Verbatim respondent quotes carried through from the monthly issues.</p>
   ${quotesSection(trends.quotes || [])}
@@ -454,5 +575,8 @@ module.exports = {
   comparisonChart,
   helioSection,
   helioComparisons,
+  metricTrends,
+  metricTrendsSection,
+  sparkline,
   succinctTitle,
 };

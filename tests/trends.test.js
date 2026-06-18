@@ -12,7 +12,12 @@ const {
   monthLabel,
   truncate,
 } = require("../netlify/build_trends");
-const { render, helioComparisons, succinctTitle } = require("../netlify/render_trends_dashboard");
+const {
+  render,
+  helioComparisons,
+  sparkline,
+  succinctTitle,
+} = require("../netlify/render_trends_dashboard");
 
 function writeJson(file, data) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -263,6 +268,13 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     );
     // A broken/expired signed URL collapses the affordance (onerror fallback).
     assert.match(html, /onerror="[^"]*remove\(\)/);
+    // Comprehension & sentiment panel: sentiment shows the baseline→variant delta;
+    // with only one cycle, the over-time trend is flagged as accruing.
+    assert.match(html, /Comprehension &amp; sentiment/);
+    assert.match(html, /class="mt-row"/);
+    assert.match(html, /26 → 44/);
+    assert.match(html, /\+18/);
+    assert.match(html, /accrues monthly/);
     // Quote carried through, inside the cross-fading rotator.
     assert.match(html, /live sessions/);
     assert.match(html, /class="qrotator"/);
@@ -395,6 +407,51 @@ test("helioComparisons keeps the newest cycle's row per variant (fresh thumbnail
   // Freshest cycle wins — its (newly-signed) thumbnail and re-measured metrics.
   assert.match(cmps[0].variants[0].thumbnail, /asset\/NEW\//);
   assert.equal(cmps[0].variants[0].metrics.engagement, 55);
+});
+
+test("helioComparisons builds comprehension/sentiment trends (variants now, cycles over time)", () => {
+  const mk = (month, test_id, name, comprehension, sentiment) => ({
+    month,
+    compare_id: "cmpA",
+    source_url: "https://glare-playground.helio.app/share/compare/cmpA",
+    comparison_title: "EDC Baseline vs v1",
+    concept: "EDC",
+    test_id,
+    test_name: name,
+    n: 100,
+    metrics: { comprehension, sentiment },
+  });
+  // One comparison, two variants, measured across two cycles (oldest first).
+  const cmps = helioComparisons([
+    mk("2026-05", "rB", "Baseline", 70, 30),
+    mk("2026-05", "rV", "V1", 74, 44),
+    mk("2026-06", "rB", "Baseline", 72, 33),
+    mk("2026-06", "rV", "V1", 78, 50),
+  ]);
+  assert.equal(cmps.length, 1);
+  const t = cmps[0].trends;
+  // Across variants = the latest cycle (2026-06), baseline → v1.
+  assert.deepEqual(t.comprehension.variants, [72, 78]);
+  assert.deepEqual(t.sentiment.variants, [33, 50]);
+  // Over cycles = best (max) per month — fills in as history accrues.
+  assert.deepEqual(
+    t.comprehension.cycles.map((p) => p.value),
+    [74, 78]
+  );
+  assert.deepEqual(
+    t.sentiment.cycles.map((p) => p.value),
+    [44, 50]
+  );
+});
+
+test("sparkline renders a dot for one point and a polyline for many", () => {
+  const one = sparkline([50]);
+  assert.match(one, /<circle/);
+  assert.ok(!/polyline/.test(one), "single point is a dot, not a line");
+  const many = sparkline([20, 60, 80]);
+  assert.match(many, /<polyline points="[^"]+"/);
+  assert.match(many, /<circle/); // endpoint marker
+  assert.equal(sparkline([]), ""); // nothing to draw
 });
 
 test("render shows a friendly empty state when no Helio data exists", () => {
