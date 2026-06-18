@@ -482,6 +482,9 @@ function helioFilterScript() {
 // from a larger embedded pool on each load (so refreshing surfaces different ones).
 const QUOTE_ROTATOR_MAX = 5;
 const QUOTE_POOL_MAX = 24;
+// In curated mode every flagged signal should appear (not a random 5), capped so the
+// rotation stays digestible.
+const QUOTE_CURATED_MAX = 8;
 
 // Resolve what each quote is ABOUT (topic) and WHO said it, for the caption.
 // A Helio verbatim → the comparison/screen it's about (+ "Research participant");
@@ -489,13 +492,14 @@ const QUOTE_POOL_MAX = 24;
 // open-end → just "Research participant". Returns a lean embed-ready entry.
 function resolveQuoteTopic(q, titleById) {
   const fromCompare = q.compare_id ? titleById[q.compare_id] : null;
-  let topic = null;
+  // Topic precedence: a curated entry carries its own; a Helio quote resolves it from
+  // compare_id; a finding quote's title IS its topic; a deck open-end has neither.
+  let topic = q.topic || fromCompare || null;
   let who = null;
-  if (fromCompare) {
-    topic = fromCompare;
-    who = "Research participant";
+  if (topic) {
+    who = q.title && q.title !== "Research participant" ? null : "Research participant";
   } else if (q.title && q.title !== "Research participant") {
-    topic = q.title; // the finding title already says what it's about
+    topic = q.title;
   } else {
     who = q.title || "Research participant";
   }
@@ -506,6 +510,7 @@ function resolveQuoteTopic(q, titleById) {
     topic,
     who,
     question: q.question ? shortQuestion(q.question) : null,
+    signal: q.signal || null,
   };
 }
 
@@ -529,31 +534,40 @@ function quoteFigure(q, active) {
   if (q.who) parts.push(esc(q.who));
   if (q.month) parts.push(esc(q.month));
   if (conf) parts.push(esc(conf));
-  const prompt = q.question
-    ? `<p class="q-prompt"><span class="q-prompt-label">Asked</span> ${esc(q.question)}</p>`
-    : "";
-  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}">${prompt}<blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${parts.join(" · ")}</figcaption></figure>`;
+  // The eyebrow above the quote: the curated signal (the pattern it represents) when
+  // present, else the survey question it answered.
+  const eyebrow = q.signal
+    ? `<p class="q-signal"><span class="q-signal-label">Signal</span> ${esc(q.signal)}</p>`
+    : q.question
+      ? `<p class="q-prompt"><span class="q-prompt-label">Asked</span> ${esc(q.question)}</p>`
+      : "";
+  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}">${eyebrow}<blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${parts.join(" · ")}</figcaption></figure>`;
 }
 
-function quotesSection(quotes, helioMetrics) {
+function quotesSection(quotes, helioMetrics, mode) {
   if (!quotes.length) return `<p class="empty">No respondent quotes captured yet.</p>`;
   const titleById = helioTitleById(helioMetrics || []);
-  const pool = quotes.slice(0, QUOTE_POOL_MAX).map((q) => resolveQuoteTopic(q, titleById));
+  const curated = mode === "curated";
+  // Curated mode shows every flagged signal; harvested mode samples the larger pool.
+  const pool = (curated ? quotes : quotes.slice(0, QUOTE_POOL_MAX)).map((q) =>
+    resolveQuoteTopic(q, titleById)
+  );
+  const max = curated ? Math.min(pool.length, QUOTE_CURATED_MAX) : QUOTE_ROTATOR_MAX;
   // SSR one quote as the no-JS fallback; the script shuffles the embedded pool and
-  // rotates a fresh set of up to QUOTE_ROTATOR_MAX in on each load.
+  // rotates a fresh set in on each load.
   const ssr = quoteFigure(pool[0], true);
   const payload = JSON.stringify(pool).replace(/</g, "\\u003c");
-  return `<div class="qrotator" data-qrotator><div class="q-stage">${ssr}</div><div class="q-dots"></div><script type="application/json" data-quotes>${payload}</script></div>${quoteRotatorScript()}`;
+  return `<div class="qrotator" data-qrotator><div class="q-stage">${ssr}</div><div class="q-dots"></div><script type="application/json" data-quotes>${payload}</script></div>${quoteRotatorScript(max)}`;
 }
 
 // On load: shuffle the embedded pool, build up to MAX slides + dots, then auto
 // cross-fade; pause on hover/focus; honor prefers-reduced-motion; dots jump directly.
-function quoteRotatorScript() {
+function quoteRotatorScript(max = QUOTE_ROTATOR_MAX) {
   return `<script>(function(){
   var r=document.querySelector('[data-qrotator]'); if(!r) return;
   var stage=r.querySelector('.q-stage'), dotsWrap=r.querySelector('.q-dots'), data=r.querySelector('[data-quotes]');
   var pool=[]; try{pool=JSON.parse((data&&data.textContent)||'[]')||[];}catch(e){}
-  var MAX=${QUOTE_ROTATOR_MAX};
+  var MAX=${max};
   if(pool.length>1){
     for(var a=pool.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var t=pool[a];pool[a]=pool[b];pool[b]=t;}
     var pick=pool.slice(0,MAX);
@@ -561,7 +575,11 @@ function quoteRotatorScript() {
     pick.forEach(function(q,idx){
       var on=idx===0;
       var fig=document.createElement('figure'); fig.className='quote q-slide'+(on?' is-active':''); fig.setAttribute('aria-hidden',on?'false':'true');
-      if(q.question){
+      if(q.signal){
+        var sg=document.createElement('p'); sg.className='q-signal';
+        var sl=document.createElement('span'); sl.className='q-signal-label'; sl.textContent='Signal';
+        sg.appendChild(sl); sg.appendChild(document.createTextNode(' '+q.signal)); fig.appendChild(sg);
+      } else if(q.question){
         var pr=document.createElement('p'); pr.className='q-prompt';
         var pl=document.createElement('span'); pl.className='q-prompt-label'; pl.textContent='Asked';
         pr.appendChild(pl); pr.appendChild(document.createTextNode(' '+q.question)); fig.appendChild(pr);
@@ -701,8 +719,10 @@ ${panel(
 ${panel(
   "voice",
   "Voice of the user",
-  "Verbatim respondent quotes — each labeled with the screen or comparison it’s about.",
-  quotesSection(trends.quotes || [], trends.helio_metrics || [])
+  trends.quote_mode === "curated"
+    ? "The most telling verbatim for each pattern we surfaced across the research — what users actually understood, in their words."
+    : "Verbatim respondent quotes — each labeled with the screen or comparison it’s about.",
+  quotesSection(trends.quotes || [], trends.helio_metrics || [], trends.quote_mode)
 )}
 
 ${panel(

@@ -88,6 +88,24 @@ function harvestHelioQuotes(publishData, perComparison = 12) {
   return out;
 }
 
+// Curated "Voice of the user" signals (editorial): the most compelling verbatim for
+// each significant research pattern. Committed + hand-edited (netlify/content/
+// voice_of_user.json). When present these REPLACE the harvested pool in the rotator so
+// it features signal-labeled representatives instead of a random run through everything.
+// Defensive: keeps only well-formed {signal, quote} entries; empty/absent → fall back.
+function loadVoicePatterns(root) {
+  const data = readJson(path.join(root, "netlify", "content", "voice_of_user.json"));
+  const patterns = data && Array.isArray(data.patterns) ? data.patterns : [];
+  return patterns.filter(
+    (p) =>
+      p &&
+      typeof p.quote === "string" &&
+      p.quote.trim() &&
+      typeof p.signal === "string" &&
+      p.signal.trim()
+  );
+}
+
 function monthlyFiles(dir) {
   try {
     return fs
@@ -390,12 +408,30 @@ function buildTrends(root) {
     if (!row.concept && conceptByTest[row.test_id]) row.concept = conceptByTest[row.test_id];
   }
 
+  // Curated signals replace the harvested pool when authored, so the rotator features
+  // one compelling verbatim per significant pattern (each labeled with its signal).
+  const voicePatterns = loadVoicePatterns(root);
+  let quoteMode = "harvested";
+  let finalQuotes = quotes;
+  if (voicePatterns.length) {
+    quoteMode = "curated";
+    finalQuotes = voicePatterns.map((p) => ({
+      month: latestMonth,
+      title: "Research participant",
+      quote: p.quote,
+      confidence: "unknown",
+      topic: p.topic || null,
+      signal: p.signal,
+    }));
+  }
+
   return {
     cycles,
     concepts: [...trajectory.values()],
     issues,
     helio_metrics: helioMetrics,
-    quotes,
+    quotes: finalQuotes,
+    quote_mode: quoteMode,
     metric_keys: [
       "overall_ux",
       "engagement",

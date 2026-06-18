@@ -275,6 +275,91 @@ test("buildTrends tags Helio verbatims with their compare_id", () => {
   }
 });
 
+test("buildTrends features curated voice signals over the harvested pool when present", () => {
+  const root = fixtureRepo();
+  try {
+    // A rich harvested pool exists...
+    writeJson(path.join(root, "publish", "data", "helio_evidence.json"), {
+      evidence: [
+        {
+          source_type: "helio_compare",
+          compare_id: "cmpEvents",
+          respondent_quotes: ["I assumed these sessions were recorded, not live."],
+        },
+      ],
+    });
+    // ...but a curated signal file takes precedence.
+    writeJson(path.join(root, "netlify", "content", "voice_of_user.json"), {
+      patterns: [
+        {
+          signal: "“Storage” is still the default read.",
+          quote: "It's advertising cloud storage data for businesses.",
+          topic: "EDC Success Blueprint",
+        },
+        { signal: "", quote: "dropped — no signal" }, // malformed → filtered out
+      ],
+    });
+    const t = buildTrends(root);
+    assert.equal(t.quote_mode, "curated");
+    assert.equal(t.quotes.length, 1); // malformed entry filtered
+    assert.equal(t.quotes[0].signal, "“Storage” is still the default read.");
+    assert.equal(t.quotes[0].topic, "EDC Success Blueprint");
+    assert.equal(t.quotes[0].title, "Research participant");
+    // The harvested verbatim is NOT in the rotator pool (curated replaces it).
+    assert.ok(!t.quotes.some((q) => /recorded, not live/.test(q.quote)));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("buildTrends falls back to the harvested pool when no curation file", () => {
+  const root = fixtureRepo();
+  try {
+    const t = buildTrends(root);
+    assert.equal(t.quote_mode, "harvested");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("render shows the curated signal eyebrow and rotates the full curated set", () => {
+  const quotes = [
+    {
+      month: "2026-06",
+      title: "Research participant",
+      quote: "It's advertising cloud storage data for businesses.",
+      confidence: "unknown",
+      topic: "EDC Success Blueprint",
+      signal: "“Storage” is still the default read.",
+    },
+    {
+      month: "2026-06",
+      title: "Research participant",
+      quote: "I am not sure, because my eyes went to the man that was standing there.",
+      confidence: "unknown",
+      topic: "Accelerate Overview Page",
+      signal: "The hero person out-competes the message.",
+    },
+  ];
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: [],
+    helio_metrics: [],
+    quotes,
+    quote_mode: "curated",
+  });
+  // SSR renders the signal eyebrow (not the "Asked" prompt) for a curated quote.
+  assert.match(html, /<p class="q-signal"><span class="q-signal-label">Signal<\/span>/);
+  assert.match(html, /Storage.{0,4} is still the default read/);
+  // Pool carries the signal + topic for the client rotator.
+  const pool = JSON.parse(html.match(/data-quotes>(.*?)<\/script>/s)[1].replace(/\\u003c/g, "<"));
+  assert.equal(pool.length, 2);
+  assert.ok(pool.every((p) => p.signal && p.topic));
+  // Curated mode rotates every signal (MAX === pool length), not a fixed 5.
+  assert.match(html, /var MAX=2;/);
+});
+
 test("render labels Voice-of-user quotes with the comparison/finding topic", () => {
   const html = render({
     cycles: [],
