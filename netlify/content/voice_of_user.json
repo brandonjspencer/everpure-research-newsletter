@@ -1,0 +1,48 @@
+{
+  "note": "Curated 'Voice of the user' signals for the dashboard rotator. Each entry pairs a significant research signal (pattern) found across the Helio first-impression comprehension tests with the single most compelling REAL verbatim that represents it. Quotes are participant words — never paraphrase or edit them. Re-curate each cycle; if this file is absent or has no patterns, the rotator falls back to the harvested quote pool. Source: Helio 'what is this page/product about?' 10-second tests, June 2026.",
+  "source": "Helio first-impression test · June 2026",
+  "patterns": [
+    {
+      "signal": "“Storage” is still the default read — the “manage your data, not your storage” message isn’t breaking through (≈36% framed it as storage; only ~5% caught the contrast).",
+      "quote": "It’s advertising cloud storage data for businesses.",
+      "topic": "EDC Success Blueprint",
+      "read": "miss"
+    },
+    {
+      "signal": "When it lands, the differentiator lands cleanly — proof the positioning can work.",
+      "quote": "It is about managing your data, not your storage.",
+      "topic": "EDC Success Blueprint",
+      "read": "hit"
+    },
+    {
+      "signal": "Category jargon (“Enterprise Data Cloud”) blocks first-time comprehension — and a user volunteers the fix.",
+      "quote": "I have no idea what an Enterprise Data Cloud is, but I'm sure it's intriguing and straightforward for people who know what it is. A video would help, though.",
+      "topic": "EDC Success Blueprint",
+      "read": "barrier"
+    },
+    {
+      "signal": "The hero person out-competes the message for attention.",
+      "quote": "I am not sure, because my eyes went to the man that was standing there.",
+      "topic": "Accelerate Overview Page",
+      "read": "distraction"
+    },
+    {
+      "signal": "Content defect users actually caught — AI-garbled / non-English copy.",
+      "quote": "I am not sure. Parts of the page were not in English or seemed to have been created with AI so had some weird garbled language.",
+      "topic": "Accelerate Overview Page",
+      "read": "defect"
+    },
+    {
+      "signal": "Over-polished “corpspeak” can backfire on credibility.",
+      "quote": "This company spends more time spewing useless marketing dictionary words and corpspeak on their page than they do actually making anything of substance. No one will EVER take this site seriously..",
+      "topic": "1Touch Product",
+      "read": "credibility"
+    },
+    {
+      "signal": "When the value prop is concrete, comprehension is excellent — the strongest-understood screen.",
+      "quote": "It was a product page featuring a solution that converts fragmented data into AI-driven intelligence.",
+      "topic": "1Touch Product",
+      "read": "hit"
+    }
+  ]
+}
