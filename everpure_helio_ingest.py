@@ -92,8 +92,11 @@ QUOTE_TEXT_KEYS = {
 }
 # Keys whose numeric value is a UX-metric score (checked in order of preference).
 METRIC_SCORE_KEYS = ("score", "value", "percent", "percentage", "average", "avg", "result", "mean")
-# Keys that name a UX metric.
-METRIC_LABEL_KEYS = ("label", "name", "metric", "title", "type", "key")
+# Keys that NAME a UX metric, in priority order. `metric_type`/`metric`/`name` carry
+# the real metric name (engagement/comprehension/…); `label` is checked LAST because in
+# the live report breakdown it holds a qualitative descriptor ("Avg", "High", "negative"),
+# not the metric name — preferring it produced junk metrics labeled "Low"/"Excellent".
+METRIC_LABEL_KEYS = ("metric_type", "metric", "name", "type", "key", "title", "label")
 
 # Keys that hold a QUESTION prompt / option label rather than a participant answer —
 # never harvest a verbatim from these (the prompt repeats once per response and would

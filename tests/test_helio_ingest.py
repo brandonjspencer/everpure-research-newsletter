@@ -635,6 +635,39 @@ def test_coerce_report_metrics_recurses_into_nested_breakdown():
     assert got2 == {"overall_score": 60, "Engagement": 50, "Intent": 33}
 
 
+def test_coerce_report_metrics_uses_metric_type_not_qualitative_label():
+    # The live report ux_metrics shape (observed 2026-06-18 via report_deep[].shape):
+    # overall_score + a `breakdown` list whose items carry BOTH the real name
+    # (metric_type) and a qualitative `label` ("Avg"/"High"). The metric name must be
+    # metric_type, never the qualitative label, and nested calc arrays are ignored.
+    ux = {
+        "overall_score": 56,
+        "breakdown": [
+            {"metric_type": "engagement", "score": 52, "label": "Avg", "section_id": 1},
+            {"metric_type": "comprehension", "score": 72, "label": "High", "section_id": 2},
+            {"metric_type": "sentiment", "score": 26, "label": "very negative", "section_id": 3},
+        ],
+        "ux_metrics_breakdown": [
+            {
+                "metric_type": "intent",
+                "score": 58,
+                "score_label": "Avg",
+                "calculation_breakdown": [1, 2, 3],
+            },
+        ],
+    }
+    got = {m["label"]: m["score"] for m in helio._coerce_report_metrics(ux)}
+    assert got == {
+        "overall_score": 56,
+        "engagement": 52,
+        "comprehension": 72,
+        "sentiment": 26,
+        "intent": 58,
+    }
+    # No qualitative descriptors leaked in as metric names.
+    assert not any(lab in got for lab in ("Avg", "High", "very negative"))
+
+
 def test_coerce_report_metrics_does_not_invent_metrics_from_nested_counts():
     # A nested non-metric number (sample size / response count) must NOT become a
     # "metric" — only top-level bare numbers + labeled objects are metrics.
