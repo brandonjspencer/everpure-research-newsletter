@@ -49,6 +49,28 @@ function harvestEvidenceQuotes(publishData, limit = 18) {
   return harvestRespondentQuotes(raw, limit);
 }
 
+// Source-aware harvest of the Helio verbatims: pull each helio_compare record's
+// respondent_quotes and tag them with the record's compare_id, so the dashboard can
+// label each quote with the comparison/screen it's about ("Voice of the user" topic).
+// The bare verbatims are wrapped so the same smart-quote extractor + quality filter
+// (first-person / CTA rejection / dedupe) as the deck harvest applies — keeping these
+// in lockstep with what harvestEvidenceQuotes would surface, just attributed.
+function harvestHelioQuotes(publishData, perComparison = 12) {
+  const out = [];
+  const data = readJson(path.join(publishData, "helio_evidence.json"));
+  for (const rec of (data && data.evidence) || []) {
+    if (rec.source_type !== "helio_compare") continue;
+    const rq = rec.respondent_quotes;
+    if (!Array.isArray(rq) || !rq.length) continue;
+    const clean = harvestRespondentQuotes(
+      rq.map((q) => `“${q}”`),
+      perComparison
+    );
+    for (const quote of clean) out.push({ quote, compare_id: rec.compare_id || null });
+  }
+  return out;
+}
+
 function monthlyFiles(dir) {
   try {
     return fs
@@ -289,6 +311,20 @@ function buildTrends(root) {
       .trim();
   const seenQuotes = new Set(quotes.map((q) => quoteKey(q.quote)));
   const latestMonth = cycles.length ? cycles[cycles.length - 1].month : "current";
+  // Helio verbatims first — they carry a compare_id so the rotator can name the
+  // comparison/screen each one is about.
+  for (const hq of harvestHelioQuotes(publishData)) {
+    if (seenQuotes.has(quoteKey(hq.quote))) continue;
+    seenQuotes.add(quoteKey(hq.quote));
+    quotes.push({
+      month: latestMonth,
+      title: "Research participant",
+      quote: hq.quote,
+      confidence: "unknown",
+      compare_id: hq.compare_id,
+    });
+  }
+  // Then the remaining deck open-ends (no single-comparison association).
   for (const q of harvestEvidenceQuotes(publishData)) {
     if (seenQuotes.has(quoteKey(q))) continue;
     seenQuotes.add(quoteKey(q));

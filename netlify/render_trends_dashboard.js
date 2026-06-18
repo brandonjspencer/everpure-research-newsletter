@@ -289,6 +289,32 @@ function helioComparisons(helioMetrics) {
   });
 }
 
+// Map each compare_id → the same succinct comparison title the cards use, so a
+// "Voice of the user" quote can be labeled with the screen/comparison it's about.
+// Mirrors the title precedence in helioComparisons (page title › trusted concept ›
+// page-derived screen name), keyed per compare page rather than per display group.
+function helioTitleById(helioMetrics) {
+  const byId = new Map();
+  for (const row of helioMetrics || []) {
+    const id = row.compare_id || row.test_id;
+    if (!id) continue;
+    const e = byId.get(id) || {};
+    e.comparison_title = e.comparison_title || row.comparison_title || null;
+    e.concept = e.concept || row.concept || null;
+    e.derived_title = e.derived_title || row.derived_title || null;
+    byId.set(id, e);
+  }
+  const out = {};
+  for (const [id, e] of byId) {
+    const raw =
+      e.comparison_title ||
+      (conceptTrusted(e.concept, e.derived_title) ? e.concept : e.derived_title || e.concept);
+    const title = succinctTitle(raw);
+    if (title) out[id] = title;
+  }
+  return out;
+}
+
 // The two UX signals tracked as sparklines (per the dashboard's editorial focus).
 const METRIC_TREND_KEYS = ["comprehension", "sentiment"];
 const METRIC_TREND_LABELS = { comprehension: "Comprehension", sentiment: "Sentiment" };
@@ -457,16 +483,42 @@ function helioFilterScript() {
 const QUOTE_ROTATOR_MAX = 5;
 const QUOTE_POOL_MAX = 24;
 
+// Resolve what each quote is ABOUT (topic) and WHO said it, for the caption.
+// A Helio verbatim → the comparison/screen it's about (+ "Research participant");
+// a curated finding quote → the finding title is itself the topic; a generic deck
+// open-end → just "Research participant". Returns a lean embed-ready entry.
+function resolveQuoteTopic(q, titleById) {
+  const fromCompare = q.compare_id ? titleById[q.compare_id] : null;
+  let topic = null;
+  let who = null;
+  if (fromCompare) {
+    topic = fromCompare;
+    who = "Research participant";
+  } else if (q.title && q.title !== "Research participant") {
+    topic = q.title; // the finding title already says what it's about
+  } else {
+    who = q.title || "Research participant";
+  }
+  return { quote: q.quote, month: q.month, confidence: q.confidence, topic, who };
+}
+
 function quoteFigure(q, active) {
   // aria-hidden tracks the visual state so assistive tech reads only the active
   // quote — opacity:0 alone leaves inactive slides in the accessibility tree. The
   // render-time value also covers the no-JS / reduced-motion stacked case.
-  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}"><blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${esc(q.title || "Research finding")} · ${esc(q.month)}${q.confidence && q.confidence !== "unknown" ? ` · ${esc(q.confidence)} confidence` : ""}</figcaption></figure>`;
+  const conf = q.confidence && q.confidence !== "unknown" ? `${q.confidence} confidence` : "";
+  const parts = [];
+  if (q.topic) parts.push(`<span class="q-topic">${esc(q.topic)}</span>`);
+  if (q.who) parts.push(esc(q.who));
+  if (q.month) parts.push(esc(q.month));
+  if (conf) parts.push(esc(conf));
+  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}"><blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${parts.join(" · ")}</figcaption></figure>`;
 }
 
-function quotesSection(quotes) {
+function quotesSection(quotes, helioMetrics) {
   if (!quotes.length) return `<p class="empty">No respondent quotes captured yet.</p>`;
-  const pool = quotes.slice(0, QUOTE_POOL_MAX);
+  const titleById = helioTitleById(helioMetrics || []);
+  const pool = quotes.slice(0, QUOTE_POOL_MAX).map((q) => resolveQuoteTopic(q, titleById));
   // SSR one quote as the no-JS fallback; the script shuffles the embedded pool and
   // rotates a fresh set of up to QUOTE_ROTATOR_MAX in on each load.
   const ssr = quoteFigure(pool[0], true);
@@ -491,7 +543,14 @@ function quoteRotatorScript() {
       var fig=document.createElement('figure'); fig.className='quote q-slide'+(on?' is-active':''); fig.setAttribute('aria-hidden',on?'false':'true');
       var bq=document.createElement('blockquote'); bq.textContent='“'+(q.quote||'')+'”';
       var cap=document.createElement('figcaption');
-      cap.textContent=(q.title||'Research finding')+' · '+(q.month||'')+((q.confidence&&q.confidence!=='unknown')?' · '+q.confidence+' confidence':'');
+      var segs=[];
+      if(q.who) segs.push(q.who);
+      if(q.month) segs.push(q.month);
+      if(q.confidence&&q.confidence!=='unknown') segs.push(q.confidence+' confidence');
+      if(q.topic){
+        var ts=document.createElement('span'); ts.className='q-topic'; ts.textContent=q.topic; cap.appendChild(ts);
+        if(segs.length) cap.appendChild(document.createTextNode(' · '+segs.join(' · ')));
+      } else { cap.textContent=segs.join(' · '); }
       fig.appendChild(bq); fig.appendChild(cap); stage.appendChild(fig);
       var d=document.createElement('button'); d.type='button'; d.className='q-dot'+(on?' is-active':''); d.setAttribute('data-i',idx); d.setAttribute('aria-current',on?'true':'false'); d.setAttribute('aria-label','Show quote '+(idx+1)+' of '+pick.length); dotsWrap.appendChild(d);
     });
@@ -617,8 +676,8 @@ ${panel(
 ${panel(
   "voice",
   "Voice of the user",
-  "Verbatim respondent quotes carried through from the monthly issues.",
-  quotesSection(trends.quotes || [])
+  "Verbatim respondent quotes — each labeled with the screen or comparison it’s about.",
+  quotesSection(trends.quotes || [], trends.helio_metrics || [])
 )}
 
 ${panel(

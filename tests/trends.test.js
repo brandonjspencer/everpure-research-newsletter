@@ -241,6 +241,88 @@ test("buildTrends enriches the quote pool with harvested evidence verbatims", ()
   }
 });
 
+test("buildTrends tags Helio verbatims with their compare_id", () => {
+  const root = fixtureRepo();
+  try {
+    writeJson(path.join(root, "publish", "data", "helio_evidence.json"), {
+      evidence: [
+        {
+          source_type: "helio_compare",
+          compare_id: "cmpEvents",
+          respondent_quotes: [
+            "I assumed these sessions were recorded, not live.",
+            "The schedule made sense to me once I scrolled.",
+          ],
+        },
+      ],
+    });
+    const t = buildTrends(root);
+    const tagged = t.quotes.find((q) => /recorded, not live/.test(q.quote));
+    assert.ok(tagged, "Helio verbatim harvested into the pool");
+    assert.equal(tagged.compare_id, "cmpEvents");
+    assert.equal(tagged.title, "Research participant");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("render labels Voice-of-user quotes with the comparison/finding topic", () => {
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: [],
+    helio_metrics: [
+      {
+        compare_id: "cmpEDC",
+        test_id: "rA",
+        test_name: "Baseline",
+        comparison_title: "191 EDC Success Blueprint Baseline vs 191 EDC Page V1",
+        derived_title: "Edc Success Blueprint vs Edc Page",
+        concept: "Pathfinder CTA Labels", // untrusted — must not win the label
+        metrics: { comprehension: 72, sentiment: 26 },
+      },
+    ],
+    quotes: [
+      {
+        month: "2026-06",
+        title: "Research participant",
+        quote: "I couldn't tell what this page was for.",
+        confidence: "unknown",
+        compare_id: "cmpEDC",
+      },
+      {
+        month: "2026-05",
+        title: "Events Page",
+        quote: "It finally clicked once I saw the diagram.",
+        confidence: "high",
+      },
+      {
+        month: "2026-06",
+        title: "Research participant",
+        quote: "The pricing was impossible to find anywhere.",
+        confidence: "unknown",
+      },
+    ],
+  });
+  // The embedded pool carries a resolved topic so the rotator can label each quote.
+  const pool = JSON.parse(html.match(/data-quotes>(.*?)<\/script>/s)[1].replace(/\\u003c/g, "<"));
+  const helioQ = pool.find((p) => /what this page was for/.test(p.quote));
+  // Topic comes from the compare page title (succinct), NOT the wrong inferred concept.
+  assert.match(helioQ.topic, /EDC Success Blueprint/);
+  assert.ok(!/Pathfinder/.test(helioQ.topic));
+  assert.equal(helioQ.who, "Research participant");
+  // A curated finding quote uses its finding title as the topic.
+  const findingQ = pool.find((p) => /finally clicked/.test(p.quote));
+  assert.equal(findingQ.topic, "Events Page");
+  assert.equal(findingQ.who, null);
+  // A generic deck open-end has no single topic.
+  const deckQ = pool.find((p) => /pricing was impossible/.test(p.quote));
+  assert.equal(deckQ.topic, null);
+  assert.equal(deckQ.who, "Research participant");
+  // The SSR figcaption renders the topic in a styled span.
+  assert.match(html, /<span class="q-topic">/);
+});
+
 test("monthLabel and truncate format issue-card text", () => {
   assert.equal(monthLabel("2026-06"), "June 2026");
   assert.equal(monthLabel("2026-01"), "January 2026");
