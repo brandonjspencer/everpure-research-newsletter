@@ -145,6 +145,7 @@ function brandCss() {
   .quote:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
   .quote blockquote{margin:0 0 4px;font-size:15px}
   .quote figcaption{color:var(--muted);font-size:12px}
+  .quote figcaption .q-topic{color:var(--accent);font-weight:600}
   .empty{color:var(--muted);font-size:14px;font-style:italic}
   .linklist{list-style:none;margin:0;padding:0}
   .linklist li{padding:11px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}
