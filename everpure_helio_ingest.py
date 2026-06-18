@@ -33,7 +33,7 @@ import argparse
 import json
 import os
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -94,6 +94,47 @@ QUOTE_TEXT_KEYS = {
 METRIC_SCORE_KEYS = ("score", "value", "percent", "percentage", "average", "avg", "result", "mean")
 # Keys that name a UX metric.
 METRIC_LABEL_KEYS = ("label", "name", "metric", "title", "type", "key")
+
+# Keys that hold a QUESTION prompt / option label rather than a participant answer —
+# never harvest a verbatim from these (the prompt repeats once per response and would
+# otherwise read as a "quote"). Distinct from QUOTE_TEXT_KEYS (the answer fields).
+QUESTION_KEYS = {
+    "question",
+    "question_text",
+    "prompt",
+    "label",
+    "title",
+    "headline",
+    "instruction",
+    "instructions",
+    "section_title",
+    "name",
+    "option",
+    "options",
+    "choices",
+}
+# Survey-question stems — strong signal a candidate is a prompt, not a participant
+# answer (catches a prompt that slips through under an answer-ish key like "text").
+QUESTION_PROMPT_RE = re.compile(
+    r"\b("
+    r"in your own words"
+    r"|please (?:explain|describe|tell us|select|choose|rate|list|specify|elaborate)"
+    r"|after (?:reviewing|looking at|viewing|reading)"
+    r"|on a scale"
+    r"|which of the following"
+    r"|select all that apply"
+    r"|how (?:likely|satisfied|easy|difficult|would you|much|many|often|confident)"
+    r"|what (?:is|are|was|were|do|did|would) (?:your|you)"
+    r"|rate (?:the|your|how)"
+    r"|to what extent"
+    r"|based on (?:what|the|your)"
+    r"|for this (?:task|question|page|screen|prototype)"
+    r")\b",
+    re.I,
+)
+# A candidate appearing at least this many times across responses is a repeated
+# prompt/label, not a unique participant answer.
+QUOTE_REPEAT_DROP = 3
 
 # Helio test/report/take ids are 26-char Crockford-style ULIDs (0-9 A-Z).
 COMPARE_ID_RE = re.compile(r"/share/compare/([A-Za-z0-9]+)")
@@ -622,21 +663,37 @@ def _coerce_report_metrics(node: Any, _depth: int = 0) -> List[Dict[str, Any]]:
                 return out
         for label, val in node.items():
             if _to_number(val) is not None:
-                _emit(label, val)
+                # A bare number is a metric only at the TOP level, where the key is
+                # the metric name (e.g. overall_score). Deeper bare numbers are
+                # counts/ids (responseCount, sample size) — never emit them, or
+                # recursion would manufacture junk "metrics".
+                if _depth == 0:
+                    _emit(label, val)
             elif isinstance(val, dict):
-                score = next(
+                direct = next(
                     (val[k] for k in METRIC_SCORE_KEYS if _to_number(val.get(k)) is not None),
                     None,
                 )
-                # In a metric→object map the KEY is the metric name; the inner
-                # `label` is usually a qualitative descriptor (High/Positive), so
-                # only fall back to an inner name when the key is an index/id.
-                key_str = str(label)
-                use_key = bool(re.search(r"[A-Za-z]", key_str)) and not re.fullmatch(
-                    r"(?:metric|item|row)?[_-]?\d+", key_str.strip().lower()
-                )
-                name = key_str if use_key else (val.get("metric") or val.get("name") or key_str)
-                _emit(name, score)
+                if direct is not None:
+                    # A metric→object map: the KEY is the metric name; the inner
+                    # `label` is usually a qualitative descriptor (High/Positive),
+                    # so only fall back to an inner name when the key is an index/id.
+                    key_str = str(label)
+                    use_key = bool(re.search(r"[A-Za-z]", key_str)) and not re.fullmatch(
+                        r"(?:metric|item|row)?[_-]?\d+", key_str.strip().lower()
+                    )
+                    name = key_str if use_key else (val.get("metric") or val.get("name") or key_str)
+                    _emit(name, direct)
+                elif _depth < 4:
+                    # No score directly on this object — recurse one level deeper
+                    # (the per-metric breakdown may be nested under an arbitrary key).
+                    for m in _coerce_report_metrics(val, _depth + 1):
+                        _emit(m["label"], m["score"])
+            elif isinstance(val, list) and _depth < 4:
+                # A per-metric breakdown array under an arbitrary sub-key (e.g.
+                # ux_metrics = {"overall_score": 56, "<breakdown>": [{label, score}…]}).
+                for m in _coerce_report_metrics(val, _depth + 1):
+                    _emit(m["label"], m["score"])
     return out
 
 
@@ -658,43 +715,76 @@ def _clean_verbatim(raw: str) -> str:
 
 
 def _harvest_report_quotes(node: Any, limit: int = 60) -> List[str]:
-    """Walk a report payload collecting deduped free-text answers (verbatims).
+    """Walk a report payload collecting deduped, prompt-free participant verbatims.
 
-    Pulls strings sitting under any QUOTE_TEXT_KEYS key at any depth (and bare
-    strings inside lists found under those keys). Quality filtering for
-    first-person voice / CTA rejection is left to the JS harvester downstream;
-    here we just gather sane, deduped candidates.
+    Harvests strings under QUOTE_TEXT_KEYS (the answer fields) at any depth, but
+    drops survey QUESTION prompts three ways: (1) it never descends into QUESTION_KEYS
+    fields (question/label/prompt/title/…); (2) it rejects candidates matching a
+    question-stem pattern that slips through under an answer-ish key; and (3) it drops
+    any candidate that repeats across responses (a prompt repeats once per response;
+    a real answer is ~unique). Quality filtering for first-person voice / CTA rejection
+    is left to the JS harvester downstream. Pure; unit-tested.
     """
-    out: List[str] = []
-    seen: set = set()
-
-    def _add(raw: Any) -> None:
-        if not isinstance(raw, str):
-            return
-        cleaned = _clean_verbatim(raw)
-        if not cleaned:
-            return
-        key = re.sub(r"[^a-z0-9]+", " ", cleaned.lower()).strip()
-        if key in seen:
-            return
-        seen.add(key)
-        out.append(cleaned)
+    # Pass 1 — collect every cleaned candidate WITH repetition, skipping prompt fields.
+    raw_candidates: List[str] = []
 
     def _walk(n: Any, under_text_key: bool) -> None:
-        if len(out) >= limit:
-            return
         if isinstance(n, str):
             if under_text_key:
-                _add(n)
+                cleaned = _clean_verbatim(n)
+                if cleaned:
+                    raw_candidates.append(cleaned)
         elif isinstance(n, list):
             for v in n:
                 _walk(v, under_text_key)
         elif isinstance(n, dict):
             for k, v in n.items():
-                _walk(v, under_text_key or str(k).lower() in QUOTE_TEXT_KEYS)
+                kl = str(k).lower()
+                if kl in QUESTION_KEYS:
+                    continue  # never harvest a question prompt / option label
+                _walk(v, under_text_key or kl in QUOTE_TEXT_KEYS)
 
     _walk(node, False)
+
+    # Pass 2 — drop repeated prompts + question-stem matches, then dedupe.
+    counts = Counter(raw_candidates)
+    out: List[str] = []
+    seen: set = set()
+    for cand in raw_candidates:
+        if len(out) >= limit:
+            break
+        if counts[cand] >= QUOTE_REPEAT_DROP:
+            continue  # a prompt/label repeated across responses, not an answer
+        if QUESTION_PROMPT_RE.search(cand):
+            continue
+        key = re.sub(r"[^a-z0-9]+", " ", cand.lower()).strip()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(cand)
     return out[:limit]
+
+
+def _shape_skeleton(node: Any, depth: int = 0, max_depth: int = 5) -> Any:
+    """PII-safe structural skeleton of a JSON node: keys + nesting preserved, lists
+    collapsed to their first element + length, string leaves replaced by a short
+    email-redacted 50-char sample. Recorded once per build (first successful report)
+    in helio_fetch_status.json so the live include-section shape is visible without a
+    live key — used to refine the metric/quote parsers when Helio changes shape."""
+    if depth >= max_depth:
+        return "…"
+    if isinstance(node, dict):
+        return {
+            str(k): _shape_skeleton(v, depth + 1, max_depth) for k, v in list(node.items())[:30]
+        }
+    if isinstance(node, list):
+        return {
+            "__list_len__": len(node),
+            "0": _shape_skeleton(node[0], depth + 1, max_depth) if node else None,
+        }
+    if isinstance(node, str):
+        return redact_text(node)[:50]
+    return type(node).__name__
 
 
 def fetch_test_report(
@@ -745,6 +835,7 @@ def fetch_test_report(
         "ux_metrics": metrics,
         "quotes": quotes,
         "top_keys": sorted(body.keys())[:25],
+        "shape": _shape_skeleton(body),
     }
 
 
@@ -819,23 +910,27 @@ def enrich_with_report_data(
 
     reports: Dict[str, Dict[str, Any]] = {}
     statuses: List[Dict[str, Any]] = []
+    shape_recorded = False
     for idx, rid in enumerate(report_ids):
         if idx >= max_fetches:
             statuses.append({"report_id": rid, "status": "skipped_limit"})
             continue
         rep = fetch_test_report(session, rid)
         reports[rid] = rep
-        statuses.append(
-            {
-                "report_id": rid,
-                "status": "success" if rep.get("found") else "error",
-                "metric_count": len(rep.get("ux_metrics") or []),
-                "quote_count": len(rep.get("quotes") or []),
-                "status_code": rep.get("status_code"),
-                "error": rep.get("error"),
-                "top_keys": rep.get("top_keys"),
-            }
-        )
+        row: Dict[str, Any] = {
+            "report_id": rid,
+            "status": "success" if rep.get("found") else "error",
+            "metric_count": len(rep.get("ux_metrics") or []),
+            "quote_count": len(rep.get("quotes") or []),
+            "status_code": rep.get("status_code"),
+            "error": rep.get("error"),
+            "top_keys": rep.get("top_keys"),
+        }
+        # Record the live include-section shape once (first success) for refinement.
+        if rep.get("found") and not shape_recorded:
+            row["shape"] = rep.get("shape")
+            shape_recorded = True
+        statuses.append(row)
 
     for rec in evidence:
         variants = rec.get("variants") or []
