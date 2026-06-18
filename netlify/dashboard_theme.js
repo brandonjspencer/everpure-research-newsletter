@@ -25,7 +25,7 @@ const FAVICON_LINK = (() => {
   try {
     const ico = fs.readFileSync(path.join(__dirname, "assets", "favicon.ico"));
     return `<link rel="icon" href="data:image/x-icon;base64,${ico.toString("base64")}">`;
-  } catch (_) {
+  } catch {
     return "";
   }
 })();
@@ -58,13 +58,13 @@ function brandCss() {
     --paper:#fbf7f2; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b6b; --line:#ece6df; --accent:#ef5b25;
     --rail:#211c17; --rail-ink:#d8cfc4; --rail-active:#ef5b25; --rail-active-bg:rgba(239,91,37,.16);
     --c-high:#2e7d57; --c-medium:#d98a00; --c-low:#c2410c; --c-unknown:#b8b2aa;
-    --bar-base:#9aa7b1; --bar-variant:#ef5b25; --track:#e8e1d8;
+    --bar-base:#9aa7b1; --bar-variant:#ef5b25; --track:#e8e1d8; --hover:#f4eee6;
   }
   :root[data-theme="dark"]{
     --paper:#15130f; --card:#211d18; --ink:#f1ebe2; --muted:#a59b8e; --line:#332d25; --accent:#ff7a45;
     --rail:#100e0b; --rail-ink:#b7ada0; --rail-active:#ff7a45; --rail-active-bg:rgba(255,122,69,.18);
     --c-high:#57bd8c; --c-medium:#e3a52e; --c-low:#e8794f; --c-unknown:#6f6760;
-    --bar-base:#5b6b78; --bar-variant:#ff7a45; --track:#2b251e;
+    --bar-base:#5b6b78; --bar-variant:#ff7a45; --track:#2b251e; --hover:#2b2620;
   }
   *{box-sizing:border-box}
   html{color-scheme:light dark}
@@ -155,16 +155,46 @@ function brandCss() {
   .issue-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:2px}
   .filechip{font-size:11px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 7px;text-decoration:none}
   .filechip:hover{color:var(--ink);border-color:var(--muted)}
-  .ms{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 18px}
-  .ms-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
-  .ms-title{font-size:13px;font-weight:600}
-  .ms-btn{font:inherit;font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:3px 10px;margin-left:6px;cursor:pointer}
+  .cmp-h-r{display:inline-flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .cmp-link{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .cmp-link:hover{text-decoration:underline}
+  /* Dropdown multiselect */
+  .ms{position:relative;display:inline-block;margin:0 0 18px;max-width:100%}
+  .ms-toggle{display:inline-flex;align-items:center;gap:10px;font:inherit;font-size:13px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}
+  .ms-toggle:hover{border-color:var(--muted)}
+  .ms-toggle[aria-expanded="true"]{border-color:var(--accent)}
+  .ms-count{color:var(--muted);font-size:12px}
+  .ms-caret{font-size:10px;color:var(--muted);transition:transform .15s ease}
+  .ms-toggle[aria-expanded="true"] .ms-caret{transform:rotate(180deg)}
+  .ms-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:300px;max-width:440px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:12px 14px}
+  .ms-panel[hidden]{display:none}
+  .ms-head{display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .ms-btn{font:inherit;font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:3px 10px;cursor:pointer}
   .ms-btn:hover{color:var(--ink);border-color:var(--muted)}
-  .ms-opts{display:flex;flex-wrap:wrap;gap:8px 18px}
-  .ms-opt{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--ink);cursor:pointer}
-  .ms-opt input{accent-color:var(--accent)}
+  /* The options scroll (not the whole panel) so the All/None header stays pinned. */
+  .ms-opts{display:flex;flex-direction:column;gap:2px;max-height:264px;overflow:auto}
+  .ms-opt{display:flex;align-items:center;gap:8px;padding:5px 4px;border-radius:7px}
+  .ms-opt:hover{background:var(--hover)}
+  .ms-opt-main{display:flex;align-items:center;gap:9px;flex:1;min-width:0;font-size:13px;color:var(--ink);cursor:pointer}
+  .ms-opt-main input{accent-color:var(--accent);flex:none}
+  .ms-opt-name{min-width:0}
+  .ms-opt-link{flex:none;color:var(--muted);text-decoration:none;font-size:14px;line-height:1;padding:2px 6px;border-radius:6px}
+  .ms-opt-link:hover{color:var(--accent);background:var(--hover)}
+  /* Cross-fading quote rotator */
+  .qrotator{position:relative}
+  .q-stage{display:grid}
+  .q-slide{grid-area:1/1;opacity:0;transition:opacity .7s ease;pointer-events:none}
+  .q-slide.is-active{opacity:1;pointer-events:auto}
+  .qrotator .quote{margin:0;padding:0;border:0}
+  .qrotator .quote blockquote{font-size:18px;line-height:1.5}
+  .q-dots{display:flex;gap:8px;margin-top:16px}
+  .q-dot{width:9px;height:9px;padding:0;border:0;border-radius:50%;background:var(--line);cursor:pointer;transition:background .15s ease}
+  .q-dot:hover{background:var(--muted)}
+  .q-dot.is-active{background:var(--accent)}
+  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
+    .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
 }
 

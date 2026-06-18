@@ -20,6 +20,17 @@ function esc(s) {
   );
 }
 
+// Only allow http(s) URLs to become a clickable link. source_url is plumbed from a
+// deck hyperlink target (author-authored, not build-controlled), so gate out any
+// javascript:/data: scheme before it lands in an href. Returns null if unsafe.
+function safeHref(u) {
+  try {
+    return /^https?:$/.test(new URL(String(u), "https://_/").protocol) ? String(u) : null;
+  } catch {
+    return null;
+  }
+}
+
 function readJson(filePath, fallback = null) {
   try {
     return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -107,7 +118,8 @@ function succinctTitle(title) {
 }
 
 // Grouped bars across UX metrics for one comparison — one colored bar per variant.
-function comparisonChart(title, n, variants, metricKeys, key) {
+// `url` (the Helio compare share page) renders a "View in Helio" link in the header.
+function comparisonChart(title, n, variants, metricKeys, key, url) {
   // Render every metric actually present (live tests use success/satisfaction/
   // effort too), ordered by the canonical list, then any extras alphabetically.
   const present = new Set();
@@ -150,7 +162,13 @@ function comparisonChart(title, n, variants, metricKeys, key) {
         `<span class="lg"><i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>${esc(v.test_name)}</span>`
     )
     .join("");
-  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong><span>${n ? `n=${n}` : ""}</span></div><div class="legend">${legend}</div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+  const href = safeHref(url);
+  const meta = `<span class="cmp-h-r">${n ? `<span class="cmp-n">n=${n}</span>` : ""}${
+    href
+      ? `<a class="cmp-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="View ${esc(title)} comparison in Helio">View in Helio&nbsp;↗</a>`
+      : ""
+  }</span>`;
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
 }
 
 function helioComparisons(helioMetrics) {
@@ -166,6 +184,7 @@ function helioComparisons(helioMetrics) {
   for (const p of pages.values()) {
     const comparisonTitle = pick(p.rows, "comparison_title") || null;
     const concept = pick(p.rows, "concept") || null;
+    const sourceUrl = pick(p.rows, "source_url") || null;
     // Drop comparisons with no real label — the generic "Data Comparison" /
     // unlabeled records are confusing, so they're omitted rather than shown.
     if (!comparisonTitle && !concept) continue;
@@ -183,6 +202,7 @@ function helioComparisons(helioMetrics) {
       key: p.id,
       comparisonTitle,
       concept,
+      url: sourceUrl,
       variants,
       n: ns.length ? Math.max(...ns) : null,
       rank: withMetrics * 100 + metricCount,
@@ -198,7 +218,7 @@ function helioComparisons(helioMetrics) {
   }
   return [...groups.values()].map((b) => {
     const title = succinctTitle(b.comparisonTitle || b.concept);
-    return { key: b.key, title, label: title, variants: b.variants, n: b.n };
+    return { key: b.key, title, label: title, variants: b.variants, n: b.n, url: b.url };
   });
 }
 
@@ -207,34 +227,47 @@ function helioSection(helioMetrics, metricKeys) {
     return `<p class="empty">No Helio comparisons captured yet — they appear here as the build ingests compare pages from the decks. Helio UX-metric trends start now and grow each cycle.</p>`;
   }
   const comparisons = helioComparisons(helioMetrics);
+  const count = comparisons.length;
   const options = comparisons
-    .map(
-      (c) =>
-        `<label class="ms-opt"><input type="checkbox" class="ms-cb" value="${esc(c.key)}" checked> <span>${esc(c.label)}</span></label>`
-    )
+    .map((c) => {
+      const href = safeHref(c.url);
+      const link = href
+        ? `<a class="ms-opt-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="Open ${esc(c.label)} comparison in Helio" title="View in Helio">↗</a>`
+        : "";
+      return `<div class="ms-opt"><label class="ms-opt-main"><input type="checkbox" class="ms-cb" value="${esc(c.key)}" checked> <span class="ms-opt-name">${esc(c.label)}</span></label>${link}</div>`;
+    })
     .join("");
+  // A dropdown multiselect: a toggle button (with a live "N of M" count) opens a
+  // popover of per-comparison checkboxes, each linking out to its Helio compare page.
   const control = `<div class="ms" data-ms="helio">
-  <div class="ms-head"><span class="ms-title">Show comparisons</span><span class="ms-actions"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></span></div>
-  <div class="ms-opts">${options}</div>
+  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${count} of ${count}</span> <span class="ms-caret" aria-hidden="true">▾</span></button>
+  <div class="ms-panel" id="ms-panel-helio" role="group" aria-label="Filter Helio comparisons" hidden>
+    <div class="ms-head"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></div>
+    <div class="ms-opts">${options}</div>
+  </div>
 </div>`;
   const blocks = comparisons
-    .map((c) => comparisonChart(c.label, c.n, c.variants, metricKeys, c.key))
+    .map((c) => comparisonChart(c.label, c.n, c.variants, metricKeys, c.key, c.url))
     .filter(Boolean)
     .join("\n");
   return `${control}<div class="cmp-list">${blocks}</div>${helioFilterScript()}`;
 }
 
-// Client-side filter: show only the checked comparisons, persisted to localStorage.
+// Client-side dropdown multiselect: a toggle opens a checkbox popover (close on
+// outside click / Escape); only checked comparisons stay visible, persisted to
+// localStorage, with a live count on the button.
 function helioFilterScript() {
   return `<script>(function(){
   var KEY="everpure-helio-show";
   var ms=document.querySelector('[data-ms="helio"]'); if(!ms) return;
+  var toggle=ms.querySelector('.ms-toggle'), panel=ms.querySelector('.ms-panel'), count=ms.querySelector('.ms-count');
   var cbs=[].slice.call(ms.querySelectorAll('.ms-cb'));
   function apply(){
     var sel={}; cbs.forEach(function(c){sel[c.value]=c.checked;});
     document.querySelectorAll('.cmp-list .cmp[data-cmp]').forEach(function(b){
       b.style.display = sel[b.getAttribute('data-cmp')]===false ? 'none' : '';
     });
+    if(count) count.textContent = cbs.filter(function(c){return c.checked;}).length + ' of ' + cbs.length;
     try{localStorage.setItem(KEY,JSON.stringify(sel));}catch(e){}
   }
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s){cbs.forEach(function(c){if(c.value in s)c.checked=!!s[c.value];});}}catch(e){}
@@ -242,20 +275,67 @@ function helioFilterScript() {
   var all=ms.querySelector('.ms-all'),none=ms.querySelector('.ms-none');
   if(all)all.addEventListener('click',function(){cbs.forEach(function(c){c.checked=true;});apply();});
   if(none)none.addEventListener('click',function(){cbs.forEach(function(c){c.checked=false;});apply();});
+  if(toggle&&panel){
+    function open(){panel.hidden=false;toggle.setAttribute('aria-expanded','true');}
+    function close(){panel.hidden=true;toggle.setAttribute('aria-expanded','false');}
+    toggle.addEventListener('click',function(e){e.stopPropagation();if(panel.hidden)open();else close();});
+    panel.addEventListener('click',function(e){e.stopPropagation();});
+    document.addEventListener('click',function(){if(!panel.hidden)close();});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!panel.hidden){close();toggle.focus();}});
+  }
   apply();
 })();</script>`;
 }
 
+// Feature the few most recent respondent quotes as a cross-fading rotator.
+const QUOTE_ROTATOR_MAX = 3;
+
+function quoteFigure(q, active) {
+  // aria-hidden tracks the visual state so assistive tech reads only the active
+  // quote — opacity:0 alone leaves inactive slides in the accessibility tree. The
+  // render-time value also covers the no-JS / reduced-motion stacked case.
+  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}"><blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${esc(q.title || "Research finding")} · ${esc(q.month)}${q.confidence && q.confidence !== "unknown" ? ` · ${esc(q.confidence)} confidence` : ""}</figcaption></figure>`;
+}
+
 function quotesSection(quotes) {
   if (!quotes.length) return `<p class="empty">No respondent quotes captured yet.</p>`;
-  return quotes
-    .slice(-12)
-    .reverse()
+  // Newest first, capped to a small set that cross-fades from one to the next.
+  const featured = quotes.slice().reverse().slice(0, QUOTE_ROTATOR_MAX);
+  if (featured.length === 1) {
+    return `<div class="qrotator"><div class="q-stage">${quoteFigure(featured[0], true)}</div></div>`;
+  }
+  const slides = featured.map((q, i) => quoteFigure(q, i === 0)).join("");
+  const dots = featured
     .map(
-      (q) =>
-        `<figure class="quote"><blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${esc(q.title || "Research finding")} · ${esc(q.month)}${q.confidence && q.confidence !== "unknown" ? ` · ${esc(q.confidence)} confidence` : ""}</figcaption></figure>`
+      (q, i) =>
+        `<button type="button" class="q-dot${i === 0 ? " is-active" : ""}" data-i="${i}" aria-current="${i === 0 ? "true" : "false"}" aria-label="Show quote ${i + 1} of ${featured.length}"></button>`
     )
-    .join("\n");
+    .join("");
+  return `<div class="qrotator" data-qrotator><div class="q-stage">${slides}</div><div class="q-dots">${dots}</div></div>${quoteRotatorScript()}`;
+}
+
+// Auto cross-fade through the featured quotes; pause on hover/focus; honor
+// prefers-reduced-motion (no auto-advance — dots still work); dots jump directly.
+function quoteRotatorScript() {
+  return `<script>(function(){
+  var r=document.querySelector('[data-qrotator]'); if(!r) return;
+  var slides=[].slice.call(r.querySelectorAll('.q-slide')), dots=[].slice.call(r.querySelectorAll('.q-dot'));
+  if(slides.length<2) return;
+  var i=0, timer=null, reduce=false, paused=false;
+  try{reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+  function show(n){i=(n+slides.length)%slides.length;
+    slides.forEach(function(s,k){var on=k===i;s.classList.toggle('is-active',on);s.setAttribute('aria-hidden',on?'false':'true');});
+    dots.forEach(function(d,k){var on=k===i;d.classList.toggle('is-active',on);d.setAttribute('aria-current',on?'true':'false');});
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){stop();if(!reduce&&!paused)timer=setInterval(function(){show(i+1);},6000);}
+  function pause(){paused=true;stop();}
+  function resume(){paused=false;start();}
+  dots.forEach(function(d,k){d.addEventListener('click',function(){show(k);start();});});
+  r.addEventListener('mouseenter',pause); r.addEventListener('mouseleave',resume);
+  r.addEventListener('focusin',pause); r.addEventListener('focusout',resume);
+  start();
+})();</script>`;
 }
 
 function issuesSection(issues) {

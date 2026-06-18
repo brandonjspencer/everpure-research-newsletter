@@ -87,6 +87,7 @@ function fixtureRepo() {
       {
         source_type: "helio_compare",
         compare_id: "cmpEvents",
+        source_url: "https://glare-playground.helio.app/share/compare/cmpEvents",
         comparison_title: "Events Baseline vs V1",
         inferred_concepts: ["Events Page"],
         variants: [
@@ -132,6 +133,7 @@ test("helioRows flattens one row per variant with metrics + n", () => {
       {
         source_type: "helio_compare",
         comparison_title: "X vs Y",
+        source_url: "https://glare-playground.helio.app/share/compare/cmpXY",
         inferred_concepts: ["C"],
         variants: [{ take_id: "T1", report_id: "R1", name: "Base" }],
         metrics: [{ label: "Overall UX", values: [{ take_id: "T1", score: 56 }] }],
@@ -144,6 +146,8 @@ test("helioRows flattens one row per variant with metrics + n", () => {
   assert.equal(rows[0].metrics.overall_ux, 56);
   assert.equal(rows[0].n, 100);
   assert.equal(rows[0].month, "2026-05");
+  // The compare share page URL is carried through for the dashboard link.
+  assert.equal(rows[0].source_url, "https://glare-playground.helio.app/share/compare/cmpXY");
 });
 
 test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () => {
@@ -172,6 +176,7 @@ test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () 
     const helio = t.helio_metrics.filter((r) => r.month === "2026-05");
     assert.equal(helio.length, 2);
     assert.equal(helio[0].metrics.engagement, 52);
+    assert.equal(helio[0].source_url, "https://glare-playground.helio.app/share/compare/cmpEvents");
 
     // Respondent quote captured from the frozen issue.
     assert.equal(t.quotes.length, 1);
@@ -224,8 +229,18 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     // Helio comparison rendered with the succinct title + sample size.
     assert.match(html, /Events Baseline vs v1/);
     assert.match(html, /n=100/);
-    // Quote carried through.
+    // Comparisons are a dropdown multiselect (collapsed by default) ...
+    assert.match(html, /class="ms" data-ms="helio"/);
+    assert.match(html, /class="ms-toggle"[^>]*aria-expanded="false"/);
+    // ... and each comparison links out to its Helio compare page.
+    assert.match(
+      html,
+      /class="cmp-link"[^>]*href="https:\/\/glare-playground\.helio\.app\/share\/compare\/cmpEvents"/
+    );
+    assert.match(html, />View in Helio/);
+    // Quote carried through, inside the cross-fading rotator.
     assert.match(html, /live sessions/);
+    assert.match(html, /class="qrotator"/);
     // Issue hero card: branded card linking to the frozen issue.
     assert.match(html, /class="issue-hero"/);
     assert.match(html, /href="issues\/2026-05\/default\.html"/);
@@ -233,6 +248,90 @@ test("render produces a self-contained dashboard with all sections + charts", ()
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("render features the newest quotes as a capped cross-fading rotator", () => {
+  const q = (n, month) => ({ month, title: `T${n}`, quote: `quote ${n}`, confidence: "high" });
+  const html = render({
+    cycles: [],
+    concepts: [],
+    helio_metrics: [],
+    metric_keys: [],
+    issues: [],
+    // Oldest-first, as build_trends emits them.
+    quotes: [q(1, "2026-02"), q(2, "2026-03"), q(3, "2026-04"), q(4, "2026-05")],
+  });
+  // Rotator present, capped to the 3 newest, exactly one active to start.
+  assert.match(html, /class="qrotator" data-qrotator/);
+  assert.equal((html.match(/class="quote q-slide/g) || []).length, 3);
+  assert.equal((html.match(/class="quote q-slide is-active"/g) || []).length, 1);
+  // One dot per slide ([ "] avoids matching the "q-dots" container).
+  assert.equal((html.match(/class="q-dot[ "]/g) || []).length, 3);
+  // Newest three quotes shown; the oldest (quote 1) is dropped by the cap.
+  // (Match the blockquote body, not bare "quote 1", which also appears in a dot
+  // aria-label like "Show quote 1 of 3".)
+  assert.match(html, /&ldquo;quote 4&rdquo;/);
+  assert.ok(!/&ldquo;quote 1&rdquo;/.test(html), "oldest quote dropped by the rotator cap");
+  // The auto-advance script honors reduced motion.
+  assert.match(html, /prefers-reduced-motion/);
+  // a11y: only the active slide is in the accessibility tree, and the active dot
+  // carries a programmatic "current" state (not color-only).
+  assert.equal((html.match(/q-slide is-active" aria-hidden="false"/g) || []).length, 1);
+  // The two inactive slides are hidden from AT (scope to slides — the sidebar
+  // icons and caret also carry aria-hidden="true").
+  assert.equal((html.match(/quote q-slide" aria-hidden="true"/g) || []).length, 2);
+  assert.equal(
+    (html.match(/class="q-dot is-active" data-i="0" aria-current="true"/g) || []).length,
+    1
+  );
+  // The script keeps both in sync (aria-hidden + aria-current toggled in show()).
+  assert.match(html, /setAttribute\('aria-hidden'/);
+  assert.match(html, /setAttribute\('aria-current'/);
+});
+
+test("comparison links gate out non-http(s) schemes (no javascript: href)", () => {
+  const row = (source_url) => ({
+    month: "2026-06",
+    compare_id: "cmpEvil",
+    source_url,
+    comparison_title: null,
+    concept: "Events Page",
+    test_id: "t1",
+    test_name: "Baseline",
+    n: 100,
+    metrics: { engagement: 60 },
+  });
+  // A malicious deck hyperlink target should never become a clickable link.
+  const evil = render({
+    cycles: [],
+    concepts: [],
+    issues: [],
+    quotes: [],
+    metric_keys: ["engagement"],
+    helio_metrics: [row("javascript:alert(document.cookie)")],
+  });
+  assert.ok(!/href="javascript:/i.test(evil), "javascript: scheme must not reach an href");
+  assert.ok(!/javascript:alert/.test(evil), "malicious payload must not appear in output");
+  // The comparison itself still renders (just without an outbound link).
+  assert.match(evil, /Events Page/);
+  assert.ok(!/class="cmp-link"/.test(evil) && !/class="ms-opt-link"/.test(evil));
+  // A normal https compare URL still produces both links.
+  const ok = render({
+    cycles: [],
+    concepts: [],
+    issues: [],
+    quotes: [],
+    metric_keys: ["engagement"],
+    helio_metrics: [row("https://glare-playground.helio.app/share/compare/cmpOK")],
+  });
+  assert.match(
+    ok,
+    /class="cmp-link" href="https:\/\/glare-playground\.helio\.app\/share\/compare\/cmpOK"/
+  );
+  assert.match(
+    ok,
+    /class="ms-opt-link" href="https:\/\/glare-playground\.helio\.app\/share\/compare\/cmpOK"/
+  );
 });
 
 test("render shows a friendly empty state when no Helio data exists", () => {
@@ -245,6 +344,7 @@ test("helioComparisons: titled stays distinct, concept dups collapse, unlabeled 
     compare_id,
     comparison_title: comparison_title || null,
     concept,
+    source_url: `https://glare-playground.helio.app/share/compare/${compare_id}`,
     test_id,
     test_name,
     n: 100,
@@ -272,6 +372,10 @@ test("helioComparisons: titled stays distinct, concept dups collapse, unlabeled 
   const pf = cmps.find((c) => c.title === "Pathfinder CTA Labels");
   assert.equal(pf.variants.length, 2); // collapsed to the richer page (p2)
   assert.ok(!cmps.some((c) => /01ULID/.test(JSON.stringify(c))), "unlabeled comparison dropped");
+  // The Helio compare page URL is carried onto each comparison for the dashboard link.
+  const edc = cmps.find((c) => c.title === "EDC Success Blueprint Baseline vs v1");
+  assert.equal(edc.url, "https://glare-playground.helio.app/share/compare/edc");
+  assert.ok(pf.url && /share\/compare\//.test(pf.url));
 });
 
 test("succinctTitle drops number prefixes and collapses the trailing version", () => {
