@@ -237,6 +237,17 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /<!doctype html>/i);
     assert.equal((html.match(/<svg/g) || []).length, (html.match(/<\/svg>/g) || []).length);
 
+    // Sections are collapsible: each is a labeled panel with a toggle + body, and a
+    // single wiring script persists the open/closed state.
+    assert.match(html, /class="panel" data-panel="helio"/);
+    assert.match(
+      html,
+      /class="panel-toggle"[^>]*aria-expanded="true"[^>]*aria-controls="panel-helio"/
+    );
+    assert.match(html, /class="panel-body" id="panel-helio"/);
+    assert.match(html, /everpure-panels/);
+    assert.equal((html.match(/class="panel" data-panel=/g) || []).length, 5);
+
     // All sections present, including the issue hero cards.
     for (const heading of [
       "Research program by cycle",

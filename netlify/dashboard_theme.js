@@ -100,6 +100,13 @@ function brandCss() {
   .kpi-l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:0 0 20px}
   .panel .desc,.desc{color:var(--muted);font-size:13px;margin:0 0 16px}
+  .panel-h{margin:0}
+  .panel-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  .panel-caret{font-size:12px;color:var(--muted);transition:transform .15s ease;flex:none}
+  .panel-toggle:hover .panel-caret{color:var(--ink)}
+  .panel-toggle[aria-expanded="false"] .panel-caret{transform:rotate(-90deg)}
+  .panel-body{margin-top:4px}
+  .panel-body[hidden]{display:none}
   svg.chart{width:100%;height:auto;display:block}
   text.axis{font-size:12px;fill:var(--ink);font-weight:600}
   text.sub{font-size:10px;fill:var(--muted)}
@@ -213,7 +220,7 @@ function brandCss() {
   .mt-delta{font-weight:600;margin-left:2px}
   .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
   .mt-soon{font-style:italic;opacity:.85}
-  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}}
+  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}

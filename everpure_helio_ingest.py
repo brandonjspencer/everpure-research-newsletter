@@ -119,6 +119,11 @@ def _asset_map(text: str, block_re: re.Pattern[str]) -> Dict[str, str]:
 # name for that variant (e.g. "2_-_VMware_Platform_Guides" -> "VMware Platform Guides").
 ASSET_SLUG_RE = re.compile(r"/asset/[A-Z0-9]+/(?:medium_)?([^/?\"]+?)\.(?:png|jpe?g|webp)")
 
+# Typos baked into Helio screen filenames (authored in Helio) → corrected for display.
+SCREEN_NAME_FIXES = {
+    "Accelerate Overview Pate": "Accelerate Overview Page",
+}
+
 
 def _screen_from_asset(url: str) -> str:
     """Derive a human screen name from a Helio asset URL's filename slug."""
@@ -128,7 +133,8 @@ def _screen_from_asset(url: str) -> str:
     slug = re.sub(r"^\d+[a-z]?[\s_-]+", "", m.group(1))  # drop leading "2_-_", "191-"
     slug = re.sub(r"[_-]+", " ", slug).strip()
     # Capitalize all-lowercase words; leave existing casing (VMware, CTA) intact.
-    return " ".join(w[:1].upper() + w[1:] if w.islower() else w for w in slug.split())
+    name = " ".join(w[:1].upper() + w[1:] if w.islower() else w for w in slug.split())
+    return SCREEN_NAME_FIXES.get(name, name)
 
 
 def parse_compare_html(html: str) -> Dict[str, Any]:

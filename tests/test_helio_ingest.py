@@ -135,6 +135,20 @@ def test_parse_compare_html_names_variants_and_title_from_screens_when_untitled(
     assert parsed["derived_title"] == "VMware Platform Guides vs Book Filter Default"
 
 
+def test_screen_from_asset_cleans_slug_and_fixes_known_typo():
+    base = "https://assets.helio.app/asset/01KSWS2SSMGRXJ65ZKF2PGKBDC/"
+    # Number/index prefixes stripped; casing of CamelCase tokens preserved.
+    assert (
+        helio._screen_from_asset(base + "2_-_VMware_Platform_Guides.png")
+        == "VMware Platform Guides"
+    )
+    # Known Helio filename typo corrected for display.
+    assert (
+        helio._screen_from_asset(base + "medium_Accelerate_Overview_Pate.jpg?Expires=1")
+        == "Accelerate Overview Page"
+    )
+
+
 def test_parse_compare_html_extracts_title_variants_metrics():
     parsed = helio.parse_compare_html(_escaped_payload())
 
