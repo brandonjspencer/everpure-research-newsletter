@@ -120,10 +120,13 @@ should be a long-lived token from a published (Production/Internal) OAuth app �
 monthly rotation; see [docs/OPERATIONS.md](docs/OPERATIONS.md) "Google auth". `HELIO_APP_ID` /
 `HELIO_API_TOKEN` are the Enterprise public-API pair (`X-API-ID`/`X-API-TOKEN`) used by
 `everpure_helio_ingest.py` for Helio report **config/integrity** provenance (Tier B-lite:
-sample size + question count); issued in Helio Org Settings → Administration, never committed.
-The public API serves test **config only** — it does **not** expose per-response/score data (the
-`/responses` route 504s), so deep report data isn't fetchable there. Helio **compare** share
-pages (Tier A, the headline metric deltas) are public and need no auth.
+sample size + question count) **and** the deep report data (Tier B): per-variant UX-metric scores
+plus verbatim participant quotes via the AI-friendly `GET /tests/:id/report?include=…` endpoint
+Helio published (docs 2026-06, which superseded the old config-only `/responses`-504 limitation).
+Issued in Helio Org Settings → Administration, never committed. The deep parser is defensive
+(records observed `top_keys` in `helio_fetch_status.json`) and **non-blocking**: it degrades deep →
+config-only → Tier A on any failure. Helio **compare** share pages (Tier A, the headline metric
+deltas) are public and need no auth.
 
 ## Environment notes
 

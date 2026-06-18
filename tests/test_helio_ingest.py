@@ -393,3 +393,221 @@ def test_enrich_records_errors_for_unresolved_reports():
     )
     assert [s["status"] for s in statuses] == ["error", "error"]
     assert "report_configs" not in rec  # nothing attached when none resolve
+
+
+# ---- Tier B (deep): UX metrics + verbatim quotes via /tests/:id/report --------
+
+
+def test_to_number_coerces_common_forms():
+    assert helio._to_number("78%") == 78.0
+    assert helio._to_number("78.5 %") == 78.5
+    assert helio._to_number(68) == 68.0
+    assert helio._to_number("n/a") is None
+    assert helio._to_number(True) is None  # bools are not scores
+
+
+def test_norm_metric_label_matches_variants():
+    assert helio._norm_metric_label("Overall UX Score") == "overall ux"
+    assert helio._norm_metric_label("Comprehension") == "comprehension"
+    assert helio._norm_metric_label("Sentiment %") == "sentiment"
+
+
+def test_coerce_report_metrics_tolerates_shapes():
+    # list of metric objects (label/name/metric + score/value/average)
+    assert helio._coerce_report_metrics(
+        [
+            {"label": "Comprehension", "score": 78},
+            {"name": "Sentiment", "value": "52%"},
+            {"metric": "Overall UX", "average": 64.0},
+            {"label": "no-score"},  # dropped
+        ]
+    ) == [
+        {"label": "Comprehension", "score": 78},
+        {"label": "Sentiment", "score": 52},
+        {"label": "Overall UX", "score": 64},
+    ]
+    # metric -> number map
+    assert helio._coerce_report_metrics({"comprehension": 78, "sentiment": 52}) == [
+        {"label": "comprehension", "score": 78},
+        {"label": "sentiment", "score": 52},
+    ]
+    # metric -> object map: KEY is the metric name, inner "label" is qualitative
+    assert helio._coerce_report_metrics({"Comprehension": {"score": 78, "label": "High"}}) == [
+        {"label": "Comprehension", "score": 78}
+    ]
+    # numeric-index keys fall back to the inner name
+    assert helio._coerce_report_metrics({"0": {"name": "Intent", "score": 40}}) == [
+        {"label": "Intent", "score": 40}
+    ]
+    # one nesting layer is unwrapped
+    assert helio._coerce_report_metrics({"ux_metrics": [{"label": "Intent", "score": 40}]}) == [
+        {"label": "Intent", "score": 40}
+    ]
+    # garbage never raises
+    assert helio._coerce_report_metrics("nope") == []
+    assert helio._coerce_report_metrics(None) == []
+
+
+def test_harvest_report_quotes_cleans_and_dedupes():
+    node = [
+        {"section_responses": [{"answer": "I couldn't tell what the page was for."}]},
+        {"merged_explanations": ["The labels confused me at first.", "Looks good"]},
+        {"answer": "https://example.com/x"},  # URL dropped
+        {"answer": "I couldn't tell what the page was for."},  # dup dropped
+        {"unrelated": "Some descriptive caption not under a text key"},  # not a quote field
+    ]
+    quotes = helio._harvest_report_quotes(node)
+    assert "I couldn't tell what the page was for." in quotes
+    assert "The labels confused me at first." in quotes
+    assert "Looks good" not in quotes  # too short
+    assert all(not q.startswith("http") for q in quotes)
+    assert quotes.count("I couldn't tell what the page was for.") == 1
+    assert "Some descriptive caption not under a text key" not in quotes
+
+
+class _FakeReportResp:
+    def __init__(self, status_code, payload):
+        self.status_code = status_code
+        self._payload = payload
+
+    def json(self):
+        if self._payload == "__bad__":
+            raise ValueError("not json")
+        return self._payload
+
+
+class _FakeReportSession:
+    """Maps test-id -> (status_code, payload) for GET /tests/:id/report.
+
+    Accepts `params` (the real report call passes include/limit) and records
+    the requested URLs + params so tests can assert on them.
+    """
+
+    def __init__(self, by_id):
+        self._by_id = by_id
+        self.headers = {}
+        self.calls = []
+
+    def get(self, url, params=None, timeout=None):
+        self.calls.append((url, params))
+        tid = url.split("/tests/")[1].split("/")[0]
+        status, payload = self._by_id.get(tid, (404, {}))
+        return _FakeReportResp(status, payload)
+
+
+def _report_payload(comp, sent, quotes, wrap=None):
+    body = {
+        "ux_metrics": [
+            {"label": "Comprehension", "score": comp},
+            {"label": "Sentiment", "score": sent},
+            {"label": "Overall UX", "score": 61},
+        ],
+        "questions_responses": [{"section_responses": [{"answer": q}]} for q in quotes],
+    }
+    return {wrap: body} if wrap else body
+
+
+def test_fetch_test_report_success_and_include_params():
+    session = _FakeReportSession(
+        {BASELINE_REPORT: (200, _report_payload(78, 40, ["I was unsure what to do here."]))}
+    )
+    rep = helio.fetch_test_report(session, BASELINE_REPORT)
+    assert rep["found"] is True
+    assert {m["label"] for m in rep["ux_metrics"]} == {"Comprehension", "Sentiment", "Overall UX"}
+    assert rep["quotes"] == ["I was unsure what to do here."]
+    # The documented include set + a response limit are requested.
+    _url, params = session.calls[0]
+    assert params["include"] == helio.REPORT_INCLUDE
+    assert "limit" in params
+
+
+def test_fetch_test_report_unwraps_report_or_data_envelope():
+    for wrap in ("report", "data"):
+        session = _FakeReportSession(
+            {
+                BASELINE_REPORT: (
+                    200,
+                    _report_payload(70, 50, ["It felt confusing to me."], wrap=wrap),
+                )
+            }
+        )
+        rep = helio.fetch_test_report(session, BASELINE_REPORT)
+        assert rep["found"] is True
+        assert rep["quotes"] == ["It felt confusing to me."]
+        assert {m["label"] for m in rep["ux_metrics"]} >= {"Comprehension", "Sentiment"}
+
+
+def test_fetch_test_report_unknown_shape_invents_nothing():
+    # A 200 with no ux_metrics/questions_responses must NOT mine stray numbers/text.
+    session = _FakeReportSession({BASELINE_REPORT: (200, {"weird": {"x": 1}, "other_count": 2})})
+    rep = helio.fetch_test_report(session, BASELINE_REPORT)
+    assert rep["found"] is True
+    assert rep["ux_metrics"] == [] and rep["quotes"] == []
+    assert "other_count" in rep["top_keys"]  # recorded for shape refinement
+
+
+def test_fetch_test_report_degrades_on_404_and_bad_json():
+    session = _FakeReportSession({BASELINE_REPORT: (504, {})})
+    assert helio.fetch_test_report(session, BASELINE_REPORT)["found"] is False
+    session2 = _FakeReportSession({BASELINE_REPORT: (200, "__bad__")})
+    rep = helio.fetch_test_report(session2, BASELINE_REPORT)
+    assert rep["found"] is False and rep["error"] == "non_json"
+
+
+def test_enrich_with_report_data_gap_fills_metrics_and_harvests_quotes():
+    parsed = helio.parse_compare_html(_escaped_payload())  # scraped Engagement + Sentiment
+    rec = helio.compare_evidence_record(
+        {"source_type": "helio_compare", "target_url": COMPARE_URL}, parsed
+    )
+    session = _FakeReportSession(
+        {
+            BASELINE_REPORT: (200, _report_payload(78, 99, ["I couldn't find the pricing."])),
+            V1_REPORT: (200, _report_payload(81, 99, ["The header made me hesitate."])),
+        }
+    )
+    reports, statuses = helio.enrich_with_report_data(
+        [rec], "app", "tok", max_fetches=12, session=session
+    )
+    assert {s["status"] for s in statuses} == {"success"}
+    assert all("top_keys" in s for s in statuses)
+
+    labels = {m["label"]: {v["take_id"]: v["score"] for v in m["values"]} for m in rec["metrics"]}
+    # Comprehension/Overall UX were absent from the scrape → gap-filled from the API.
+    assert labels["Comprehension"] == {BASELINE_TAKE: 78, V1_TAKE: 81}
+    assert "Overall UX" in labels
+    # Sentiment was already scraped (26 / 44) → the API's 99 must NOT overwrite it.
+    assert labels["Sentiment"][BASELINE_TAKE] == 26
+    assert labels["Sentiment"][V1_TAKE] == 44
+    # Per-variant raw API metrics attached as provenance.
+    assert rec["variants"][0]["report_metrics"]["Comprehension"] == 78
+    # Verbatims collected + folded (wrapped) into evidence_text for the JS harvesters.
+    assert "I couldn't find the pricing." in rec["respondent_quotes"]
+    assert "The header made me hesitate." in rec["respondent_quotes"]
+    assert '"I couldn\'t find the pricing."' in rec["evidence_text"]
+
+
+def test_enrich_with_report_data_is_nonblocking_and_respects_limit():
+    parsed = helio.parse_compare_html(_escaped_payload())
+    rec = helio.compare_evidence_record(
+        {"source_type": "helio_compare", "target_url": COMPARE_URL}, parsed
+    )
+    # First id resolves; second is skipped by the fetch limit.
+    session = _FakeReportSession(
+        {BASELINE_REPORT: (200, _report_payload(70, 60, ["It wasn't clear to me."]))}
+    )
+    _reports, statuses = helio.enrich_with_report_data(
+        [rec], "app", "tok", max_fetches=1, session=session
+    )
+    assert statuses[0]["status"] == "success"
+    assert statuses[1]["status"] == "skipped_limit"
+
+    # All ids 404 → no metrics gap-filled, no quotes, nothing raised.
+    rec2 = helio.compare_evidence_record(
+        {"source_type": "helio_compare", "target_url": COMPARE_URL}, parsed
+    )
+    before = {m["label"]: len(m["values"]) for m in rec2["metrics"]}
+    session2 = _FakeReportSession({})  # everything 404s
+    _r, st = helio.enrich_with_report_data([rec2], "app", "tok", max_fetches=12, session=session2)
+    assert [s["status"] for s in st] == ["error", "error"]
+    assert "respondent_quotes" not in rec2
+    assert {m["label"]: len(m["values"]) for m in rec2["metrics"]} == before

@@ -12,8 +12,12 @@ The Slides decks link to ZURB **Helio** sources that the Google-Sheet ingest onl
     concrete evidence signals and discover the report ids for Tier B.
 
   * **Tier B — report detail** (`my.helio.app/report/<id>`): behind the Helio public
-    REST API (Enterprise; `X-API-ID`/`X-API-TOKEN`). Built in a follow-up once the
-    response shape is confirmed against live keys (scripts/helio_api_probe.py).
+    REST API (Enterprise; `X-API-ID`/`X-API-TOKEN`). Two parts:
+      - *config/integrity* via `GET /tests/:id` (sample size, section/spam/flag counts);
+      - *deep report data* via `GET /tests/:id/report?include=ux_metrics,questions_summary,
+        questions_responses` — the AI-friendly report endpoint Helio published (docs 2026-06).
+        We parse per-variant UX-metric scores (gap-filling the scraped Tier-A metrics) and
+        harvest verbatim participant quotes into the evidence substrate.
 
 Output: appends `helio_*` evidence records into `external_research_evidence.json`
 (so the existing merge_external_evidence_packs.js consumes them unchanged), augments
@@ -49,15 +53,47 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
-# Public REST API base (Enterprise; X-API-ID / X-API-TOKEN). Probed 2026-06: it
-# serves test CONFIG only (GET /tests, GET /tests/:id). The per-response/score
-# route GET /tests/:id/responses TIMES OUT on Helio's origin (504) regardless of
-# pagination or section scoping, and /results /insights /sections return 406. So
-# deep response/score data is NOT fetchable via the public API today — Tier B is
-# limited to config/integrity provenance (sample size + question count). Revisit
-# if Helio fixes /responses or publishes API docs. Deep data otherwise needs the
-# private app API (session auth) or a manual export.
+# Public REST API base (Enterprise; X-API-ID / X-API-TOKEN). Historically (probed
+# 2026-06) only test CONFIG was reachable: GET /tests/:id worked, but the
+# per-response route GET /tests/:id/responses 504'd and /results /insights /sections
+# returned 406. Helio has since published API docs (2026-06) exposing a purpose-built
+# AI-friendly report endpoint — GET /tests/:id/report?include=... — which serves the
+# deep data the old routes couldn't. We now fetch it (Tier B), still NON-BLOCKING:
+# any 404/406/504/timeout/empty per id degrades to the config-only provenance, never
+# aborting the deploy. The exact include-section JSON shape is parsed defensively and
+# the observed top-level keys are recorded in helio_fetch_status.json for refinement.
 HELIO_API_BASE = "https://my.helio.app/api/public"
+
+# Deep report data we request from GET /tests/:id/report. The endpoint returns only
+# the sections named here; this set covers UX-metric scores + verbatim participant
+# answers (questions_responses) without pulling the heavier journey/demographic cuts.
+REPORT_INCLUDE = "ux_metrics,questions_summary,questions_responses"
+# Cap responses pulled per test (endpoint max is 500); quotes are deduped after.
+REPORT_RESPONSE_LIMIT = 200
+
+# Free-text answer fields, at any nesting depth, that may carry a participant verbatim.
+QUOTE_TEXT_KEYS = {
+    "answer",
+    "answer_text",
+    "text",
+    "value",
+    "response",
+    "response_text",
+    "explanation",
+    "explanations",
+    "merged_explanations",
+    "comment",
+    "comments",
+    "body",
+    "content",
+    "open_ended",
+    "free_text",
+    "verbatim",
+}
+# Keys whose numeric value is a UX-metric score (checked in order of preference).
+METRIC_SCORE_KEYS = ("score", "value", "percent", "percentage", "average", "avg", "result", "mean")
+# Keys that name a UX metric.
+METRIC_LABEL_KEYS = ("label", "name", "metric", "title", "type", "key")
 
 # Helio test/report/take ids are 26-char Crockford-style ULIDs (0-9 A-Z).
 COMPARE_ID_RE = re.compile(r"/share/compare/([A-Za-z0-9]+)")
@@ -507,6 +543,328 @@ def enrich_with_report_config(
     return configs, statuses
 
 
+# ---------------------------------------------------------------------------
+# Tier B (deep) — UX metrics + verbatim quotes via GET /tests/:id/report.
+# The include-section shapes aren't documented field-by-field, so every parser
+# here is shape-tolerant and total: unknown input yields empty, never raises.
+# ---------------------------------------------------------------------------
+
+
+def _to_number(val: Any) -> Optional[float]:
+    """Coerce 78 / 78.5 / "78" / "78%" / "78.0 %" → float; None if not numeric."""
+    if isinstance(val, bool):
+        return None
+    if isinstance(val, (int, float)):
+        return float(val)
+    if isinstance(val, str):
+        m = re.search(r"-?\d+(?:\.\d+)?", val)
+        if m:
+            try:
+                return float(m.group(0))
+            except ValueError:
+                return None
+    return None
+
+
+def _num_or_int(val: float) -> Any:
+    """Render a whole-number float as an int so scores read 68 not 68.0."""
+    return int(val) if float(val).is_integer() else val
+
+
+def _norm_metric_label(label: str) -> str:
+    """Normalize a metric label for matching ('Overall UX Score' ↔ 'overall ux')."""
+    s = normalize_space(label).lower()
+    s = re.sub(r"[%]", "", s)
+    s = re.sub(r"\b(score|metric|rating|average|avg)\b", "", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _coerce_report_metrics(node: Any, _depth: int = 0) -> List[Dict[str, Any]]:
+    """Pull [{label, score}] from a ux_metrics node, tolerant of list/dict shapes.
+
+    Handles: a list of metric objects ({label/name, score/value/percent}); a
+    metric→number map ({"comprehension": 78}); a metric→object map
+    ({"comprehension": {"score": 78}}); and one level of {metrics|data|ux_metrics}
+    wrapping. Deduped by normalized label, first value wins.
+    """
+    out: List[Dict[str, Any]] = []
+    seen: set = set()
+
+    def _emit(label: Any, score: Any) -> None:
+        lab = normalize_space(label)
+        num = _to_number(score)
+        if not lab or num is None:
+            return
+        key = _norm_metric_label(lab)
+        if not key or key in seen:
+            return
+        seen.add(key)
+        out.append({"label": lab, "score": _num_or_int(num)})
+
+    if isinstance(node, list):
+        for item in node:
+            if isinstance(item, dict):
+                label = next((item[k] for k in METRIC_LABEL_KEYS if item.get(k)), None)
+                score = next(
+                    (item[k] for k in METRIC_SCORE_KEYS if _to_number(item.get(k)) is not None),
+                    None,
+                )
+                _emit(label, score)
+    elif isinstance(node, dict):
+        # Unwrap a single nesting layer (e.g. {"ux_metrics": {...}}).
+        if _depth == 0:
+            for wrap in ("ux_metrics", "metrics", "data", "results"):
+                if isinstance(node.get(wrap), (list, dict)):
+                    nested = _coerce_report_metrics(node[wrap], _depth + 1)
+                    for m in nested:
+                        _emit(m["label"], m["score"])
+            if out:
+                return out
+        for label, val in node.items():
+            if _to_number(val) is not None:
+                _emit(label, val)
+            elif isinstance(val, dict):
+                score = next(
+                    (val[k] for k in METRIC_SCORE_KEYS if _to_number(val.get(k)) is not None),
+                    None,
+                )
+                # In a metric→object map the KEY is the metric name; the inner
+                # `label` is usually a qualitative descriptor (High/Positive), so
+                # only fall back to an inner name when the key is an index/id.
+                key_str = str(label)
+                use_key = bool(re.search(r"[A-Za-z]", key_str)) and not re.fullmatch(
+                    r"(?:metric|item|row)?[_-]?\d+", key_str.strip().lower()
+                )
+                name = key_str if use_key else (val.get("metric") or val.get("name") or key_str)
+                _emit(name, score)
+    return out
+
+
+def _clean_verbatim(raw: str) -> str:
+    """Normalize one candidate verbatim; '' if it isn't usable participant text."""
+    s = normalize_space(raw)
+    # Strip a single layer of wrapping quotes so we don't double-wrap later.
+    s = re.sub(r"""^[\s"“”']+""", "", s)
+    s = re.sub(r"""[\s"“”']+$""", "", s)
+    if len(s) < 15 or len(s) > 400:
+        return ""
+    if " " not in s:  # single token — a label/option, not a sentence
+        return ""
+    if not re.search(r"[A-Za-z]", s):
+        return ""
+    if re.match(r"^https?://", s):
+        return ""
+    return s
+
+
+def _harvest_report_quotes(node: Any, limit: int = 60) -> List[str]:
+    """Walk a report payload collecting deduped free-text answers (verbatims).
+
+    Pulls strings sitting under any QUOTE_TEXT_KEYS key at any depth (and bare
+    strings inside lists found under those keys). Quality filtering for
+    first-person voice / CTA rejection is left to the JS harvester downstream;
+    here we just gather sane, deduped candidates.
+    """
+    out: List[str] = []
+    seen: set = set()
+
+    def _add(raw: Any) -> None:
+        if not isinstance(raw, str):
+            return
+        cleaned = _clean_verbatim(raw)
+        if not cleaned:
+            return
+        key = re.sub(r"[^a-z0-9]+", " ", cleaned.lower()).strip()
+        if key in seen:
+            return
+        seen.add(key)
+        out.append(cleaned)
+
+    def _walk(n: Any, under_text_key: bool) -> None:
+        if len(out) >= limit:
+            return
+        if isinstance(n, str):
+            if under_text_key:
+                _add(n)
+        elif isinstance(n, list):
+            for v in n:
+                _walk(v, under_text_key)
+        elif isinstance(n, dict):
+            for k, v in n.items():
+                _walk(v, under_text_key or str(k).lower() in QUOTE_TEXT_KEYS)
+
+    _walk(node, False)
+    return out[:limit]
+
+
+def fetch_test_report(
+    session: requests.Session,
+    test_id: str,
+    include: str = REPORT_INCLUDE,
+    limit: int = REPORT_RESPONSE_LIMIT,
+    timeout: int = 90,
+) -> Dict[str, Any]:
+    """GET /tests/:id/report → {found, ux_metrics:[{label,score}], quotes:[...], top_keys}.
+
+    Non-blocking and shape-tolerant: any transport error or non-200 returns
+    {found: False, ...}; an unexpected JSON shape yields empty metrics/quotes
+    (with top_keys recorded) rather than raising. A `session` double makes this
+    unit-testable without a live call.
+    """
+    url = f"{HELIO_API_BASE}/tests/{test_id}/report"
+    params = {"include": include, "limit": str(limit)}
+    try:
+        resp = session.get(url, params=params, timeout=timeout)
+    except Exception as exc:  # noqa: BLE001 - non-blocking ingest
+        return {"report_id": test_id, "found": False, "error": f"{exc.__class__.__name__}:{exc}"}
+    if getattr(resp, "status_code", None) != 200:
+        return {"report_id": test_id, "found": False, "status_code": resp.status_code}
+    try:
+        payload = resp.json()
+    except ValueError:
+        return {"report_id": test_id, "found": False, "error": "non_json"}
+    if not isinstance(payload, dict):
+        return {"report_id": test_id, "found": False, "error": "non_object"}
+    # Some APIs wrap the body in {"report": {...}} or {"data": {...}}.
+    body = payload
+    for wrap in ("report", "data"):
+        if isinstance(payload.get(wrap), dict):
+            body = payload[wrap]
+            break
+    # Only read the explicit documented sections — never fall back to the whole
+    # body, or a stray numeric field (e.g. a response count) reads as a "metric".
+    ux_node = body.get("ux_metrics")
+    metrics = _coerce_report_metrics(ux_node) if ux_node is not None else []
+    resp_node = body.get("questions_responses")
+    if resp_node is None:
+        resp_node = body.get("responses")
+    quotes = _harvest_report_quotes(resp_node) if resp_node is not None else []
+    return {
+        "report_id": test_id,
+        "found": True,
+        "ux_metrics": metrics,
+        "quotes": quotes,
+        "top_keys": sorted(body.keys())[:25],
+    }
+
+
+def _attach_report_metrics(
+    rec: Dict[str, Any], take_id: str, name: str, metrics: List[Dict]
+) -> int:
+    """Gap-fill rec['metrics'] from one variant's API metrics. Never overwrites a
+    scraped (Tier-A) score; adds missing per-variant values and missing metric
+    rows. Returns how many values were added."""
+    rows = rec.setdefault("metrics", [])
+    by_norm = {_norm_metric_label(r.get("label", "")): r for r in rows}
+    added = 0
+    for m in metrics:
+        norm = _norm_metric_label(m["label"])
+        if not norm:
+            continue
+        row = by_norm.get(norm)
+        if row is None:
+            row = {"label": m["label"], "values": []}
+            rows.append(row)
+            by_norm[norm] = row
+        values = row.setdefault("values", [])
+        existing = next((v for v in values if v.get("take_id") == take_id), None)
+        if existing is None:
+            values.append(
+                {
+                    "take_id": take_id,
+                    "name": name,
+                    "score": m["score"],
+                    "qual_label": "",
+                    "source": "report_api",
+                }
+            )
+            added += 1
+        elif not isinstance(existing.get("score"), (int, float)):
+            existing["score"] = m["score"]
+            existing.setdefault("source", "report_api")
+            added += 1
+    return added
+
+
+def _fold_quotes_into_evidence(rec: Dict[str, Any], quotes: List[str]) -> None:
+    """Store clean verbatims on the record and append a wrapped form to
+    evidence_text so the existing JS quote harvesters (dashboard pool + concept
+    → issue extraction) surface them with no downstream changes."""
+    if not quotes:
+        return
+    rec["respondent_quotes"] = quotes
+    # Only quotes within the JS harvester's 200-char window are wrapped (others
+    # stay in respondent_quotes for the inference pass); cap to keep text bounded.
+    wrapped = " ".join(f'"{q}"' for q in quotes if len(q) <= 200)[:4000]
+    if wrapped:
+        base = rec.get("evidence_text") or ""
+        rec["evidence_text"] = redact_text(f"{base} {wrapped}".strip(), limit=8000)
+
+
+def enrich_with_report_data(
+    evidence: List[Dict[str, Any]],
+    app_id: str,
+    token: str,
+    max_fetches: int,
+    session: Optional[requests.Session] = None,
+) -> Tuple[Dict[str, Dict[str, Any]], List[Dict[str, Any]]]:
+    """Fetch GET /tests/:id/report for each discovered variant report id and attach
+    its UX-metric scores (gap-filling rec['metrics']) and verbatim participant
+    quotes (rec['respondent_quotes'] + folded into evidence_text). Returns
+    (report_id -> parsed report, status rows)."""
+    report_ids = discovered_report_ids(evidence)
+    if not report_ids:
+        return {}, []
+    session = session or helio_api_session(app_id, token)
+
+    reports: Dict[str, Dict[str, Any]] = {}
+    statuses: List[Dict[str, Any]] = []
+    for idx, rid in enumerate(report_ids):
+        if idx >= max_fetches:
+            statuses.append({"report_id": rid, "status": "skipped_limit"})
+            continue
+        rep = fetch_test_report(session, rid)
+        reports[rid] = rep
+        statuses.append(
+            {
+                "report_id": rid,
+                "status": "success" if rep.get("found") else "error",
+                "metric_count": len(rep.get("ux_metrics") or []),
+                "quote_count": len(rep.get("quotes") or []),
+                "status_code": rep.get("status_code"),
+                "error": rep.get("error"),
+                "top_keys": rep.get("top_keys"),
+            }
+        )
+
+    for rec in evidence:
+        variants = rec.get("variants") or []
+        rec_quotes: List[str] = []
+        seen_q: set = set()
+        metrics_added = 0
+        for v in variants:
+            rep = reports.get(v.get("report_id"))
+            if not rep or not rep.get("found"):
+                continue
+            ux = rep.get("ux_metrics") or []
+            if ux:
+                v["report_metrics"] = {m["label"]: m["score"] for m in ux}
+                metrics_added += _attach_report_metrics(
+                    rec, v.get("take_id"), v.get("name") or "", ux
+                )
+            for q in rep.get("quotes") or []:
+                key = re.sub(r"[^a-z0-9]+", " ", q.lower()).strip()
+                if key in seen_q:
+                    continue
+                seen_q.add(key)
+                rec_quotes.append(q)
+        if rec_quotes:
+            _fold_quotes_into_evidence(rec, rec_quotes)
+        if metrics_added:
+            rec["report_metrics_added"] = metrics_added
+    return reports, statuses
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Fetch Helio evidence linked from the decks")
     ap.add_argument("--data-dir", required=True, help="Build data dir (has deck_links.json)")
@@ -531,8 +889,9 @@ def main() -> None:
     statuses, evidence = fetch_compare_pages(links, max_fetches=args.max_helio_fetches)
 
     # Tier B-lite: enrich the compare evidence with sample size + question count
-    # from the public API (config only). Non-blocking; skipped without keys.
+    # from the public API (config). Non-blocking; skipped without keys.
     config_statuses: List[Dict[str, Any]] = []
+    report_statuses: List[Dict[str, Any]] = []
     has_keys = bool(args.helio_app_id and args.helio_api_token)
     if has_keys and evidence:
         try:
@@ -544,6 +903,16 @@ def main() -> None:
             )
         except Exception as exc:  # noqa: BLE001 - non-blocking ingest
             config_statuses = [{"status": "error", "error": f"{exc.__class__.__name__}:{exc}"}]
+        # Tier B (deep): UX-metric scores + verbatim quotes via /tests/:id/report.
+        try:
+            _reports, report_statuses = enrich_with_report_data(
+                evidence,
+                args.helio_app_id,
+                args.helio_api_token,
+                max_fetches=args.max_helio_fetches,
+            )
+        except Exception as exc:  # noqa: BLE001 - non-blocking ingest
+            report_statuses = [{"status": "error", "error": f"{exc.__class__.__name__}:{exc}"}]
 
     merged = merge_into_external_evidence(data_dir, evidence)
     augment_summary = augment_deck_content(data_dir, evidence) if evidence else {}
@@ -571,6 +940,17 @@ def main() -> None:
         "report_config_error_count": len(
             [s for s in config_statuses if s.get("status") == "error"]
         ),
+        "report_deep_attempted": len(
+            [s for s in report_statuses if s.get("status") != "skipped_limit"]
+        ),
+        "report_deep_success_count": len(
+            [s for s in report_statuses if s.get("status") == "success"]
+        ),
+        "report_deep_error_count": len([s for s in report_statuses if s.get("status") == "error"]),
+        "report_metric_values_added": sum(rec.get("report_metrics_added", 0) for rec in evidence),
+        "respondent_quotes_harvested": sum(
+            len(rec.get("respondent_quotes") or []) for rec in evidence
+        ),
     }
 
     write_aliases(
@@ -586,6 +966,7 @@ def main() -> None:
             "summary": summary,
             "fetches": statuses,
             "report_config": config_statuses,
+            "report_deep": report_statuses,
         },
     )
 
