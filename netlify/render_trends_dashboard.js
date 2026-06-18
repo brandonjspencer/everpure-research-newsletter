@@ -543,7 +543,7 @@ function issuesSection(issues) {
 function panel(key, title, desc, body) {
   const id = `panel-${esc(key)}`;
   return `<section class="panel" data-panel="${esc(key)}">
-  <h2 class="panel-h"><button type="button" class="panel-toggle" aria-expanded="true" aria-controls="${id}">${title}<span class="panel-caret" aria-hidden="true">▾</span></button></h2>
+  <h2 class="panel-h"><button type="button" class="panel-toggle" aria-expanded="true" aria-controls="${id}">${title}<svg class="panel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h2>
   <div class="panel-body" id="${id}">${desc ? `<p class="desc">${desc}</p>` : ""}${body}</div>
 </section>`;
 }

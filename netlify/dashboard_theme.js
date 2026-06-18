@@ -102,7 +102,7 @@ function brandCss() {
   .panel .desc,.desc{color:var(--muted);font-size:13px;margin:0 0 16px}
   .panel-h{margin:0}
   .panel-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
-  .panel-caret{font-size:12px;color:var(--muted);transition:transform .15s ease;flex:none}
+  .panel-caret{display:block;width:20px;height:20px;color:var(--muted);transition:transform .15s ease;flex:none}
   .panel-toggle:hover .panel-caret{color:var(--ink)}
   .panel-toggle[aria-expanded="false"] .panel-caret{transform:rotate(-90deg)}
   .panel-body{margin-top:4px}
