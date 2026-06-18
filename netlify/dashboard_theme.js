@@ -146,6 +146,8 @@ function brandCss() {
   .quote blockquote{margin:0 0 4px;font-size:15px}
   .quote figcaption{color:var(--muted);font-size:12px}
   .quote figcaption .q-topic{color:var(--accent);font-weight:600}
+  .q-prompt{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.4}
+  .q-prompt-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-right:6px}
   .empty{color:var(--muted);font-size:14px;font-style:italic}
   .linklist{list-style:none;margin:0;padding:0}
   .linklist li{padding:11px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}

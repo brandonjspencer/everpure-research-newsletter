@@ -456,13 +456,41 @@ def test_harvest_report_quotes_cleans_and_dedupes():
         {"answer": "I couldn't tell what the page was for."},  # dup dropped
         {"unrelated": "Some descriptive caption not under a text key"},  # not a quote field
     ]
-    quotes = helio._harvest_report_quotes(node)
+    quotes = [d["quote"] for d in helio._harvest_report_quotes(node)]
     assert "I couldn't tell what the page was for." in quotes
     assert "The labels confused me at first." in quotes
     assert "Looks good" not in quotes  # too short
     assert all(not q.startswith("http") for q in quotes)
     assert quotes.count("I couldn't tell what the page was for.") == 1
     assert "Some descriptive caption not under a text key" not in quotes
+
+
+def test_harvest_report_quotes_pairs_answer_with_its_question():
+    # The live questions_responses shape: each response object has the question
+    # (question.text) alongside the participant's answer (text). The harvest pairs them.
+    node = {
+        "data": [
+            {
+                "question": {"type": "open", "text": "What did you think this page was about?"},
+                "text": "I think it is a cloud storage platform.",
+                "sentiment": "neutral",
+            },
+            {
+                "question": {"text": "What did you think this page was about?"},
+                "text": "It helps you assess enterprise data readiness.",
+            },
+        ]
+    }
+    out = helio._harvest_report_quotes(node)
+    by_quote = {d["quote"]: d["question"] for d in out}
+    assert by_quote["I think it is a cloud storage platform."] == (
+        "What did you think this page was about?"
+    )
+    assert by_quote["It helps you assess enterprise data readiness."] == (
+        "What did you think this page was about?"
+    )
+    # The question itself is never harvested as a quote.
+    assert "What did you think this page was about?" not in by_quote
 
 
 class _FakeReportResp:
@@ -514,7 +542,7 @@ def test_fetch_test_report_success_and_include_params():
     rep = helio.fetch_test_report(session, BASELINE_REPORT)
     assert rep["found"] is True
     assert {m["label"] for m in rep["ux_metrics"]} == {"Comprehension", "Sentiment", "Overall UX"}
-    assert rep["quotes"] == ["I was unsure what to do here."]
+    assert [d["quote"] for d in rep["quotes"]] == ["I was unsure what to do here."]
     # The documented include set + a response limit are requested.
     _url, params = session.calls[0]
     assert params["include"] == helio.REPORT_INCLUDE
@@ -533,7 +561,7 @@ def test_fetch_test_report_unwraps_report_or_data_envelope():
         )
         rep = helio.fetch_test_report(session, BASELINE_REPORT)
         assert rep["found"] is True
-        assert rep["quotes"] == ["It felt confusing to me."]
+        assert [d["quote"] for d in rep["quotes"]] == ["It felt confusing to me."]
         assert {m["label"] for m in rep["ux_metrics"]} >= {"Comprehension", "Sentiment"}
 
 
@@ -700,7 +728,7 @@ def test_harvest_report_quotes_drops_question_prompts():
         {"text": prompt, "answer": "Another distinct participant response here."},
         {"text": prompt, "answer": "Yet a third unique participant response."},
     ]
-    quotes = helio._harvest_report_quotes(qr)
+    quotes = [d["quote"] for d in helio._harvest_report_quotes(qr)]
     # The prompt is dropped three ways (question key skip + repetition + phrase deny);
     # real answers survive.
     assert prompt not in quotes
