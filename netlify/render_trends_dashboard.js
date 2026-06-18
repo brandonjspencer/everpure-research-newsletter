@@ -115,7 +115,9 @@ function succinctTitle(title) {
 
 // Grouped bars across UX metrics for one comparison — one colored bar per variant.
 // `url` (the Helio compare share page) renders a "View in Helio" link in the header.
-function comparisonChart(title, n, variants, metricKeys, key, url) {
+// `footer` (prebuilt HTML) renders inside the card, beneath the bars — the frontrunner
+// + signal block — so the multiselect filter hides it together with the chart.
+function comparisonChart(title, n, variants, metricKeys, key, url, footer = "") {
   // Render every metric actually present (live tests use success/satisfaction/
   // effort too), ordered by the canonical list, then any extras alphabetically.
   const present = new Set();
@@ -161,7 +163,157 @@ function comparisonChart(title, n, variants, metricKeys, key, url) {
       ? `<a class="cmp-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="View ${esc(title)} comparison in Helio">View in Helio&nbsp;↗</a>`
       : ""
   }</span>`;
-  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><div class="mc" role="img" aria-label="${esc(title)} UX metrics">${bars}</div></div>`;
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><div class="mc" role="img" aria-label="${esc(title)} UX metrics">${bars}</div>${footer || ""}</div>`;
+}
+
+// Average a variant's present metric scores (its own denominator). overall_score is a
+// Helio roll-up of the others, so it's excluded from the mean to avoid double-counting
+// (it still renders as a bar and can still be the biggest mover). Returns null if none.
+function variantMean(metrics) {
+  const all = Object.keys(metrics || {});
+  const keys = all.filter((k) => k !== "overall_score");
+  const use = (keys.length ? keys : all)
+    .map((k) => metrics[k])
+    .filter((x) => typeof x === "number");
+  if (!use.length) return null;
+  return use.reduce((a, b) => a + b, 0) / use.length;
+}
+
+// Humanize a metric key for inline prose ("overall_score" → "overall score").
+function metricName(k) {
+  return String(k || "").replace(/_/g, " ");
+}
+
+// Pure: which variant leads a comparison, by how much, and where. Returns null when
+// there's no head-to-head (fewer than two variants carrying metrics). Higher is better
+// for every Helio UX metric (0–100). Baseline = the variant named "…Baseline", else the
+// first (Helio returns baseline-first take order). The frontrunner is the highest mean;
+// when that's the baseline itself, the variants regressed (baselineWins).
+function comparisonFrontrunner(variants) {
+  const vs = (variants || [])
+    .map((v) => ({
+      name: v.test_name || "",
+      metrics: v.metrics || {},
+      mean: variantMean(v.metrics),
+    }))
+    .filter((v) => typeof v.mean === "number");
+  if (vs.length < 2) return null;
+  const baseline = vs.find((v) => /baseline/i.test(v.name)) || vs[0];
+  let winner = vs[0];
+  for (const v of vs) if (v.mean > winner.mean) winner = v;
+  const baselineWins = winner === baseline;
+  // Count metrics where the winner is the strict top scorer (only metrics ≥2 variants
+  // actually scored, so a metric only one variant has doesn't inflate the lead count).
+  const metricKeys = [...new Set(vs.flatMap((v) => Object.keys(v.metrics)))];
+  let leads = 0;
+  let total = 0;
+  for (const k of metricKeys) {
+    const scored = vs.map((v) => v.metrics[k]).filter((x) => typeof x === "number");
+    if (scored.length < 2) continue;
+    total += 1;
+    if (typeof winner.metrics[k] === "number" && winner.metrics[k] === Math.max(...scored))
+      leads += 1;
+  }
+  // Biggest mover winner−baseline (signed), to name the headline metric.
+  let biggest = null;
+  for (const k of metricKeys) {
+    const w = winner.metrics[k];
+    const b = baseline.metrics[k];
+    if (typeof w !== "number" || typeof b !== "number") continue;
+    const delta = w - b;
+    if (!biggest || Math.abs(delta) > Math.abs(biggest.delta)) biggest = { metric: k, delta };
+  }
+  const challengers = vs.filter((v) => v !== baseline);
+  const bestChallenger = challengers.length
+    ? challengers.reduce((a, b) => (b.mean > a.mean ? b : a))
+    : null;
+  return {
+    winnerName: winner.name,
+    baselineName: baseline.name,
+    baselineWins,
+    avgLift: Math.round(winner.mean - baseline.mean),
+    trailGap:
+      baselineWins && bestChallenger ? Math.round(baseline.mean - bestChallenger.mean) : null,
+    bestChallengerName: baselineWins && bestChallenger ? bestChallenger.name : null,
+    leads,
+    total,
+    biggest,
+    variantCount: vs.length,
+  };
+}
+
+// Find the curated signal for a comparison: exact compare_id (key) match first, then a
+// case-insensitive substring of the comparison's display title. Title-only (not concept)
+// so an inferred concept shared by two cards can't cross-match. First match wins.
+function matchUxSignal(comparison, uxSignals) {
+  const key = String(comparison.key || "").toLowerCase();
+  const title = String(comparison.title || comparison.label || "").toLowerCase();
+  for (const s of uxSignals || []) {
+    const m = String(s.match || "")
+      .toLowerCase()
+      .trim();
+    if (!m) continue;
+    if (m === key || (m.length >= 3 && title.includes(m))) return s;
+  }
+  return null;
+}
+
+// The block rendered beneath a comparison's chart: a deterministic frontrunner line
+// (always, when there's a head-to-head) plus the signal — the curated editorial read
+// when authored, else a computed fallback from the frontrunner stats. Curated signals
+// may add a one-line recommendation. Returns "" when there's nothing to say.
+function frontrunnerBlock(comparison, uxSignals) {
+  const fr = comparisonFrontrunner(comparison.variants);
+  const curated = matchUxSignal(comparison, uxSignals);
+  const parts = [];
+  if (fr) {
+    let line;
+    if (fr.baselineWins) {
+      const trail =
+        fr.bestChallengerName && fr.trailGap != null
+          ? `; best variant (${esc(fr.bestChallengerName)}) trails by ${fr.trailGap} avg`
+          : "";
+      line = `<span class="cf-name">${esc(fr.baselineName)}</span> <span class="cf-stat">still leads — variants regressed${trail}</span>`;
+    } else {
+      const leadStr = fr.total ? ` · leads ${fr.leads}/${fr.total} metrics` : "";
+      const big =
+        fr.biggest && fr.biggest.delta !== 0
+          ? ` · biggest ${fr.biggest.delta > 0 ? "lift" : "drop"} ${esc(metricName(fr.biggest.metric))} ${fr.biggest.delta > 0 ? "+" : ""}${fr.biggest.delta}`
+          : "";
+      line = `<span class="cf-name">${esc(fr.winnerName)}</span> <span class="cf-stat"><span class="cf-up">+${fr.avgLift} avg</span>${leadStr}${big} vs baseline</span>`;
+    }
+    parts.push(`<p class="cmp-front"><span class="cmp-front-label">Frontrunner</span> ${line}</p>`);
+  } else if ((comparison.variants || []).length < 2) {
+    parts.push(
+      `<p class="cmp-front cmp-front-solo"><span class="cmp-front-label">Single screen</span> <span class="cf-stat">no head-to-head comparison</span></p>`
+    );
+  }
+  // Signal: curated editorial read, else a computed fallback (plain text, esc'd once).
+  let signalText = curated ? curated.signal : "";
+  if (!signalText && fr) {
+    if (fr.baselineWins) {
+      signalText = `Variants regressed — the baseline still scores highest${
+        fr.bestChallengerName ? `; ${fr.bestChallengerName} is the closest challenger` : ""
+      }.`;
+    } else {
+      const big =
+        fr.biggest && fr.biggest.delta > 0
+          ? ` Biggest gain: ${metricName(fr.biggest.metric)} +${fr.biggest.delta}.`
+          : "";
+      signalText = `${fr.winnerName} leads ${fr.leads} of ${fr.total} metrics (+${fr.avgLift} avg vs baseline).${big}`;
+    }
+  }
+  if (signalText) {
+    parts.push(
+      `<p class="cmp-signal"><span class="cmp-signal-label">Signal</span> ${esc(signalText)}</p>`
+    );
+  }
+  if (curated && curated.recommendation) {
+    parts.push(
+      `<p class="cmp-rec"><span class="cmp-rec-label">Next</span> ${esc(curated.recommendation)}</p>`
+    );
+  }
+  return parts.length ? `<div class="cmp-foot">${parts.join("")}</div>` : "";
 }
 
 // Trust a slide-inferred concept as the comparison's label ONLY when the page's own
@@ -413,7 +565,7 @@ function metricTrendsSection(comparisons) {
   return `<div class="mtrends">${blocks}</div>`;
 }
 
-function helioSection(helioMetrics, metricKeys) {
+function helioSection(helioMetrics, metricKeys, uxSignals) {
   if (!helioMetrics.length) {
     return `<p class="empty">No Helio comparisons captured yet — they appear here as the build ingests compare pages from the decks. Helio UX-metric trends start now and grow each cycle.</p>`;
   }
@@ -438,7 +590,17 @@ function helioSection(helioMetrics, metricKeys) {
   </div>
 </div>`;
   const blocks = comparisons
-    .map((c) => comparisonChart(c.label, c.n, c.variants, metricKeys, c.key, c.url))
+    .map((c) =>
+      comparisonChart(
+        c.label,
+        c.n,
+        c.variants,
+        metricKeys,
+        c.key,
+        c.url,
+        frontrunnerBlock(c, uxSignals)
+      )
+    )
     .filter(Boolean)
     .join("\n");
   return `${control}<div class="cmp-list">${blocks}</div>${helioFilterScript()}`;
@@ -705,8 +867,8 @@ ${panel(
 ${panel(
   "helio",
   "Helio UX metrics",
-  "Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better.",
-  helioSection(trends.helio_metrics || [], metricKeys)
+  "Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better. Each chart is followed by its variant frontrunner and the signal we're reading from it.",
+  helioSection(trends.helio_metrics || [], metricKeys, trends.ux_signals || [])
 )}
 
 ${panel(
@@ -760,6 +922,9 @@ module.exports = {
   comparisonChart,
   helioSection,
   helioComparisons,
+  comparisonFrontrunner,
+  matchUxSignal,
+  frontrunnerBlock,
   metricTrends,
   metricTrendsSection,
   sparkline,

@@ -1,0 +1,47 @@
+{
+  "note": "Curated UX-metric signals for the dashboard — the quantitative analogue of voice_of_user.json. Each entry pairs a Helio comparison with the meaningful directional read of its scores. The dashboard renders the signal beneath that comparison's chart, alongside a variant 'Frontrunner' line it ALWAYS computes deterministically from the scores (which variant leads, by how much, biggest mover, and the regression case). So this file is for the editorial read, not the math. Re-curate each cycle (see the /new-issue skill, 'Dashboard signals'). If a comparison has no entry here, the dashboard shows the computed frontrunner + a computed fallback signal; if this file is absent or empty, every comparison falls back that way. Match a comparison by its compare_id (exact) or a case-insensitive substring of its displayed title (title only, so a shared inferred concept can't cross-match). Keep signals evidence-anchored — cite real scores, never invent certainty. Source: Helio UX-metric compare pages, June 2026.",
+  "source": "Helio UX-metric compare pages · June 2026",
+  "signals": [
+    {
+      "match": "EDC",
+      "signal": "V1 lifts every UX metric, led by Sentiment (26→44, +18) and Engagement (52→68, +16). The redesign clearly improves first impressions — though Sentiment is still weak in absolute terms (44/100).",
+      "read": "win",
+      "recommendation": "Ship V1 directionally; keep pushing on sentiment — 44/100 still leaves headroom."
+    },
+    {
+      "match": "Pathfinder",
+      "signal": "Both relabeled CTA variants scored worse than the baseline — task success fell from 49 to 11 (V1) and 20 (V2). The new labels hurt rather than helped.",
+      "read": "regression",
+      "recommendation": "Hold the baseline CTA labels — don't ship V1/V2; rethink the labeling hypothesis before re-testing."
+    },
+    {
+      "match": "cmobmblzm000004lhrppgbvab",
+      "signal": "Eight rounds of iteration climbed to a peak around V4b, then V5b and V6 lost ground — V4b is the high-water mark the later rounds didn't beat.",
+      "read": "peaked",
+      "recommendation": "Benchmark against V4b; diagnose what changed in V5b/V6 before another round of iteration."
+    },
+    {
+      "match": "Accelerate",
+      "signal": "Single screen, not a head-to-head: people grasp it (comprehension 72) but it isn't landing emotionally — sentiment is just 19 and intent 44. The verbatims blame a distracting hero image and AI-garbled copy.",
+      "read": "mixed",
+      "recommendation": "Fix the flagged copy defects and de-emphasize the hero image before re-testing."
+    },
+    {
+      "match": "Virtualization",
+      "signal": "The 'Solutions' framing beats 'Campaign' almost entirely on engagement (46→68, +22); comprehension was already high on both (~75).",
+      "read": "win",
+      "recommendation": "Prefer the 'Solutions' framing for virtualization — the win is an engagement story, not a comprehension one."
+    },
+    {
+      "match": "cmo1joapv000004jpk5tsqv3c",
+      "signal": "More AI emphasis reads better: the 75/25 mix leads on comprehension (75) and sentiment (39); the lightest-AI 25/25 mix trails (sentiment 24). Gaps are small and sample size isn't captured here — treat as directional.",
+      "read": "win",
+      "recommendation": "Lean the homepage toward the higher-AI mix, but confirm with a sized test before committing."
+    },
+    {
+      "match": "Book Filter",
+      "signal": "The Book Filter Default layout leads the VMware Platform Guides version on overall UX (53→83) and satisfaction (69→77) — the widest gap in the set.",
+      "read": "win"
+    }
+  ]
+}

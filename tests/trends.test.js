@@ -8,6 +8,7 @@ const path = require("node:path");
 const {
   buildTrends,
   helioRows,
+  loadUxSignals,
   normConfidence,
   monthLabel,
   truncate,
@@ -15,6 +16,8 @@ const {
 const {
   render,
   helioComparisons,
+  comparisonFrontrunner,
+  matchUxSignal,
   sparkline,
   succinctTitle,
 } = require("../netlify/render_trends_dashboard");
@@ -320,6 +323,177 @@ test("buildTrends falls back to the harvested pool when no curation file", () =>
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+// --- UX-metric signals + variant frontrunner ----------------------------
+
+test("comparisonFrontrunner: variant beats baseline (lift, leads, biggest mover)", () => {
+  const fr = comparisonFrontrunner([
+    { test_name: "Baseline", metrics: { engagement: 50, comprehension: 60, overall_score: 55 } },
+    { test_name: "V1", metrics: { engagement: 66, comprehension: 64, overall_score: 65 } },
+  ]);
+  assert.equal(fr.winnerName, "V1");
+  assert.equal(fr.baselineName, "Baseline");
+  assert.equal(fr.baselineWins, false);
+  // Mean excludes the overall_score roll-up: base (50+60)/2=55, V1 (66+64)/2=65 → +10.
+  assert.equal(fr.avgLift, 10);
+  // leads/total DO count overall_score (both variants scored it; V1 tops all three).
+  assert.equal(fr.leads, 3);
+  assert.equal(fr.total, 3);
+  assert.deepEqual(fr.biggest, { metric: "engagement", delta: 16 });
+});
+
+test("comparisonFrontrunner: detects regression (baseline still leads)", () => {
+  const fr = comparisonFrontrunner([
+    { test_name: "CTA Baseline", metrics: { success: 50, engagement: 10 } },
+    { test_name: "CTA V1", metrics: { success: 12, engagement: 18 } },
+    { test_name: "CTA V2", metrics: { success: 20, engagement: 4 } },
+  ]);
+  // Baseline mean 30 > V1 15 > V2 12 → the relabels regressed.
+  assert.equal(fr.baselineWins, true);
+  assert.equal(fr.baselineName, "CTA Baseline");
+  assert.equal(fr.bestChallengerName, "CTA V1");
+  assert.equal(fr.trailGap, 15);
+});
+
+test("comparisonFrontrunner: no head-to-head returns null", () => {
+  assert.equal(comparisonFrontrunner([{ test_name: "Solo", metrics: { engagement: 50 } }]), null);
+  assert.equal(comparisonFrontrunner([]), null);
+  // A variant with no numeric metrics doesn't count toward the head-to-head.
+  assert.equal(
+    comparisonFrontrunner([
+      { test_name: "A", metrics: { engagement: 50 } },
+      { test_name: "B", metrics: {} },
+    ]),
+    null
+  );
+});
+
+test("matchUxSignal: compare_id exact, title substring, title-only (no concept cross-match)", () => {
+  const sigs = [
+    { match: "EDC", signal: "edc read" },
+    { match: "cmpABC", signal: "by id" },
+  ];
+  // Case-insensitive substring of the display title.
+  assert.equal(matchUxSignal({ key: "k1", title: "EDC Blueprint vs v1" }, sigs).signal, "edc read");
+  // Exact compare_id (key) match.
+  assert.equal(matchUxSignal({ key: "cmpABC", title: "Whatever" }, sigs).signal, "by id");
+  // Title-only: an inferred concept must NOT cross-match (title has no "edc").
+  assert.equal(
+    matchUxSignal({ key: "k2", title: "Book Filter Default", concept: "EDC" }, sigs),
+    null
+  );
+  // No match → null.
+  assert.equal(matchUxSignal({ key: "kX", title: "Pathfinder CTA Labels" }, sigs), null);
+});
+
+test("loadUxSignals filters malformed entries and trims/normalizes", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "uxsig-"));
+  try {
+    writeJson(path.join(root, "netlify", "content", "ux_signals.json"), {
+      signals: [
+        { match: "EDC", signal: "ok", read: "win", recommendation: "ship it" },
+        { match: "  X  ", signal: "  trimmed  " },
+        { match: "", signal: "no match key" }, // dropped
+        { signal: "no match field" }, // dropped
+        { match: "Y" }, // no signal → dropped
+      ],
+    });
+    const out = loadUxSignals(root);
+    assert.equal(out.length, 2);
+    assert.deepEqual(out[0], {
+      match: "EDC",
+      signal: "ok",
+      read: "win",
+      recommendation: "ship it",
+    });
+    // Trimmed; absent read/recommendation aren't added as empty keys.
+    assert.deepEqual(out[1], { match: "X", signal: "trimmed" });
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+  // Absent file → empty list.
+  const empty = fs.mkdtempSync(path.join(os.tmpdir(), "uxsig-"));
+  try {
+    assert.deepEqual(loadUxSignals(empty), []);
+  } finally {
+    fs.rmSync(empty, { recursive: true, force: true });
+  }
+});
+
+test("buildTrends emits curated ux_signals (empty when no file)", () => {
+  let root = fixtureRepo();
+  try {
+    assert.deepEqual(buildTrends(root).ux_signals, []);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+  root = fixtureRepo();
+  try {
+    writeJson(path.join(root, "netlify", "content", "ux_signals.json"), {
+      signals: [{ match: "EDC", signal: "edc read", read: "win" }],
+    });
+    const t = buildTrends(root);
+    assert.equal(t.ux_signals.length, 1);
+    assert.equal(t.ux_signals[0].match, "EDC");
+    assert.equal(t.ux_signals[0].signal, "edc read");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("render: frontrunner + curated signal beneath each chart; computed fallback when uncurated", () => {
+  const mk = (compare_id, comparison_title, test_id, test_name, metrics) => ({
+    month: "2026-06",
+    compare_id,
+    source_url: null,
+    comparison_title,
+    derived_title: null,
+    concept: null,
+    link_text: null,
+    test_id,
+    test_name,
+    thumbnail: null,
+    n: 100,
+    metrics,
+  });
+  const helio_metrics = [
+    mk("cmpEDC", "EDC Baseline vs v1", "b", "Baseline", { engagement: 50, sentiment: 26 }),
+    mk("cmpEDC", "EDC Baseline vs v1", "v", "V1", { engagement: 66, sentiment: 44 }),
+    mk("cmpUNC", "Foo vs Bar", "f", "Foo", { engagement: 40, sentiment: 30 }),
+    mk("cmpUNC", "Foo vs Bar", "r", "Bar", { engagement: 55, sentiment: 45 }),
+    mk("cmpSOLO", "Accelerate Overview", "s", "Accelerate Overview", {
+      comprehension: 72,
+      sentiment: 19,
+    }),
+  ];
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: ["engagement", "comprehension", "sentiment"],
+    helio_metrics,
+    quotes: [],
+    quote_mode: "harvested",
+    ux_signals: [
+      { match: "EDC", signal: "V1 lifts every metric.", read: "win", recommendation: "Ship V1." },
+      { match: "Accelerate", signal: "Single screen: grasped but not loved.", read: "mixed" },
+    ],
+  });
+  // Curated signal + recommendation render inside the card.
+  assert.match(html, /<span class="cmp-signal-label">Signal<\/span> V1 lifts every metric\./);
+  assert.match(html, /<span class="cmp-rec-label">Next<\/span> Ship V1\./);
+  // Deterministic frontrunner line names the winning variant.
+  assert.match(
+    html,
+    /<span class="cmp-front-label">Frontrunner<\/span> <span class="cf-name">V1<\/span>/
+  );
+  // The uncurated comparison falls back to a COMPUTED signal (no curated entry for it).
+  assert.match(html, /Bar leads \d of \d metrics/);
+  // The single-variant screen shows the "Single screen" note + its curated signal.
+  assert.match(html, /<span class="cmp-front-label">Single screen<\/span>/);
+  assert.match(html, /grasped but not loved/);
+  // The frontrunner/signal block lives INSIDE the .cmp card (hides with the filter).
+  assert.match(html, /<div class="mc"[\s\S]*?<div class="cmp-foot">/);
 });
 
 test("render shows the curated signal eyebrow and rotates the full curated set", () => {

@@ -148,8 +148,23 @@ function brandCss() {
   .quote figcaption .q-topic{color:var(--accent);font-weight:600}
   .q-prompt{margin:0 0 8px;color:var(--muted);font-size:13px;line-height:1.4}
   .q-prompt-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-right:6px}
-  .q-signal{margin:0 0 10px;color:var(--text);font-size:14px;font-weight:600;line-height:1.4}
+  .q-signal{margin:0 0 10px;color:var(--ink);font-size:14px;font-weight:600;line-height:1.4}
   .q-signal-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--accent);border-radius:4px;padding:2px 6px;margin-right:8px;vertical-align:middle}
+  /* Per-comparison footer beneath each chart: a deterministic frontrunner line + the
+     signal (curated read or computed fallback) + an optional next-step. Pill labels and
+     the signal type mirror the Voice-of-the-user styling for a consistent visual grammar. */
+  .cmp-foot{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
+  .cmp-front-label,.cmp-signal-label,.cmp-rec-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-right:8px;vertical-align:middle}
+  .cmp-front{margin:0 0 8px;font-size:13px;line-height:1.5;color:var(--muted)}
+  .cmp-front-label{color:#fff;background:var(--c-high)}
+  .cmp-front-solo .cmp-front-label{background:var(--muted)}
+  .cf-name{font-weight:700;color:var(--ink)}
+  .cf-stat{color:var(--muted)}
+  .cf-up{color:var(--c-high);font-weight:600}
+  .cmp-signal{margin:0 0 7px;color:var(--ink);font-size:14px;font-weight:600;line-height:1.45}
+  .cmp-signal-label{color:#fff;background:var(--accent);vertical-align:middle}
+  .cmp-rec{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
+  .cmp-rec-label{color:var(--accent);background:transparent;border:1px solid var(--accent)}
   .empty{color:var(--muted);font-size:14px;font-style:italic}
   .linklist{list-style:none;margin:0;padding:0}
   .linklist li{padding:11px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:baseline;flex-wrap:wrap}

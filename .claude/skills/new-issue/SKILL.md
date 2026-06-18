@@ -64,6 +64,9 @@ stop at each approval gate until the user explicitly approves.**
      user what degraded, ask whether to proceed. Exit `1` **fallback tier** or `2` no manifest →
      **STOP**, report it, and do not draft until a fresh build is obtained.
 3. Report the tier, record count, and date range before moving on.
+4. **Re-curate the dashboard signals** off this fresh build — see [Dashboard signals
+   (monthly re-curation)](#dashboard-signals-monthly-re-curation) below. Do this now, while the
+   cycle's Helio scores + verbatims are in front of you.
 
 ## Phase 2 — Scaffold the editorial draft
 
@@ -164,6 +167,31 @@ site has deployed**, so the link resolves (same timing and same frozen target as
    channel id with `slack_search_channels` first if needed). Prefer `slack_send_message_draft` if
    the user would rather send it themselves; if no Slack connector is available, hand the user the
    formatted text to paste.
+
+---
+
+## Dashboard signals (monthly re-curation)
+
+Runs once per cycle, off the **fresh** Phase-1 build (`publish/data/helio_evidence.json` has the
+cycle's Helio scores + verbatims). The homepage trends dashboard carries two curated signal layers —
+both **committed data, not code** — that should be refreshed as the concepts under test evolve. The
+charts and the variant **frontrunner** line are computed deterministically; these files are the
+**editorial read** on top, and must never invent certainty beyond the evidence. Full reference:
+[OPERATIONS.md → Dashboard signals](../../../docs/OPERATIONS.md#dashboard-signals-voice--ux--re-curate-monthly).
+
+1. **UX signals** — `netlify/content/ux_signals.json`. Comb this cycle's Helio comparisons for the
+   meaningful read of each: which variant **won or regressed**, where comprehension/sentiment moved,
+   the biggest mover. Write one `signal` per concept worth flagging (with an optional `read` tag +
+   one-line `recommendation`), matched by `compare_id` or a substring of the comparison's displayed
+   title. Cite real scores. Comparisons you don't curate still show the computed frontrunner + a
+   computed fallback signal, so curate where there's a _story_, not everywhere.
+2. **Voice signals** — `netlify/content/voice_of_user.json`. Comb the cycle's verbatims for the most
+   compelling **real** quote representing each significant pattern; label each with its `signal` +
+   `topic`. Participant words verbatim — never paraphrase or edit.
+3. **Rebuild + eyeball:** `node netlify/build_trends.js . && node netlify/render_trends_dashboard.js .`
+   then open `publish/index.html` — confirm the frontrunner lines, UX signals, and quote rotator read
+   correctly. (A full `bash netlify/build.sh` also does this; these two commands are the fast path.)
+4. These files are committed with the freeze PR (Phase 5) like any other content change.
 
 ---
 
