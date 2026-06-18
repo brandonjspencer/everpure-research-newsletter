@@ -3,10 +3,11 @@ name: new-issue
 description: >-
   Author a new monthly Everpure Research Roundup end-to-end: verify build
   freshness, scaffold an editable editorial draft, run the QC agent suite,
-  freeze the approved issue, and prepare the distribution email — with explicit
-  approval gates before freezing and before sending. Use when the user wants to
-  start, draft, build, QC, freeze, or send a new monthly issue / Research
-  Roundup.
+  freeze the approved issue, prepare the distribution email, and post a Slack
+  announcement to #research-and-discovery — with explicit approval gates before
+  freezing, before the email send, and before the Slack post. Use when the user
+  wants to start, draft, build, QC, freeze, send, or announce a new monthly issue
+  / Research Roundup.
 ---
 
 # New monthly issue (Research Roundup)
@@ -19,8 +20,9 @@ stop at each approval gate until the user explicitly approves.**
 
 - **Freshness before synthesis.** A green build ≠ fresh data. Never draft, freeze, or email off
   a fallback-tier build. (Phase 1 enforces this.)
-- **Two human approval gates:** before **freeze** (Phase 5) and before **send** (Phase 6). Never
-  freeze or send without explicit "approved/yes."
+- **Three human approval gates:** before **freeze** (Phase 5), before the **email send** (Phase 6),
+  and before the **Slack post** (Phase 7). Never freeze, send, or post without explicit
+  "approved/yes." Posting to Slack is outward-facing — treat it like the email send.
 - **No secrets.** Never ask the user to paste tokens, `.env`, or credentials into chat. Builds
   read secrets from the environment / CI.
 - **Frozen issues are immutable.** Once `issues/YYYY-MM/` exists, never edit it except on an
@@ -141,6 +143,27 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
    - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
    - UX-tip emails use `dryRunUxTip` / `sendUxTipTest` / `sendUxTipBroadcast`.
+
+## Phase 7 — Slack announcement ▶ APPROVAL GATE 3
+
+Post a short announcement to the **#research-and-discovery** Slack channel that mirrors the email —
+the headline takeaway plus a link to the issue. Post it **after the freeze PR has merged and the
+site has deployed**, so the link resolves (same timing and same frozen target as the email CTA).
+
+1. Compose the post in Slack mrkdwn — concise and in the email's spirit (lead with the learning;
+   never invent certainty beyond the evidence):
+   - Title: `:mag: *Research Roundup — <Month Year> (Issue NN)* is live`
+   - 1–2 sentences on the cycle's headline finding, drawn from the **frozen** issue's executive
+     summary.
+   - The issue link — the **frozen** published archive, never the mutable newsletter:
+     `https://brandonjspencer.github.io/everpure-research-newsletter/issues/$MONTH/default.html`
+   - A one-line invite to reply in-thread with questions/feedback.
+2. Present the exact text. **Ask the user to approve posting it. Do not post without explicit
+   approval** (posting is both "send a message" and "publish public content").
+3. Post to `#research-and-discovery` via the Slack connector — `slack_send_message` (resolve the
+   channel id with `slack_search_channels` first if needed). Prefer `slack_send_message_draft` if
+   the user would rather send it themselves; if no Slack connector is available, hand the user the
+   formatted text to paste.
 
 ---
 

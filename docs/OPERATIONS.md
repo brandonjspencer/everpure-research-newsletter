@@ -271,6 +271,20 @@ broadcast).
 - The email link must be the saved frozen issue, not the latest page.
 - Test-send before final distribution.
 
+### Slack announcement (#research-and-discovery)
+
+After the freeze PR has merged and the site has deployed, post a short announcement to the
+**#research-and-discovery** channel that mirrors the email — the headline takeaway plus a link to
+the issue (`/new-issue` Phase 7).
+
+- Link to the **frozen archive** issue
+  (`https://brandonjspencer.github.io/everpure-research-newsletter/issues/YYYY-MM/default.html`),
+  never the mutable `/newsletter/default.html` — same rule as the email CTA.
+- Keep it concise and evidence-honest; lead with the cycle's headline finding from the frozen
+  executive summary.
+- Posting is outward-facing: **get explicit approval before posting** (treat it like the email
+  broadcast). Post via the Slack connector, or draft it for the user to send.
+
 ---
 
 ## High-risk areas
