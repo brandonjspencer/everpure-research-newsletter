@@ -140,6 +140,40 @@ All tiers are **non-blocking**: a Helio failure (any 404/406/504/timeout/empty) 
 `helio_fetch_status.json` and degrades gracefully (deep → config-only → Tier A), never aborting the
 deploy.
 
+### Dashboard signals (Voice + UX — re-curate monthly)
+
+The trends dashboard surfaces two curated "signal" layers on top of the deterministic charts. Both
+are **committed data, not code** — hand-edited JSON the build reads — and both should be **re-curated
+each cycle when fresh findings land** (the `/new-issue` skill calls this out; see its "Dashboard
+signals" step). The principle is the repo's: the math is computed and deterministic; the _editorial
+read_ is curated and never invents certainty beyond the evidence.
+
+- **`netlify/content/voice_of_user.json`** — the qualitative layer. The most compelling **real**
+  verbatim for each significant research pattern, each labeled with its signal + topic. Replaces the
+  randomly-harvested quote pool in the "Voice of the user" rotator when present (else the rotator
+  falls back to the harvested pool). Quotes are participant words verbatim — never paraphrase/edit.
+- **`netlify/content/ux_signals.json`** — the quantitative layer. The directional **read** of a
+  Helio comparison's scores, rendered beneath that comparison's chart in "Helio UX metrics". Each
+  entry has a `match` (a comparison's `compare_id`, or a case-insensitive **substring of its
+  displayed title** — title only, so a shared inferred concept can't cross-match), a `signal`
+  sentence, and optional `read` tag + one-line `recommendation`. Cite real scores; stay directional.
+
+  Alongside each curated signal the renderer **always computes a deterministic "Frontrunner" line**
+  from the same scores the bars show — which variant leads, its average lift vs. the baseline (the
+  `…Baseline`-named variant, else the first; `overall_score` is excluded from the mean as a
+  roll-up), how many metrics it tops, and the biggest mover. When the baseline outscores every
+  variant it reads "**still leads — variants regressed**" (e.g. the Pathfinder CTA relabels). A
+  comparison with **no** curated entry still shows the frontrunner line + a **computed fallback
+  signal**; if `ux_signals.json` is absent/empty, every comparison falls back that way. Single-screen
+  records (no head-to-head) show a "Single screen" note instead of a frontrunner.
+
+**Monthly re-curation (the repeatable process):** after a fresh live build (Helio scores + verbatims
+refreshed), comb the current `publish/data/helio_evidence.json` for the cycle's meaningful patterns —
+which variant won/regressed, where comprehension/sentiment moved, what users said in their own words —
+and update the two files to feature the most compelling, evidence-backed signal per concept. Rebuild
+(`build_trends.js` → `render_trends_dashboard.js`, both run by `netlify/build.sh`) and eyeball the
+homepage. This keeps the dashboard's signals current as the concepts under test evolve.
+
 ### Committed snapshot auto-refresh
 
 To keep the `local_html_fallback` tier from drifting stale, the Pages build refreshes the

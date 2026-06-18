@@ -106,6 +106,36 @@ function loadVoicePatterns(root) {
   );
 }
 
+// Curated UX-metric signals (editorial): the meaningful directional read for a Helio
+// comparison — the quantitative analogue of voice_of_user.json. Committed + hand-edited
+// (netlify/content/ux_signals.json), re-curated each cycle. Each entry carries a `match`
+// (a comparison's compare_id, or a case-insensitive substring of its title) and a
+// `signal` sentence; the dashboard renders it beneath that comparison's chart, alongside
+// a deterministic variant-frontrunner line it always computes from the scores. Absent or
+// empty → the dashboard shows the computed frontrunner + a computed fallback signal only.
+// Defensive: keeps only well-formed {match, signal} entries.
+function loadUxSignals(root) {
+  const data = readJson(path.join(root, "netlify", "content", "ux_signals.json"));
+  const signals = data && Array.isArray(data.signals) ? data.signals : [];
+  return signals
+    .filter(
+      (s) =>
+        s &&
+        typeof s.match === "string" &&
+        s.match.trim() &&
+        typeof s.signal === "string" &&
+        s.signal.trim()
+    )
+    .map((s) => ({
+      match: s.match.trim(),
+      signal: s.signal.trim(),
+      ...(typeof s.read === "string" && s.read.trim() ? { read: s.read.trim() } : {}),
+      ...(typeof s.recommendation === "string" && s.recommendation.trim()
+        ? { recommendation: s.recommendation.trim() }
+        : {}),
+    }));
+}
+
 function monthlyFiles(dir) {
   try {
     return fs
@@ -432,6 +462,9 @@ function buildTrends(root) {
     helio_metrics: helioMetrics,
     quotes: finalQuotes,
     quote_mode: quoteMode,
+    // Curated UX-metric signals (matched to comparisons by the renderer); the
+    // frontrunner line is computed deterministically there from helio_metrics.
+    ux_signals: loadUxSignals(root),
     metric_keys: [
       "overall_ux",
       "engagement",
@@ -473,6 +506,7 @@ if (require.main === module) main();
 module.exports = {
   buildTrends,
   helioRows,
+  loadUxSignals,
   normConfidence,
   normDecision,
   metricKey,

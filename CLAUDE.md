@@ -71,6 +71,14 @@ in `netlify/content/default-current.json`** (data, not code) — edit that JSON 
 issue; the renderer falls back to generic defaults for anything absent. See
 [docs/OPERATIONS.md](docs/OPERATIONS.md) "Editing the default brief's copy".
 
+The **trends dashboard** carries two more **data-not-code** content files, re-curated monthly off
+each fresh build (see OPERATIONS.md "Dashboard signals"): `netlify/content/voice_of_user.json`
+(curated respondent verbatims for the "Voice of the user" rotator) and
+`netlify/content/ux_signals.json` (the editorial read per Helio comparison, shown beneath its chart
+alongside a **deterministic** variant-frontrunner line). Both degrade gracefully — absent/empty falls
+back to computed/harvested output. The math is computed; these files are the editorial read and must
+not invent certainty beyond the evidence.
+
 ## Conventions & guardrails
 
 - **Generated artifacts are not committed.** All of `publish/` and fetched `deck_artifacts/`
