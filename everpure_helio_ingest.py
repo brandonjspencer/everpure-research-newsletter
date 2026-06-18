@@ -115,6 +115,22 @@ def _asset_map(text: str, block_re: re.Pattern[str]) -> Dict[str, str]:
     return out
 
 
+# .../asset/<id>/<slug>.<ext> — the slug is the screen's filename, our ground-truth
+# name for that variant (e.g. "2_-_VMware_Platform_Guides" -> "VMware Platform Guides").
+ASSET_SLUG_RE = re.compile(r"/asset/[A-Z0-9]+/(?:medium_)?([^/?\"]+?)\.(?:png|jpe?g|webp)")
+
+
+def _screen_from_asset(url: str) -> str:
+    """Derive a human screen name from a Helio asset URL's filename slug."""
+    m = ASSET_SLUG_RE.search(url or "")
+    if not m:
+        return ""
+    slug = re.sub(r"^\d+[a-z]?[\s_-]+", "", m.group(1))  # drop leading "2_-_", "191-"
+    slug = re.sub(r"[_-]+", " ", slug).strip()
+    # Capitalize all-lowercase words; leave existing casing (VMware, CTA) intact.
+    return " ".join(w[:1].upper() + w[1:] if w.islower() else w for w in slug.split())
+
+
 def parse_compare_html(html: str) -> Dict[str, Any]:
     """Parse a Helio compare share page into a structured comparison.
 
@@ -145,17 +161,28 @@ def parse_compare_html(html: str) -> Dict[str, Any]:
 
     take_name: Dict[str, str] = {}
     variants: List[Dict[str, Any]] = []
+    screens: List[str] = []
     for idx, (take_id, report_id) in enumerate(report_map):
-        name = names[idx] if idx < len(names) else f"Variant {idx + 1}"
+        thumb = thumbs.get(take_id) or fulls.get(take_id) or None
+        screen = _screen_from_asset(thumb or "")
+        # Name from the compare title ("<A> vs <B>"); else the screenshot's own name;
+        # else a generic placeholder. The screen name is ground truth for the page.
+        name = (names[idx] if idx < len(names) else "") or screen or f"Variant {idx + 1}"
         take_name[take_id] = name
+        if screen and screen not in screens:
+            screens.append(screen)
         variants.append(
             {
                 "take_id": take_id,
                 "report_id": report_id,
                 "name": name,
-                "thumbnail": thumbs.get(take_id) or fulls.get(take_id) or None,
+                "thumbnail": thumb,
             }
         )
+    # A title derived from the actual compared screens — used downstream when the
+    # page carries no "<A> vs <B>" title, so the label reflects the real page rather
+    # than a (sometimes wrong) slide-inferred concept.
+    derived_title = " vs ".join(screens[:2])
 
     metrics: List[Dict[str, Any]] = []
     rows = list(ROW_RE.finditer(text))
@@ -178,6 +205,7 @@ def parse_compare_html(html: str) -> Dict[str, Any]:
 
     return {
         "comparison_title": comparison_title,
+        "derived_title": derived_title,
         "variants": variants,
         "report_ids": [report_id for _, report_id in report_map],
         "metrics": metrics,
@@ -238,6 +266,7 @@ def compare_evidence_record(link: Dict[str, Any], parsed: Dict[str, Any]) -> Dic
         "compare_id": link.get("helio_compare_id"),
         "report_ids": parsed.get("report_ids", []),
         "comparison_title": parsed.get("comparison_title"),
+        "derived_title": parsed.get("derived_title"),
         "deck_file_id": link.get("deck_file_id"),
         "deck_title": link.get("deck_title"),
         "slide_number": link.get("slide_number"),
