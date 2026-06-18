@@ -113,14 +113,22 @@ ingest only inventories them):
   (`X-API-ID`/`X-API-TOKEN`, from `HELIO_APP_ID`/`HELIO_API_TOKEN`). For each discovered report id
   it fetches `GET /tests/:id` and attaches **sample size (n) + question count** as provenance,
   folding n into the headline signal so it backs the confidence label.
+- **Tier B (deep) — UX metrics + verbatim quotes** via the AI-friendly report endpoint Helio
+  published (docs 2026-06): `GET /tests/:id/report?include=ux_metrics,questions_summary,questions_responses`.
+  For each discovered variant report id it parses:
+  - **per-variant UX-metric scores** → **gap-fills** the scraped Tier-A `metrics[]` (never overwrites
+    a compare-page score; adds metrics/variants the scrape lacked). This is what populates the
+    dashboard's **Comprehension & Sentiment** sparklines, which the compare page often omits.
+  - **verbatim participant answers** (`questions_responses`) → `respondent_quotes[]` on the record,
+    with a wrapped copy folded into `evidence_text` so the existing quote harvesters surface them in
+    the dashboard quote rotator (and, via concept matching, in the issues).
 
-  **The public API serves test config only — it does NOT expose per-response/score data.** Probed
-  2026-06: `GET /tests/:id/responses` 504s on Helio's origin (every page size + section scoping),
-  `/results` `/insights` `/sections` return 406, and `?expand=`/`?include=` are ignored. So
-  per-question scores / open-text responses / common-words are **not fetchable via the public API**;
-  the headline metric deltas come from the **compare pages (Tier A)**, and deeper data needs the
-  private app API (session auth, not CI-safe) or a manual export. Re-check if Helio fixes
-  `/responses` or publishes API docs. To re-probe the surface with live keys:
+  **History note.** This route was unreachable when probed 2026-06 (`/tests/:id/responses` 504'd,
+  `/results` `/insights` `/sections` 406'd). Helio's published docs added the purpose-built
+  `/tests/:id/report` endpoint, which serves the deep data the old routes couldn't. The
+  include-section JSON shape isn't documented field-by-field, so the parser is **defensive** and
+  records the observed top-level keys in `helio_fetch_status.json` (`report_deep[].top_keys`) for
+  refinement after the first live run. To re-probe the surface with live keys:
 
   ```bash
   HELIO_APP_ID=… HELIO_API_TOKEN=… python3 scripts/helio_api_probe.py [TEST_ID]
@@ -128,8 +136,9 @@ ingest only inventories them):
 
   It prints a redacted skeleton (no keys; values truncated) — safe to share.
 
-Both tiers are **non-blocking**: a Helio failure is recorded in `helio_fetch_status.json` and never
-aborts the deploy.
+All tiers are **non-blocking**: a Helio failure (any 404/406/504/timeout/empty) is recorded in
+`helio_fetch_status.json` and degrades gracefully (deep → config-only → Tier A), never aborting the
+deploy.
 
 ### Committed snapshot auto-refresh
 

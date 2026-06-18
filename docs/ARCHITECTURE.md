@@ -77,10 +77,11 @@ by reordering — keep them in this sequence:
    to `deck_content.json`.
    - **Helio ingest** (`everpure_helio_ingest.py`) — runs in the same slot, _after_ external
      ingest (it reads the `deck_links.json` that step writes) and _before_ evidence packs.
-     Fetches the deck-linked Helio compare share pages (Tier A; no auth) and enriches them with
-     sample size + question count from the public test-config API (Tier B-lite;
-     `HELIO_APP_ID`/`HELIO_API_TOKEN`), appending the signals into
-     `external_research_evidence.json` so the merge step picks them up. Non-blocking.
+     Fetches the deck-linked Helio compare share pages (Tier A; no auth), enriches them with
+     sample size + question count from the public test-config API (Tier B-lite), and pulls
+     per-variant UX-metric scores + verbatim participant quotes from the AI-friendly report
+     endpoint (Tier B deep, `GET /tests/:id/report`; `HELIO_APP_ID`/`HELIO_API_TOKEN`), appending
+     the signals into `external_research_evidence.json` so the merge step picks them up. Non-blocking.
 4. `build_evidence_packs.js`
 5. `merge_external_evidence_packs.js`
 6. `clean_evidence_signals.js`
@@ -114,7 +115,7 @@ by reordering — keep them in this sequence:
 - **`everpure_google_fetch.py`** — Fetches Slides metadata + PDF/PPTX exports into `deck_artifacts/` via OAuth access token, service-account JSON, or domain-wide delegation (`--subject`). Requires `drive.readonly` scope. Wrapped locally by `run_google_fetch.sh` (`LIMIT`, `MODE`, `SKIP_META`).
 - **`everpure_deck_link_smoke.py`** — Smoke test: extracts/classifies hyperlinks from deck metadata, resolves Google redirects, smoke-tests Sheet/Data-Comparison links via Drive CSV export, inventories Helio links without fetching. Writes `deck_links.json`, `deck_link_fetch_status.json`, `external_research_evidence_smoke.json`.
 - **`everpure_external_research_ingest.py`** — Production external-evidence ingest: fetches classified Google Sheets, samples signals, augments `deck_content.json`, writes `external_research_evidence.json`. Non-blocking unless `EXTERNAL_EVIDENCE_STRICT=1`.
-- **`everpure_helio_ingest.py`** — Fetches deck-linked **Helio** evidence the Sheet ingest only inventories. **Tier A** (live): parses the public `glare-playground.../share/compare/<id>` share pages (Next.js RSC `self.__next_f` payload) into per-metric comparison signals (Engagement/Expectations/Comprehension/Intent/Sentiment, score + qualitative label per variant) and discovers the `my.helio.app/report/<id>` deep links. **Tier B-lite**: enriches those signals with sample size (n) + question count from the Enterprise public API (`GET /tests/:id`, `X-API-ID`/`X-API-TOKEN` from `HELIO_APP_ID`/`HELIO_API_TOKEN`). The public API serves test **config only** — its per-response/score route (`/tests/:id/responses`) 504s on Helio's origin and the rest 406 — so per-question scores / open-text responses are **not fetchable** there (probe: `scripts/helio_api_probe.py`); deep data needs the private app API or a manual export. Appends signals into `external_research_evidence.json`; augments `deck_content.json`; writes `helio_evidence.json` + `helio_fetch_status.json`. Non-blocking.
+- **`everpure_helio_ingest.py`** — Fetches deck-linked **Helio** evidence the Sheet ingest only inventories. **Tier A** (live): parses the public `glare-playground.../share/compare/<id>` share pages (Next.js RSC `self.__next_f` payload) into per-metric comparison signals (Engagement/Expectations/Comprehension/Intent/Sentiment, score + qualitative label per variant) and discovers the `my.helio.app/report/<id>` deep links. **Tier B-lite**: enriches those signals with sample size (n) + question count from the Enterprise public API (`GET /tests/:id`, `X-API-ID`/`X-API-TOKEN` from `HELIO_APP_ID`/`HELIO_API_TOKEN`). **Tier B (deep)**: the AI-friendly report endpoint Helio published (docs 2026-06), `GET /tests/:id/report?include=ux_metrics,questions_summary,questions_responses`, yields **per-variant UX-metric scores** (gap-fills the scraped Tier-A `metrics[]` — populating the dashboard's Comprehension/Sentiment sparklines the compare page omits — never overwriting a scraped score) and **verbatim participant answers** (`respondent_quotes[]`, folded wrapped into `evidence_text` so the existing harvesters surface them in the dashboard rotator and issues). The deep route replaced the old config-only limitation (pre-docs, `/tests/:id/responses` 504'd and the rest 406'd); the parser is defensive and records observed top-level keys in `helio_fetch_status.json` (`report_deep[].top_keys`) for refinement. Appends signals into `external_research_evidence.json`; augments `deck_content.json`; writes `helio_evidence.json` + `helio_fetch_status.json`. Non-blocking (deep → config-only → Tier A degrade).
 
 ### Node — evidence & rendering (`netlify/`)
 
