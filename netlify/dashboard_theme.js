@@ -107,11 +107,24 @@ function brandCss() {
   .panel-toggle[aria-expanded="false"] .panel-caret{transform:rotate(-90deg)}
   .panel-body{margin-top:4px}
   .panel-body[hidden]{display:none}
-  svg.chart{width:100%;height:auto;display:block}
-  text.axis{font-size:12px;fill:var(--ink);font-weight:600}
-  text.sub{font-size:10px;fill:var(--muted)}
-  text.mlabel{font-size:12px;fill:var(--ink);text-transform:capitalize}
-  text.mval{font-size:11px;fill:var(--muted)}
+  /* Confidence chart — HTML stacked columns (responsive; text never shrinks). */
+  .ccols{display:flex;gap:10px;align-items:flex-end}
+  .ccol{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center}
+  .ccol-bar{width:100%;max-width:64px;height:170px;display:flex;align-items:flex-end}
+  .ccol-stack{width:100%;height:100%;display:flex;flex-direction:column-reverse;border-radius:5px;overflow:hidden}
+  .cseg{width:100%}
+  .ccol-x{font-size:13px;font-weight:600;margin-top:8px}
+  .ccol-sub{font-size:11px;color:var(--muted);line-height:1.35}
+  /* Comparison chart — HTML bars; grid collapses to stacked label+bars on mobile. */
+  .mc{margin-top:2px}
+  .mc-metric{display:grid;grid-template-columns:130px 1fr;gap:10px 14px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+  .mc-metric:first-child{border-top:0}
+  .mc-label{font-size:13px;color:var(--ink);text-transform:capitalize}
+  .mc-bars{display:flex;flex-direction:column;gap:5px;min-width:0}
+  .mc-row{display:flex;align-items:center;gap:8px}
+  .mc-track{flex:1;height:9px;background:var(--track);border-radius:3px;overflow:hidden;min-width:0}
+  .mc-fill{height:100%;border-radius:3px;min-width:2px}
+  .mc-val{font-size:11px;color:var(--muted);min-width:34px;text-align:right;flex:none}
   .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:12px;color:var(--muted)}
   .lg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
   /* Variant legend item with a hover thumbnail (the Helio compare screenshot). */
@@ -222,6 +235,7 @@ function brandCss() {
   .mt-soon{font-style:italic;opacity:.85}
   @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}}
   @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
