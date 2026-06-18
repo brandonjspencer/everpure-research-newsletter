@@ -218,6 +218,29 @@ test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () 
   }
 });
 
+test("buildTrends enriches the quote pool with harvested evidence verbatims", () => {
+  const root = fixtureRepo();
+  try {
+    writeJson(path.join(root, "publish", "data", "external_research_evidence.json"), {
+      evidence: [
+        {
+          evidence_text:
+            'A participant said "I cannot find the pricing anywhere on this page." clearly.',
+        },
+      ],
+    });
+    const t = buildTrends(root);
+    // The finding quote stays (deduped, not dropped) ...
+    assert.ok(t.quotes.some((q) => /live sessions/.test(q.quote)));
+    // ... and the evidence verbatim is harvested in, attributed generically.
+    const harvested = t.quotes.find((q) => /pricing anywhere/.test(q.quote));
+    assert.ok(harvested, "evidence verbatim harvested into the pool");
+    assert.equal(harvested.title, "Research participant");
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("monthLabel and truncate format issue-card text", () => {
   assert.equal(monthLabel("2026-06"), "June 2026");
   assert.equal(monthLabel("2026-01"), "January 2026");
@@ -298,48 +321,32 @@ test("render produces a self-contained dashboard with all sections + charts", ()
   }
 });
 
-test("render features the newest quotes as a capped cross-fading rotator", () => {
+test("render embeds the full quote pool and shuffles up to 5 in on load", () => {
   const q = (n, month) => ({ month, title: `T${n}`, quote: `quote ${n}`, confidence: "high" });
+  const quotes = [];
+  for (let n = 1; n <= 8; n++) quotes.push(q(n, "2026-06"));
   const html = render({
     cycles: [],
     concepts: [],
     helio_metrics: [],
     metric_keys: [],
     issues: [],
-    // Oldest-first, as build_trends emits them (6 quotes, cap is 5).
-    quotes: [
-      q(1, "2026-01"),
-      q(2, "2026-02"),
-      q(3, "2026-03"),
-      q(4, "2026-04"),
-      q(5, "2026-05"),
-      q(6, "2026-06"),
-    ],
+    quotes,
   });
-  // Rotator present, capped to the 5 newest, exactly one active to start.
+  // Rotator present with a single SSR fallback slide (the rest are built on load).
   assert.match(html, /class="qrotator" data-qrotator/);
-  assert.equal((html.match(/class="quote q-slide/g) || []).length, 5);
-  assert.equal((html.match(/class="quote q-slide is-active"/g) || []).length, 1);
-  // One dot per slide ([ "] avoids matching the "q-dots" container).
-  assert.equal((html.match(/class="q-dot[ "]/g) || []).length, 5);
-  // Newest five quotes shown; the oldest (quote 1) is dropped by the cap.
-  // (Match the blockquote body, not bare "quote 1", which also appears in a dot
-  // aria-label like "Show quote 1 of 5".)
-  assert.match(html, /&ldquo;quote 6&rdquo;/);
-  assert.ok(!/&ldquo;quote 1&rdquo;/.test(html), "oldest quote dropped by the rotator cap");
-  // The auto-advance script honors reduced motion.
+  assert.equal((html.match(/class="quote q-slide/g) || []).length, 1);
+  // The WHOLE pool is embedded (not just 5) — selection happens client-side.
+  assert.match(html, /<script type="application\/json" data-quotes>/);
+  assert.match(html, /quote 1\b/); // oldest is in the pool, available to rotate in
+  assert.match(html, /quote 8\b/);
+  // The script shuffles (Math.random) and picks up to MAX=5, building slides + dots.
+  assert.match(html, /var MAX=5/);
+  assert.match(html, /Math\.random/);
+  assert.match(html, /slice\(0, ?MAX\)/);
+  assert.match(html, /createElement\("figure"\)|createElement\('figure'\)/);
+  // a11y + motion preserved in the rotation logic.
   assert.match(html, /prefers-reduced-motion/);
-  // a11y: only the active slide is in the accessibility tree, and the active dot
-  // carries a programmatic "current" state (not color-only).
-  assert.equal((html.match(/q-slide is-active" aria-hidden="false"/g) || []).length, 1);
-  // The four inactive slides are hidden from AT (scope to slides — the sidebar
-  // icons and caret also carry aria-hidden="true").
-  assert.equal((html.match(/quote q-slide" aria-hidden="true"/g) || []).length, 4);
-  assert.equal(
-    (html.match(/class="q-dot is-active" data-i="0" aria-current="true"/g) || []).length,
-    1
-  );
-  // The script keeps both in sync (aria-hidden + aria-current toggled in show()).
   assert.match(html, /setAttribute\('aria-hidden'/);
   assert.match(html, /setAttribute\('aria-current'/);
 });

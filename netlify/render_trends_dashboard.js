@@ -470,8 +470,10 @@ function helioFilterScript() {
 })();</script>`;
 }
 
-// Feature the few most recent respondent quotes as a cross-fading rotator.
+// Show up to QUOTE_ROTATOR_MAX quotes at a time in the rotator, freshly shuffled in
+// from a larger embedded pool on each load (so refreshing surfaces different ones).
 const QUOTE_ROTATOR_MAX = 5;
+const QUOTE_POOL_MAX = 24;
 
 function quoteFigure(q, active) {
   // aria-hidden tracks the visual state so assistive tech reads only the active
@@ -482,26 +484,36 @@ function quoteFigure(q, active) {
 
 function quotesSection(quotes) {
   if (!quotes.length) return `<p class="empty">No respondent quotes captured yet.</p>`;
-  // Newest first, capped to a small set that cross-fades from one to the next.
-  const featured = quotes.slice().reverse().slice(0, QUOTE_ROTATOR_MAX);
-  if (featured.length === 1) {
-    return `<div class="qrotator"><div class="q-stage">${quoteFigure(featured[0], true)}</div></div>`;
-  }
-  const slides = featured.map((q, i) => quoteFigure(q, i === 0)).join("");
-  const dots = featured
-    .map(
-      (q, i) =>
-        `<button type="button" class="q-dot${i === 0 ? " is-active" : ""}" data-i="${i}" aria-current="${i === 0 ? "true" : "false"}" aria-label="Show quote ${i + 1} of ${featured.length}"></button>`
-    )
-    .join("");
-  return `<div class="qrotator" data-qrotator><div class="q-stage">${slides}</div><div class="q-dots">${dots}</div></div>${quoteRotatorScript()}`;
+  const pool = quotes.slice(0, QUOTE_POOL_MAX);
+  // SSR one quote as the no-JS fallback; the script shuffles the embedded pool and
+  // rotates a fresh set of up to QUOTE_ROTATOR_MAX in on each load.
+  const ssr = quoteFigure(pool[0], true);
+  const payload = JSON.stringify(pool).replace(/</g, "\\u003c");
+  return `<div class="qrotator" data-qrotator><div class="q-stage">${ssr}</div><div class="q-dots"></div><script type="application/json" data-quotes>${payload}</script></div>${quoteRotatorScript()}`;
 }
 
-// Auto cross-fade through the featured quotes; pause on hover/focus; honor
-// prefers-reduced-motion (no auto-advance — dots still work); dots jump directly.
+// On load: shuffle the embedded pool, build up to MAX slides + dots, then auto
+// cross-fade; pause on hover/focus; honor prefers-reduced-motion; dots jump directly.
 function quoteRotatorScript() {
   return `<script>(function(){
   var r=document.querySelector('[data-qrotator]'); if(!r) return;
+  var stage=r.querySelector('.q-stage'), dotsWrap=r.querySelector('.q-dots'), data=r.querySelector('[data-quotes]');
+  var pool=[]; try{pool=JSON.parse((data&&data.textContent)||'[]')||[];}catch(e){}
+  var MAX=${QUOTE_ROTATOR_MAX};
+  if(pool.length>1){
+    for(var a=pool.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var t=pool[a];pool[a]=pool[b];pool[b]=t;}
+    var pick=pool.slice(0,MAX);
+    stage.textContent=''; dotsWrap.textContent='';
+    pick.forEach(function(q,idx){
+      var on=idx===0;
+      var fig=document.createElement('figure'); fig.className='quote q-slide'+(on?' is-active':''); fig.setAttribute('aria-hidden',on?'false':'true');
+      var bq=document.createElement('blockquote'); bq.textContent='“'+(q.quote||'')+'”';
+      var cap=document.createElement('figcaption');
+      cap.textContent=(q.title||'Research finding')+' · '+(q.month||'')+((q.confidence&&q.confidence!=='unknown')?' · '+q.confidence+' confidence':'');
+      fig.appendChild(bq); fig.appendChild(cap); stage.appendChild(fig);
+      var d=document.createElement('button'); d.type='button'; d.className='q-dot'+(on?' is-active':''); d.setAttribute('data-i',idx); d.setAttribute('aria-current',on?'true':'false'); d.setAttribute('aria-label','Show quote '+(idx+1)+' of '+pick.length); dotsWrap.appendChild(d);
+    });
+  }
   var slides=[].slice.call(r.querySelectorAll('.q-slide')), dots=[].slice.call(r.querySelectorAll('.q-dot'));
   if(slides.length<2) return;
   var i=0, timer=null, reduce=false, paused=false;
