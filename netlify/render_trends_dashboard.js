@@ -42,16 +42,16 @@ function readJson(filePath, fallback = null) {
   }
 }
 
-// Stacked columns of confidence mix per cycle, with stat labels beneath.
+// Stacked columns of confidence mix per cycle, with stat labels beneath. Rendered
+// as HTML/CSS (not SVG) so labels stay legible and the layout reflows on mobile.
 function confidenceChart(cycles) {
   if (!cycles.length) return "<p class='empty'>No research cycles recorded yet.</p>";
-  const W = 720;
-  const H = 300;
-  const padX = 48;
-  const padTop = 16;
-  const baseY = 230;
-  const colW = 54;
-  const gap = (W - padX * 2 - colW * cycles.length) / Math.max(1, cycles.length - 1 || 1);
+  const order = [
+    ["high", "var(--c-high)"],
+    ["medium", "var(--c-medium)"],
+    ["low", "var(--c-low)"],
+    ["unknown", "var(--c-unknown)"],
+  ];
   const maxTotal = Math.max(
     1,
     ...cycles.map((c) => {
@@ -59,37 +59,30 @@ function confidenceChart(cycles) {
       return (b.high || 0) + (b.medium || 0) + (b.low || 0) + (b.unknown || 0);
     })
   );
-  const order = [
-    ["high", "var(--c-high)"],
-    ["medium", "var(--c-medium)"],
-    ["low", "var(--c-low)"],
-    ["unknown", "var(--c-unknown)"],
-  ];
-  let bars = "";
-  cycles.forEach((c, i) => {
-    const x = padX + i * (colW + gap);
-    const b = c.confidence_breakdown || {};
-    let y = baseY;
-    for (const [key, color] of order) {
-      const v = b[key] || 0;
-      if (!v) continue;
-      const h = ((baseY - padTop) * v) / maxTotal;
-      y -= h;
-      bars += `<rect x="${x}" y="${y.toFixed(1)}" width="${colW}" height="${h.toFixed(1)}" fill="${color}"><title>${esc(c.month)} — ${key}: ${v}</title></rect>`;
-    }
-    bars += `<text x="${x + colW / 2}" y="${baseY + 18}" class="axis" text-anchor="middle">${esc(c.month)}</text>`;
-    const strength = c.avg_evidence_strength == null ? "—" : c.avg_evidence_strength;
-    const findings = c.finding_count == null ? "—" : c.finding_count;
-    bars += `<text x="${x + colW / 2}" y="${baseY + 34}" class="sub" text-anchor="middle">${c.concept_count} concepts</text>`;
-    bars += `<text x="${x + colW / 2}" y="${baseY + 48}" class="sub" text-anchor="middle">${findings} findings · str ${strength}</text>`;
-  });
+  const cols = cycles
+    .map((c) => {
+      const b = c.confidence_breakdown || {};
+      // column-reverse stacks the first child (high) at the bottom; height is the
+      // count as a % of the busiest cycle, so shorter cycles read as shorter columns.
+      const segs = order
+        .map(([k, col]) => {
+          const v = b[k] || 0;
+          if (!v) return "";
+          return `<div class="cseg" style="height:${((v / maxTotal) * 100).toFixed(1)}%;background:${col}" title="${esc(c.month)} — ${k}: ${v}"></div>`;
+        })
+        .join("");
+      const strength = c.avg_evidence_strength == null ? "—" : c.avg_evidence_strength;
+      const findings = c.finding_count == null ? "—" : c.finding_count;
+      return `<div class="ccol"><div class="ccol-bar"><div class="ccol-stack">${segs}</div></div><div class="ccol-x">${esc(c.month)}</div><div class="ccol-sub">${c.concept_count} concepts</div><div class="ccol-sub">${findings} findings · str ${strength}</div></div>`;
+    })
+    .join("");
   const legend = order
     .map(
       ([k, col]) =>
         `<span class="lg"><i style="background:${col}"></i>${k[0].toUpperCase() + k.slice(1)} confidence</span>`
     )
     .join("");
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Confidence mix per cycle">${bars}</svg><div class="legend">${legend}</div>`;
+  return `<div class="ccols" role="img" aria-label="Confidence mix per cycle">${cols}</div><div class="legend">${legend}</div>`;
 }
 
 // Distinct colors for the variants in a comparison (read on light + dark cards).
@@ -133,32 +126,21 @@ function comparisonChart(title, n, variants, metricKeys, key, url) {
   ];
   const vars = variants.slice(0, 8);
   if (!metrics.length || !vars.length) return "";
-  const W = 720;
-  const labelW = 150;
-  const valW = 40;
-  const trackW = W - labelW - valW - 10;
-  const barH = 7;
-  const vgap = 3;
-  const metricGap = 16;
-  const blockH = vars.length * (barH + vgap);
-  let y = 8;
-  let rows = "";
-  metrics.forEach((m) => {
-    rows += `<text x="0" y="${y + blockH / 2}" class="mlabel" dominant-baseline="middle">${esc(m.replace(/_/g, " "))}</text>`;
-    vars.forEach((v, vi) => {
-      const by = y + vi * (barH + vgap);
-      rows += `<rect x="${labelW}" y="${by}" width="${trackW}" height="${barH}" fill="var(--track)" rx="2"></rect>`;
-      const score = v.metrics[m];
-      if (typeof score === "number") {
-        const w = (trackW * score) / 100;
-        const color = VARIANT_COLORS[vi % VARIANT_COLORS.length];
-        rows += `<rect x="${labelW}" y="${by}" width="${w.toFixed(1)}" height="${barH}" fill="${color}" rx="2"><title>${esc(v.test_name)} — ${m}: ${score}%</title></rect>`;
-        rows += `<text x="${labelW + trackW + 6}" y="${by + barH}" class="mval">${score}%</text>`;
-      }
-    });
-    y += blockH + metricGap;
-  });
-  const H = y;
+  // HTML/CSS bars (not SVG): one colored bar per variant per metric. Labels and
+  // values are real text, so nothing shrinks — the grid reflows to stacked on mobile.
+  const bars = metrics
+    .map((m) => {
+      const rows = vars
+        .map((v, vi) => {
+          const score = v.metrics[m];
+          if (typeof score !== "number") return "";
+          const color = VARIANT_COLORS[vi % VARIANT_COLORS.length];
+          return `<div class="mc-row" title="${esc(v.test_name)} — ${esc(m)}: ${score}%"><div class="mc-track"><div class="mc-fill" style="width:${score}%;background:${color}"></div></div><span class="mc-val">${score}%</span></div>`;
+        })
+        .join("");
+      return `<div class="mc-metric"><div class="mc-label">${esc(m.replace(/_/g, " "))}</div><div class="mc-bars">${rows}</div></div>`;
+    })
+    .join("");
   const legend = vars
     .map((v, i) => {
       const sw = `<i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>`;
@@ -179,7 +161,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url) {
       ? `<a class="cmp-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="View ${esc(title)} comparison in Helio">View in Helio&nbsp;↗</a>`
       : ""
   }</span>`;
-  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} UX metrics">${rows}</svg></div>`;
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><div class="mc" role="img" aria-label="${esc(title)} UX metrics">${bars}</div></div>`;
 }
 
 // Trust a slide-inferred concept as the comparison's label ONLY when the page's own

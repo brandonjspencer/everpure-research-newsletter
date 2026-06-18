@@ -260,6 +260,12 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /<!doctype html>/i);
     assert.equal((html.match(/<svg/g) || []).length, (html.match(/<\/svg>/g) || []).length);
 
+    // Charts are responsive HTML/CSS (not scaled SVG), so labels stay legible on
+    // mobile: the confidence chart is HTML columns and comparisons are HTML bars.
+    assert.match(html, /class="ccols"/);
+    assert.match(html, /class="mc-metric"/);
+    assert.ok(!/<svg class="chart"/.test(html), "charts no longer use the scaled SVG canvas");
+
     // Sections are collapsible: each is a labeled panel with a toggle + body, and a
     // single wiring script persists the open/closed state.
     assert.match(html, /class="panel" data-panel="helio"/);
