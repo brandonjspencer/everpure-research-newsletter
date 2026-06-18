@@ -611,3 +611,92 @@ def test_enrich_with_report_data_is_nonblocking_and_respects_limit():
     assert [s["status"] for s in st] == ["error", "error"]
     assert "respondent_quotes" not in rec2
     assert {m["label"]: len(m["values"]) for m in rec2["metrics"]} == before
+
+
+# ---- Live-shape refinements (deploy 2026-06-18 revealed these) ----------------
+
+
+def test_coerce_report_metrics_recurses_into_nested_breakdown():
+    # Live shape: ux_metrics carries a top-level overall_score PLUS a per-metric
+    # breakdown nested under an arbitrary sub-key (list of {label, score}).
+    ux = {
+        "overall_score": 56,
+        "breakdown": [
+            {"label": "Engagement", "score": 52},
+            {"label": "Comprehension", "score": 78},
+            {"name": "Sentiment", "value": 40},
+        ],
+    }
+    got = {m["label"]: m["score"] for m in helio._coerce_report_metrics(ux)}
+    assert got == {"overall_score": 56, "Engagement": 52, "Comprehension": 78, "Sentiment": 40}
+    # Also a per-metric breakdown as a nested dict-of-objects under a sub-key.
+    ux2 = {"overall_score": 60, "scores": {"Engagement": {"score": 50}, "Intent": {"score": 33}}}
+    got2 = {m["label"]: m["score"] for m in helio._coerce_report_metrics(ux2)}
+    assert got2 == {"overall_score": 60, "Engagement": 50, "Intent": 33}
+
+
+def test_coerce_report_metrics_does_not_invent_metrics_from_nested_counts():
+    # A nested non-metric number (sample size / response count) must NOT become a
+    # "metric" — only top-level bare numbers + labeled objects are metrics.
+    ux = {
+        "overall_score": 56,
+        "sample": {"size": 100},  # nested count — must be ignored
+        "breakdown": [{"label": "Engagement", "score": 52}],
+    }
+    got = {m["label"]: m["score"] for m in helio._coerce_report_metrics(ux)}
+    assert got == {"overall_score": 56, "Engagement": 52}
+
+
+def test_harvest_report_quotes_drops_question_prompts():
+    prompt = (
+        "After reviewing this page for 10 seconds, in your own words, "
+        "please explain what you believe this page is about?"
+    )
+    qr = [
+        {"question": prompt, "section_responses": [{"answer": "It is a cloud data platform."}]},
+        {
+            "question": prompt,
+            "section_responses": [{"answer": "Helps you assess enterprise data."}],
+        },
+        {
+            "question": prompt,
+            "section_responses": [{"answer": "I'm honestly not sure what it does."}],
+        },
+        # A prompt leaking under an answer-ish "text" key, repeated across responses.
+        {"text": prompt, "answer": "A genuinely unique participant answer here."},
+        {"text": prompt, "answer": "Another distinct participant response here."},
+        {"text": prompt, "answer": "Yet a third unique participant response."},
+    ]
+    quotes = helio._harvest_report_quotes(qr)
+    # The prompt is dropped three ways (question key skip + repetition + phrase deny);
+    # real answers survive.
+    assert prompt not in quotes
+    assert not any("please explain" in q for q in quotes)
+    assert "It is a cloud data platform." in quotes
+    assert "A genuinely unique participant answer here." in quotes
+
+
+def test_harvest_report_quotes_phrase_denylist_catches_singleton_prompt():
+    # A prompt that appears only once still gets rejected by the question-stem pattern.
+    node = [{"answer": "On a scale of 1 to 5, how easy was this task to complete?"}]
+    assert helio._harvest_report_quotes(node) == []
+
+
+def test_shape_skeleton_is_pii_safe():
+    sk = helio._shape_skeleton(
+        {
+            "ux_metrics": {
+                "overall_score": 56,
+                "breakdown": [{"label": "Engagement", "score": 52}],
+            },
+            "questions_responses": [
+                {"answer": "reach me at jane.doe@example.com — this is a long verbatim answer"}
+            ],
+        }
+    )
+    # Numbers become type names; strings become short, email-redacted samples.
+    assert sk["ux_metrics"]["overall_score"] == "int"
+    assert sk["ux_metrics"]["breakdown"]["__list_len__"] == 1
+    sample = sk["questions_responses"]["0"]["answer"]
+    assert "@" not in sample  # email redacted
+    assert len(sample) <= 50  # truncated
