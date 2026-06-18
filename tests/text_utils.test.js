@@ -9,6 +9,7 @@ const {
   pickBestEvidence,
   composeEvidenceSummary,
   extractRespondentQuote,
+  harvestRespondentQuotes,
 } = require("../netlify/text_utils");
 
 test("strips a duplicated concept label from the front of an evidence line", () => {
@@ -143,6 +144,25 @@ test("extractRespondentQuote returns empty when only CTA labels / taglines are q
     'Emotional tags were "Overwhelming" and "Helpful".',
   ];
   assert.strictEqual(extractRespondentQuote(candidates), "");
+});
+
+test("harvestRespondentQuotes returns many deduped, filtered, cleaned quotes", () => {
+  const candidates = [
+    'One said "I prefer the single topic view because I can concentrate on one thing."',
+    'Another: "I prefer the single topic view because I can concentrate on one thing."', // dup
+    'A third asked "Why would you assume I\'d start an assessment straight away?"',
+    'CTA buttons "Watch a Demo" and "Start Y our Assessment"', // CTA → rejected
+    'A fragment ". I think that should be renamed as"', // truncated → rejected
+    'OCR noise "the language is a bit complicated to digest if you don\'t know data"',
+  ];
+  const quotes = harvestRespondentQuotes(candidates, 10);
+  // Deduped (the repeated quote appears once) and CTAs/fragments excluded.
+  assert.ok(quotes.length >= 3 && quotes.length <= 4);
+  assert.ok(quotes.includes("Why would you assume I'd start an assessment straight away?"));
+  assert.ok(!quotes.some((q) => /Watch a Demo|Start Your Assessment/.test(q)));
+  assert.ok(!quotes.some((q) => /renamed as$/.test(q)));
+  // Honors the limit.
+  assert.ok(harvestRespondentQuotes(candidates, 1).length === 1);
 });
 
 test("composeEvidenceSummary truncates an overlong single segment at a boundary", () => {

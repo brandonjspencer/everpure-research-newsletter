@@ -306,8 +306,9 @@ function looksLikeRespondentQuote(q) {
  * `respondent_quote` override should win over this. Verbatim, with OCR spacing
  * ("Start Y our" → "Start Your") and ligatures repaired.
  */
-function extractRespondentQuote(rawCandidates) {
+function collectRespondentQuotes(rawCandidates) {
   const found = [];
+  const seen = new Set();
   const re = /[“"]([^“”"]{12,200})[”"]/g;
   for (const raw of rawCandidates || []) {
     const norm = normalizeLigatures(String(raw || ""))
@@ -316,16 +317,42 @@ function extractRespondentQuote(rawCandidates) {
     let m;
     re.lastIndex = 0;
     while ((m = re.exec(norm)) !== null) {
-      const q = m[1].trim();
-      if (looksLikeRespondentQuote(q)) found.push(q);
+      // Drop leading punctuation fragments ("\. I think…" → "I think…").
+      const q = m[1]
+        .trim()
+        .replace(/^[^A-Za-z0-9“"']+/, "")
+        .trim();
+      if (!looksLikeRespondentQuote(q)) continue;
+      // Skip ones truncated mid-sentence (dangling function word at the end).
+      if (/\b(as|the|a|an|to|of|and|or|but|with|for|in|on)$/i.test(q.replace(/[.,;:\s]+$/, "")))
+        continue;
+      const key = q
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      found.push(q);
     }
   }
   const score = (q) =>
     (/\?/.test(q) ? 3 : 0) +
     (/\b(i|i'?d|i'?m|i'?ve|my|me)\b/i.test(q) ? 3 : 0) +
     (q.length >= 25 && q.length <= 140 ? 2 : 0);
-  found.sort((a, b) => score(b) - score(a) || a.length - b.length);
-  return found[0] || "";
+  return found.sort((a, b) => score(b) - score(a) || a.length - b.length);
+}
+
+function extractRespondentQuote(rawCandidates) {
+  return collectRespondentQuotes(rawCandidates)[0] || "";
+}
+
+/**
+ * Harvest up to `limit` distinct, clean respondent quotes from raw candidate
+ * strings (e.g. deck open-ends) — same filtering/cleaning as extractRespondentQuote,
+ * but returns the whole ranked, deduped set instead of just the top one.
+ */
+function harvestRespondentQuotes(rawCandidates, limit = 24) {
+  return collectRespondentQuotes(rawCandidates).slice(0, Math.max(0, limit));
 }
 
 module.exports = {
@@ -337,4 +364,5 @@ module.exports = {
   pickBestEvidence,
   composeEvidenceSummary,
   extractRespondentQuote,
+  harvestRespondentQuotes,
 };

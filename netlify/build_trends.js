@@ -19,6 +19,7 @@
  */
 const fs = require("fs");
 const path = require("path");
+const { harvestRespondentQuotes } = require("./text_utils");
 
 function readJson(filePath, fallback = null) {
   try {
@@ -26,6 +27,26 @@ function readJson(filePath, fallback = null) {
   } catch {
     return fallback;
   }
+}
+
+// Recursively collect every string value from a JSON structure.
+function collectStrings(node, out) {
+  if (typeof node === "string") out.push(node);
+  else if (Array.isArray(node)) for (const v of node) collectStrings(v, out);
+  else if (node && typeof node === "object")
+    for (const v of Object.values(node)) collectStrings(v, out);
+  return out;
+}
+
+// Harvest clean, distinct respondent verbatims from the research-evidence artifacts
+// (deck open-ends) so the dashboard's quote pool is bigger than the 1-per-finding set.
+function harvestEvidenceQuotes(publishData, limit = 18) {
+  const raw = [];
+  for (const file of ["external_research_evidence.json", "deck_content.json"]) {
+    const data = readJson(path.join(publishData, file));
+    if (data) collectStrings(data, raw);
+  }
+  return harvestRespondentQuotes(raw, limit);
 }
 
 function monthlyFiles(dir) {
@@ -256,6 +277,27 @@ function buildTrends(root) {
   issues.sort((a, b) => b.month.localeCompare(a.month)); // newest first
   for (const cycle of cycles) {
     if (cycle.month in findingCountByMonth) cycle.finding_count = findingCountByMonth[cycle.month];
+  }
+
+  // Enrich the quote pool with verbatims harvested from the research evidence, so the
+  // dashboard rotator can draw from many (not just the curated 1-per-finding quotes).
+  // Attributed to the latest cycle (deck open-ends aren't tied to a single finding).
+  const quoteKey = (s) =>
+    String(s || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const seenQuotes = new Set(quotes.map((q) => quoteKey(q.quote)));
+  const latestMonth = cycles.length ? cycles[cycles.length - 1].month : "current";
+  for (const q of harvestEvidenceQuotes(publishData)) {
+    if (seenQuotes.has(quoteKey(q))) continue;
+    seenQuotes.add(quoteKey(q));
+    quotes.push({
+      month: latestMonth,
+      title: "Research participant",
+      quote: q,
+      confidence: "unknown",
+    });
   }
 
   // --- Helio UX-metric time series --------------------------------------
