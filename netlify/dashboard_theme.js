@@ -235,7 +235,13 @@ function brandCss() {
   .mt-soon{font-style:italic;opacity:.85}
   @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
   @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
-  @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}}
+  @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}
+    /* Issue/activity index rows stack into a card: title on top, a full-width
+       action row beneath with MD/JSON left and the View button pushed right. */
+    .issuelist>li{flex-direction:column;align-items:stretch;gap:12px}
+    .links{margin-left:0;width:100%}
+    .links .btn{margin-left:auto}
+    .filechip{padding:6px 10px}}
   @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
