@@ -538,6 +538,32 @@ function issuesSection(issues) {
   return `<div class="issuegrid">${cards}</div>`;
 }
 
+// A collapsible dashboard section: the heading is a toggle button that hides the
+// body. `title` may contain trusted markup (it's a literal). `body` is prebuilt HTML.
+function panel(key, title, desc, body) {
+  const id = `panel-${esc(key)}`;
+  return `<section class="panel" data-panel="${esc(key)}">
+  <h2 class="panel-h"><button type="button" class="panel-toggle" aria-expanded="true" aria-controls="${id}">${title}<span class="panel-caret" aria-hidden="true">▾</span></button></h2>
+  <div class="panel-body" id="${id}">${desc ? `<p class="desc">${desc}</p>` : ""}${body}</div>
+</section>`;
+}
+
+// Wire every section's header to collapse/expand its body; state persists per panel.
+function panelScript() {
+  return `<script>(function(){
+  var KEY="everpure-panels", state={};
+  try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  [].slice.call(document.querySelectorAll('.panel[data-panel]')).forEach(function(p){
+    var key=p.getAttribute('data-panel'), btn=p.querySelector('.panel-toggle'), body=p.querySelector('.panel-body');
+    if(!btn||!body) return;
+    function set(open){btn.setAttribute('aria-expanded',open?'true':'false');body.hidden=!open;}
+    if(state[key]===false) set(false);
+    btn.addEventListener('click',function(){var open=btn.getAttribute('aria-expanded')!=='true';set(open);state[key]=open;save();});
+  });
+})();</script>`;
+}
+
 function render(trends) {
   const cycles = trends.cycles || [];
   const metricKeys = trends.metric_keys || [];
@@ -573,39 +599,45 @@ ${sidebar("dashboard", "")}
 </header>
 <div class="kpis">${kpis}</div>
 
-<section class="panel">
-  <h2>Research program by cycle</h2>
-  <p class="desc">Concepts evaluated each 30-day cycle, by evidence-backed confidence. Findings and average evidence strength noted beneath each column.</p>
-  ${confidenceChart(cycles)}
-</section>
+${panel(
+  "cycles",
+  "Research program by cycle",
+  "Concepts evaluated each 30-day cycle, by evidence-backed confidence. Findings and average evidence strength noted beneath each column.",
+  confidenceChart(cycles)
+)}
 
-<section class="panel">
-  <h2>Helio UX metrics</h2>
-  <p class="desc">Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better.</p>
-  ${helioSection(trends.helio_metrics || [], metricKeys)}
-</section>
+${panel(
+  "helio",
+  "Helio UX metrics",
+  "Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better.",
+  helioSection(trends.helio_metrics || [], metricKeys)
+)}
 
-<section class="panel">
-  <h2>Comprehension &amp; sentiment</h2>
-  <p class="desc">The two signals to watch — how each comparison moves from baseline to the latest variant (left), and across cycles as Helio history accrues (right).</p>
-  ${metricTrendsSection(helioComparisons(trends.helio_metrics || []))}
-</section>
+${panel(
+  "metrics",
+  "Comprehension &amp; sentiment",
+  "The two signals to watch — how each comparison moves from baseline to the latest variant (left), and across cycles as Helio history accrues (right).",
+  metricTrendsSection(helioComparisons(trends.helio_metrics || []))
+)}
 
-<section class="panel">
-  <h2>Voice of the user</h2>
-  <p class="desc">Verbatim respondent quotes carried through from the monthly issues.</p>
-  ${quotesSection(trends.quotes || [])}
-</section>
+${panel(
+  "voice",
+  "Voice of the user",
+  "Verbatim respondent quotes carried through from the monthly issues.",
+  quotesSection(trends.quotes || [])
+)}
 
-<section class="panel">
-  <h2>Published issues</h2>
-  <p class="desc">Each monthly Research Roundup — open the frozen issue.</p>
-  ${issuesSection(trends.issues || [])}
-</section>
+${panel(
+  "issues",
+  "Published issues",
+  "Each monthly Research Roundup — open the frozen issue.",
+  issuesSection(trends.issues || [])
+)}
 
 <footer>
   Source: committed <code>history/</code> + <code>issues/</code> + Helio compare evidence, rolled up by <code>build_trends.js</code>. Helio UX-metric trends begin June 2026 and grow as comparisons are run.
 </footer>
+${panelScript()}
 </div></div></body></html>`;
 }
 
