@@ -138,6 +138,7 @@ function helioRows(payload, month) {
       out.push({
         month,
         compare_id: rec.compare_id || null,
+        source_url: rec.source_url || null,
         comparison_title: rec.comparison_title || null,
         concept: (rec.inferred_concepts || [])[0] || null,
         link_text: rec.link_text || null,
