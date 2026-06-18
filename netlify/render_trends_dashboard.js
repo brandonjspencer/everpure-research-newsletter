@@ -24,8 +24,11 @@ function esc(s) {
 // deck hyperlink target (author-authored, not build-controlled), so gate out any
 // javascript:/data: scheme before it lands in an href. Returns null if unsafe.
 function safeHref(u) {
+  // Falsy/non-string in → null out (else String(null) === "null" would resolve to a
+  // valid URL and leak href="null"/src="null" for missing source_url / thumbnail).
+  if (typeof u !== "string" || !u) return null;
   try {
-    return /^https?:$/.test(new URL(String(u), "https://_/").protocol) ? String(u) : null;
+    return /^https?:$/.test(new URL(u, "https://_/").protocol) ? u : null;
   } catch {
     return null;
   }
@@ -157,10 +160,18 @@ function comparisonChart(title, n, variants, metricKeys, key, url) {
   });
   const H = y;
   const legend = vars
-    .map(
-      (v, i) =>
-        `<span class="lg"><i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>${esc(v.test_name)}</span>`
-    )
+    .map((v, i) => {
+      const sw = `<i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>`;
+      const name = esc(v.test_name);
+      const thumb = safeHref(v.thumbnail);
+      // Hovering a variant with a screenshot pops its thumbnail (Helio compare page).
+      if (!thumb) return `<span class="lg">${sw}${name}</span>`;
+      // onerror: an expired/broken signed asset URL collapses the affordance back to a
+      // plain legend item (Helio thumbnail URLs are time-signed and eventually 403).
+      const onerr =
+        "this.closest('.lg').classList.remove('has-thumb');this.closest('.thumb-pop').remove()";
+      return `<span class="lg has-thumb">${sw}${name}<span class="thumb-pop"><img src="${esc(thumb)}" alt="${name} preview" loading="lazy" decoding="async" onerror="${onerr}"></span></span>`;
+    })
     .join("");
   const href = safeHref(url);
   const meta = `<span class="cmp-h-r">${n ? `<span class="cmp-n">n=${n}</span>` : ""}${
@@ -188,13 +199,15 @@ function helioComparisons(helioMetrics) {
     // Drop comparisons with no real label — the generic "Data Comparison" /
     // unlabeled records are confusing, so they're omitted rather than shown.
     if (!comparisonTitle && !concept) continue;
-    const seen = new Set();
-    const variants = [];
+    // Dedup variants by test_id, keeping the NEWEST cycle's row (freshest metrics +
+    // freshly-signed thumbnail) while preserving first-seen legend order. Rows carry
+    // `month` as YYYY-MM, so a lexicographic compare orders cycles.
+    const byTest = new Map();
     for (const r of p.rows) {
-      if (seen.has(r.test_id)) continue;
-      seen.add(r.test_id);
-      variants.push(r);
+      const cur = byTest.get(r.test_id);
+      if (!cur || String(r.month || "") > String(cur.month || "")) byTest.set(r.test_id, r);
     }
+    const variants = [...byTest.values()];
     const ns = variants.map((v) => v.n).filter((x) => typeof x === "number");
     const withMetrics = variants.filter((v) => Object.keys(v.metrics || {}).length).length;
     const metricCount = new Set(variants.flatMap((v) => Object.keys(v.metrics || {}))).size;
@@ -288,7 +301,7 @@ function helioFilterScript() {
 }
 
 // Feature the few most recent respondent quotes as a cross-fading rotator.
-const QUOTE_ROTATOR_MAX = 3;
+const QUOTE_ROTATOR_MAX = 5;
 
 function quoteFigure(q, active) {
   // aria-hidden tracks the visual state so assistive tech reads only the active

@@ -116,6 +116,7 @@ function helioRows(payload, month) {
       byVariant[v.take_id] = {
         test_id: v.report_id || null,
         test_name: v.name || null,
+        thumbnail: v.thumbnail || null,
         metrics: {},
       };
     }
@@ -144,6 +145,7 @@ function helioRows(payload, month) {
         link_text: rec.link_text || null,
         test_id: slot.test_id || null,
         test_name: slot.test_name || null,
+        thumbnail: slot.thumbnail || null,
         n,
         metrics: slot.metrics,
       });

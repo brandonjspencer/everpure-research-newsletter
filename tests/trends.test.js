@@ -91,7 +91,13 @@ function fixtureRepo() {
         comparison_title: "Events Baseline vs V1",
         inferred_concepts: ["Events Page"],
         variants: [
-          { take_id: "T1", report_id: "R1", name: "Baseline" },
+          {
+            take_id: "T1",
+            report_id: "R1",
+            name: "Baseline",
+            thumbnail:
+              "https://assets.helio.app/asset/AAA/medium_baseline.png?Expires=1&Signature=x",
+          },
           { take_id: "T2", report_id: "R2", name: "V1" },
         ],
         metrics: [
@@ -135,7 +141,14 @@ test("helioRows flattens one row per variant with metrics + n", () => {
         comparison_title: "X vs Y",
         source_url: "https://glare-playground.helio.app/share/compare/cmpXY",
         inferred_concepts: ["C"],
-        variants: [{ take_id: "T1", report_id: "R1", name: "Base" }],
+        variants: [
+          {
+            take_id: "T1",
+            report_id: "R1",
+            name: "Base",
+            thumbnail: "https://assets.helio.app/asset/AAA/medium_base.png?Expires=1&Signature=x",
+          },
+        ],
         metrics: [{ label: "Overall UX", values: [{ take_id: "T1", score: 56 }] }],
         report_configs: [{ report_id: "R1", responses_count: 100 }],
       },
@@ -148,6 +161,8 @@ test("helioRows flattens one row per variant with metrics + n", () => {
   assert.equal(rows[0].month, "2026-05");
   // The compare share page URL is carried through for the dashboard link.
   assert.equal(rows[0].source_url, "https://glare-playground.helio.app/share/compare/cmpXY");
+  // The per-variant screenshot thumbnail rides along for the legend tooltip.
+  assert.match(rows[0].thumbnail, /assets\.helio\.app\/asset\/AAA\/medium_base\.png/);
 });
 
 test("buildTrends rolls up cycles, trajectories, helio metrics, and quotes", () => {
@@ -238,6 +253,16 @@ test("render produces a self-contained dashboard with all sections + charts", ()
       /class="cmp-link"[^>]*href="https:\/\/glare-playground\.helio\.app\/share\/compare\/cmpEvents"/
     );
     assert.match(html, />View in Helio/);
+    // A variant with a screenshot gets a hover thumbnail in the legend; the one
+    // without a thumbnail stays a plain legend item (no broken src="null").
+    assert.equal((html.match(/class="lg has-thumb"/g) || []).length, 1);
+    assert.ok(!/src="null"/.test(html), "missing-thumbnail variant must not render src=null");
+    assert.match(
+      html,
+      /class="thumb-pop"><img src="https:\/\/assets\.helio\.app\/asset\/AAA\/medium_baseline\.png/
+    );
+    // A broken/expired signed URL collapses the affordance (onerror fallback).
+    assert.match(html, /onerror="[^"]*remove\(\)/);
     // Quote carried through, inside the cross-fading rotator.
     assert.match(html, /live sessions/);
     assert.match(html, /class="qrotator"/);
@@ -258,28 +283,35 @@ test("render features the newest quotes as a capped cross-fading rotator", () =>
     helio_metrics: [],
     metric_keys: [],
     issues: [],
-    // Oldest-first, as build_trends emits them.
-    quotes: [q(1, "2026-02"), q(2, "2026-03"), q(3, "2026-04"), q(4, "2026-05")],
+    // Oldest-first, as build_trends emits them (6 quotes, cap is 5).
+    quotes: [
+      q(1, "2026-01"),
+      q(2, "2026-02"),
+      q(3, "2026-03"),
+      q(4, "2026-04"),
+      q(5, "2026-05"),
+      q(6, "2026-06"),
+    ],
   });
-  // Rotator present, capped to the 3 newest, exactly one active to start.
+  // Rotator present, capped to the 5 newest, exactly one active to start.
   assert.match(html, /class="qrotator" data-qrotator/);
-  assert.equal((html.match(/class="quote q-slide/g) || []).length, 3);
+  assert.equal((html.match(/class="quote q-slide/g) || []).length, 5);
   assert.equal((html.match(/class="quote q-slide is-active"/g) || []).length, 1);
   // One dot per slide ([ "] avoids matching the "q-dots" container).
-  assert.equal((html.match(/class="q-dot[ "]/g) || []).length, 3);
-  // Newest three quotes shown; the oldest (quote 1) is dropped by the cap.
+  assert.equal((html.match(/class="q-dot[ "]/g) || []).length, 5);
+  // Newest five quotes shown; the oldest (quote 1) is dropped by the cap.
   // (Match the blockquote body, not bare "quote 1", which also appears in a dot
-  // aria-label like "Show quote 1 of 3".)
-  assert.match(html, /&ldquo;quote 4&rdquo;/);
+  // aria-label like "Show quote 1 of 5".)
+  assert.match(html, /&ldquo;quote 6&rdquo;/);
   assert.ok(!/&ldquo;quote 1&rdquo;/.test(html), "oldest quote dropped by the rotator cap");
   // The auto-advance script honors reduced motion.
   assert.match(html, /prefers-reduced-motion/);
   // a11y: only the active slide is in the accessibility tree, and the active dot
   // carries a programmatic "current" state (not color-only).
   assert.equal((html.match(/q-slide is-active" aria-hidden="false"/g) || []).length, 1);
-  // The two inactive slides are hidden from AT (scope to slides — the sidebar
+  // The four inactive slides are hidden from AT (scope to slides — the sidebar
   // icons and caret also carry aria-hidden="true").
-  assert.equal((html.match(/quote q-slide" aria-hidden="true"/g) || []).length, 2);
+  assert.equal((html.match(/quote q-slide" aria-hidden="true"/g) || []).length, 4);
   assert.equal(
     (html.match(/class="q-dot is-active" data-i="0" aria-current="true"/g) || []).length,
     1
@@ -332,6 +364,37 @@ test("comparison links gate out non-http(s) schemes (no javascript: href)", () =
     ok,
     /class="ms-opt-link" href="https:\/\/glare-playground\.helio\.app\/share\/compare\/cmpOK"/
   );
+});
+
+test("helioComparisons keeps the newest cycle's row per variant (fresh thumbnail wins)", () => {
+  // Same comparison + variant seen in two cycles (oldest first, as build_trends emits).
+  const base = {
+    compare_id: "cmpX",
+    comparison_title: "X vs Y",
+    concept: "C",
+    test_id: "t1",
+    test_name: "Base",
+    n: 100,
+  };
+  const cmps = helioComparisons([
+    {
+      ...base,
+      month: "2026-05",
+      thumbnail: "https://assets.helio.app/asset/OLD/m.png?Expires=1",
+      metrics: { engagement: 50 },
+    },
+    {
+      ...base,
+      month: "2026-07",
+      thumbnail: "https://assets.helio.app/asset/NEW/m.png?Expires=9",
+      metrics: { engagement: 55 },
+    },
+  ]);
+  assert.equal(cmps.length, 1);
+  assert.equal(cmps[0].variants.length, 1);
+  // Freshest cycle wins — its (newly-signed) thumbnail and re-measured metrics.
+  assert.match(cmps[0].variants[0].thumbnail, /asset\/NEW\//);
+  assert.equal(cmps[0].variants[0].metrics.engagement, 55);
 });
 
 test("render shows a friendly empty state when no Helio data exists", () => {
