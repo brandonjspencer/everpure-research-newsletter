@@ -60,13 +60,30 @@ function harvestHelioQuotes(publishData, perComparison = 12) {
   const data = readJson(path.join(publishData, "helio_evidence.json"));
   for (const rec of (data && data.evidence) || []) {
     if (rec.source_type !== "helio_compare") continue;
-    const rq = rec.respondent_quotes;
-    if (!Array.isArray(rq) || !rq.length) continue;
-    const clean = harvestRespondentQuotes(
-      rq.map((q) => `“${q}”`),
-      perComparison
-    );
-    for (const quote of clean) out.push({ quote, compare_id: rec.compare_id || null });
+    const compareId = rec.compare_id || null;
+    // Prefer the structured details (carry the question prompt per quote); fall back
+    // to the flat respondent_quotes for older cycles frozen before details existed.
+    const details = Array.isArray(rec.respondent_quote_details)
+      ? rec.respondent_quote_details
+      : null;
+    if (details) {
+      let kept = 0;
+      for (const d of details) {
+        if (kept >= perComparison) break;
+        // Run each verbatim through the same quality filter/cleaning as the deck
+        // harvest (wrap so the smart-quote extractor sees it); keep its question.
+        const [quote] = harvestRespondentQuotes([`“${d.quote}”`], 1);
+        if (!quote) continue;
+        out.push({ quote, question: d.question || null, compare_id: compareId });
+        kept += 1;
+      }
+    } else if (Array.isArray(rec.respondent_quotes) && rec.respondent_quotes.length) {
+      const clean = harvestRespondentQuotes(
+        rec.respondent_quotes.map((q) => `“${q}”`),
+        perComparison
+      );
+      for (const quote of clean) out.push({ quote, question: null, compare_id: compareId });
+    }
   }
   return out;
 }
@@ -256,7 +273,10 @@ function buildTrends(root) {
   }
 
   // --- Issues (hero cards) + findings + respondent quotes ----------------
-  const quotes = [];
+  // Heterogeneous by design: finding quotes carry decision; Helio quotes carry
+  // compare_id + question; deck quotes carry neither. Typed any[] so checkJs doesn't
+  // collapse them to a union (which would reject reading the per-source fields).
+  const quotes = /** @type {any[]} */ ([]);
   const issues = [];
   const findingCountByMonth = {};
   const issueMonths = monthDirs(issuesRoot);
@@ -322,6 +342,7 @@ function buildTrends(root) {
       quote: hq.quote,
       confidence: "unknown",
       compare_id: hq.compare_id,
+      ...(hq.question ? { question: hq.question } : {}),
     });
   }
   // Then the remaining deck open-ends (no single-comparison association).

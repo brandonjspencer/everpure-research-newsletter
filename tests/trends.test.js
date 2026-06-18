@@ -253,6 +253,13 @@ test("buildTrends tags Helio verbatims with their compare_id", () => {
             "I assumed these sessions were recorded, not live.",
             "The schedule made sense to me once I scrolled.",
           ],
+          respondent_quote_details: [
+            {
+              quote: "I assumed these sessions were recorded, not live.",
+              question: "What did you expect from the events page?",
+            },
+            { quote: "The schedule made sense to me once I scrolled.", question: null },
+          ],
         },
       ],
     });
@@ -261,6 +268,8 @@ test("buildTrends tags Helio verbatims with their compare_id", () => {
     assert.ok(tagged, "Helio verbatim harvested into the pool");
     assert.equal(tagged.compare_id, "cmpEvents");
     assert.equal(tagged.title, "Research participant");
+    // The question prompt rides along (from the structured details).
+    assert.equal(tagged.question, "What did you expect from the events page?");
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -289,6 +298,7 @@ test("render labels Voice-of-user quotes with the comparison/finding topic", () 
         quote: "I couldn't tell what this page was for.",
         confidence: "unknown",
         compare_id: "cmpEDC",
+        question: "In your own words, what is this page about?",
       },
       {
         month: "2026-05",
@@ -311,16 +321,21 @@ test("render labels Voice-of-user quotes with the comparison/finding topic", () 
   assert.match(helioQ.topic, /EDC Success Blueprint/);
   assert.ok(!/Pathfinder/.test(helioQ.topic));
   assert.equal(helioQ.who, "Research participant");
+  // The question the participant answered rides along, for the prompt line.
+  assert.equal(helioQ.question, "In your own words, what is this page about?");
   // A curated finding quote uses its finding title as the topic.
   const findingQ = pool.find((p) => /finally clicked/.test(p.quote));
   assert.equal(findingQ.topic, "Events Page");
   assert.equal(findingQ.who, null);
+  assert.equal(findingQ.question, null);
   // A generic deck open-end has no single topic.
   const deckQ = pool.find((p) => /pricing was impossible/.test(p.quote));
   assert.equal(deckQ.topic, null);
   assert.equal(deckQ.who, "Research participant");
   // The SSR figcaption renders the topic in a styled span.
   assert.match(html, /<span class="q-topic">/);
+  // …and the question prompt renders above the quote.
+  assert.match(html, /<p class="q-prompt"><span class="q-prompt-label">Asked<\/span>/);
 });
 
 test("monthLabel and truncate format issue-card text", () => {

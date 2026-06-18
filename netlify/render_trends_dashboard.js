@@ -499,7 +499,24 @@ function resolveQuoteTopic(q, titleById) {
   } else {
     who = q.title || "Research participant";
   }
-  return { quote: q.quote, month: q.month, confidence: q.confidence, topic, who };
+  return {
+    quote: q.quote,
+    month: q.month,
+    confidence: q.confidence,
+    topic,
+    who,
+    question: q.question ? shortQuestion(q.question) : null,
+  };
+}
+
+// The survey prompt shown above a quote — trimmed at a word boundary so a long
+// open-ended question doesn't dominate the rotator.
+function shortQuestion(text, maxLen = 150) {
+  const s = String(text || "").trim();
+  if (s.length <= maxLen) return s;
+  const cut = s.slice(0, maxLen);
+  const sp = cut.lastIndexOf(" ");
+  return `${(sp > 60 ? cut.slice(0, sp) : cut).replace(/[\s,.;:]+$/, "")}…`;
 }
 
 function quoteFigure(q, active) {
@@ -512,7 +529,10 @@ function quoteFigure(q, active) {
   if (q.who) parts.push(esc(q.who));
   if (q.month) parts.push(esc(q.month));
   if (conf) parts.push(esc(conf));
-  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}"><blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${parts.join(" · ")}</figcaption></figure>`;
+  const prompt = q.question
+    ? `<p class="q-prompt"><span class="q-prompt-label">Asked</span> ${esc(q.question)}</p>`
+    : "";
+  return `<figure class="quote q-slide${active ? " is-active" : ""}" aria-hidden="${active ? "false" : "true"}">${prompt}<blockquote>&ldquo;${esc(q.quote)}&rdquo;</blockquote><figcaption>${parts.join(" · ")}</figcaption></figure>`;
 }
 
 function quotesSection(quotes, helioMetrics) {
@@ -541,6 +561,11 @@ function quoteRotatorScript() {
     pick.forEach(function(q,idx){
       var on=idx===0;
       var fig=document.createElement('figure'); fig.className='quote q-slide'+(on?' is-active':''); fig.setAttribute('aria-hidden',on?'false':'true');
+      if(q.question){
+        var pr=document.createElement('p'); pr.className='q-prompt';
+        var pl=document.createElement('span'); pl.className='q-prompt-label'; pl.textContent='Asked';
+        pr.appendChild(pl); pr.appendChild(document.createTextNode(' '+q.question)); fig.appendChild(pr);
+      }
       var bq=document.createElement('blockquote'); bq.textContent='“'+(q.quote||'')+'”';
       var cap=document.createElement('figcaption');
       var segs=[];

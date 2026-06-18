@@ -717,43 +717,59 @@ def _clean_verbatim(raw: str) -> str:
     return s
 
 
-def _harvest_report_quotes(node: Any, limit: int = 60) -> List[str]:
-    """Walk a report payload collecting deduped, prompt-free participant verbatims.
+def _question_text(d: Dict[str, Any]) -> Optional[str]:
+    """Pull a question prompt off a response object: `question.text` (the live shape)
+    or a direct question/prompt string. Returns None when there's no question field."""
+    for k in ("question", "prompt", "question_text"):
+        v = d.get(k)
+        if isinstance(v, str) and v.strip():
+            return normalize_space(v)
+        if isinstance(v, dict):
+            t = v.get("text") or v.get("label") or v.get("title")
+            if isinstance(t, str) and t.strip():
+                return normalize_space(t)
+    return None
 
-    Harvests strings under QUOTE_TEXT_KEYS (the answer fields) at any depth, but
-    drops survey QUESTION prompts three ways: (1) it never descends into QUESTION_KEYS
-    fields (question/label/prompt/title/…); (2) it rejects candidates matching a
-    question-stem pattern that slips through under an answer-ish key; and (3) it drops
-    any candidate that repeats across responses (a prompt repeats once per response;
-    a real answer is ~unique). Quality filtering for first-person voice / CTA rejection
-    is left to the JS harvester downstream. Pure; unit-tested.
+
+def _harvest_report_quotes(node: Any, limit: int = 60) -> List[Dict[str, Any]]:
+    """Walk a report payload collecting deduped participant verbatims, each paired with
+    the QUESTION it answered.
+
+    The answer is the free text under a QUOTE_TEXT_KEYS field; the question is the
+    `question.text` on the enclosing response object (tracked as we descend). Survey
+    prompts are still kept OUT of the verbatims three ways: (1) QUESTION_KEYS subtrees
+    are never harvested as answers; (2) question-stem candidates are rejected; (3) a
+    candidate repeating across responses (a prompt does, a real answer doesn't) is
+    dropped. Returns [{quote, question}] (question may be None). Pure; unit-tested.
     """
-    # Pass 1 — collect every cleaned candidate WITH repetition, skipping prompt fields.
-    raw_candidates: List[str] = []
+    # Pass 1 — collect (answer, enclosing-question) pairs, skipping prompt fields.
+    raw: List[Tuple[str, Optional[str]]] = []
 
-    def _walk(n: Any, under_text_key: bool) -> None:
+    def _walk(n: Any, under_text_key: bool, question_ctx: Optional[str]) -> None:
         if isinstance(n, str):
             if under_text_key:
                 cleaned = _clean_verbatim(n)
                 if cleaned:
-                    raw_candidates.append(cleaned)
+                    raw.append((cleaned, question_ctx))
         elif isinstance(n, list):
             for v in n:
-                _walk(v, under_text_key)
+                _walk(v, under_text_key, question_ctx)
         elif isinstance(n, dict):
+            # This object's own question (if any) scopes the answers nested under it.
+            q_ctx = _question_text(n) or question_ctx
             for k, v in n.items():
                 kl = str(k).lower()
                 if kl in QUESTION_KEYS:
                     continue  # never harvest a question prompt / option label
-                _walk(v, under_text_key or kl in QUOTE_TEXT_KEYS)
+                _walk(v, under_text_key or kl in QUOTE_TEXT_KEYS, q_ctx)
 
-    _walk(node, False)
+    _walk(node, False, None)
 
-    # Pass 2 — drop repeated prompts + question-stem matches, then dedupe.
-    counts = Counter(raw_candidates)
-    out: List[str] = []
+    # Pass 2 — drop repeated prompts + question-stem matches, then dedupe (keep question).
+    counts = Counter(cand for cand, _ in raw)
+    out: List[Dict[str, Any]] = []
     seen: set = set()
-    for cand in raw_candidates:
+    for cand, question in raw:
         if len(out) >= limit:
             break
         if counts[cand] >= QUOTE_REPEAT_DROP:
@@ -764,7 +780,7 @@ def _harvest_report_quotes(node: Any, limit: int = 60) -> List[str]:
         if key in seen:
             continue
         seen.add(key)
-        out.append(cand)
+        out.append({"quote": cand, "question": question})
     return out[:limit]
 
 
@@ -937,7 +953,7 @@ def enrich_with_report_data(
 
     for rec in evidence:
         variants = rec.get("variants") or []
-        rec_quotes: List[str] = []
+        rec_details: List[Dict[str, Any]] = []
         seen_q: set = set()
         metrics_added = 0
         for v in variants:
@@ -950,14 +966,21 @@ def enrich_with_report_data(
                 metrics_added += _attach_report_metrics(
                     rec, v.get("take_id"), v.get("name") or "", ux
                 )
-            for q in rep.get("quotes") or []:
-                key = re.sub(r"[^a-z0-9]+", " ", q.lower()).strip()
+            for d in rep.get("quotes") or []:
+                quote = d.get("quote") if isinstance(d, dict) else d
+                question = d.get("question") if isinstance(d, dict) else None
+                if not quote:
+                    continue
+                key = re.sub(r"[^a-z0-9]+", " ", quote.lower()).strip()
                 if key in seen_q:
                     continue
                 seen_q.add(key)
-                rec_quotes.append(q)
-        if rec_quotes:
-            _fold_quotes_into_evidence(rec, rec_quotes)
+                rec_details.append({"quote": quote, "question": question})
+        if rec_details:
+            # Flat list (+ wrapped into evidence_text) for the existing JS harvesters;
+            # the structured details carry the question through for the dashboard.
+            _fold_quotes_into_evidence(rec, [d["quote"] for d in rec_details])
+            rec["respondent_quote_details"] = rec_details
         if metrics_added:
             rec["report_metrics_added"] = metrics_added
     return reports, statuses
