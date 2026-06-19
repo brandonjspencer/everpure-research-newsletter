@@ -9,6 +9,7 @@ const {
   buildTrends,
   helioRows,
   loadUxSignals,
+  thumbnailExpiry,
   normConfidence,
   monthLabel,
   truncate,
@@ -104,7 +105,7 @@ function fixtureRepo() {
             report_id: "R1",
             name: "Baseline",
             thumbnail:
-              "https://assets.helio.app/asset/AAA/medium_baseline.png?Expires=1&Signature=x",
+              "https://assets.helio.app/asset/AAA/medium_baseline.png?Expires=4000000000&Signature=x",
           },
           { take_id: "T2", report_id: "R2", name: "V1" },
         ],
@@ -494,6 +495,67 @@ test("render: frontrunner + curated signal beneath each chart; computed fallback
   assert.match(html, /grasped but not loved/);
   // The frontrunner/signal block lives INSIDE the .cmp card (hides with the filter).
   assert.match(html, /<div class="mc"[\s\S]*?<div class="cmp-foot">/);
+});
+
+test("thumbnailExpiry parses the signed-URL expiry (null when absent)", () => {
+  assert.equal(thumbnailExpiry("https://x/y.png?Expires=1700000000&Signature=z"), 1700000000);
+  assert.equal(thumbnailExpiry("https://x/y.png"), null);
+  assert.equal(thumbnailExpiry(null), null);
+});
+
+test("buildTrends backfills expired thumbnails from a valid copy (else nulls them)", () => {
+  const root = fixtureRepo();
+  try {
+    const EXP = "https://assets.helio.app/asset/AAA/m.png?Expires=1000000000&Signature=x"; // 2001 — expired
+    const VALID = "https://assets.helio.app/asset/AAA/m.png?Expires=4000000000&Signature=y"; // 2096 — valid
+    const NOEXP = "https://assets.helio.app/asset/BBB/m.png"; // no Expires → left as-is
+    // Two compare pages share test_id "shared1": page A's copy is expired, page B's is
+    // valid. "orphan1" is expired with no valid copy anywhere; "noexp1" has no Expires.
+    writeJson(path.join(root, "publish", "data", "helio_evidence.json"), {
+      evidence: [
+        {
+          source_type: "helio_compare",
+          compare_id: "cmpA",
+          comparison_title: "A vs B",
+          variants: [
+            { take_id: "t1", report_id: "shared1", name: "Screen Baseline", thumbnail: EXP },
+            { take_id: "t2", report_id: "orphan1", name: "Orphan", thumbnail: EXP },
+            { take_id: "t3", report_id: "noexp1", name: "NoExpiry", thumbnail: NOEXP },
+          ],
+          metrics: [
+            {
+              label: "Engagement",
+              values: [
+                { take_id: "t1", score: 50 },
+                { take_id: "t2", score: 40 },
+                { take_id: "t3", score: 45 },
+              ],
+            },
+          ],
+        },
+        {
+          source_type: "helio_compare",
+          compare_id: "cmpB",
+          comparison_title: "C vs D",
+          variants: [
+            { take_id: "t1", report_id: "shared1", name: "Screen Baseline", thumbnail: VALID },
+          ],
+          metrics: [{ label: "Engagement", values: [{ take_id: "t1", score: 60 }] }],
+        },
+      ],
+    });
+    const t = buildTrends(root);
+    const byTest = {};
+    for (const r of t.helio_metrics) (byTest[r.test_id] = byTest[r.test_id] || []).push(r);
+    // Expired thumbnail on cmpA/shared1 swapped for the valid copy from cmpB.
+    assert.ok(byTest.shared1.length && byTest.shared1.every((r) => r.thumbnail === VALID));
+    // Orphan-expired (no valid copy anywhere) → nulled so the legend renders plain.
+    assert.ok(byTest.orphan1.length && byTest.orphan1.every((r) => r.thumbnail === null));
+    // No Expires param → treated as non-expiring, left untouched.
+    assert.ok(byTest.noexp1.length && byTest.noexp1.every((r) => r.thumbnail === NOEXP));
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("render shows the curated signal eyebrow and rotates the full curated set", () => {
