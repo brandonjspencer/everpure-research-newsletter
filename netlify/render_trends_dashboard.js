@@ -85,18 +85,25 @@ function confidenceChart(cycles) {
   return `<div class="ccols" role="img" aria-label="Confidence mix per cycle">${cols}</div><div class="legend">${legend}</div>`;
 }
 
-// Distinct colors for the variants in a comparison (read on light + dark cards).
-// Deliberately NO red-orange: a warning hue on a neutral data series (often the
-// *winning* variant) reads as "bad". Calm, neutral-to-positive hues instead.
+// Variant colors — drawn from the Everpure brand palette. NO red-orange/terracotta/clay
+// (a warning hue on neutral data reads as "bad"). The brand palette is warm and blue-less,
+// so most hues collapse toward tan under red-green color-vision deficiency; LIGHTNESS is the
+// reliable channel, and the bars/swatches must also stay legible on BOTH the light and dark
+// themes (so colors are held to L* ~48–72 — no near-white/near-black). Order is front-loaded
+// for maximum worst-case-CVD separation across the FIRST few colors, since real comparisons
+// use 2–4 variants (2-variant = gray baseline vs deep green, ΔE≈21; first 4 ≥ ΔE 10). Eight
+// simultaneously CVD-distinct colors aren't possible from this palette, so the 5th–8th (only
+// the single 8-variant card) also lean on the legend's text labels. Chosen via a deuteranopia/
+// protanopia simulation that maximized the minimum perceptual (CIE76) distance.
 const VARIANT_COLORS = [
-  "#9aa7b1", // baseline — neutral slate gray
-  "#3a86c8", // blue (was red-orange) — calm for the primary variant
-  "#2e7d57", // green
-  "#d98a00", // amber
-  "#7c6bd6", // purple
-  "#1d9e88", // teal
-  "#c2557a", // rose
-  "#7a8b3a", // olive
+  "#969493", // Ash Gray 200    — neutral gray (baseline)
+  "#5A6359", // Basil Byte 500  — deep green
+  "#DEA193", // Sync Pink 500   — soft pink
+  "#B9867B", // Quartz Pink 600 — dusty rose
+  "#B8ABA5", // Walnut Brown 200 — light taupe
+  "#73716F", // Ash Gray 300    — mid gray
+  "#8B857C", // Stone Gray 700  — warm gray
+  "#8FA596", // Maverick Moss 500 — sage green
 ];
 
 // Tidy a comparison title: drop leading test-number prefixes ("191 ") and
@@ -552,7 +559,7 @@ function metricTrendsSection(comparisons) {
           t.cycles.length >= 2
             ? `<span class="mt-cyc" title="${t.cycles.length} cycles">${sparkline(
                 t.cycles.map((p) => p.value),
-                "#3a86c8"
+                "#5A6359"
               )}<span>${t.cycles.length} cycles</span></span>`
             : `<span class="mt-cyc mt-soon">trend accrues monthly</span>`;
         return `<div class="mt-metric"><span class="mt-label">${METRIC_TREND_LABELS[m]}</span>${sparkline(
