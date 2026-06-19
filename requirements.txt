@@ -8,6 +8,7 @@ pypdf==6.13.2
 pdfplumber==0.11.10
 PyJWT==2.13.0
 playwright==1.60.0
-# Pillow: compress Helio thumbnails to WebP for the committed thumbnail cache
-# (scripts/cache_helio_thumbnails.py). Build-time only; small wheel.
-Pillow==11.3.0
+# Pillow (PIL) is used by scripts/cache_helio_thumbnails.py to compress thumbnails to
+# WebP. It is intentionally NOT pinned here: Pillow already ships transitively via
+# pdfplumber, and an explicit pin conflicts with pdfplumber's own floor
+# (pdfplumber 0.11.10 requires Pillow>=12.2.0). Let pdfplumber resolve the version.
