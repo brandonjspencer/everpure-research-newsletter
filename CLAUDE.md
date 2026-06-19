@@ -85,6 +85,11 @@ not invent certainty beyond the evidence.
   are rebuilt; they're gitignored. The homepage `publish/index.html` is now **generated** too —
   it's the trends dashboard (`render_trends_dashboard.js`, the build's last writer of
   `index.html`). `output/` holds committed legacy sample data used as test fixtures.
+  **Exception — the Helio thumbnail cache is committed:** `assets/helio_thumbnails/<asset-id>.webp`
+  is a self-hosted, content-addressed cache so the dashboard's hover-screenshots survive Helio's
+  time-signed-URL expiry. `scripts/cache_helio_thumbnails.py` downloads + compresses each thumbnail
+  once and rewrites `trends.json` to the local copy; the Pages workflow commits new cache files back
+  to `main`. Don't hand-edit it — it's grown by the build. See OPERATIONS.md "Helio thumbnail cache".
 - **Branded pages share one theme.** `netlify/dashboard_theme.js` is the single source of the
   branded look (light/dark CSS variables, the collapsible hover-expand icon sidebar, the theme
   toggle). The dashboard (homepage), `render_sitemap.js`, the issues archive

@@ -8,3 +8,6 @@ pypdf==6.13.2
 pdfplumber==0.11.10
 PyJWT==2.13.0
 playwright==1.60.0
+# Pillow: compress Helio thumbnails to WebP for the committed thumbnail cache
+# (scripts/cache_helio_thumbnails.py). Build-time only; small wheel.
+Pillow==11.3.0

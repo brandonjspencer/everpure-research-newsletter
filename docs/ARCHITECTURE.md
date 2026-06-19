@@ -95,6 +95,9 @@ by reordering — keep them in this sequence:
 11. `render_stage2_default_current.js`, `render_stage2_marketing_current.js`
 12. `publish_issue_archives.js`
 13. `fix_static_aliases.js` (near the very end, after static artifacts exist)
+    - `scripts/cache_helio_thumbnails.py` — **must run after `build_trends.js` and before the
+      dashboard render**: self-hosts Helio thumbnails into the committed WebP cache and rewrites
+      `trends.json` to the local copies, so the dashboard emits local paths (not expiring signed URLs).
 14. `render_trends_dashboard.js` — writes the homepage `publish/index.html`; **must run after**
     `generate_static_newsletters.js` + `external_evidence_observability.js` (which write/inject
     `index.html`) so the dashboard is the final homepage.

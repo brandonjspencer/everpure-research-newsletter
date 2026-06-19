@@ -83,24 +83,26 @@ jobs:
               echo "::warning::Source freshness: not a live fetch (fetch_method='${METHOD:-unknown}', fallback='${FALLBACK:-}'). Verify before treating the issue as current." ;;
           esac
 
-      - name: Refresh committed Notion snapshot
+      - name: Refresh committed snapshot + Helio thumbnails
         run: |
-          # Keep data/Everpure.html (the fallback the build parses when a live
-          # fetch fails) current: on a live build, overwrite it with the freshly
-          # fetched HTML and commit only if it changed. [skip ci] stops the
-          # commit from re-triggering this workflow (and ci.yml).
+          # Keep data/Everpure.html (the fallback the build parses when a live fetch
+          # fails) current, AND persist any newly-cached Helio thumbnails
+          # (assets/helio_thumbnails/, downloaded by cache_helio_thumbnails.py while
+          # their signed URLs were still valid) so they survive Helio's URL expiry.
+          # Stage both; commit only if something changed. [skip ci] stops the commit
+          # from re-triggering this workflow (and ci.yml).
           python3 scripts/refresh_committed_snapshot.py \
             --manifest publish/data/refresh_manifest.json \
             --dest data/Everpure.html \
             --raw-dir raw
-          if git diff --quiet -- data/Everpure.html; then
-            echo "Snapshot unchanged; nothing to commit."
-            echo "- committed snapshot: unchanged" >> "$GITHUB_STEP_SUMMARY"
+          git add -A -- data/Everpure.html assets/helio_thumbnails
+          if git diff --cached --quiet; then
+            echo "Snapshot + thumbnails unchanged; nothing to commit."
+            echo "- committed snapshot/thumbnails: unchanged" >> "$GITHUB_STEP_SUMMARY"
           else
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add data/Everpure.html
-            git commit -m "chore: refresh committed Notion snapshot [skip ci]"
+            git commit -m "chore: refresh committed snapshot + Helio thumbnails [skip ci]"
             pushed=0
             for attempt in 1 2 3; do
               if git push origin HEAD:main; then pushed=1; break; fi
@@ -109,11 +111,11 @@ jobs:
               git rebase origin/main || git rebase --abort
             done
             if [ "$pushed" = 1 ]; then
-              echo "Pushed refreshed snapshot to main."
-              echo "- committed snapshot: refreshed" >> "$GITHUB_STEP_SUMMARY"
+              echo "Pushed refreshed snapshot + thumbnails to main."
+              echo "- committed snapshot/thumbnails: refreshed" >> "$GITHUB_STEP_SUMMARY"
             else
-              echo "::warning::Could not push refreshed snapshot after 3 attempts."
-              echo "- committed snapshot: refresh push failed" >> "$GITHUB_STEP_SUMMARY"
+              echo "::warning::Could not push refreshed snapshot/thumbnails after 3 attempts."
+              echo "- committed snapshot/thumbnails: refresh push failed" >> "$GITHUB_STEP_SUMMARY"
             fi
           fi
 

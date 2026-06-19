@@ -194,6 +194,30 @@ What this means in practice:
   dump — this is intentional and matches the primary fetch path.
 - It is best-effort: a refresh problem prints a warning and **never fails the deploy**.
 
+### Helio thumbnail cache (committed, survives URL expiry)
+
+Helio thumbnail URLs are **time-signed** (`?Expires=…`, ~1y), so the dashboard's hover-screenshots
+eventually 403 and vanish (see PR #40's expiry backfill — a stopgap that only helps while _some_
+compare page still has a live signature). To make them durable, the build **self-hosts** them:
+
+- `scripts/cache_helio_thumbnails.py` runs between `build_trends.js` and the dashboard render. It
+  downloads each still-valid thumbnail **once**, compresses it to WebP (~3–9 KB each), and stores it
+  in the **committed** content-addressed cache `assets/helio_thumbnails/<asset-id>.webp` (keyed by the
+  stable Helio asset ULID from the URL). It rewrites `publish/data/trends.json` to the local copy and
+  copies the file into `publish/data/thumbnails/` (served; gitignored). References are **relative**
+  (`data/thumbnails/…`) so they survive the Pages subpath.
+- A cached asset is **reused regardless of the URL's expiry** — so once captured, a thumbnail is
+  never lost. The Pages workflow commits new cache files back to `main` (the same step that refreshes
+  the Notion snapshot — `chore: refresh committed snapshot + Helio thumbnails [skip ci]`).
+- Best-effort and **non-blocking**: a failed download or missing Pillow leaves the original URL in
+  place (the renderer's `img onerror` still degrades gracefully) and never fails the deploy.
+- A thumbnail with **no** valid signature anywhere (every compare page expired before it was ever
+  cached — e.g. a one-off compare page) can't be captured until Helio regenerates it; that variant
+  shows a plain legend item until then. Compression depends on **Pillow** (`requirements.txt`).
+- To re-seed or backfill manually: run a fresh `bash netlify/build.sh` (or
+  `python3 scripts/cache_helio_thumbnails.py --root .` after `build_trends.js`) and commit any new
+  `assets/helio_thumbnails/*.webp`.
+
 ---
 
 ## Agent / QC sequence (before freeze or email)
