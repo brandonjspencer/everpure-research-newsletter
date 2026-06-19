@@ -534,10 +534,12 @@ test("render: sections are drag-reorderable and charts avoid red-orange", () => 
   assert.equal((html.match(/class="panel-grip" draggable="true"/g) || []).length, 5);
   // Order persists + restores via localStorage.
   assert.match(html, /everpure-panel-order/);
-  // No red-orange as a CHART color (bar fills / legend swatches). The brand --accent
-  // stays #ef5b25 for UI chrome (links/pills) — that's deliberately not a chart color.
+  // Chart fills come from the brand palette, no red-orange. The common 2-variant case
+  // is gray baseline vs deep green (the most CVD-distinct, dual-theme-safe pair).
   assert.ok(!/background:#ef5b25/i.test(html), "red-orange must not fill chart bars/swatches");
-  assert.match(html, /background:#3a86c8/); // the calm blue now colors the 2nd variant
+  assert.ok(!/background:#3a86c8/i.test(html), "the old non-brand blue must be gone");
+  assert.match(html, /background:#969493/i); // Ash Gray — baseline (variant 1)
+  assert.match(html, /background:#5A6359/i); // Basil Byte deep green — variant 2
 });
 
 test("thumbnailExpiry parses the signed-URL expiry (null when absent)", () => {
