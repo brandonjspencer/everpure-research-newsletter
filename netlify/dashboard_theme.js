@@ -161,15 +161,15 @@ function brandCss() {
      signal (curated read or computed fallback) + an optional next-step. Pill labels and
      the signal type mirror the Voice-of-the-user styling for a consistent visual grammar. */
   /* Insight block now sits ABOVE the chart: a dashed bottom rule separates it from the legend + bars. */
-  .cmp-lead{margin:6px 0 14px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
+  .cmp-lead{margin:16px 0 22px;padding-bottom:18px;border-bottom:1px dashed var(--line)}
   .cmp-front-label,.cmp-signal-label,.cmp-rec-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-right:8px;vertical-align:middle}
-  .cmp-front{margin:0 0 8px;font-size:13px;line-height:1.5;color:var(--muted)}
+  .cmp-front{margin:0 0 10px;font-size:13px;line-height:1.5;color:var(--muted)}
   .cmp-front-label{color:#fff;background:var(--c-high)}
   .cmp-front-solo .cmp-front-label{background:var(--muted)}
   .cf-name{font-weight:700;color:var(--ink)}
   .cf-stat{color:var(--muted)}
   .cf-up{color:var(--c-high);font-weight:600}
-  .cmp-signal{margin:0 0 7px;color:var(--ink);font-size:14px;font-weight:600;line-height:1.45}
+  .cmp-signal{margin:0 0 10px;color:var(--ink);font-size:14px;font-weight:600;line-height:1.45}
   .cmp-signal-label{color:#fff;background:var(--accent);vertical-align:middle}
   .cmp-rec{margin:0;color:var(--muted);font-size:13px;line-height:1.45}
   .cmp-rec-label{color:var(--accent);background:transparent;border:1px solid var(--accent)}
