@@ -86,15 +86,17 @@ function confidenceChart(cycles) {
 }
 
 // Distinct colors for the variants in a comparison (read on light + dark cards).
+// Deliberately NO red-orange: a warning hue on a neutral data series (often the
+// *winning* variant) reads as "bad". Calm, neutral-to-positive hues instead.
 const VARIANT_COLORS = [
-  "#9aa7b1",
-  "#ef5b25",
-  "#2e7d57",
-  "#d98a00",
-  "#7c6bd6",
-  "#3a86c8",
-  "#c2557a",
-  "#1d9e88",
+  "#9aa7b1", // baseline — neutral slate gray
+  "#3a86c8", // blue (was red-orange) — calm for the primary variant
+  "#2e7d57", // green
+  "#d98a00", // amber
+  "#7c6bd6", // purple
+  "#1d9e88", // teal
+  "#c2557a", // rose
+  "#7a8b3a", // olive
 ];
 
 // Tidy a comparison title: drop leading test-number prefixes ("191 ") and
@@ -115,9 +117,10 @@ function succinctTitle(title) {
 
 // Grouped bars across UX metrics for one comparison — one colored bar per variant.
 // `url` (the Helio compare share page) renders a "View in Helio" link in the header.
-// `footer` (prebuilt HTML) renders inside the card, beneath the bars — the frontrunner
-// + signal block — so the multiselect filter hides it together with the chart.
-function comparisonChart(title, n, variants, metricKeys, key, url, footer = "") {
+// `lead` (prebuilt HTML) renders inside the card just under the header, BEFORE the
+// legend + bars — the frontrunner + signal block, so the takeaway is read first — and
+// it's hidden together with the chart by the multiselect filter.
+function comparisonChart(title, n, variants, metricKeys, key, url, lead = "") {
   // Render every metric actually present (live tests use success/satisfaction/
   // effort too), ordered by the canonical list, then any extras alphabetically.
   const present = new Set();
@@ -163,7 +166,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url, footer = "") 
       ? `<a class="cmp-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="View ${esc(title)} comparison in Helio">View in Helio&nbsp;↗</a>`
       : ""
   }</span>`;
-  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div><div class="legend">${legend}</div><div class="mc" role="img" aria-label="${esc(title)} UX metrics">${bars}</div>${footer || ""}</div>`;
+  return `<div class="cmp" data-cmp="${esc(key || title)}"><div class="cmp-h"><strong>${esc(title)}</strong>${meta}</div>${lead || ""}<div class="legend">${legend}</div><div class="mc" role="img" aria-label="${esc(title)} UX metrics">${bars}</div></div>`;
 }
 
 // Average a variant's present metric scores (its own denominator). overall_score is a
@@ -258,7 +261,7 @@ function matchUxSignal(comparison, uxSignals) {
   return null;
 }
 
-// The block rendered beneath a comparison's chart: a deterministic frontrunner line
+// The block rendered just above a comparison's chart: a deterministic frontrunner line
 // (always, when there's a head-to-head) plus the signal — the curated editorial read
 // when authored, else a computed fallback from the frontrunner stats. Curated signals
 // may add a one-line recommendation. Returns "" when there's nothing to say.
@@ -313,7 +316,7 @@ function frontrunnerBlock(comparison, uxSignals) {
       `<p class="cmp-rec"><span class="cmp-rec-label">Next</span> ${esc(curated.recommendation)}</p>`
     );
   }
-  return parts.length ? `<div class="cmp-foot">${parts.join("")}</div>` : "";
+  return parts.length ? `<div class="cmp-lead">${parts.join("")}</div>` : "";
 }
 
 // Trust a slide-inferred concept as the comparison's label ONLY when the page's own
@@ -549,7 +552,7 @@ function metricTrendsSection(comparisons) {
           t.cycles.length >= 2
             ? `<span class="mt-cyc" title="${t.cycles.length} cycles">${sparkline(
                 t.cycles.map((p) => p.value),
-                "var(--accent)"
+                "#3a86c8"
               )}<span>${t.cycles.length} cycles</span></span>`
             : `<span class="mt-cyc mt-soon">trend accrues monthly</span>`;
         return `<div class="mt-metric"><span class="mt-label">${METRIC_TREND_LABELS[m]}</span>${sparkline(
@@ -796,14 +799,62 @@ function issuesSection(issues) {
   return `<div class="issuegrid">${cards}</div>`;
 }
 
-// A collapsible dashboard section: the heading is a toggle button that hides the
-// body. `title` may contain trusted markup (it's a literal). `body` is prebuilt HTML.
+// Drag-handle glyph (2×3 dots) for reordering sections. currentColor so it themes.
+const GRIP_SVG = `<svg class="grip-i" viewBox="0 0 10 16" width="10" height="16" aria-hidden="true"><circle cx="3" cy="3" r="1.2"/><circle cx="7" cy="3" r="1.2"/><circle cx="3" cy="8" r="1.2"/><circle cx="7" cy="8" r="1.2"/><circle cx="3" cy="13" r="1.2"/><circle cx="7" cy="13" r="1.2"/></svg>`;
+
+// A collapsible, reorderable dashboard section: a drag grip + a toggle button that
+// hides the body. `title` may contain trusted markup (it's a literal). `body` is
+// prebuilt HTML. The grip drives drag/keyboard reordering (see sectionOrderScript).
 function panel(key, title, desc, body) {
   const id = `panel-${esc(key)}`;
   return `<section class="panel" data-panel="${esc(key)}">
-  <h2 class="panel-h"><button type="button" class="panel-toggle" aria-expanded="true" aria-controls="${id}">${title}<svg class="panel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h2>
+  <h2 class="panel-h"><button type="button" class="panel-grip" draggable="true" aria-label="Reorder this section — drag, or press Arrow Up / Arrow Down">${GRIP_SVG}</button><button type="button" class="panel-toggle" aria-expanded="true" aria-controls="${id}">${title}<svg class="panel-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></h2>
   <div class="panel-body" id="${id}">${desc ? `<p class="desc">${desc}</p>` : ""}${body}</div>
 </section>`;
+}
+
+// Reorder sections by dragging their grip (or focusing it and pressing Arrow Up/Down);
+// the order persists to localStorage and is restored on load. Plain DnD API — no libs.
+// Touch devices can't HTML5-drag, so the keyboard path is the accessible fallback.
+function sectionOrderScript() {
+  return `<script>(function(){
+  var KEY="everpure-panel-order";
+  var box=document.querySelector('[data-panels]'); if(!box) return;
+  function panels(){return [].slice.call(box.querySelectorAll(':scope > .panel'));}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(panels().map(function(p){return p.getAttribute('data-panel');})));}catch(e){}}
+  // Restore saved order: known ids first (in saved order), any new panels keep their spot at the end.
+  try{var saved=JSON.parse(localStorage.getItem(KEY)||'null');
+    if(Array.isArray(saved)){var byId={};panels().forEach(function(p){byId[p.getAttribute('data-panel')]=p;});
+      saved.forEach(function(id){if(byId[id])box.appendChild(byId[id]);});}}catch(e){}
+  var dragging=null;
+  function afterEl(y){ // first panel whose vertical midpoint sits below the cursor
+    var best=null,bestOff=-Infinity;
+    panels().forEach(function(p){if(p===dragging)return;var r=p.getBoundingClientRect();var off=y-r.top-r.height/2;if(off<0&&off>bestOff){bestOff=off;best=p;}});
+    return best;
+  }
+  box.addEventListener('dragstart',function(e){
+    var g=e.target.closest&&e.target.closest('.panel-grip'); if(!g)return;
+    dragging=g.closest('.panel'); if(!dragging)return;
+    dragging.classList.add('dragging');
+    try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','');}catch(_){}
+  });
+  box.addEventListener('dragover',function(e){
+    if(!dragging)return; e.preventDefault();
+    var ref=afterEl(e.clientY);
+    if(ref){box.insertBefore(dragging,ref);}else{box.appendChild(dragging);}
+  });
+  box.addEventListener('drop',function(e){if(dragging)e.preventDefault();});
+  box.addEventListener('dragend',function(){if(!dragging)return;dragging.classList.remove('dragging');dragging=null;save();});
+  // Keyboard: focus a grip, Arrow Up/Down moves its section and persists.
+  box.addEventListener('keydown',function(e){
+    var g=e.target.closest&&e.target.closest('.panel-grip'); if(!g)return;
+    if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return; e.preventDefault();
+    var p=g.closest('.panel'); if(!p)return;
+    if(e.key==='ArrowUp'&&p.previousElementSibling){box.insertBefore(p,p.previousElementSibling);}
+    else if(e.key==='ArrowDown'&&p.nextElementSibling){box.insertBefore(p.nextElementSibling,p);}
+    save(); g.focus();
+  });
+})();</script>`;
 }
 
 // Wire every section's header to collapse/expand its body; state persists per panel.
@@ -853,10 +904,11 @@ ${sidebar("dashboard", "")}
 <div class="shell"><div class="wrap">
 <header>
   <h1>Research Trends</h1>
-  <p class="sub">How the Everpure research program and its Helio UX signals move over time.${generated ? ` Built ${esc(generated)}.` : ""}</p>
+  <p class="sub">How the Everpure research program and its Helio UX signals move over time.${generated ? ` Built ${esc(generated)}.` : ""} <span class="hint">Drag a section’s ⠿ handle to reorder.</span></p>
 </header>
 <div class="kpis">${kpis}</div>
 
+<div class="panels" data-panels>
 ${panel(
   "cycles",
   "Research program by cycle",
@@ -867,7 +919,7 @@ ${panel(
 ${panel(
   "helio",
   "Helio UX metrics",
-  "Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better. Each chart is followed by its variant frontrunner and the signal we're reading from it.",
+  "Per-comparison UX scores (0–100) from the decks' Helio compare pages — baseline vs. the later variant. Higher is better. Each chart leads with its variant frontrunner and the signal we're reading from it.",
   helioSection(trends.helio_metrics || [], metricKeys, trends.ux_signals || [])
 )}
 
@@ -893,11 +945,13 @@ ${panel(
   "Each monthly Research Roundup — open the frozen issue.",
   issuesSection(trends.issues || [])
 )}
+</div>
 
 <footer>
   Source: committed <code>history/</code> + <code>issues/</code> + Helio compare evidence, rolled up by <code>build_trends.js</code>. Helio UX-metric trends begin June 2026 and grow as comparisons are run.
 </footer>
 ${panelScript()}
+${sectionOrderScript()}
 </div></div></body></html>`;
 }
 
