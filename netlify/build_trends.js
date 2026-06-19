@@ -182,6 +182,14 @@ function metricKey(label) {
     .replace(/\s+/g, "_");
 }
 
+// Unix-seconds expiry from a Helio time-signed asset URL (?Expires=…). Returns null
+// when there's no Expires param (then the URL is treated as non-expiring — never
+// suppressed; a genuine 403 is still caught client-side by the img onerror handler).
+function thumbnailExpiry(url) {
+  const m = /[?&]Expires=(\d+)/.exec(String(url || ""));
+  return m ? parseInt(m[1], 10) : null;
+}
+
 const MONTH_NAMES = [
   "January",
   "February",
@@ -438,6 +446,31 @@ function buildTrends(root) {
     if (!row.concept && conceptByTest[row.test_id]) row.concept = conceptByTest[row.test_id];
   }
 
+  // Backfill expired thumbnails by cross-referencing the same test_id. Helio thumbnail
+  // URLs are time-signed (~1y); older compare pages embed signatures that have lapsed,
+  // so the dashboard's hover-screenshot 403s and collapses. The SAME screen (same
+  // test_id) often has a freshly-signed, still-valid thumbnail in a newer compare page
+  // (same asset, re-signed) — prefer that. If a thumbnail is provably expired and no
+  // valid copy exists anywhere, null it so the renderer shows a plain legend item
+  // instead of a dead hover affordance. A URL with no Expires param is treated as
+  // non-expiring (left as-is; the client onerror still covers a genuine 403).
+  const nowSec = Math.floor(Date.now() / 1000);
+  const bestThumbByTest = {};
+  for (const row of helioMetrics) {
+    if (!row.thumbnail || !row.test_id) continue;
+    const exp = thumbnailExpiry(row.thumbnail);
+    if (exp != null && exp <= nowSec) continue; // expired → not a candidate
+    const rank = exp == null ? Infinity : exp; // non-expiring beats any dated URL
+    const cur = bestThumbByTest[row.test_id];
+    if (!cur || rank > cur.rank) bestThumbByTest[row.test_id] = { url: row.thumbnail, rank };
+  }
+  for (const row of helioMetrics) {
+    const exp = thumbnailExpiry(row.thumbnail);
+    if (exp == null || exp > nowSec) continue; // present+valid or non-expiring → keep
+    const best = row.test_id ? bestThumbByTest[row.test_id] : null;
+    row.thumbnail = best ? best.url : null; // swap a valid copy in, else drop the dead URL
+  }
+
   // Curated signals replace the harvested pool when authored, so the rotator features
   // one compelling verbatim per significant pattern (each labeled with its signal).
   const voicePatterns = loadVoicePatterns(root);
@@ -507,6 +540,7 @@ module.exports = {
   buildTrends,
   helioRows,
   loadUxSignals,
+  thumbnailExpiry,
   normConfidence,
   normDecision,
   metricKey,
