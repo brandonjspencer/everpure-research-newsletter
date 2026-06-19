@@ -62,6 +62,9 @@ pythonVersion = "3.9"
 # Resolve imports against the project venv (CI also builds ./.venv).
 venvPath = "."
 venv = ".venv"
+# Resolve imports of helper modules under scripts/ (e.g. tests import
+# cache_helio_thumbnails) without forcing every script into the checked set.
+extraPaths = ["scripts"]
 # Third-party deps (bs4, pdfplumber, playwright, ...) ship without type stubs;
 # don't treat the missing-stub case as a finding.
 reportMissingModuleSource = "none"

@@ -211,6 +211,14 @@ if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
   node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
 fi
 
+# Localize Helio thumbnails into the committed WebP cache and rewrite trends.json to
+# the local copies BEFORE the dashboard renders (so it emits local paths, not the
+# expiring signed URLs). Best-effort/non-blocking; the CI workflow commits new cache
+# files back to main so they survive Helio's signed-URL expiry.
+if [ -f "$ROOT/scripts/cache_helio_thumbnails.py" ]; then
+  python3 "$ROOT/scripts/cache_helio_thumbnails.py" --root "$ROOT" || echo "Thumbnail cache step failed; continuing."
+fi
+
 # Dashboard is the site homepage, so it must be the LAST writer of publish/index.html
 # (generate_static_newsletters.js + external_evidence_observability.js write/inject it
 # earlier). The sitemap runs dead last so it scans every page that shipped.
