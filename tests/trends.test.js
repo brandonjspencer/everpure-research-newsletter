@@ -493,8 +493,51 @@ test("render: frontrunner + curated signal beneath each chart; computed fallback
   // The single-variant screen shows the "Single screen" note + its curated signal.
   assert.match(html, /<span class="cmp-front-label">Single screen<\/span>/);
   assert.match(html, /grasped but not loved/);
-  // The frontrunner/signal block lives INSIDE the .cmp card (hides with the filter).
-  assert.match(html, /<div class="mc"[\s\S]*?<div class="cmp-foot">/);
+  // The insight block leads the card — it renders BEFORE the chart bars, inside .cmp.
+  assert.match(html, /<div class="cmp-lead">[\s\S]*?<div class="mc"/);
+  // ...and there is no leftover post-chart footer.
+  assert.ok(!/cmp-foot/.test(html), "insight should be a pre-chart lead, not a footer");
+});
+
+test("render: sections are drag-reorderable and charts avoid red-orange", () => {
+  const helio_metrics = [
+    {
+      month: "2026-06",
+      compare_id: "cmpZ",
+      comparison_title: "A vs B",
+      test_id: "a",
+      test_name: "Baseline",
+      n: 50,
+      metrics: { engagement: 40 },
+    },
+    {
+      month: "2026-06",
+      compare_id: "cmpZ",
+      comparison_title: "A vs B",
+      test_id: "b",
+      test_name: "V1",
+      n: 50,
+      metrics: { engagement: 60 },
+    },
+  ];
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: ["engagement"],
+    helio_metrics,
+    quotes: [],
+    quote_mode: "harvested",
+    ux_signals: [],
+  });
+  // All panels live in one drag container, each with a draggable grip handle.
+  assert.match(html, /<div class="panels" data-panels>/);
+  assert.equal((html.match(/class="panel-grip" draggable="true"/g) || []).length, 5);
+  // Order persists + restores via localStorage.
+  assert.match(html, /everpure-panel-order/);
+  // No red-orange as a CHART color (bar fills / legend swatches). The brand --accent
+  // stays #ef5b25 for UI chrome (links/pills) — that's deliberately not a chart color.
+  assert.ok(!/background:#ef5b25/i.test(html), "red-orange must not fill chart bars/swatches");
+  assert.match(html, /background:#3a86c8/); // the calm blue now colors the 2nd variant
 });
 
 test("thumbnailExpiry parses the signed-URL expiry (null when absent)", () => {

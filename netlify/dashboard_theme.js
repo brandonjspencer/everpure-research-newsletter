@@ -93,6 +93,7 @@ function brandCss() {
   .wrap{max-width:900px;margin:0 auto;padding:34px 24px 72px}
   header h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em}
   header p.sub{color:var(--muted);margin:0 0 24px}
+  .sub .hint{font-size:12px;opacity:.7}
   h2{font-size:18px;margin:0 0 4px;letter-spacing:-.01em}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 26px}
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
@@ -100,8 +101,14 @@ function brandCss() {
   .kpi-l{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:0 0 20px}
   .panel .desc,.desc{color:var(--muted);font-size:13px;margin:0 0 16px}
-  .panel-h{margin:0}
-  .panel-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+  .panel-h{display:flex;align-items:center;gap:8px;margin:0}
+  .panel-grip{flex:none;display:inline-flex;align-items:center;cursor:grab;color:var(--muted);background:none;border:0;padding:4px 2px;margin:0;border-radius:6px;touch-action:none}
+  .panel-grip:hover{color:var(--ink)}
+  .panel-grip:active{cursor:grabbing}
+  .panel-grip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .grip-i{display:block;fill:currentColor}
+  .panel.dragging{opacity:.6;box-shadow:0 10px 28px rgba(0,0,0,.20)}
+  .panel-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:1;min-width:0;font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
   .panel-caret{display:block;width:20px;height:20px;color:var(--muted);transition:transform .15s ease;flex:none}
   .panel-toggle:hover .panel-caret{color:var(--ink)}
   .panel-toggle[aria-expanded="false"] .panel-caret{transform:rotate(-90deg)}
@@ -153,7 +160,8 @@ function brandCss() {
   /* Per-comparison footer beneath each chart: a deterministic frontrunner line + the
      signal (curated read or computed fallback) + an optional next-step. Pill labels and
      the signal type mirror the Voice-of-the-user styling for a consistent visual grammar. */
-  .cmp-foot{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
+  /* Insight block now sits ABOVE the chart: a dashed bottom rule separates it from the legend + bars. */
+  .cmp-lead{margin:6px 0 14px;padding-bottom:12px;border-bottom:1px dashed var(--line)}
   .cmp-front-label,.cmp-signal-label,.cmp-rec-label{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;margin-right:8px;vertical-align:middle}
   .cmp-front{margin:0 0 8px;font-size:13px;line-height:1.5;color:var(--muted)}
   .cmp-front-label{color:#fff;background:var(--c-high)}
