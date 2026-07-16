@@ -860,11 +860,13 @@ function issuesSection(issues) {
   </div>
 </a>`;
   };
-  // 3-up carousel (newest first) built as *paged cross-fade* rather than a scroll
-  // track: pages of 3 stack in one grid cell and the out-of-view pages fade to
-  // opacity 0. Nothing clips, so each card's hover shadow renders on every side
-  // (a horizontal scroll container necessarily clips the side shadows). Prev =
-  // newer, Next = older. Degrades without JS to every page shown in sequence.
+  // Paged carousel (newest first) built as a cross-fade, NOT a scroll track: pages
+  // stack in one grid cell and out-of-view pages fade to opacity 0. Nothing clips,
+  // so each card's hover shadow renders on every side (a scroll container clips the
+  // side shadows). Cards never wrap/stack — each page is a single nowrap row, and
+  // the client re-chunks how many cards fit per page by width (3 → 2 → 1) so they're
+  // never squeezed. Arrows sit centered *below* the cards and switch to a disabled
+  // state at the first/last page rather than disappearing. Prev = newer, Next = older.
   const pages = [];
   for (let i = 0; i < issues.length; i += ISSUES_PER_PAGE) {
     pages.push(issues.slice(i, i + ISSUES_PER_PAGE));
@@ -883,31 +885,46 @@ function issuesSection(issues) {
     `<svg class="ic-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
   const multi = pages.length > 1;
   return `<div class="issue-carousel" data-issue-carousel>
-  <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>${chevron("M15 6l-6 6 6 6")}</button>
   <div class="issue-track">${pagesHtml}</div>
-  <button type="button" class="ic-nav ic-next" aria-label="Show older issues"${multi ? "" : " hidden"}>${chevron("M9 6l6 6-6 6")}</button>
+  <div class="ic-nav-row">
+    <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" disabled>${chevron("M15 6l-6 6 6 6")}</button>
+    <button type="button" class="ic-nav ic-next" aria-label="Show older issues"${multi ? "" : " disabled"}>${chevron("M9 6l6 6-6 6")}</button>
+  </div>
 </div>${issueCarouselScript()}`;
 }
 
-// Client: page through the stacked issue pages by toggling .is-active (CSS cross-
-// fades). An arrow shows only when it has somewhere to go — prev hides on the
-// first (newest) page, next hides on the last. Single page → no arrows.
+// Client: (re)chunk the flat card set into pages of N — where N is how many cards
+// comfortably fit the current width (3 / 2 / 1) so cards are never squeezed or
+// stacked — then page by toggling .is-active (CSS cross-fades). Arrows stay put and
+// go disabled at the first (newest) / last page rather than disappearing.
 function issueCarouselScript() {
   return `<script>(function(){
   var c=document.querySelector('[data-issue-carousel]'); if(!c) return;
-  var pages=[].slice.call(c.querySelectorAll('.issue-page'));
+  var track=c.querySelector('.issue-track');
   var prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
-  if(pages.length<2){ if(prev)prev.hidden=true; if(next)next.hidden=true; return; }
-  var i=0;
-  function show(n){
-    i=Math.max(0,Math.min(pages.length-1,n));
-    pages.forEach(function(p,k){var on=k===i;p.classList.toggle('is-active',on);p.setAttribute('aria-hidden',on?'false':'true');});
-    prev.hidden=i<=0;
-    next.hidden=i>=pages.length-1;
+  var cards=[].slice.call(track.querySelectorAll('.issue-hero')); if(!cards.length) return;
+  var page=0;
+  function perView(){var w=c.getBoundingClientRect().width;var n=Math.floor((w+14)/(240+14));return Math.max(1,Math.min(3,n));}
+  function count(){return track.children.length;}
+  function mark(){var pg=track.children;for(var k=0;k<pg.length;k++){var on=k===page;pg[k].classList.toggle('is-active',on);pg[k].setAttribute('aria-hidden',on?'false':'true');}prev.disabled=page<=0;next.disabled=page>=pg.length-1;}
+  function build(){
+    var n=perView(),pc=Math.max(1,Math.ceil(cards.length/n));
+    page=Math.max(0,Math.min(pc-1,page));
+    while(track.firstChild)track.removeChild(track.firstChild);
+    for(var p=0;p<pc;p++){
+      var pg=document.createElement('div');pg.className='issue-page';pg.setAttribute('role','group');
+      var from=p*n+1,to=Math.min((p+1)*n,cards.length);
+      pg.setAttribute('aria-label','Issues '+from+'\\u2013'+to+' of '+cards.length);
+      for(var k=p*n;k<to;k++)pg.appendChild(cards[k]);
+      track.appendChild(pg);
+    }
+    mark();
   }
-  prev.addEventListener('click',function(){show(i-1);});
-  next.addEventListener('click',function(){show(i+1);});
-  show(0);
+  function show(t){page=Math.max(0,Math.min(count()-1,t));mark();}
+  prev.addEventListener('click',function(){show(page-1);});
+  next.addEventListener('click',function(){show(page+1);});
+  var tm;window.addEventListener('resize',function(){clearTimeout(tm);tm=setTimeout(build,150);});
+  build();
 })();</script>`;
 }
 

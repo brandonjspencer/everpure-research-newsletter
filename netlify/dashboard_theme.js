@@ -201,20 +201,20 @@ function brandCss() {
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
   /* Published-issues carousel: 3-up native scroll track + prev/next arrows. */
-  /* Side gutters keep the arrows off the cards. Nothing here clips: pages stack in
-     one grid cell and cross-fade, so each card's hover shadow renders on every side
-     (a scroll container would clip the left/right shadows). */
-  .issue-carousel{position:relative;padding:0 42px}
-  .issue-track{display:grid}
-  .issue-page{grid-area:1/1;display:flex;flex-wrap:wrap;gap:14px;align-content:start;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
+  /* Nothing here clips: pages stack in one grid cell and cross-fade, so each card's
+     hover shadow renders on every side (a scroll container would clip the left/right
+     shadows). Each page is a single nowrap row (cards never wrap/stack); the client
+     sets how many cards per page by width. Arrows live centered below the cards. */
+  .issue-carousel{position:relative}
+  .issue-track{display:grid;grid-template-columns:1fr}
+  .issue-page{grid-area:1/1;display:flex;flex-wrap:nowrap;gap:14px;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
   .issue-page.is-active{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s linear 0s}
-  .issue-page>.issue-hero{flex:0 0 calc((100% - 28px)/3)}
-  .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
-  .ic-nav:hover{color:var(--accent);border-color:var(--accent)}
-  .ic-nav[hidden]{display:none}
+  .issue-page>.issue-hero{flex:1 1 0;min-width:0}
+  .ic-nav-row{display:flex;justify-content:center;gap:14px;margin-top:18px}
+  .ic-nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.10);transition:color .12s ease,border-color .12s ease,opacity .12s ease}
+  .ic-nav:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
+  .ic-nav:disabled{opacity:.4;cursor:default;box-shadow:none}
   .ic-caret{display:block;width:20px;height:20px}
-  .ic-prev{left:0}
-  .ic-next{right:0}
   .issue-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .12s ease,box-shadow .12s ease}
   .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
   .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -278,8 +278,7 @@ function brandCss() {
   .mt-delta{font-weight:600;margin-left:2px}
   .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
   .mt-soon{font-style:italic;opacity:.85}
-  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}.issue-page{transition:visibility 0s}}
-  @media (max-width:760px){.issue-page>.issue-hero{flex:0 0 calc((100% - 14px)/2)}}
+  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}.issue-page{transition:none}}
   @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}
     /* Issue/activity index rows stack into a card: title on top, a full-width
        action row beneath with MD/JSON left and the View button pushed right. */
@@ -287,7 +286,7 @@ function brandCss() {
     .links{margin-left:0;width:100%}
     .links .btn{margin-left:auto}
     .filechip{padding:6px 10px}}
-  @media (max-width:520px){.issue-carousel{padding:0 34px}.issue-page>.issue-hero{flex:0 0 100%}.kpis{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
 }

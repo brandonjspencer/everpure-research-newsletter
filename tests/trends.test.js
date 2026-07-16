@@ -888,10 +888,11 @@ test("render produces a self-contained dashboard with all sections + charts", ()
       html,
       /class="ic-nav ic-next"[^>]*>\s*<svg class="ic-caret"[^>]*><path d="M9 6l6 6-6 6"/
     );
-    // Both arrows start hidden; the client script reveals them only when the track
-    // overflows and hides prev at the start / next at the end.
-    assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
-    assert.match(html, /class="ic-nav ic-next"[^>]*hidden/);
+    // Arrows sit in a centered nav row below the cards and use a disabled state
+    // (not hidden) at the ends. With a single page here, both are disabled.
+    assert.match(html, /class="ic-nav-row"/);
+    assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+    assert.match(html, /class="ic-nav ic-next"[^>]*disabled/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -1174,20 +1175,23 @@ test("issuesSection pages issues 3-up as a cross-fade (no scroll/overflow so sha
     href: `issues/2026-0${n}/default.html`,
   });
   const html = issuesSection([mk(4), mk(3), mk(2), mk(1)]); // newest first
-  // Two pages (3 + 1): the first is active and exposed, the rest hidden from a11y.
+  // Server chunks at 3 → two pages (3 + 1): first active/exposed, rest hidden a11y.
   assert.equal((html.match(/class="issue-page/g) || []).length, 2);
   assert.match(html, /class="issue-page is-active"[^>]*aria-hidden="false"/);
   assert.match(html, /class="issue-page"[^>]*aria-hidden="true"/);
   assert.equal((html.match(/class="issue-hero"/g) || []).length, 4);
-  // Prev is hidden on the first page; next is available (more than one page).
-  assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
-  assert.doesNotMatch(html, /class="ic-nav ic-next"[^>]*hidden/);
-  // The out-of-view cards are hidden by opacity, NOT by a scroll/overflow clip —
-  // that's what lets each card's hover shadow render on every side.
+  // Arrows sit in a centered nav row below the cards. Prev is disabled on the first
+  // page (not hidden); next is enabled because there's more than one page.
+  assert.match(html, /class="ic-nav-row"/);
+  assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+  assert.doesNotMatch(html, /class="ic-nav ic-next"[^>]*disabled/);
+  // Cards never wrap/stack — each page is a single nowrap row — and out-of-view
+  // cards are hidden by opacity, NOT by a scroll/overflow clip, so hover shadows
+  // render on every side.
   assert.doesNotMatch(html, /scroll-snap|overflow/);
 });
 
-test("issuesSection with a single page shows no carousel arrows", () => {
+test("issuesSection with a single page disables both arrows (kept, not hidden)", () => {
   const mk = (n) => ({
     label: `M${n}`,
     issue_label: `Issue 0${n}`,
@@ -1197,6 +1201,8 @@ test("issuesSection with a single page shows no carousel arrows", () => {
   });
   const html = issuesSection([mk(2), mk(1)]);
   assert.equal((html.match(/class="issue-page/g) || []).length, 1);
-  assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
-  assert.match(html, /class="ic-nav ic-next"[^>]*hidden/);
+  // Both arrows are present but disabled — never removed from the layout.
+  assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+  assert.match(html, /class="ic-nav ic-next"[^>]*disabled/);
+  assert.doesNotMatch(html, /class="ic-nav[^"]*"[^>]*hidden/);
 });
