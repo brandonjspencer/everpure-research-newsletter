@@ -19,6 +19,7 @@ const {
   helioComparisons,
   comparisonFrontrunner,
   matchUxSignal,
+  issuesSection,
   sparkline,
   succinctTitle,
 } = require("../netlify/render_trends_dashboard");
@@ -1162,4 +1163,40 @@ test("succinctTitle drops number prefixes and collapses the trailing version", (
   // The 1-word shared prefix ("EDC …") is NOT collapsed (see EDC case above), and
   // number runs not followed by AI stay untouched.
   assert.equal(succinctTitle("Rebranded Page V6 281 29"), "Rebranded Page V6 281 29");
+});
+
+test("issuesSection pages issues 3-up as a cross-fade (no scroll/overflow so shadows aren't clipped)", () => {
+  const mk = (n) => ({
+    label: `Month ${n}`,
+    issue_label: `Issue 0${n}`,
+    title: `Roundup ${n}`,
+    finding_count: n,
+    href: `issues/2026-0${n}/default.html`,
+  });
+  const html = issuesSection([mk(4), mk(3), mk(2), mk(1)]); // newest first
+  // Two pages (3 + 1): the first is active and exposed, the rest hidden from a11y.
+  assert.equal((html.match(/class="issue-page/g) || []).length, 2);
+  assert.match(html, /class="issue-page is-active"[^>]*aria-hidden="false"/);
+  assert.match(html, /class="issue-page"[^>]*aria-hidden="true"/);
+  assert.equal((html.match(/class="issue-hero"/g) || []).length, 4);
+  // Prev is hidden on the first page; next is available (more than one page).
+  assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
+  assert.doesNotMatch(html, /class="ic-nav ic-next"[^>]*hidden/);
+  // The out-of-view cards are hidden by opacity, NOT by a scroll/overflow clip —
+  // that's what lets each card's hover shadow render on every side.
+  assert.doesNotMatch(html, /scroll-snap|overflow/);
+});
+
+test("issuesSection with a single page shows no carousel arrows", () => {
+  const mk = (n) => ({
+    label: `M${n}`,
+    issue_label: `Issue 0${n}`,
+    title: `R${n}`,
+    finding_count: 1,
+    href: `x${n}.html`,
+  });
+  const html = issuesSection([mk(2), mk(1)]);
+  assert.equal((html.match(/class="issue-page/g) || []).length, 1);
+  assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
+  assert.match(html, /class="ic-nav ic-next"[^>]*hidden/);
 });

@@ -201,12 +201,14 @@ function brandCss() {
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
   /* Published-issues carousel: 3-up native scroll track + prev/next arrows. */
+  /* Side gutters keep the arrows off the cards. Nothing here clips: pages stack in
+     one grid cell and cross-fade, so each card's hover shadow renders on every side
+     (a scroll container would clip the left/right shadows). */
   .issue-carousel{position:relative;padding:0 42px}
-  /* Side gutters (above) keep the arrows off the cards; the track's vertical padding
-     gives the cards' hover-lift shadow room to render before overflow clips it. */
-  .issue-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:18px 6px 26px;scrollbar-width:none;-ms-overflow-style:none}
-  .issue-track::-webkit-scrollbar{display:none}
-  .issue-track>.issue-hero{flex:0 0 calc((100% - 28px)/3);scroll-snap-align:start}
+  .issue-track{display:grid}
+  .issue-page{grid-area:1/1;display:flex;flex-wrap:wrap;gap:14px;align-content:start;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
+  .issue-page.is-active{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s linear 0s}
+  .issue-page>.issue-hero{flex:0 0 calc((100% - 28px)/3)}
   .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
   .ic-nav:hover{color:var(--accent);border-color:var(--accent)}
   .ic-nav[hidden]{display:none}
@@ -276,8 +278,8 @@ function brandCss() {
   .mt-delta{font-weight:600;margin-left:2px}
   .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
   .mt-soon{font-style:italic;opacity:.85}
-  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
-  @media (max-width:760px){.issue-track>.issue-hero{flex:0 0 calc((100% - 14px)/2)}}
+  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}.issue-page{transition:visibility 0s}}
+  @media (max-width:760px){.issue-page>.issue-hero{flex:0 0 calc((100% - 14px)/2)}}
   @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}
     /* Issue/activity index rows stack into a card: title on top, a full-width
        action row beneath with MD/JSON left and the View button pushed right. */
@@ -285,7 +287,7 @@ function brandCss() {
     .links{margin-left:0;width:100%}
     .links .btn{margin-left:auto}
     .filechip{padding:6px 10px}}
-  @media (max-width:520px){.issue-track>.issue-hero{flex:0 0 88%}.kpis{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:520px){.issue-carousel{padding:0 34px}.issue-page>.issue-hero{flex:0 0 100%}.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
 }

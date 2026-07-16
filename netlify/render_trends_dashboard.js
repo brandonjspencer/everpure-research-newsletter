@@ -846,58 +846,68 @@ function quoteRotatorScript(max = QUOTE_ROTATOR_MAX) {
 })();</script>`;
 }
 
+const ISSUES_PER_PAGE = 3;
+
 function issuesSection(issues) {
   if (!issues.length) return `<p class="empty">No issues published yet.</p>`;
-  const cards = issues
-    .map((it) => {
-      const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
-      return `<a class="issue-hero" href="${esc(it.href)}">
+  const card = (it) => {
+    const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
+    return `<a class="issue-hero" href="${esc(it.href)}">
   <div class="issue-hero-band"><span class="issue-hero-month">${esc(it.label)}</span><span class="issue-hero-tag">${tag}</span></div>
   <div class="issue-hero-body">
     <div class="issue-hero-title">${esc(it.title)}</div>
     <div class="issue-hero-foot"><span>${it.finding_count} findings</span><span class="go">Read issue →</span></div>
   </div>
 </a>`;
+  };
+  // 3-up carousel (newest first) built as *paged cross-fade* rather than a scroll
+  // track: pages of 3 stack in one grid cell and the out-of-view pages fade to
+  // opacity 0. Nothing clips, so each card's hover shadow renders on every side
+  // (a horizontal scroll container necessarily clips the side shadows). Prev =
+  // newer, Next = older. Degrades without JS to every page shown in sequence.
+  const pages = [];
+  for (let i = 0; i < issues.length; i += ISSUES_PER_PAGE) {
+    pages.push(issues.slice(i, i + ISSUES_PER_PAGE));
+  }
+  const pagesHtml = pages
+    .map((pg, pi) => {
+      const from = pi * ISSUES_PER_PAGE + 1;
+      const to = pi * ISSUES_PER_PAGE + pg.length;
+      const active = pi === 0;
+      return `<div class="issue-page${active ? " is-active" : ""}" role="group" aria-label="Issues ${from}–${to} of ${issues.length}" aria-hidden="${active ? "false" : "true"}">${pg.map(card).join("")}</div>`;
     })
-    .join("\n");
-  // 3-up carousel (newest first): a native horizontal scroll track (scroll-snap,
-  // touch + keyboard friendly, degrades without JS) enhanced with prev/next arrows
-  // that appear only when there are more issues than fit — advance to page through
-  // older issues while staying 3-up. Prev = newer, Next = older.
+    .join("");
   // Arrows reuse the collapse/expand chevron glyph (see panel()'s .panel-caret),
   // rotated to point left (prev = newer) and right (next = older).
   const chevron = (d) =>
     `<svg class="ic-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const multi = pages.length > 1;
   return `<div class="issue-carousel" data-issue-carousel>
   <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>${chevron("M15 6l-6 6 6 6")}</button>
-  <div class="issue-track" tabindex="0" role="group" aria-label="Published issues, newest first">${cards}</div>
-  <button type="button" class="ic-nav ic-next" aria-label="Show older issues" hidden>${chevron("M9 6l6 6-6 6")}</button>
+  <div class="issue-track">${pagesHtml}</div>
+  <button type="button" class="ic-nav ic-next" aria-label="Show older issues"${multi ? "" : " hidden"}>${chevron("M9 6l6 6-6 6")}</button>
 </div>${issueCarouselScript()}`;
 }
 
-// Client: only show an arrow when it has somewhere to go — prev hides at the start
-// (nothing newer to reveal), next hides at the end. No overflow → neither shows.
-// No-JS → a plain scrollable 3-up row.
+// Client: page through the stacked issue pages by toggling .is-active (CSS cross-
+// fades). An arrow shows only when it has somewhere to go — prev hides on the
+// first (newest) page, next hides on the last. Single page → no arrows.
 function issueCarouselScript() {
   return `<script>(function(){
   var c=document.querySelector('[data-issue-carousel]'); if(!c) return;
-  var track=c.querySelector('.issue-track'), prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
-  var cards=[].slice.call(track.querySelectorAll('.issue-hero')); if(!cards.length) return;
-  function step(){var s=getComputedStyle(track);var gap=parseFloat(s.columnGap||s.gap||'14')||14;return cards[0].getBoundingClientRect().width+gap;}
-  function update(){
-    var max=track.scrollWidth-track.clientWidth;
-    var can=max>2;
-    // scroll-snap + the track's own inline padding rest the start a few px in from 0,
-    // so tolerate that when deciding "at the start / at the end".
-    var eps=(parseFloat(getComputedStyle(track).paddingLeft)||0)+4;
-    prev.hidden=!can||track.scrollLeft<=eps;
-    next.hidden=!can||track.scrollLeft>=max-eps;
+  var pages=[].slice.call(c.querySelectorAll('.issue-page'));
+  var prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
+  if(pages.length<2){ if(prev)prev.hidden=true; if(next)next.hidden=true; return; }
+  var i=0;
+  function show(n){
+    i=Math.max(0,Math.min(pages.length-1,n));
+    pages.forEach(function(p,k){var on=k===i;p.classList.toggle('is-active',on);p.setAttribute('aria-hidden',on?'false':'true');});
+    prev.hidden=i<=0;
+    next.hidden=i>=pages.length-1;
   }
-  prev.addEventListener('click',function(){track.scrollBy({left:-step(),behavior:'smooth'});});
-  next.addEventListener('click',function(){track.scrollBy({left:step(),behavior:'smooth'});});
-  track.addEventListener('scroll',update,{passive:true});
-  window.addEventListener('resize',update);
-  update();
+  prev.addEventListener('click',function(){show(i-1);});
+  next.addEventListener('click',function(){show(i+1);});
+  show(0);
 })();</script>`;
 }
 
@@ -1102,6 +1112,7 @@ module.exports = {
   render,
   confidenceChart,
   comparisonChart,
+  issuesSection,
   helioSection,
   helioComparisons,
   comparisonFrontrunner,
