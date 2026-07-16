@@ -200,7 +200,17 @@ function brandCss() {
   .cards{display:grid;gap:14px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
-  .issuegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  /* Published-issues carousel: 3-up native scroll track + prev/next arrows. */
+  .issue-carousel{position:relative}
+  .issue-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px;scrollbar-width:none;-ms-overflow-style:none}
+  .issue-track::-webkit-scrollbar{display:none}
+  .issue-track>.issue-hero{flex:0 0 calc((100% - 28px)/3);scroll-snap-align:start}
+  .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+  .ic-nav:hover{color:var(--accent)}
+  .ic-nav[hidden]{display:none}
+  .ic-nav:disabled{opacity:.35;cursor:default}
+  .ic-prev{left:-8px}
+  .ic-next{right:-8px}
   .issue-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .12s ease,box-shadow .12s ease}
   .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
   .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -226,6 +236,9 @@ function brandCss() {
   .ms-toggle[aria-expanded="true"] .ms-caret{transform:rotate(180deg)}
   .ms-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:300px;max-width:440px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:12px 14px}
   .ms-panel[hidden]{display:none}
+  .ms-search{display:block;width:100%;box-sizing:border-box;margin-bottom:8px;padding:7px 10px;font:inherit;font-size:13px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px}
+  .ms-search:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .ms-search::placeholder{color:var(--muted)}
   .ms-head{display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
   .ms-btn{font:inherit;font-size:12px;color:var(--muted);background:none;border:1px solid var(--line);border-radius:7px;padding:3px 10px;cursor:pointer}
   .ms-btn:hover{color:var(--ink);border-color:var(--muted)}
@@ -262,7 +275,7 @@ function brandCss() {
   .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
   .mt-soon{font-style:italic;opacity:.85}
   @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
-  @media (max-width:760px){.issuegrid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:760px){.issue-track>.issue-hero{flex:0 0 calc((100% - 14px)/2)}}
   @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}
     /* Issue/activity index rows stack into a card: title on top, a full-width
        action row beneath with MD/JSON left and the View button pushed right. */
@@ -270,7 +283,7 @@ function brandCss() {
     .links{margin-left:0;width:100%}
     .links .btn{margin-left:auto}
     .filechip{padding:6px 10px}}
-  @media (max-width:520px){.issuegrid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:520px){.issue-track>.issue-hero{flex:0 0 88%}.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
 }

@@ -106,20 +106,47 @@ const VARIANT_COLORS = [
   "#8FA596", // Maverick Moss 500 — sage green
 ];
 
-// Tidy a comparison title: drop leading test-number prefixes ("191 ") and
-// collapse a trailing version on the variant side ("…Page V1" → "v1") so
-// "191 EDC Success Blueprint Baseline vs 191 EDC Page V1" → "EDC Success
-// Blueprint Baseline vs v1". Concept titles (no "vs", no number) pass through.
+// Acronyms that must render in canonical casing regardless of how the source
+// (Helio page titles, deck-inferred concepts) cased them — "Edc Page" → "EDC Page".
+// Word-boundary, case-insensitive; display-layer only (keys/ids stay untouched).
+const DISPLAY_ACRONYMS = ["EDC", "AI", "CTA", "PDP", "UX"];
+function fixAcronymCasing(s) {
+  let out = String(s || "");
+  for (const a of DISPLAY_ACRONYMS) out = out.replace(new RegExp(`\\b${a}\\b`, "gi"), a);
+  return out;
+}
+
+// Display normalizer for any source-authored name (test/variant/comparison titles).
+// Besides acronym casing, it joins Helio's bare mix numbers into a readable ratio:
+// "Home Page 50 25 AI" → "Home Page 50/25 AI". Deliberately anchored to a following
+// "AI" so unrelated number runs (e.g. "Rebranded Page V6 281 29") are left alone.
+function displayName(s) {
+  return fixAcronymCasing(String(s || "").replace(/\b(\d{1,3})\s+(\d{1,3})(\s+AI\b)/gi, "$1/$2$3"));
+}
+
+// Tidy a comparison title: drop leading test-number prefixes ("191 "), collapse a
+// trailing version on the variant side ("…Page V1" → "v1"), and de-duplicate a
+// repeated multi-word prefix on the right of "vs" ("Home Page 50/25 AI vs Home Page
+// 75/25 AI" → "… vs 75/25 AI") so what differs is what reads. The prefix collapse
+// needs ≥2 shared words so "EDC Success Blueprint vs EDC Page" keeps both names.
+// Concept titles (no "vs") pass through. displayName (ratios + acronym casing) last.
 function succinctTitle(title) {
-  return String(title || "")
+  const parts = String(title || "")
     .split(/\s+vs\.?\s+/i)
     .map((part, i) => {
       const clean = part.replace(/^\d+\s+/, "").trim();
       if (i === 0) return clean;
       const m = clean.match(/\bv(?:ersion)?\s*([0-9]+)\b\s*$/i);
       return m ? `v${m[1]}` : clean;
-    })
-    .join(" vs ");
+    });
+  if (parts.length === 2) {
+    const a = parts[0].split(/\s+/);
+    const b = parts[1].split(/\s+/);
+    let k = 0;
+    while (k < a.length && k < b.length && a[k].toLowerCase() === b[k].toLowerCase()) k++;
+    if (k >= 2 && k < b.length) parts[1] = b.slice(k).join(" ");
+  }
+  return displayName(parts.join(" vs "));
 }
 
 // Grouped bars across UX metrics for one comparison — one colored bar per variant.
@@ -147,7 +174,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url, lead = "") {
           const score = v.metrics[m];
           if (typeof score !== "number") return "";
           const color = VARIANT_COLORS[vi % VARIANT_COLORS.length];
-          return `<div class="mc-row" title="${esc(v.test_name)} — ${esc(m)}: ${score}%"><div class="mc-track"><div class="mc-fill" style="width:${score}%;background:${color}"></div></div><span class="mc-val">${score}%</span></div>`;
+          return `<div class="mc-row" title="${esc(displayName(v.test_name))} — ${esc(m)}: ${score}%"><div class="mc-track"><div class="mc-fill" style="width:${score}%;background:${color}"></div></div><span class="mc-val">${score}%</span></div>`;
         })
         .join("");
       return `<div class="mc-metric"><div class="mc-label">${esc(m.replace(/_/g, " "))}</div><div class="mc-bars">${rows}</div></div>`;
@@ -156,7 +183,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url, lead = "") {
   const legend = vars
     .map((v, i) => {
       const sw = `<i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>`;
-      const name = esc(v.test_name);
+      const name = esc(displayName(v.test_name));
       const thumb = safeHref(v.thumbnail);
       // Hovering a variant with a screenshot pops its thumbnail (Helio compare page).
       if (!thumb) return `<span class="lg">${sw}${name}</span>`;
@@ -281,16 +308,16 @@ function frontrunnerBlock(comparison, uxSignals) {
     if (fr.baselineWins) {
       const trail =
         fr.bestChallengerName && fr.trailGap != null
-          ? `; best variant (${esc(fr.bestChallengerName)}) trails by ${fr.trailGap} avg`
+          ? `; best variant (${esc(displayName(fr.bestChallengerName))}) trails by ${fr.trailGap} avg`
           : "";
-      line = `<span class="cf-name">${esc(fr.baselineName)}</span> <span class="cf-stat">still leads — variants regressed${trail}</span>`;
+      line = `<span class="cf-name">${esc(displayName(fr.baselineName))}</span> <span class="cf-stat">still leads — variants regressed${trail}</span>`;
     } else {
       const leadStr = fr.total ? ` · leads ${fr.leads}/${fr.total} metrics` : "";
       const big =
         fr.biggest && fr.biggest.delta !== 0
           ? ` · biggest ${fr.biggest.delta > 0 ? "lift" : "drop"} ${esc(metricName(fr.biggest.metric))} ${fr.biggest.delta > 0 ? "+" : ""}${fr.biggest.delta}`
           : "";
-      line = `<span class="cf-name">${esc(fr.winnerName)}</span> <span class="cf-stat"><span class="cf-up">+${fr.avgLift} avg</span>${leadStr}${big} vs baseline</span>`;
+      line = `<span class="cf-name">${esc(displayName(fr.winnerName))}</span> <span class="cf-stat"><span class="cf-up">+${fr.avgLift} avg</span>${leadStr}${big} vs baseline</span>`;
     }
     parts.push(`<p class="cmp-front"><span class="cmp-front-label">Frontrunner</span> ${line}</p>`);
   } else if ((comparison.variants || []).length < 2) {
@@ -303,14 +330,16 @@ function frontrunnerBlock(comparison, uxSignals) {
   if (!signalText && fr) {
     if (fr.baselineWins) {
       signalText = `Variants regressed — the baseline still scores highest${
-        fr.bestChallengerName ? `; ${fr.bestChallengerName} is the closest challenger` : ""
+        fr.bestChallengerName
+          ? `; ${displayName(fr.bestChallengerName)} is the closest challenger`
+          : ""
       }.`;
     } else {
       const big =
         fr.biggest && fr.biggest.delta > 0
           ? ` Biggest gain: ${metricName(fr.biggest.metric)} +${fr.biggest.delta}.`
           : "";
-      signalText = `${fr.winnerName} leads ${fr.leads} of ${fr.total} metrics (+${fr.avgLift} avg vs baseline).${big}`;
+      signalText = `${displayName(fr.winnerName)} leads ${fr.leads} of ${fr.total} metrics (+${fr.avgLift} avg vs baseline).${big}`;
     }
   }
   if (signalText) {
@@ -581,20 +610,38 @@ function helioSection(helioMetrics, metricKeys, uxSignals) {
   }
   const comparisons = helioComparisons(helioMetrics);
   const count = comparisons.length;
+  // Default view = the 5 most recent comparisons (by the newest month among their
+  // variants; ties keep list order) — the rest stay available via the filter. A
+  // saved localStorage selection still overrides this default on load.
+  const recency = (c) =>
+    (c.variants || []).reduce(
+      (m, v) => (String(v.month || "") > m ? String(v.month || "") : m),
+      ""
+    );
+  const defaultKeys = new Set(
+    [...comparisons]
+      .map((c, i) => ({ c, i }))
+      .sort((a, b) => recency(b.c).localeCompare(recency(a.c)) || a.i - b.i)
+      .slice(0, 5)
+      .map((x) => x.c.key)
+  );
   const options = comparisons
     .map((c) => {
       const href = safeHref(c.url);
       const link = href
         ? `<a class="ms-opt-link" href="${esc(href)}" target="_blank" rel="noopener" aria-label="Open ${esc(c.label)} comparison in Helio" title="View in Helio">↗</a>`
         : "";
-      return `<div class="ms-opt"><label class="ms-opt-main"><input type="checkbox" class="ms-cb" value="${esc(c.key)}" checked> <span class="ms-opt-name">${esc(c.label)}</span></label>${link}</div>`;
+      const on = defaultKeys.has(c.key) ? " checked" : "";
+      return `<div class="ms-opt"><label class="ms-opt-main"><input type="checkbox" class="ms-cb" value="${esc(c.key)}"${on}> <span class="ms-opt-name">${esc(c.label)}</span></label>${link}</div>`;
     })
     .join("");
   // A dropdown multiselect: a toggle button (with a live "N of M" count) opens a
-  // popover of per-comparison checkboxes, each linking out to its Helio compare page.
+  // popover with a search box + per-comparison checkboxes, each linking out to its
+  // Helio compare page. Shows the latest 5 by default; search to find a concept fast.
   const control = `<div class="ms" data-ms="helio">
-  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${count} of ${count}</span> <span class="ms-caret" aria-hidden="true">▾</span></button>
+  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${defaultKeys.size} of ${count}</span> <span class="ms-caret" aria-hidden="true">▾</span></button>
   <div class="ms-panel" id="ms-panel-helio" role="group" aria-label="Filter Helio comparisons" hidden>
+    <input type="search" class="ms-search" placeholder="Search comparisons…" aria-label="Search comparisons">
     <div class="ms-head"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></div>
     <div class="ms-opts">${options}</div>
   </div>
@@ -635,6 +682,16 @@ function helioFilterScript() {
   }
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s){cbs.forEach(function(c){if(c.value in s)c.checked=!!s[c.value];});}}catch(e){}
   cbs.forEach(function(c){c.addEventListener('change',apply);});
+  // Search filters the option list (case-insensitive substring on the name).
+  var search=ms.querySelector('.ms-search');
+  if(search){
+    search.addEventListener('input',function(){
+      var q=search.value.toLowerCase();
+      [].slice.call(ms.querySelectorAll('.ms-opt')).forEach(function(o){
+        o.style.display=(o.textContent||'').toLowerCase().indexOf(q)===-1?'none':'';
+      });
+    });
+  }
   var all=ms.querySelector('.ms-all'),none=ms.querySelector('.ms-none');
   if(all)all.addEventListener('click',function(){cbs.forEach(function(c){c.checked=true;});apply();});
   if(none)none.addEventListener('click',function(){cbs.forEach(function(c){c.checked=false;});apply();});
@@ -803,7 +860,36 @@ function issuesSection(issues) {
 </a>`;
     })
     .join("\n");
-  return `<div class="issuegrid">${cards}</div>`;
+  // 3-up carousel (newest first): a native horizontal scroll track (scroll-snap,
+  // touch + keyboard friendly, degrades without JS) enhanced with prev/next arrows
+  // that appear only when there are more issues than fit — advance to page through
+  // older issues while staying 3-up. Prev = newer, Next = older.
+  return `<div class="issue-carousel" data-issue-carousel>
+  <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>&#8249;</button>
+  <div class="issue-track" tabindex="0" role="group" aria-label="Published issues, newest first">${cards}</div>
+  <button type="button" class="ic-nav ic-next" aria-label="Show older issues" hidden>&#8250;</button>
+</div>${issueCarouselScript()}`;
+}
+
+// Client: show prev/next only when the track overflows (>3 issues), scroll by one card,
+// and disable the arrows at each end. No-JS / no-overflow → a plain scrollable 3-up row.
+function issueCarouselScript() {
+  return `<script>(function(){
+  var c=document.querySelector('[data-issue-carousel]'); if(!c) return;
+  var track=c.querySelector('.issue-track'), prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
+  var cards=[].slice.call(track.querySelectorAll('.issue-hero')); if(!cards.length) return;
+  function step(){var s=getComputedStyle(track);var gap=parseFloat(s.columnGap||s.gap||'14')||14;return cards[0].getBoundingClientRect().width+gap;}
+  function update(){
+    var can=track.scrollWidth-track.clientWidth>2;
+    prev.hidden=!can; next.hidden=!can;
+    if(can){prev.disabled=track.scrollLeft<=1; next.disabled=track.scrollLeft>=track.scrollWidth-track.clientWidth-1;}
+  }
+  prev.addEventListener('click',function(){track.scrollBy({left:-step(),behavior:'smooth'});});
+  next.addEventListener('click',function(){track.scrollBy({left:step(),behavior:'smooth'});});
+  track.addEventListener('scroll',update,{passive:true});
+  window.addEventListener('resize',update);
+  update();
+})();</script>`;
 }
 
 // Drag-handle glyph (2×3 dots) for reordering sections. currentColor so it themes.
@@ -880,21 +966,47 @@ function panelScript() {
 })();</script>`;
 }
 
+// Compact a count for a KPI card: 1477 → "1.5K" so big totals don't widen the card.
+function compactCount(n) {
+  if (typeof n !== "number" || !isFinite(n)) return "—";
+  if (n < 1000) return String(n);
+  return (Math.round(n / 100) / 10).toFixed(1).replace(/\.0$/, "") + "K";
+}
+
 function render(trends) {
   const cycles = trends.cycles || [];
   const metricKeys = trends.metric_keys || [];
-  const latest = cycles[cycles.length - 1];
   const totalConcepts = new Set((trends.concepts || []).map((c) => c.key)).size;
   const generated = trends.generated_at ? trends.generated_at.slice(0, 10) : "";
+
+  // Participants tested across ALL tracked cycles: each (month, compare page) is a
+  // test run with its own sample (n is duplicated onto every variant row of the run,
+  // so count it once per run). A re-measured comparison in a later month is a new run.
+  const seenRuns = new Set();
+  let participants = 0;
+  for (const r of trends.helio_metrics || []) {
+    const k = `${r.month}|${r.compare_id || r.test_id}`;
+    if (typeof r.n === "number" && !seenRuns.has(k)) {
+      seenRuns.add(k);
+      participants += r.n;
+    }
+  }
+  // Variant wins: of the head-to-head comparisons (2+ scored variants), how many have
+  // a variant beating the baseline — same deterministic math as the Frontrunner lines.
+  let wins = 0;
+  let headToHeads = 0;
+  for (const c of helioComparisons(trends.helio_metrics || [])) {
+    const fr = comparisonFrontrunner(c.variants);
+    if (!fr) continue;
+    headToHeads += 1;
+    if (!fr.baselineWins && fr.avgLift > 0) wins += 1;
+  }
 
   const kpis = [
     ["Cycles tracked", cycles.length],
     ["Concepts followed", totalConcepts],
-    [
-      "Helio comparisons",
-      new Set((trends.helio_metrics || []).map((r) => r.comparison_title)).size,
-    ],
-    ["Latest cycle", latest ? latest.month : "—"],
+    ["Participants tested", compactCount(participants)],
+    ["Variant wins", headToHeads ? `${wins} of ${headToHeads}` : "—"],
   ]
     .map(
       ([label, v]) =>
