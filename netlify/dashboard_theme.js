@@ -201,16 +201,18 @@ function brandCss() {
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
   /* Published-issues carousel: 3-up native scroll track + prev/next arrows. */
-  .issue-carousel{position:relative}
-  .issue-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px;scrollbar-width:none;-ms-overflow-style:none}
+  .issue-carousel{position:relative;padding:0 42px}
+  /* Side gutters (above) keep the arrows off the cards; the track's vertical padding
+     gives the cards' hover-lift shadow room to render before overflow clips it. */
+  .issue-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:18px 6px 26px;scrollbar-width:none;-ms-overflow-style:none}
   .issue-track::-webkit-scrollbar{display:none}
   .issue-track>.issue-hero{flex:0 0 calc((100% - 28px)/3);scroll-snap-align:start}
-  .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
-  .ic-nav:hover{color:var(--accent)}
+  .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+  .ic-nav:hover{color:var(--accent);border-color:var(--accent)}
   .ic-nav[hidden]{display:none}
-  .ic-nav:disabled{opacity:.35;cursor:default}
-  .ic-prev{left:-8px}
-  .ic-next{right:-8px}
+  .ic-caret{display:block;width:20px;height:20px}
+  .ic-prev{left:0}
+  .ic-next{right:0}
   .issue-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .12s ease,box-shadow .12s ease}
   .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
   .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}

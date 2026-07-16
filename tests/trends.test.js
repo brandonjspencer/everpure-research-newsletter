@@ -877,6 +877,20 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /class="issue-hero"/);
     assert.match(html, /href="issues\/2026-05\/default\.html"/);
     assert.match(html, /May 2026/);
+    // Carousel nav uses the collapse/expand chevron glyph (rounded path), rotated
+    // left (prev) and right (next) — not the old ‹/› text glyphs.
+    assert.match(
+      html,
+      /class="ic-nav ic-prev"[^>]*>\s*<svg class="ic-caret"[^>]*><path d="M15 6l-6 6 6 6"/
+    );
+    assert.match(
+      html,
+      /class="ic-nav ic-next"[^>]*>\s*<svg class="ic-caret"[^>]*><path d="M9 6l6 6-6 6"/
+    );
+    // Both arrows start hidden; the client script reveals them only when the track
+    // overflows and hides prev at the start / next at the end.
+    assert.match(html, /class="ic-nav ic-prev"[^>]*hidden/);
+    assert.match(html, /class="ic-nav ic-next"[^>]*hidden/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

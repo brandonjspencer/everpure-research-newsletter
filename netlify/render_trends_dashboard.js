@@ -864,15 +864,20 @@ function issuesSection(issues) {
   // touch + keyboard friendly, degrades without JS) enhanced with prev/next arrows
   // that appear only when there are more issues than fit — advance to page through
   // older issues while staying 3-up. Prev = newer, Next = older.
+  // Arrows reuse the collapse/expand chevron glyph (see panel()'s .panel-caret),
+  // rotated to point left (prev = newer) and right (next = older).
+  const chevron = (d) =>
+    `<svg class="ic-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
   return `<div class="issue-carousel" data-issue-carousel>
-  <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>&#8249;</button>
+  <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>${chevron("M15 6l-6 6 6 6")}</button>
   <div class="issue-track" tabindex="0" role="group" aria-label="Published issues, newest first">${cards}</div>
-  <button type="button" class="ic-nav ic-next" aria-label="Show older issues" hidden>&#8250;</button>
+  <button type="button" class="ic-nav ic-next" aria-label="Show older issues" hidden>${chevron("M9 6l6 6-6 6")}</button>
 </div>${issueCarouselScript()}`;
 }
 
-// Client: show prev/next only when the track overflows (>3 issues), scroll by one card,
-// and disable the arrows at each end. No-JS / no-overflow → a plain scrollable 3-up row.
+// Client: only show an arrow when it has somewhere to go — prev hides at the start
+// (nothing newer to reveal), next hides at the end. No overflow → neither shows.
+// No-JS → a plain scrollable 3-up row.
 function issueCarouselScript() {
   return `<script>(function(){
   var c=document.querySelector('[data-issue-carousel]'); if(!c) return;
@@ -880,9 +885,13 @@ function issueCarouselScript() {
   var cards=[].slice.call(track.querySelectorAll('.issue-hero')); if(!cards.length) return;
   function step(){var s=getComputedStyle(track);var gap=parseFloat(s.columnGap||s.gap||'14')||14;return cards[0].getBoundingClientRect().width+gap;}
   function update(){
-    var can=track.scrollWidth-track.clientWidth>2;
-    prev.hidden=!can; next.hidden=!can;
-    if(can){prev.disabled=track.scrollLeft<=1; next.disabled=track.scrollLeft>=track.scrollWidth-track.clientWidth-1;}
+    var max=track.scrollWidth-track.clientWidth;
+    var can=max>2;
+    // scroll-snap + the track's own inline padding rest the start a few px in from 0,
+    // so tolerate that when deciding "at the start / at the end".
+    var eps=(parseFloat(getComputedStyle(track).paddingLeft)||0)+4;
+    prev.hidden=!can||track.scrollLeft<=eps;
+    next.hidden=!can||track.scrollLeft>=max-eps;
   }
   prev.addEventListener('click',function(){track.scrollBy({left:-step(),behavior:'smooth'});});
   next.addEventListener('click',function(){track.scrollBy({left:step(),behavior:'smooth'});});
