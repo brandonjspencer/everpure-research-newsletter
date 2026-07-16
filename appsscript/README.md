@@ -19,9 +19,12 @@ anyone on the suppression tab.
    npm install -g @google/clasp
    clasp login
    ```
-2. Point clasp at your Apps Script project: copy `.clasp.json.example` to `.clasp.json` (gitignored)
-   and paste your script id, **or** `clasp clone <scriptId>` into this folder.
-3. Push the code: `clasp push` (run from the repo root, or `cd appsscript`).
+2. Point clasp at your Apps Script project: from `appsscript/`, copy `.clasp.json.example` to
+   `.clasp.json` (gitignored) and paste your script id (Apps Script editor → **Project Settings →
+   IDs → Script ID**), **or** `clasp clone <scriptId>` into this folder.
+3. Push the code: `cd appsscript && clasp push` (that's where `.clasp.json` lives, with
+   `rootDir: "."`). The push writes `appsscript.json`'s scopes, so Apps Script may prompt you to
+   re-authorize on the next run — that's expected.
 4. In the Apps Script editor → **Project Settings → Script Properties**, set these (they live in
    Apps Script, **never in the repo**, so the recipient sheet id and Drive ids stay private):
 
@@ -30,11 +33,17 @@ anyone on the suppression tab.
    | `RECIPIENTS_SHEET_ID`   | Drive id of the recipients spreadsheet (has the PII list)                   |
    | `ISSUE_EMAIL_FOLDER_ID` | Drive **folder** id holding issue email HTML — newest `.html` is auto-used  |
    | `UXTIP_EMAIL_FOLDER_ID` | Drive **folder** id holding UX-tip email HTML — newest `.html` is auto-used |
-   | `ISSUE_SUBJECT`         | e.g. `Everpure Research Roundup — June 2026 Issue`                          |
-   | `UXTIP_SUBJECT`         | e.g. `Everpure UX Tip — …`                                                  |
+   | `ISSUE_SUBJECT`         | _optional fallback_ — subject normally rides in the email (see below)       |
+   | `UXTIP_SUBJECT`         | _optional fallback_ — same, for UX-tip emails                               |
    | `REPLY_TO`              | your address (also gets a copy of each batch for visibility)                |
    | `REVIEWERS`             | comma-separated reviewer addresses for **test** mode                        |
    | `UNSUBSCRIBE_URL`       | optional: link/mailto added as an unsubscribe footer                        |
+
+   **Subject resolution:** the subject is read from the email HTML's
+   `<meta name="subject" content="…">` tag, so it ships with each issue and needs **no monthly
+   Script Property edit**. `ISSUE_SUBJECT` / `UXTIP_SUBJECT` are used only as a fallback when an
+   email has no such tag. `dryRunIssue` logs the resolved `Subject:` so you can confirm it before
+   sending.
 
    **Email HTML resolution:** by default the script auto-picks the **newest `.html`** in the
    configured folder (`ISSUE_EMAIL_FOLDER_ID` / `UXTIP_EMAIL_FOLDER_ID`), so there's no per-issue
