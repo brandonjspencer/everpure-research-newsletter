@@ -238,7 +238,8 @@ function brandCss() {
   .ms-toggle:hover{border-color:var(--muted)}
   .ms-toggle[aria-expanded="true"]{border-color:var(--accent)}
   .ms-count{color:var(--muted);font-size:12px}
-  .ms-caret{font-size:10px;color:var(--muted);transition:transform .15s ease}
+  .ms-caret{display:block;width:16px;height:16px;color:var(--muted);transition:transform .15s ease;flex:none}
+  .ms-toggle:hover .ms-caret{color:var(--ink)}
   .ms-toggle[aria-expanded="true"] .ms-caret{transform:rotate(180deg)}
   .ms-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:300px;max-width:440px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:12px 14px}
   .ms-panel[hidden]{display:none}

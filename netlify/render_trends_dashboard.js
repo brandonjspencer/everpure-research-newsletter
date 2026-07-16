@@ -639,7 +639,7 @@ function helioSection(helioMetrics, metricKeys, uxSignals) {
   // popover with a search box + per-comparison checkboxes, each linking out to its
   // Helio compare page. Shows the latest 5 by default; search to find a concept fast.
   const control = `<div class="ms" data-ms="helio">
-  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${defaultKeys.size} of ${count}</span> <span class="ms-caret" aria-hidden="true">▾</span></button>
+  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${defaultKeys.size} of ${count}</span> <svg class="ms-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   <div class="ms-panel" id="ms-panel-helio" role="group" aria-label="Filter Helio comparisons" hidden>
     <input type="search" class="ms-search" placeholder="Search comparisons…" aria-label="Search comparisons">
     <div class="ms-head"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></div>

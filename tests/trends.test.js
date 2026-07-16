@@ -848,6 +848,9 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     // Comparisons are a dropdown multiselect (collapsed by default) ...
     assert.match(html, /class="ms" data-ms="helio"/);
     assert.match(html, /class="ms-toggle"[^>]*aria-expanded="false"/);
+    // ... whose caret is the shared chevron glyph (not the old ▾ text glyph).
+    assert.match(html, /<svg class="ms-caret"[^>]*><path d="M6 9l6 6 6-6"/);
+    assert.doesNotMatch(html, /▾/);
     // ... and each comparison links out to its Helio compare page.
     assert.match(
       html,
