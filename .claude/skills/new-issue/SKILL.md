@@ -128,7 +128,10 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
 
 1. Build the email from [docs/handoff/research_roundup_email_template.html](../../../docs/handoff/research_roundup_email_template.html)
    (latest mobile fixes), populated from the **frozen** `issues/$MONTH/default.*`. Save as
-   `emails/research_roundup_issueNN_email_<month><year>.html`.
+   `emails/research_roundup_issueNN_email_<month><year>.html`. **Set the subject in the email's
+   `<head>`** — `<meta name="subject" content="Everpure Research Roundup Newsletter — <Month> <Year> Issue">`
+   — the Apps Script reads the subject from this tag (`appsscript/Code.gs`), so there is **no
+   `ISSUE_SUBJECT` Script Property to edit**; just bump the tag each issue.
 2. **CTAs must point to the frozen archive** `/issues/$MONTH/default.html` — never the mutable
    `/newsletter/default.html`. Include the Zscaler authentication note and the
    `#research-and-discovery` Slack feedback link.
@@ -140,8 +143,9 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
      Drive connector is available you can create it there directly (`text/html`, no Google-Doc
      conversion); otherwise the user drops it in. The script auto-uses the **newest `.html`** in
      that folder — no file-id to update.
-   - **Preview**: `dryRunIssue` — confirm the email-HTML file picked, recipient count, batch
-     count, and remaining quota.
+   - **Preview**: `dryRunIssue` — confirm the email-HTML file picked, the logged **`Subject:`**
+     (comes from the email's `<meta name="subject">`), recipient count, batch count, and remaining
+     quota.
    - **Test**: `sendIssueTest` (goes to `REVIEWERS` only) — review in Gmail desktop + phone.
    - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
    - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
@@ -163,10 +167,11 @@ site has deployed**, so the link resolves (same timing and same frozen target as
    - A one-line invite to reply in-thread with questions/feedback.
 2. Present the exact text. **Ask the user to approve posting it. Do not post without explicit
    approval** (posting is both "send a message" and "publish public content").
-3. Post to `#research-and-discovery` via the Slack connector — `slack_send_message` (resolve the
-   channel id with `slack_search_channels` first if needed). Prefer `slack_send_message_draft` if
-   the user would rather send it themselves; if no Slack connector is available, hand the user the
-   formatted text to paste.
+3. Post to `#research-and-discovery` (`C03NSK4PCHJ`). **That channel is externally shared (Slack
+   Connect), so `slack_send_message` is BLOCKED** (`mcp_externally_shared_channel_restricted`) —
+   use **`slack_send_message_draft`** to drop the message as a draft in the channel, and the user
+   clicks Send. (Resolve the channel id with `slack_search_channels` if it changes; if no Slack
+   connector is available, hand the user the formatted text to paste.)
 
 ---
 

@@ -32,7 +32,9 @@ var DEFAULTS = {
 };
 
 // Property keys to set (see README.md):
-//   Required: RECIPIENTS_SHEET_ID, ISSUE_SUBJECT, UXTIP_SUBJECT, REPLY_TO, REVIEWERS
+//   Required: RECIPIENTS_SHEET_ID, REPLY_TO, REVIEWERS
+//   Subject: read from the email HTML's <meta name="subject" content="…"> (preferred);
+//     ISSUE_SUBJECT / UXTIP_SUBJECT are an OPTIONAL fallback for emails without the tag.
 //   Email HTML source (per type, pick one):
 //     - ISSUE_EMAIL_FOLDER_ID / UXTIP_EMAIL_FOLDER_ID  → auto-pick newest .html (recommended)
 //     - ISSUE_HTML_FILE_ID / UXTIP_HTML_FILE_ID         → pin an exact file (overrides the folder)
@@ -77,11 +79,25 @@ function send_(opts) {
   var mode = opts.mode;
   var dryRun = !!opts.dryRun;
 
-  var subject = requireProp_(type === "issue" ? "ISSUE_SUBJECT" : "UXTIP_SUBJECT");
   var replyTo = requireProp_("REPLY_TO");
   var fromName = prop_("FROM_NAME");
 
-  var html = injectUnsubscribeFooter_(resolveHtml_(type), prop_("UNSUBSCRIBE_URL"));
+  // The subject rides inside the email: read <meta name="subject"> from the HTML so
+  // there's no per-issue Script Property to bump. Fall back to ISSUE_SUBJECT /
+  // UXTIP_SUBJECT for emails without the tag; error if neither is present.
+  var rawHtml = resolveHtml_(type);
+  var subject =
+    subjectFromHtml_(rawHtml) || prop_(type === "issue" ? "ISSUE_SUBJECT" : "UXTIP_SUBJECT");
+  if (!subject) {
+    throw new Error(
+      'No subject found: add <meta name="subject" content="…"> to the email HTML, or set ' +
+        (type === "issue" ? "ISSUE_SUBJECT" : "UXTIP_SUBJECT") +
+        " in Script Properties."
+    );
+  }
+  Logger.log("Subject: %s", subject);
+
+  var html = injectUnsubscribeFooter_(rawHtml, prop_("UNSUBSCRIBE_URL"));
 
   var recipients = mode === "test" ? reviewers_() : activeRecipients_();
   recipients = dedupeValid_(recipients);
@@ -191,6 +207,39 @@ function newestHtmlInFolder_(folderId, pattern) {
     if (!best || f.getLastUpdated() > best.getLastUpdated()) best = f;
   }
   return best;
+}
+
+// Pull the email subject out of the HTML itself so it can't drift from a separate
+// Script Property. Reads <meta name="subject" content="…"> (tolerant of attribute
+// order and quote style). Returns "" if the tag is absent.
+function subjectFromHtml_(html) {
+  var s = String(html || "");
+  var m =
+    /<meta[^>]*\bname\s*=\s*["']subject["'][^>]*\bcontent\s*=\s*["']([^"']*)["']/i.exec(s) ||
+    /<meta[^>]*\bcontent\s*=\s*["']([^"']*)["'][^>]*\bname\s*=\s*["']subject["']/i.exec(s);
+  return m ? decodeEntities_(m[1]).trim() : "";
+}
+
+// Minimal HTML-entity decode so a subject authored with entities (e.g. &mdash;) is
+// sent as plain text. Handles the common named + numeric entities; &amp; is last so
+// an already-escaped "&amp;mdash;" resolves correctly.
+function decodeEntities_(s) {
+  return String(s)
+    .replace(/&mdash;/g, "—")
+    .replace(/&ndash;/g, "–")
+    .replace(/&rsquo;/g, "’")
+    .replace(/&lsquo;/g, "‘")
+    .replace(/&ldquo;/g, "“")
+    .replace(/&rdquo;/g, "”")
+    .replace(/&hellip;/g, "…")
+    .replace(/&#x([0-9a-fA-F]+);/g, function (_, h) {
+      return String.fromCharCode(parseInt(h, 16));
+    })
+    .replace(/&#(\d+);/g, function (_, d) {
+      return String.fromCharCode(parseInt(d, 10));
+    })
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&");
 }
 
 // ---- Recipient sourcing -----------------------------------------------------
