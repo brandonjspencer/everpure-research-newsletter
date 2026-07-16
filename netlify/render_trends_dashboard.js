@@ -918,6 +918,12 @@ function issueCarouselScript() {
       for(var k=p*n;k<to;k++)pg.appendChild(cards[k]);
       track.appendChild(pg);
     }
+    // Cap card width to the per-view size so a partial last page (e.g. one card in a
+    // 3-up view) doesn't stretch — it keeps the same width as a full page's cards.
+    var gap=14,pg0=track.children[0];
+    if(pg0){var g=parseFloat(getComputedStyle(pg0).columnGap||getComputedStyle(pg0).gap||'14');if(!isNaN(g))gap=g;}
+    var w=track.getBoundingClientRect().width;
+    track.style.setProperty('--issue-card-w',((w-(n-1)*gap)/n)+'px');
     mark();
   }
   function show(t){page=Math.max(0,Math.min(count()-1,t));mark();}

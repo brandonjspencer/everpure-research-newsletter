@@ -209,7 +209,9 @@ function brandCss() {
   .issue-track{display:grid;grid-template-columns:1fr}
   .issue-page{grid-area:1/1;display:flex;flex-wrap:nowrap;gap:14px;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
   .issue-page.is-active{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s linear 0s}
-  .issue-page>.issue-hero{flex:1 1 0;min-width:0}
+  /* Cap each card at its per-view width (set by JS as --issue-card-w; 3-up fallback)
+     so a partial last page's card keeps its 3-up size instead of stretching wide. */
+  .issue-page>.issue-hero{flex:1 1 0;min-width:0;max-width:var(--issue-card-w, calc((100% - 28px)/3))}
   .ic-nav-row{display:flex;justify-content:center;gap:14px;margin-top:18px}
   .ic-nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.10);transition:color .12s ease,border-color .12s ease,opacity .12s ease}
   .ic-nav:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
