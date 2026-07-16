@@ -254,7 +254,12 @@ function brandCss() {
   .ms-opt{display:flex;align-items:center;gap:8px;padding:5px 4px;border-radius:7px}
   .ms-opt:hover{background:var(--hover)}
   .ms-opt-main{display:flex;align-items:center;gap:9px;flex:1;min-width:0;font-size:13px;color:var(--ink);cursor:pointer}
-  .ms-opt-main input{accent-color:var(--accent);flex:none}
+  /* Custom checkbox so the tick is guaranteed white on the accent fill (native
+     accent-color lets the UA pick the tick color, which lands dark on orange). */
+  .ms-cb{appearance:none;-webkit-appearance:none;margin:0;flex:none;width:16px;height:16px;border:1.5px solid var(--line);border-radius:4px;background:var(--card);cursor:pointer;display:inline-grid;place-content:center;transition:background-color .12s ease,border-color .12s ease}
+  .ms-cb:checked{background:var(--accent);border-color:var(--accent)}
+  .ms-cb:checked::after{content:"";width:4px;height:8px;margin-top:-1px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .ms-cb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .ms-opt-name{min-width:0}
   .ms-opt-link{flex:none;color:var(--muted);text-decoration:none;font-size:14px;line-height:1;padding:2px 6px;border-radius:6px}
   .ms-opt-link:hover{color:var(--accent);background:var(--hover)}
