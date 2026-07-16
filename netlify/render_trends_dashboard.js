@@ -639,7 +639,7 @@ function helioSection(helioMetrics, metricKeys, uxSignals) {
   // popover with a search box + per-comparison checkboxes, each linking out to its
   // Helio compare page. Shows the latest 5 by default; search to find a concept fast.
   const control = `<div class="ms" data-ms="helio">
-  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${defaultKeys.size} of ${count}</span> <span class="ms-caret" aria-hidden="true">▾</span></button>
+  <button type="button" class="ms-toggle" aria-expanded="false" aria-controls="ms-panel-helio"><span class="ms-label">Show comparisons</span> <span class="ms-count">${defaultKeys.size} of ${count}</span> <svg class="ms-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   <div class="ms-panel" id="ms-panel-helio" role="group" aria-label="Filter Helio comparisons" hidden>
     <input type="search" class="ms-search" placeholder="Search comparisons…" aria-label="Search comparisons">
     <div class="ms-head"><button type="button" class="ms-btn ms-all">All</button><button type="button" class="ms-btn ms-none">None</button></div>
@@ -846,49 +846,91 @@ function quoteRotatorScript(max = QUOTE_ROTATOR_MAX) {
 })();</script>`;
 }
 
+const ISSUES_PER_PAGE = 3;
+
 function issuesSection(issues) {
   if (!issues.length) return `<p class="empty">No issues published yet.</p>`;
-  const cards = issues
-    .map((it) => {
-      const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
-      return `<a class="issue-hero" href="${esc(it.href)}">
+  const card = (it) => {
+    const tag = it.issue_label ? esc(it.issue_label) : `${it.finding_count} findings`;
+    return `<a class="issue-hero" href="${esc(it.href)}">
   <div class="issue-hero-band"><span class="issue-hero-month">${esc(it.label)}</span><span class="issue-hero-tag">${tag}</span></div>
   <div class="issue-hero-body">
     <div class="issue-hero-title">${esc(it.title)}</div>
     <div class="issue-hero-foot"><span>${it.finding_count} findings</span><span class="go">Read issue →</span></div>
   </div>
 </a>`;
+  };
+  // Paged carousel (newest first) built as a cross-fade, NOT a scroll track: pages
+  // stack in one grid cell and out-of-view pages fade to opacity 0. Nothing clips,
+  // so each card's hover shadow renders on every side (a scroll container clips the
+  // side shadows). Cards never wrap/stack — each page is a single nowrap row, and
+  // the client re-chunks how many cards fit per page by width (3 → 2 → 1) so they're
+  // never squeezed. Arrows sit centered *below* the cards and switch to a disabled
+  // state at the first/last page rather than disappearing. Prev = newer, Next = older.
+  const pages = [];
+  for (let i = 0; i < issues.length; i += ISSUES_PER_PAGE) {
+    pages.push(issues.slice(i, i + ISSUES_PER_PAGE));
+  }
+  const pagesHtml = pages
+    .map((pg, pi) => {
+      const from = pi * ISSUES_PER_PAGE + 1;
+      const to = pi * ISSUES_PER_PAGE + pg.length;
+      const active = pi === 0;
+      return `<div class="issue-page${active ? " is-active" : ""}" role="group" aria-label="Issues ${from}–${to} of ${issues.length}" aria-hidden="${active ? "false" : "true"}">${pg.map(card).join("")}</div>`;
     })
-    .join("\n");
-  // 3-up carousel (newest first): a native horizontal scroll track (scroll-snap,
-  // touch + keyboard friendly, degrades without JS) enhanced with prev/next arrows
-  // that appear only when there are more issues than fit — advance to page through
-  // older issues while staying 3-up. Prev = newer, Next = older.
+    .join("");
+  // Arrows reuse the collapse/expand chevron glyph (see panel()'s .panel-caret),
+  // rotated to point left (prev = newer) and right (next = older).
+  const chevron = (d) =>
+    `<svg class="ic-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const multi = pages.length > 1;
   return `<div class="issue-carousel" data-issue-carousel>
-  <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" hidden>&#8249;</button>
-  <div class="issue-track" tabindex="0" role="group" aria-label="Published issues, newest first">${cards}</div>
-  <button type="button" class="ic-nav ic-next" aria-label="Show older issues" hidden>&#8250;</button>
+  <div class="issue-track">${pagesHtml}</div>
+  <div class="ic-nav-row">
+    <button type="button" class="ic-nav ic-prev" aria-label="Show newer issues" disabled>${chevron("M15 6l-6 6 6 6")}</button>
+    <button type="button" class="ic-nav ic-next" aria-label="Show older issues"${multi ? "" : " disabled"}>${chevron("M9 6l6 6-6 6")}</button>
+  </div>
 </div>${issueCarouselScript()}`;
 }
 
-// Client: show prev/next only when the track overflows (>3 issues), scroll by one card,
-// and disable the arrows at each end. No-JS / no-overflow → a plain scrollable 3-up row.
+// Client: (re)chunk the flat card set into pages of N — where N is how many cards
+// comfortably fit the current width (3 / 2 / 1) so cards are never squeezed or
+// stacked — then page by toggling .is-active (CSS cross-fades). Arrows stay put and
+// go disabled at the first (newest) / last page rather than disappearing.
 function issueCarouselScript() {
   return `<script>(function(){
   var c=document.querySelector('[data-issue-carousel]'); if(!c) return;
-  var track=c.querySelector('.issue-track'), prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
+  var track=c.querySelector('.issue-track');
+  var prev=c.querySelector('.ic-prev'), next=c.querySelector('.ic-next');
   var cards=[].slice.call(track.querySelectorAll('.issue-hero')); if(!cards.length) return;
-  function step(){var s=getComputedStyle(track);var gap=parseFloat(s.columnGap||s.gap||'14')||14;return cards[0].getBoundingClientRect().width+gap;}
-  function update(){
-    var can=track.scrollWidth-track.clientWidth>2;
-    prev.hidden=!can; next.hidden=!can;
-    if(can){prev.disabled=track.scrollLeft<=1; next.disabled=track.scrollLeft>=track.scrollWidth-track.clientWidth-1;}
+  var page=0;
+  function perView(){var w=c.getBoundingClientRect().width;var n=Math.floor((w+14)/(240+14));return Math.max(1,Math.min(3,n));}
+  function count(){return track.children.length;}
+  function mark(){var pg=track.children;for(var k=0;k<pg.length;k++){var on=k===page;pg[k].classList.toggle('is-active',on);pg[k].setAttribute('aria-hidden',on?'false':'true');}prev.disabled=page<=0;next.disabled=page>=pg.length-1;}
+  function build(){
+    var n=perView(),pc=Math.max(1,Math.ceil(cards.length/n));
+    page=Math.max(0,Math.min(pc-1,page));
+    while(track.firstChild)track.removeChild(track.firstChild);
+    for(var p=0;p<pc;p++){
+      var pg=document.createElement('div');pg.className='issue-page';pg.setAttribute('role','group');
+      var from=p*n+1,to=Math.min((p+1)*n,cards.length);
+      pg.setAttribute('aria-label','Issues '+from+'\\u2013'+to+' of '+cards.length);
+      for(var k=p*n;k<to;k++)pg.appendChild(cards[k]);
+      track.appendChild(pg);
+    }
+    // Cap card width to the per-view size so a partial last page (e.g. one card in a
+    // 3-up view) doesn't stretch — it keeps the same width as a full page's cards.
+    var gap=14,pg0=track.children[0];
+    if(pg0){var g=parseFloat(getComputedStyle(pg0).columnGap||getComputedStyle(pg0).gap||'14');if(!isNaN(g))gap=g;}
+    var w=track.getBoundingClientRect().width;
+    track.style.setProperty('--issue-card-w',((w-(n-1)*gap)/n)+'px');
+    mark();
   }
-  prev.addEventListener('click',function(){track.scrollBy({left:-step(),behavior:'smooth'});});
-  next.addEventListener('click',function(){track.scrollBy({left:step(),behavior:'smooth'});});
-  track.addEventListener('scroll',update,{passive:true});
-  window.addEventListener('resize',update);
-  update();
+  function show(t){page=Math.max(0,Math.min(count()-1,t));mark();}
+  prev.addEventListener('click',function(){show(page-1);});
+  next.addEventListener('click',function(){show(page+1);});
+  var tm;window.addEventListener('resize',function(){clearTimeout(tm);tm=setTimeout(build,150);});
+  build();
 })();</script>`;
 }
 
@@ -1093,6 +1135,7 @@ module.exports = {
   render,
   confidenceChart,
   comparisonChart,
+  issuesSection,
   helioSection,
   helioComparisons,
   comparisonFrontrunner,

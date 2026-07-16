@@ -19,6 +19,7 @@ const {
   helioComparisons,
   comparisonFrontrunner,
   matchUxSignal,
+  issuesSection,
   sparkline,
   succinctTitle,
 } = require("../netlify/render_trends_dashboard");
@@ -847,6 +848,9 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     // Comparisons are a dropdown multiselect (collapsed by default) ...
     assert.match(html, /class="ms" data-ms="helio"/);
     assert.match(html, /class="ms-toggle"[^>]*aria-expanded="false"/);
+    // ... whose caret is the shared chevron glyph (not the old ▾ text glyph).
+    assert.match(html, /<svg class="ms-caret"[^>]*><path d="M6 9l6 6 6-6"/);
+    assert.doesNotMatch(html, /▾/);
     // ... and each comparison links out to its Helio compare page.
     assert.match(
       html,
@@ -877,6 +881,21 @@ test("render produces a self-contained dashboard with all sections + charts", ()
     assert.match(html, /class="issue-hero"/);
     assert.match(html, /href="issues\/2026-05\/default\.html"/);
     assert.match(html, /May 2026/);
+    // Carousel nav uses the collapse/expand chevron glyph (rounded path), rotated
+    // left (prev) and right (next) — not the old ‹/› text glyphs.
+    assert.match(
+      html,
+      /class="ic-nav ic-prev"[^>]*>\s*<svg class="ic-caret"[^>]*><path d="M15 6l-6 6 6 6"/
+    );
+    assert.match(
+      html,
+      /class="ic-nav ic-next"[^>]*>\s*<svg class="ic-caret"[^>]*><path d="M9 6l6 6-6 6"/
+    );
+    // Arrows sit in a centered nav row below the cards and use a disabled state
+    // (not hidden) at the ends. With a single page here, both are disabled.
+    assert.match(html, /class="ic-nav-row"/);
+    assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+    assert.match(html, /class="ic-nav ic-next"[^>]*disabled/);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -1148,4 +1167,45 @@ test("succinctTitle drops number prefixes and collapses the trailing version", (
   // The 1-word shared prefix ("EDC …") is NOT collapsed (see EDC case above), and
   // number runs not followed by AI stay untouched.
   assert.equal(succinctTitle("Rebranded Page V6 281 29"), "Rebranded Page V6 281 29");
+});
+
+test("issuesSection pages issues 3-up as a cross-fade (no scroll/overflow so shadows aren't clipped)", () => {
+  const mk = (n) => ({
+    label: `Month ${n}`,
+    issue_label: `Issue 0${n}`,
+    title: `Roundup ${n}`,
+    finding_count: n,
+    href: `issues/2026-0${n}/default.html`,
+  });
+  const html = issuesSection([mk(4), mk(3), mk(2), mk(1)]); // newest first
+  // Server chunks at 3 → two pages (3 + 1): first active/exposed, rest hidden a11y.
+  assert.equal((html.match(/class="issue-page/g) || []).length, 2);
+  assert.match(html, /class="issue-page is-active"[^>]*aria-hidden="false"/);
+  assert.match(html, /class="issue-page"[^>]*aria-hidden="true"/);
+  assert.equal((html.match(/class="issue-hero"/g) || []).length, 4);
+  // Arrows sit in a centered nav row below the cards. Prev is disabled on the first
+  // page (not hidden); next is enabled because there's more than one page.
+  assert.match(html, /class="ic-nav-row"/);
+  assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+  assert.doesNotMatch(html, /class="ic-nav ic-next"[^>]*disabled/);
+  // Cards never wrap/stack — each page is a single nowrap row — and out-of-view
+  // cards are hidden by opacity, NOT by a scroll/overflow clip, so hover shadows
+  // render on every side.
+  assert.doesNotMatch(html, /scroll-snap|overflow/);
+});
+
+test("issuesSection with a single page disables both arrows (kept, not hidden)", () => {
+  const mk = (n) => ({
+    label: `M${n}`,
+    issue_label: `Issue 0${n}`,
+    title: `R${n}`,
+    finding_count: 1,
+    href: `x${n}.html`,
+  });
+  const html = issuesSection([mk(2), mk(1)]);
+  assert.equal((html.match(/class="issue-page/g) || []).length, 1);
+  // Both arrows are present but disabled — never removed from the layout.
+  assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
+  assert.match(html, /class="ic-nav ic-next"[^>]*disabled/);
+  assert.doesNotMatch(html, /class="ic-nav[^"]*"[^>]*hidden/);
 });

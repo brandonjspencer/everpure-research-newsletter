@@ -201,16 +201,22 @@ function brandCss() {
   .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
   .subtle{color:var(--muted);font-size:13px;margin-top:4px}
   /* Published-issues carousel: 3-up native scroll track + prev/next arrows. */
+  /* Nothing here clips: pages stack in one grid cell and cross-fade, so each card's
+     hover shadow renders on every side (a scroll container would clip the left/right
+     shadows). Each page is a single nowrap row (cards never wrap/stack); the client
+     sets how many cards per page by width. Arrows live centered below the cards. */
   .issue-carousel{position:relative}
-  .issue-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:2px;scrollbar-width:none;-ms-overflow-style:none}
-  .issue-track::-webkit-scrollbar{display:none}
-  .issue-track>.issue-hero{flex:0 0 calc((100% - 28px)/3);scroll-snap-align:start}
-  .ic-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.18)}
-  .ic-nav:hover{color:var(--accent)}
-  .ic-nav[hidden]{display:none}
-  .ic-nav:disabled{opacity:.35;cursor:default}
-  .ic-prev{left:-8px}
-  .ic-next{right:-8px}
+  .issue-track{display:grid;grid-template-columns:1fr}
+  .issue-page{grid-area:1/1;display:flex;flex-wrap:nowrap;gap:14px;opacity:0;visibility:hidden;transition:opacity .25s ease,visibility 0s linear .25s}
+  .issue-page.is-active{opacity:1;visibility:visible;transition:opacity .25s ease,visibility 0s linear 0s}
+  /* Cap each card at its per-view width (set by JS as --issue-card-w; 3-up fallback)
+     so a partial last page's card keeps its 3-up size instead of stretching wide. */
+  .issue-page>.issue-hero{flex:1 1 0;min-width:0;max-width:var(--issue-card-w, calc((100% - 28px)/3))}
+  .ic-nav-row{display:flex;justify-content:center;gap:14px;margin-top:18px}
+  .ic-nav{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.10);transition:color .12s ease,border-color .12s ease,opacity .12s ease}
+  .ic-nav:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
+  .ic-nav:disabled{opacity:.4;cursor:default;box-shadow:none}
+  .ic-caret{display:block;width:20px;height:20px}
   .issue-hero{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .12s ease,box-shadow .12s ease}
   .issue-hero:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.12)}
   .issue-hero-band{background:var(--accent);color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -232,7 +238,8 @@ function brandCss() {
   .ms-toggle:hover{border-color:var(--muted)}
   .ms-toggle[aria-expanded="true"]{border-color:var(--accent)}
   .ms-count{color:var(--muted);font-size:12px}
-  .ms-caret{font-size:10px;color:var(--muted);transition:transform .15s ease}
+  .ms-caret{display:block;width:16px;height:16px;color:var(--muted);transition:transform .15s ease;flex:none}
+  .ms-toggle:hover .ms-caret{color:var(--ink)}
   .ms-toggle[aria-expanded="true"] .ms-caret{transform:rotate(180deg)}
   .ms-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:30;min-width:300px;max-width:440px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.18);padding:12px 14px}
   .ms-panel[hidden]{display:none}
@@ -247,7 +254,12 @@ function brandCss() {
   .ms-opt{display:flex;align-items:center;gap:8px;padding:5px 4px;border-radius:7px}
   .ms-opt:hover{background:var(--hover)}
   .ms-opt-main{display:flex;align-items:center;gap:9px;flex:1;min-width:0;font-size:13px;color:var(--ink);cursor:pointer}
-  .ms-opt-main input{accent-color:var(--accent);flex:none}
+  /* Custom checkbox so the tick is guaranteed white on the accent fill (native
+     accent-color lets the UA pick the tick color, which lands dark on orange). */
+  .ms-cb{appearance:none;-webkit-appearance:none;margin:0;flex:none;width:16px;height:16px;border:1.5px solid var(--line);border-radius:4px;background:var(--card);cursor:pointer;display:inline-grid;place-content:center;transition:background-color .12s ease,border-color .12s ease}
+  .ms-cb:checked{background:var(--accent);border-color:var(--accent)}
+  .ms-cb:checked::after{content:"";width:4px;height:8px;margin-top:-1px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .ms-cb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .ms-opt-name{min-width:0}
   .ms-opt-link{flex:none;color:var(--muted);text-decoration:none;font-size:14px;line-height:1;padding:2px 6px;border-radius:6px}
   .ms-opt-link:hover{color:var(--accent);background:var(--hover)}
@@ -274,8 +286,7 @@ function brandCss() {
   .mt-delta{font-weight:600;margin-left:2px}
   .mt-cyc{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-left:auto}
   .mt-soon{font-style:italic;opacity:.85}
-  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}}
-  @media (max-width:760px){.issue-track>.issue-hero{flex:0 0 calc((100% - 14px)/2)}}
+  @media (prefers-reduced-motion: reduce){.q-slide{transition:none}.ms-caret{transition:none}.panel-caret{transition:none}.issue-page{transition:none}}
   @media (max-width:600px){.mc-metric{grid-template-columns:1fr;gap:5px;align-items:start}.mc-label{font-weight:600}.ccols{gap:6px}.ccol-sub{font-size:10px}
     /* Issue/activity index rows stack into a card: title on top, a full-width
        action row beneath with MD/JSON left and the View button pushed right. */
@@ -283,7 +294,7 @@ function brandCss() {
     .links{margin-left:0;width:100%}
     .links .btn{margin-left:auto}
     .filechip{padding:6px 10px}}
-  @media (max-width:520px){.issue-track>.issue-hero{flex:0 0 88%}.kpis{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}
     .ms,.ms-toggle{display:flex;width:100%}.ms-toggle{justify-content:space-between}.ms-panel{min-width:0;width:100%;max-width:100%}}
 </style>`;
 }
