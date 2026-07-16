@@ -542,6 +542,98 @@ test("render: sections are drag-reorderable and charts avoid red-orange", () => 
   assert.match(html, /background:#5A6359/i); // Basil Byte deep green — variant 2
 });
 
+test("render: KPI row shows participants (compacted) + variant wins, no Latest cycle", () => {
+  // Two comparisons: cmpW re-measured across two months (two runs, n counted per run);
+  // cmpL is a single-variant screen (no head-to-head, excluded from the wins ratio).
+  const mk = (month, compare_id, title, test_id, name, n, metrics) => ({
+    month,
+    compare_id,
+    comparison_title: title,
+    test_id,
+    test_name: name,
+    n,
+    metrics,
+  });
+  const helio_metrics = [
+    mk("2026-05", "cmpW", "W vs X", "b", "Baseline", 600, { engagement: 40 }),
+    mk("2026-05", "cmpW", "W vs X", "v", "V1", 600, { engagement: 60 }),
+    mk("2026-06", "cmpW", "W vs X", "b", "Baseline", 500, { engagement: 42 }),
+    mk("2026-06", "cmpW", "W vs X", "v", "V1", 500, { engagement: 65 }),
+    mk("2026-06", "cmpL", "Solo Screen", "s", "Solo Screen", 350, { engagement: 50 }),
+  ];
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: ["engagement"],
+    helio_metrics,
+    quotes: [],
+    quote_mode: "harvested",
+    ux_signals: [],
+  });
+  // 600 + 500 + 350 = 1450 participants across runs → compacted to 1.5K (per run,
+  // not per variant row — n is duplicated onto each variant of the same run).
+  assert.match(
+    html,
+    /<div class="kpi-v">1\.5K<\/div><div class="kpi-l">Participants tested<\/div>/
+  );
+  // One head-to-head, won by the variant; the single screen doesn't count.
+  assert.match(html, /<div class="kpi-v">1 of 1<\/div><div class="kpi-l">Variant wins<\/div>/);
+  // The old cards are gone.
+  assert.ok(!/Latest cycle/.test(html), "Latest cycle KPI should be removed");
+  assert.ok(!/Helio comparisons<\/div>/.test(html), "raw comparison-count KPI should be removed");
+});
+
+test("helioSection: latest 5 checked by default + search box in the filter", () => {
+  // Seven comparisons across two months — the five most recent should be checked.
+  const helio_metrics = [];
+  for (let i = 0; i < 7; i++) {
+    const month = i < 3 ? "2026-05" : "2026-06"; // 4 recent (2026-06), 3 older
+    helio_metrics.push(
+      {
+        month,
+        compare_id: `cmp${i}`,
+        comparison_title: `Concept ${i} A vs B`,
+        test_id: `t${i}a`,
+        test_name: "Baseline",
+        n: 10,
+        metrics: { engagement: 40 },
+      },
+      {
+        month,
+        compare_id: `cmp${i}`,
+        comparison_title: `Concept ${i} A vs B`,
+        test_id: `t${i}b`,
+        test_name: "V1",
+        n: 10,
+        metrics: { engagement: 50 },
+      }
+    );
+  }
+  const html = render({
+    cycles: [],
+    concepts: [],
+    metric_keys: ["engagement"],
+    helio_metrics,
+    quotes: [],
+    quote_mode: "harvested",
+    ux_signals: [],
+  });
+  // Exactly 5 of the 7 checkboxes are checked by default, and the count says so.
+  assert.equal((html.match(/class="ms-cb"[^>]* checked/g) || []).length, 5);
+  assert.match(html, /<span class="ms-count">5 of 7<\/span>/);
+  // All four 2026-06 comparisons are among the defaults (recency wins).
+  for (const i of [3, 4, 5, 6]) {
+    assert.match(
+      new RegExp(`value="cmp${i}" checked`).test(html) ? "ok" : html,
+      /ok/,
+      `cmp${i} (recent) should be checked by default`
+    );
+  }
+  // The search box renders inside the filter panel and the script wires it.
+  assert.match(html, /<input type="search" class="ms-search"/);
+  assert.match(html, /ms-search/);
+});
+
 test("thumbnailExpiry parses the signed-URL expiry (null when absent)", () => {
   assert.equal(thumbnailExpiry("https://x/y.png?Expires=1700000000&Signature=z"), 1700000000);
   assert.equal(thumbnailExpiry("https://x/y.png"), null);
@@ -1035,4 +1127,25 @@ test("succinctTitle drops number prefixes and collapses the trailing version", (
     "EDC Success Blueprint Baseline vs v1"
   );
   assert.equal(succinctTitle("Pathfinder CTA Labels"), "Pathfinder CTA Labels");
+  // Acronym casing is normalized to canonical form however the source cased it.
+  assert.equal(
+    succinctTitle("Edc Success Blueprint vs Edc Page"),
+    "EDC Success Blueprint vs EDC Page"
+  );
+  assert.equal(succinctTitle("Homepage ai Messaging"), "Homepage AI Messaging");
+  // ...but only as standalone words — no mangling inside other words.
+  assert.equal(succinctTitle("Reduced Friction"), "Reduced Friction");
+  // Bare mix numbers before "AI" join into a readable ratio, and a repeated
+  // multi-word prefix on the right of "vs" is dropped so the difference reads.
+  assert.equal(
+    succinctTitle("Home Page 50 25 AI vs Home Page 75 25 AI"),
+    "Home Page 50/25 AI vs 75/25 AI"
+  );
+  assert.equal(
+    succinctTitle("Evergreen Architecture State 1 vs Evergreen Architecture V2 State 1"),
+    "Evergreen Architecture State 1 vs V2 State 1"
+  );
+  // The 1-word shared prefix ("EDC …") is NOT collapsed (see EDC case above), and
+  // number runs not followed by AI stay untouched.
+  assert.equal(succinctTitle("Rebranded Page V6 281 29"), "Rebranded Page V6 281 29");
 });
