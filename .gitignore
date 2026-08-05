@@ -61,3 +61,6 @@ eval "$(ssh-agent -s)".pub
 # appsscript/ IS tracked; clasp credentials never are.
 appsscript/.clasp.json
 .clasprc.json
+
+# graphify — generated knowledge graph (graph.json/html, GRAPH_REPORT.md, cache)
+graphify-out/
