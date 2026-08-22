@@ -111,6 +111,38 @@ function spansMultipleSentences(text) {
   return /[.!?]\s+[A-Z]/.test(text);
 }
 
+const GENERIC_TITLE_WORDS = new Set([
+  "our",
+  "my",
+  "your",
+  "their",
+  "the",
+  "this",
+  "that",
+  "these",
+  "those",
+  "we",
+  "i",
+  "focus",
+  "goal",
+  "goals",
+  "plan",
+  "plans",
+  "approach",
+  "team",
+  "priority",
+  "priorities",
+]);
+
+function isGenericTitleOnly(title) {
+  const words = normalizeWhitespace(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  return words.length > 0 && words.every((w) => GENERIC_TITLE_WORDS.has(w));
+}
+
 function structuredConceptFromLine(text) {
   const t = normalizeWhitespace(text);
   if (!t || isBadEvidenceText(t) || isIntroLine(t)) return null;
@@ -129,6 +161,10 @@ function structuredConceptFromLine(text) {
     // preceding sentence plus a name/fragment from the next one - not a title.
     if (spansMultipleSentences(match[1])) continue;
     const title = cleanupConceptTitle(match[1]);
+    // A title made entirely of generic pronouns/vague nouns (e.g. "Our
+    // focus") names no reader-recognizable concept - reject rather than
+    // promote it to a pack.
+    if (title && isGenericTitleOnly(title)) continue;
     if (title && title.length >= 3 && title.length <= 72) return title;
   }
   return null;

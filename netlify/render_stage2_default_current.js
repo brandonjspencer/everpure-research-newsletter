@@ -823,6 +823,14 @@ function actionForTopic(title) {
   );
 }
 
+// Recommended Actions must be an operational next step distinct from the
+// Direction copy a Finding/Comparison already showed (they share a reader,
+// minutes apart) - so this prefers a dedicated override before falling back
+// to the same Direction text used elsewhere.
+function recommendedActionForTopic(title) {
+  return content.topics[topicKey(title)]?.recommended_action || actionForTopic(title);
+}
+
 function findingFromGroup(group) {
   const title = canonicalTopicTitle(group.title);
   const evidenceLine = bestEvidenceLine(group);
@@ -868,10 +876,14 @@ function groupRankScore(group) {
 }
 
 function eligibleGroups(groups) {
+  const excluded = new Set(
+    (content.selection.excluded_titles || []).map((title) => topicKey(title))
+  );
   return uniqueByTitle(
     (groups || [])
       .filter((group) => group && group.title && !isContaminatedPublicText(group.title))
       .map((group) => ({ ...group, title: canonicalTopicTitle(group.title) }))
+      .filter((group) => !excluded.has(topicKey(group.title)))
   ).sort((a, b) => groupRankScore(b) - groupRankScore(a));
 }
 
@@ -906,10 +918,14 @@ function buildComparisons(groups, sourceComparisons, excludeTitles = []) {
   return candidates.map((group) => {
     const source = groupSource(group);
     const title = canonicalTopicTitle(group.title);
+    const override = content.topics[topicKey(title)] || {};
     return {
       title,
-      finding_statement: content.comparison_defaults.statement_template.replace("{title}", title),
-      decision_criteria: content.comparison_defaults.decision_criteria,
+      finding_statement:
+        override.comparison_statement ||
+        content.comparison_defaults.statement_template.replace("{title}", title),
+      decision_criteria:
+        override.comparison_criteria || content.comparison_defaults.decision_criteria,
       next_step: actionForTopic(title),
       confidence: confidenceForGroup(group, "comparison"),
       decision_status: "compare",
@@ -951,10 +967,18 @@ function buildUnresolvedQuestions(groups, statusInfo) {
   return questions.slice(0, 3);
 }
 
-function buildRecommendedActions(groups, statusInfo, sourceActions) {
+// Recommended Actions must cover the important findings, comparisons, and
+// unresolved decision blockers already surfaced elsewhere in the issue - not
+// independently re-rank the full eligible pool, which can pad the section
+// with a topic the reader never saw a Finding/Comparison/Unresolved item for
+// (an orphaned action with no upstream context).
+function buildRecommendedActions(groups, statusInfo, sourceActions, topicTitles = []) {
+  const orderedTitles = [...new Set(topicTitles.map((t) => canonicalTopicTitle(t)))];
+  const candidates = eligibleGroups(groups);
   const actions = [];
-  for (const group of eligibleGroups(groups).slice(0, 5)) {
-    actions.push(topicAction(group.title, actionForTopic(group.title)));
+  for (const title of orderedTitles) {
+    const group = candidates.find((g) => topicKey(g.title) === topicKey(title));
+    if (group) actions.push(topicAction(group.title, recommendedActionForTopic(group.title)));
   }
   return uniqueActions(actions)
     .filter((item) => !isNewsletterSelfTestAction(item) && !isInternalOperationalAction(item))
@@ -1016,7 +1040,11 @@ function buildStage2Brief() {
   );
   const unresolvedQuestions = buildUnresolvedQuestions(evidenceGroups, statusInfo);
   const sourceActions = asArray(source.next_actions || sections.next_actions);
-  const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
+  const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions, [
+    ...surfacedFindings.map((item) => item.title),
+    ...comparisonTests.map((item) => item.title),
+    ...unresolvedQuestions.map((item) => item.title),
+  ]);
   const deckCount = deckContentCount(statusInfo);
 
   const executiveSummary = buildExecutiveSummaryFromBrief(
