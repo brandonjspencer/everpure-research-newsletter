@@ -1,0 +1,122 @@
+{
+  "title": "Everpure monthly research roundup (30d)",
+  "generated_at": "2026-08-22T16:29:35.416Z",
+  "window": "30d",
+  "audience": "exec",
+  "tone": "strategic",
+  "issue": {
+    "number": "05",
+    "label": "Issue 05",
+    "date": "August 2026"
+  },
+  "summary": {
+    "latest_week_date": "2026-08-20",
+    "week_count_30d": 5,
+    "concept_evidence_count": 11,
+    "evidence_pack_count": 10,
+    "deck_content_count": 16
+  },
+  "executive_summary": "This month’s research is centered on Contextual Intelligence PDP, Contact Form, EDC Blueprint Page. The strongest value is decision-shaping rather than broad launch approval: each track points to a clearer question about what users understand, trust, or know how to do next.",
+  "surfaced_findings": [
+    {
+      "title": "Contextual Intelligence PDP",
+      "finding_statement": "A plain-language headline reframe substantially improved how visitors understand the Contextual Intelligence page, but the clearer entry point now raises expectations the technical feature section further down the page doesn't meet.",
+      "proof_point": "Full comprehension rose 66%→74% and \"Understood very well\" nearly tripled (12%→31%) after swapping jargon for outcome language; Watch Demo intent grew 49%→65%. The one regression: \"Complicated\" impressions rose 12%→16%, from technical wording further down the page.",
+      "respondent_quote": "too much technical wording",
+      "next_step": "Apply the same plain-language, progressive-disclosure treatment to the feature section below the fold that worked in the hero, so the clearer entry doesn't keep raising expectations the rest of the page can't meet.",
+      "confidence": "high",
+      "decision_status": "ready to decide",
+      "source_label": "Source deck",
+      "source_href": "https://docs.google.com/presentation/d/15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY/edit"
+    },
+    {
+      "title": "Contact Form",
+      "finding_statement": "A plain, functional headline that names the page (\"Connect with an Everpure advisor\") beats a benefit-driven slogan for helping visitors understand the Contact Sales page — restoring it while keeping the 2026 copy's other improvements produced the strongest version tested.",
+      "proof_point": "Swapping the page's name for a slogan dropped \"sales/advisor\" recall 22%→7% and doubled \"Complicated\" impressions (9%→19%); restoring the functional headline (V2) lifted \"understood very well\" to 49% vs. 36% live, with 51% saying they'd fill out the form vs. 33%.",
+      "respondent_quote": "I don't know what challenges they're referring to.",
+      "next_step": "Ship V2: keep the headline functional, keep the 2026 button/chat/topic-list improvements, and reserve benefit-driven slogans for campaign pages rather than utility pages like Contact Sales.",
+      "confidence": "high",
+      "decision_status": "ready to decide",
+      "source_label": "Source deck",
+      "source_href": "https://docs.google.com/presentation/d/16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8/edit"
+    },
+    {
+      "title": "EDC Blueprint Page",
+      "finding_statement": "Across three rounds of testing, visitors understand the Enterprise Data Cloud category but still can't articulate what the Success Blueprint assessment gives them — an outcome-led headline and a lighter layout recovered comprehension, and a new \"What's an EDC?\" button surfaced how large that gap still is.",
+      "proof_point": "Baseline: fewer than 5 respondents named the Success Blueprint unprompted, and 29% weren't sure the page was for them. V2's outcome-led headline lifted comprehension to best-of-three (23% \"understood very well\") and dropped \"Overwhelming\" 17%→7%, but 26% chose \"What's an EDC?\" instead.",
+      "respondent_quote": "Why would you assume I'd start an assessment straight away?",
+      "next_step": "Resolve the \"What's an EDC?\" button as a lightweight inline expander that returns users to Start Assessment rather than an off-page detour, and protect the lighter layout that's now the proven win.",
+      "confidence": "high",
+      "decision_status": "ready to decide",
+      "source_label": "Source deck",
+      "source_href": "https://docs.google.com/presentation/d/15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY/edit"
+    }
+  ],
+  "comparison_tests": [
+    {
+      "title": "Chat Avatar",
+      "finding_statement": "Two chat avatars, Everly and Valencia, were tested cold — just a name, photo, and first message, the way a real visitor would meet either on the website. Everly was understood faster and confused fewer people, but both were treated as generic website help rather than a guide tied to Everpure's business.",
+      "decision_criteria": "Judge the choice by comprehension, ease of getting started, and willingness to use: Everly leads on all three (72 vs. 68 comprehension score, 84% vs. 70% found her welcome easy to follow, 42% vs. 29% very likely to use her), while treating \"does the avatar signal what Everpure does\" as a separate, still-open problem — only 5% of respondents connected either avatar to data or storage.",
+      "next_step": "Move forward with Everly as the primary avatar, rewrite her first message to name what she actually helps with (data, storage, technical questions), and keep Valencia as a plainer-voiced backup only.",
+      "confidence": "medium",
+      "decision_status": "compare",
+      "source_label": "Source deck",
+      "source_href": "https://docs.google.com/presentation/d/16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8/edit"
+    },
+    {
+      "title": "Platform Diagram Update",
+      "finding_statement": "A second round of the platform diagram redesign (V2) nudged positioning in the right direction but made the page feel more complicated in the process — comprehension improved while \"Helpful\" fell and \"Complicated\" rose by equal amounts.",
+      "decision_criteria": "Judge the next iteration by whether it reduces jargon and demotes the diagram to a supporting role, per the team's own \"refine design\" call, without repeating V2's regression: comprehension reading as intelligence/platform rose 29%→39% and the overall NET comprehension score rose 49%→57%, but \"Helpful\" fell 39%→29% and \"Complicated\" rose 24%→34%, and 19% still understood nothing in either version.",
+      "next_step": "Prototype a plain-language, value-first hero headline that demotes the diagram to supporting evidence and cuts jargon, per the team's own decision, then re-test comprehension and sentiment together so a future comprehension gain doesn't cost the page more complexity again.",
+      "confidence": "medium",
+      "decision_status": "compare",
+      "source_label": "Source deck",
+      "source_href": "https://docs.google.com/presentation/d/15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY/edit"
+    }
+  ],
+  "unresolved_questions": [
+    {
+      "title": "Contextual Intelligence PDP",
+      "scope": "Feature-section density",
+      "question": "Can the technical feature section below the fold be simplified enough to match the hero's new clarity, or does closing that gap require restructuring the page rather than rewording it?"
+    },
+    {
+      "title": "Contact Form",
+      "scope": "Channel preference clarity",
+      "question": "The form-vs-chat-vs-call split looked directional only, since chat was worded differently across versions — does a clean re-test with equalized wording confirm which channel visitors actually prefer?"
+    },
+    {
+      "title": "EDC Blueprint Page",
+      "scope": "\"What's an EDC?\" button",
+      "question": "Does the new button convert curiosity into assessment starts, or let visitors leave the funnel entirely — the answer depends on where it currently leads, which hasn't been tested yet."
+    }
+  ],
+  "next_actions": [
+    {
+      "topic": "Contextual Intelligence PDP",
+      "scope": "",
+      "action": "Contextual Intelligence PDP: Draft a plain-language rewrite of the technical feature section below the fold and re-test comprehension alongside \"Complicated\" impressions together, to confirm the fix doesn't just push the jargon problem further down the page."
+    },
+    {
+      "topic": "Contact Form",
+      "scope": "",
+      "action": "Contact Form: Schedule a clean re-test of the form-vs-chat-vs-call channel preference with equalized wording across variants, since the current 51%-vs-33% form-fill split is confounded by chat being worded differently on each version tested."
+    },
+    {
+      "topic": "EDC Blueprint Page",
+      "scope": "",
+      "action": "EDC Blueprint Page: Instrument where the \"What's an EDC?\" button leads and measure whether the 26% who click it return to Start Assessment or leave the funnel, before deciding whether it's an on-ramp or an off-ramp."
+    },
+    {
+      "topic": "Chat Avatar",
+      "scope": "",
+      "action": "Chat Avatar: Rewrite Everly's opening message to name data, storage, and technical support explicitly, then re-test comprehension to confirm the \"generic website help\" perception improves before removing Valencia as a backup."
+    },
+    {
+      "topic": "Platform Diagram Update",
+      "scope": "",
+      "action": "Platform Diagram Update: Before the full hero rebuild, test the smaller, faster fix first — add an explicit \"what is this, who is it for\" statement above the diagram, since respondents directly asked for it (\"What company is this? Who is this for?\") and it's cheaper to validate than a full redesign round."
+    }
+  ],
+  "note": "Three unrelated tests this cycle landed on the same lesson: plain, functional language keeps beating clever or technical framing, whether that's a headline, a slogan, or a chat avatar's voice."
+}
