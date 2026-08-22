@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 import pytest
 
 import everpure_notion_api as api
-from everpure_parser import parse_html
+from everpure_parser import is_date_heading, parse_html
 
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = ROOT / "tests" / "fixtures" / "notion_recordmap.json"
@@ -44,6 +44,24 @@ def test_page_id_from_url(url):
 def test_page_id_from_url_rejects_garbage():
     with pytest.raises(api.NotionApiError):
         api.page_id_from_url("https://example.com/not-a-notion-page")
+
+
+# ---------------------------------------------------------------------------
+# is_date_heading
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "text",
+    ["📌 July 30, 2026", "📌 Jul 30, 2026"],
+)
+def test_is_date_heading_accepts_full_and_abbreviated_month(text):
+    dt = is_date_heading(text)
+    assert dt is not None
+    assert (dt.year, dt.month, dt.day) == (2026, 7, 30)
+
+
+def test_is_date_heading_rejects_non_date_text():
+    assert is_date_heading("📌 not a date") is None
+    assert is_date_heading("just some text") is None
 
 
 # ---------------------------------------------------------------------------

@@ -97,7 +97,13 @@ def is_date_heading(text: str) -> Optional[datetime]:
     m = DATE_RE.match(text)
     if not m:
         return None
-    return datetime.strptime(m.group(1), "%B %d, %Y")
+    raw = m.group(1)
+    for fmt in ("%B %d, %Y", "%b %d, %Y"):
+        try:
+            return datetime.strptime(raw, fmt)
+        except ValueError:
+            continue
+    return None
 
 
 def extract_slides_info(url: str) -> Optional[Dict[str, str]]:
