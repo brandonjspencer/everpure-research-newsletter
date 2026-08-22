@@ -41,3 +41,102 @@ test("build_evidence_packs.js produces a valid evidence pack from parsed outputs
     "hyphenated alias evidence-packs.json should also be written"
   );
 });
+
+test("build_evidence_packs.js merges Helio comparisons into packs", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "everpure-evidence-helio-"));
+  const dataDir = path.join(tmp, "data");
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  fs.writeFileSync(path.join(dataDir, "weeks.json"), "[]");
+  fs.writeFileSync(path.join(dataDir, "deck_content.json"), "[]");
+  fs.writeFileSync(
+    path.join(dataDir, "helio_evidence.json"),
+    JSON.stringify({
+      evidence: [
+        // Two compare objects that share one real concept via the slide's own
+        // "<Label> | <Type> | Concept <NN>" caption should merge into one pack.
+        {
+          compare_id: "cmp-a",
+          derived_title: "1touch Product",
+          deck_file_id: "deck-1",
+          slide_text_excerpt:
+            "Chat Avatar | Design | Concept 199 | Source: Data Comparison | Each person met one avatar cold.",
+          associated_weeks: ["2026-08-06"],
+          variants: [{ name: "Everly" }, { name: "Valencia" }],
+          metrics: [
+            {
+              label: "Comprehension",
+              values: [
+                { name: "Everly", score: 72, qual_label: "High" },
+                { name: "Valencia", score: 68, qual_label: "Average" },
+              ],
+            },
+          ],
+        },
+        {
+          compare_id: "cmp-b",
+          derived_title: "F703486b 333d 4303 B449 Dd8a7807bbee",
+          deck_file_id: "deck-1",
+          slide_text_excerpt: "Chat Avatar | Decisions | Concept 199 | Ship Everly as primary.",
+          associated_weeks: ["2026-08-13"],
+          variants: [],
+          metrics: [],
+        },
+        // A clean derived_title with no parseable caption is used as-is.
+        {
+          compare_id: "cmp-c",
+          derived_title: "Product Pages FlashArray vs Product Pages FlashBlade",
+          deck_file_id: "deck-2",
+          slide_text_excerpt:
+            "Visitors understand the category but cannot articulate the positioning.",
+          associated_weeks: ["2026-07-30"],
+          variants: [{ name: "FlashArray" }, { name: "FlashBlade" }],
+          metrics: [],
+        },
+        // A garbled derived_title with no parseable caption cannot be honestly
+        // labeled, so it should be skipped rather than surfaced as junk.
+        {
+          compare_id: "cmp-d",
+          derived_title: "960d4d46912e97f6a88c6939 vs f703486b333d4303b449dd8a7807bbee",
+          deck_file_id: "deck-3",
+          slide_text_excerpt: "No usable caption here either.",
+          associated_weeks: ["2026-07-30"],
+          variants: [],
+          metrics: [],
+        },
+      ],
+    })
+  );
+
+  execFileSync("node", [path.join(ROOT, "netlify", "build_evidence_packs.js"), tmp], {
+    stdio: "pipe",
+  });
+
+  const payload = JSON.parse(fs.readFileSync(path.join(dataDir, "evidence_packs.json"), "utf8"));
+  const byTitle = new Map(payload.packs.map((p) => [p.concept_title, p]));
+
+  const chatAvatar = byTitle.get("Chat Avatar");
+  assert.ok(chatAvatar, "should produce a pack titled from the slide caption");
+  assert.strictEqual(chatAvatar.concept_id, "199");
+  assert.strictEqual(
+    chatAvatar.helio_compare_ids.length,
+    2,
+    "both compare objects tagged Concept 199 should merge into one pack"
+  );
+  assert.ok(
+    chatAvatar.supporting_numbers.includes("72") && chatAvatar.supporting_numbers.includes("68"),
+    "should carry the real comprehension scores"
+  );
+
+  const flash = byTitle.get("Product Pages FlashArray vs Product Pages FlashBlade");
+  assert.ok(flash, "a clean derived_title with no caption should be used as-is");
+
+  const garbled = payload.packs.find((p) =>
+    (p.source_refs || []).some((r) => r.helio_compare_id === "cmp-d")
+  );
+  assert.strictEqual(
+    garbled,
+    undefined,
+    "an unlabelable garbled comparison should be skipped, not guessed at"
+  );
+});

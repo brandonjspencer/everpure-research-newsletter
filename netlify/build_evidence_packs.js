@@ -288,8 +288,22 @@ function buildPack(rec, group, text, concept, deckTextById, packs) {
   }
 }
 
+function ratingForHelioPack(pack) {
+  const rounds = pack.helio_compare_ids ? pack.helio_compare_ids.size : 1;
+  let score = 0;
+  if (rounds >= 2) score += 3;
+  if (pack.supporting_numbers.size > 0) score += 2;
+  if (pack.deck_refs.size > 0) score += 1;
+  if (pack.comparison_cues.length > 0) score += 1;
+  if (score >= 6)
+    return { confidence: "high", status: "validated_finding", next_step: "ship_or_finalize" };
+  if (score >= 3)
+    return { confidence: "moderate", status: "directional_signal", next_step: "iterate" };
+  return { confidence: "low", status: "work_in_motion", next_step: "watch" };
+}
+
 function finalizePack(pack) {
-  const rating = ratingForPack(pack);
+  const rating = pack.is_helio ? ratingForHelioPack(pack) : ratingForPack(pack);
   const weeks = [...pack.weeks_seen].sort();
   return {
     concept_key: pack.concept_key,
@@ -313,7 +327,149 @@ function finalizePack(pack) {
     rule_based_status: rating.status,
     rule_based_next_step: rating.next_step,
     rule_based_confidence: rating.confidence,
+    ...(pack.is_helio
+      ? { source: "helio_evidence", helio_compare_ids: [...pack.helio_compare_ids] }
+      : {}),
   };
+}
+
+// --- Helio evidence -> packs -----------------------------------------------
+// Helio comparisons are structured, reliably-fetched A/B test data (see
+// everpure_helio_ingest.py) that is completely unaffected by the weekly-notes
+// prose/heading regression the rest of this file works around. A comparison's
+// own `derived_title` is often an unreliable internal Helio codename (reused
+// across unrelated concepts, or a raw variant id), so a slide's own
+// "<Label> | <Type> | Concept <NN> | ..." caption (when present) is preferred
+// and used to merge multiple Helio compare objects that share one real concept.
+const HELIO_CONCEPT_LABEL_RE =
+  /^(.{2,60}?)\s*\|\s*(?:Design|Signal|Decisions?|Analysis|Recommendations?)\s*\|\s*Concept\s*(\d+)\b/i;
+
+function looksGarbledVariantName(name) {
+  const compact = normalizeWhitespace(name)
+    .replace(/[\s-]+/g, "")
+    .toLowerCase();
+  return compact.length >= 16 && /^[0-9a-f]+$/.test(compact);
+}
+
+function helioConceptFromExcerpt(excerpt) {
+  const m = HELIO_CONCEPT_LABEL_RE.exec(normalizeWhitespace(excerpt || ""));
+  if (!m) return null;
+  const title = cleanupConceptTitle(m[1]);
+  if (!title) return null;
+  return { concept_id: m[2], title };
+}
+
+function cleanHelioDerivedTitle(title) {
+  const t = normalizeWhitespace(title || "");
+  if (!t) return null;
+  const segments = t.split(/\s+vs\.?\s+/i);
+  if (segments.length > 1 && segments.every(looksGarbledVariantName)) return null;
+  if (segments.length === 1 && looksGarbledVariantName(t)) return null;
+  return t;
+}
+
+function helioEvidenceText(entry) {
+  const raw = normalizeWhitespace(entry.slide_text_excerpt || "");
+  // Strip a leading "Label | Type | Concept NN | Source: ... |" template
+  // prefix so the stored evidence line reads as prose, not a slide caption.
+  const stripped = raw.replace(/^.*?\|\s*Source:\s*[^|]+\|\s*/i, "").trim();
+  return stripped || raw;
+}
+
+function buildHelioPack(entry, packs) {
+  const excerptConcept = helioConceptFromExcerpt(entry.slide_text_excerpt);
+  let key;
+  let title;
+  let conceptId = null;
+  if (excerptConcept) {
+    conceptId = excerptConcept.concept_id;
+    title = excerptConcept.title;
+    key = `helio_concept_${conceptId}`;
+  } else {
+    const cleaned = cleanHelioDerivedTitle(entry.derived_title);
+    if (!cleaned) return; // No honest human-readable label available; skip rather than guess.
+    title = cleaned;
+    key = `helio_title_${title.toLowerCase()}`;
+  }
+
+  if (!packs.has(key)) {
+    packs.set(key, {
+      concept_key: key,
+      concept_id: conceptId,
+      concept_title: title,
+      concept_display: conceptId ? `Concept ${conceptId} - ${title}` : title,
+      weeks_seen: new Set(),
+      source_refs: [],
+      raw_finding_excerpts: [],
+      groups_seen: new Set(),
+      deck_refs: new Set(),
+      supporting_numbers: new Set(),
+      comparison_cues: [],
+      behavioral_signals: new Set(),
+      evidence_snapshot_rule_based: [],
+      helio_compare_ids: new Set(),
+      is_helio: true,
+    });
+  }
+  const pack = packs.get(key);
+  pack.groups_seen.add("helio_evidence");
+  pack.helio_compare_ids.add(entry.compare_id);
+  for (const w of entry.associated_weeks || []) pack.weeks_seen.add(w);
+  if (entry.deck_file_id) pack.deck_refs.add(entry.deck_file_id);
+  pack.comparison_cues.push("comparison");
+
+  const evidenceText = helioEvidenceText(entry);
+  if (hasSentenceEvidenceShape(evidenceText)) pack.raw_finding_excerpts.push(evidenceText);
+  for (const n of extractNumbers(evidenceText)) pack.supporting_numbers.add(n);
+
+  const variantNames = (entry.variants || []).map((v) => v.name).filter(Boolean);
+  const namesAreClean =
+    variantNames.length > 0 && variantNames.every((n) => !looksGarbledVariantName(n));
+
+  for (const metric of entry.metrics || []) {
+    const label = normalizeWhitespace(metric.label || "");
+    if (!label) continue;
+    const lower = label.toLowerCase();
+    if (
+      /comprehension|sentiment|engagement|desirability|intent|clarity|confidence|success|expectation/.test(
+        lower
+      )
+    )
+      pack.behavioral_signals.add(lower);
+    const values = metric.values || [];
+    for (const v of values) {
+      if (typeof v.score === "number") pack.supporting_numbers.add(String(v.score));
+    }
+    if (namesAreClean && values.length === 2 && values.every((v) => typeof v.score === "number")) {
+      const [a, b] = values;
+      pack.raw_finding_excerpts.push(
+        `${label}: ${a.name} scored ${a.score}${a.qual_label ? ` (${a.qual_label})` : ""} vs ${b.name} scored ${b.score}${b.qual_label ? ` (${b.qual_label})` : ""}.`
+      );
+    }
+  }
+
+  pack.source_refs.push({
+    week_date: (entry.associated_weeks || [])[0] || null,
+    record_id: null,
+    group: "helio_evidence",
+    text: evidenceText.slice(0, 400),
+    deck_file_id: entry.deck_file_id || null,
+    helio_compare_id: entry.compare_id,
+    helio_source_url: entry.source_url || null,
+  });
+}
+
+function ingestHelioEvidence(helioEvidence, packs) {
+  for (const entry of asHelioEntries(helioEvidence)) {
+    buildHelioPack(entry, packs);
+  }
+}
+
+function asHelioEntries(helioEvidence) {
+  if (!helioEvidence) return [];
+  if (Array.isArray(helioEvidence.evidence)) return helioEvidence.evidence;
+  if (Array.isArray(helioEvidence)) return helioEvidence;
+  return [];
 }
 
 function main() {
@@ -325,6 +481,7 @@ function main() {
     readJson(path.join(dataDir, "deck-content.json"), [])
   );
   const deckItems = flattenDeckContent(deckRaw);
+  const helioEvidence = readJson(path.join(dataDir, "helio_evidence.json"), null);
 
   const latestWeek =
     [...weeks]
@@ -359,6 +516,8 @@ function main() {
     }
   }
 
+  ingestHelioEvidence(helioEvidence, packs);
+
   const allPacks = [...packs.values()].map(finalizePack).sort((a, b) => {
     if (b.occurrence_count !== a.occurrence_count) return b.occurrence_count - a.occurrence_count;
     return a.concept_display.localeCompare(b.concept_display);
@@ -374,6 +533,7 @@ function main() {
     source_counts: {
       weeks: weeks.length,
       deck_items: deckItems.length,
+      helio_evidence: asHelioEntries(helioEvidence).length,
     },
     packs: allPacks,
   };
