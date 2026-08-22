@@ -1,0 +1,1449 @@
+{
+  "generated_at": "2026-08-22T16:29:34.772Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 11,
+  "with_evidence_count": 11,
+  "concepts": [
+    {
+      "concept_key": "helio_concept_194",
+      "concept_id": "194",
+      "concept_title": "Platform Diagram Update",
+      "concept_display": "194 - Platform Diagram Update",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "The terminology (control plane, data plane, evergreen architecture) isn't self-explanatory. Even an articulate respondent who got it said it stays opaque \"until I start clicking and exp",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmpzq0hkj000204l1b2xxjxmw",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmpzq0hkj000204l1b2xxjxmw"
+        },
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Platform Diagram Update | Decisions | Concept 194 | Implement | Refine Design | Test Iteration | Revisit Later | Do Not Pursue | Refine Design | Sequence density needs to , add a warmth to the image. The positioning win isn't here yet, needs more clarity Copy",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmouhxn4m000104ihqtdj64yd",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmouhxn4m000104ihqtdj64yd"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "text": "Sentiment: 1touch Product 32% (negative) vs 1touch Product 10.4% (SENTIMENT) (n=100).",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmpzq0hkj000204l1b2xxjxmw",
+          "slide_number": 7
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "text": "Comprehension: 1touch Product 69% (Average).",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmouhxn4m000104ihqtdj64yd",
+          "slide_number": 12
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image.",
+          "score": 32,
+          "numbers": [
+            "194",
+            "49%",
+            "57%",
+            "19%",
+            "29%",
+            "39%",
+            "22%",
+            "56%",
+            "53%",
+            "1",
+            "59%",
+            "58%",
+            "10",
+            "24%",
+            "34%",
+            "7%",
+            "3%"
+          ]
+        },
+        {
+          "text": "Platform Diagram Update | Decisions | Concept 194 | Implement | Refine Design | Test Iteration | Revisit Later | Do Not Pursue | Refine Design | Sequence density needs to , add a warmth to the image. The positioning win isn't here yet, needs more clarity Copy",
+          "score": 28,
+          "numbers": [
+            "194"
+          ]
+        },
+        {
+          "text": "Platform Diagram Update Recommendation Concept 194 Source: Data Comparison Platform Diagram Update Design Concept 194 Source: Data Comparison Lead with the intelligence outcome in words; demote diagram to support 22/70 said \"storage/cloud/disk\"; viewers compare to AWS/MS/Google Platform Diagram Update Signal Concept 194 Source: Data Comparison Platform Diagram Update Signal Concept 194 Source: Data Comparison The terminology (control plane, data plane, evergreen architecture) isn't self-explanatory.",
+          "score": 25,
+          "numbers": [
+            "194",
+            "22",
+            "70"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Platform Diagram Version 2 Design Concept 194 V2 is a lateral move made the page feel more complicated, not more clear.",
+          "score": 25,
+          "numbers": [
+            "2",
+            "194"
+          ]
+        },
+        {
+          "text": "Platform Diagram Update Signal Concept 194 Source: Data Comparison \"A title would be helpful,\" \"What company is this?",
+          "score": 25,
+          "numbers": [
+            "194"
+          ]
+        },
+        {
+          "text": "Platform Diagram Update Hunch Concept 194 Source: Figma File Rewrite the ﬁrst read.",
+          "score": 21,
+          "numbers": [
+            "194"
+          ]
+        },
+        {
+          "text": "The verbatims across all three variations say the same thing: \"needs more basic information and less jargon,\" \"hard to see how it all ties together,\" \"too much information to get the point across.\" Future of Storage Signal Concept 159 Source: Data Comparison Future of Storage Design Concept 159 V5 Platform Diagram Update Decisions Concept 159 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+          "score": 20,
+          "numbers": [
+            "159",
+            "1"
+          ]
+        },
+        {
+          "text": "Future of Storage Signal Concept 159 Source: Data Comparison Claude AI Update is the least-bad on comprehension.",
+          "score": 15,
+          "numbers": [
+            "159"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image.",
+        "Platform Diagram Update | Decisions | Concept 194 | Implement | Refine Design | Test Iteration | Revisit Later | Do Not Pursue | Refine Design | Sequence density needs to , add a warmth to the image. The positioning win isn't here yet, needs more clarity Copy",
+        "Platform Diagram Update Recommendation Concept 194 Source: Data Comparison Platform Diagram Update Design Concept 194 Source: Data Comparison Lead with the intelligence outcome in words; demote diagram to support 22/70 said \"storage/cloud/disk\"; viewers compare to AWS/MS/Google Platform Diagram Update Signal Concept 194 Source: Data Comparison Platform Diagram Update Signal Concept 194 Source: Data Comparison The terminology (control plane, data plane, evergreen architecture) isn't self-explanatory.",
+        "Source: Data Comparison Platform Diagram Version 2 Design Concept 194 V2 is a lateral move made the page feel more complicated, not more clear.",
+        "Platform Diagram Update Signal Concept 194 Source: Data Comparison \"A title would be helpful,\" \"What company is this?"
+      ],
+      "clean_key_numbers": [
+        "194",
+        "49%",
+        "57%",
+        "19%",
+        "29%",
+        "39%"
+      ],
+      "matched_summary": "194 - Platform Diagram Update shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 32,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "we'll focus on three key takeaways from our edc blueprint assessment testing",
+      "concept_id": null,
+      "concept_title": "We'll focus on three key takeaways from our EDC Blueprint Assessment testing",
+      "concept_display": "We'll focus on three key takeaways from our EDC Blueprint Assessment testing",
+      "weeks_seen": [
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": "everpure_2026_07_30",
+          "group": "other",
+          "text": "We'll focus on three key takeaways from our EDC Blueprint Assessment testing:",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+          "score": 31,
+          "numbers": [
+            "191",
+            "21%",
+            "15%",
+            "23%",
+            "73%",
+            "72%",
+            "65%",
+            "20%",
+            "25%",
+            "32%",
+            "7%",
+            "3%",
+            "4%",
+            "61%",
+            "58%",
+            "59%",
+            "44%",
+            "50%",
+            "49%",
+            "12%",
+            "9%",
+            "8%",
+            "60%",
+            "28%",
+            "26%",
+            "17%",
+            "18%",
+            "16%",
+            "10%",
+            "1"
+          ]
+        },
+        {
+          "text": "We'll focus on three key takeaways from our EDC Blueprint Assessment testing:",
+          "score": 25,
+          "numbers": []
+        },
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 24,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint V2 People were less overwhelmed.",
+          "score": 23,
+          "numbers": [
+            "191",
+            "5%",
+            "50%",
+            "29%",
+            "20%"
+          ]
+        },
+        {
+          "text": "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted.",
+          "score": 23,
+          "numbers": [
+            "10",
+            "5"
+          ]
+        },
+        {
+          "text": "EDC Blueprint Page Recommendation Concept 191 Source: Data Comparison EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint Baseline EDC Page Baseline A stronger message could increase assessment start rates by setting a clearer expectation for what users will get.",
+          "score": 23,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "Verbatims shifted from \"too much / busy\" toward \"the page seems to have a single purpose.\" Comprehension recovered (very well 15% →23%, best of three) — the outcome-led headline \"Assess your EDC maturity\" did its job where V1's evocative hero had hurt it.",
+          "score": 21,
+          "numbers": [
+            "15%",
+            "23%"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison A self-serve, short question assessment reached from the EDC Success Blueprint page that maps a visitor's biggest business pressure to a data-cloud maturity level and returns a personalized blueprint with a workshop path.",
+          "score": 20,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+        "We'll focus on three key takeaways from our EDC Blueprint Assessment testing:",
+        "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Based on the opportunities, the page has many things we can improve Source: Data Comparison Decision Rationale Lead hero with outcome, not category Baseline showed <5% named Blueprint concept in ﬁrst impression Add CTA descriptor line beneath \"Start Y our Assessment\" 50% clicked but expectations were inconsistent across respondents Introduce audience qualiﬁer in the opening section 29% didn't understand if the page was for them Reduce visual parity between all CTAs Assessment, Workshop, Blueprint Guide, and Contact all competed equally Simplify above-fold information density \"Overwhelming\" and \"Complicated\" appeared in ~20% of emotional responses EDC Blueprint Page Design Concept 191 Source: Figma File EDC Blueprint V2 People were less overwhelmed.",
+        "In the 10-second ﬁrst impression, nearly all responses describe the page as \"data cloud storage,\" \"cloud data,\" or \"enterprise data storage.\" Fewer than 5 respondents named the Success Blueprint concept, the assessment journey, or the three outcomes (reduce risk, scale agility, increase eﬃciency) without being prompted."
+      ],
+      "clean_key_numbers": [
+        "191",
+        "21%",
+        "15%",
+        "23%",
+        "73%",
+        "72%"
+      ],
+      "matched_summary": "We'll focus on three key takeaways from our EDC Blueprint Assessment testing appears to be surfacing a negative signal in the current evidence, which points to another iteration rather than a ship decision.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 31,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "the new contextual intelligence page is a large improvement over the baseline.",
+      "concept_id": null,
+      "concept_title": "The new Contextual Intelligence page is a large improvement over the baseline.",
+      "concept_display": "The new Contextual Intelligence page is a large improvement over the baseline.",
+      "weeks_seen": [
+        "2026-07-23"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-23",
+          "record_id": "everpure_2026_07_23",
+          "group": "other",
+          "text": "The new Contextual Intelligence page is a large improvement over the baseline.",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Signal Baseline V2 Direction Full comprehension 66% 74% ↑ improving \"Understood very well\" 12% 31% ↑ strong gain Partial comprehension gap 33% 27% ↑ shrinking Watch Demo intent 49% 65% ↑ conﬁrmed Helpful + Innovative ~48% avg 56% ↑ improving Overwhelming 15% 9% ↑ improving Confusing 11% 7% ↑ improving Complicated 12% 16% ↓ regressing Unappealing 16% 12% ↑ slight improvement \"None of these\" 7% 7% → ﬂat The headline clarity raised expectations the feature section can't yet meet.",
+          "score": 27,
+          "numbers": [
+            "193",
+            "66%",
+            "74%",
+            "12%",
+            "31%",
+            "33%",
+            "27%",
+            "49%",
+            "65%",
+            "48%",
+            "56%",
+            "15%",
+            "9%",
+            "11%",
+            "7%",
+            "16%"
+          ]
+        },
+        {
+          "text": "The new Contextual Intelligence page is a large improvement over the baseline.",
+          "score": 25,
+          "numbers": []
+        },
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+          "score": 22,
+          "numbers": [
+            "191",
+            "21%",
+            "15%",
+            "23%",
+            "73%",
+            "72%",
+            "65%",
+            "20%",
+            "25%",
+            "32%",
+            "7%",
+            "3%",
+            "4%",
+            "61%",
+            "58%",
+            "59%",
+            "44%",
+            "50%",
+            "49%",
+            "12%",
+            "9%",
+            "8%",
+            "60%",
+            "28%",
+            "26%",
+            "17%",
+            "18%",
+            "16%",
+            "10%",
+            "1"
+          ]
+        },
+        {
+          "text": "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+          "score": 21,
+          "numbers": [
+            "193"
+          ]
+        },
+        {
+          "text": "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image.",
+          "score": 18,
+          "numbers": [
+            "194",
+            "49%",
+            "57%",
+            "19%",
+            "29%",
+            "39%",
+            "22%",
+            "56%",
+            "53%",
+            "1",
+            "59%",
+            "58%",
+            "10",
+            "24%",
+            "34%",
+            "7%",
+            "3%"
+          ]
+        },
+        {
+          "text": "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+          "score": 18,
+          "numbers": [
+            "193",
+            "66%"
+          ]
+        },
+        {
+          "text": "\"Understood very well\" tripled from 12% to 31%, full comprehension lifted from 66% to 74%, and Section 2 open responses shifted from generic labels like \"AI\" and \"data storage\" to the product's own language: \"structuring fractured data for contextual AI,\" \"turn a company's fragmented data into contextual AI data intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Visitors want to watch before they commit.",
+          "score": 18,
+          "numbers": [
+            "12%",
+            "31%",
+            "66%",
+            "74%",
+            "2",
+            "193"
+          ]
+        },
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 18,
+          "numbers": [
+            "191"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Signal Baseline V2 Direction Full comprehension 66% 74% ↑ improving \"Understood very well\" 12% 31% ↑ strong gain Partial comprehension gap 33% 27% ↑ shrinking Watch Demo intent 49% 65% ↑ conﬁrmed Helpful + Innovative ~48% avg 56% ↑ improving Overwhelming 15% 9% ↑ improving Confusing 11% 7% ↑ improving Complicated 12% 16% ↓ regressing Unappealing 16% 12% ↑ slight improvement \"None of these\" 7% 7% → ﬂat The headline clarity raised expectations the feature section can't yet meet.",
+        "The new Contextual Intelligence page is a large improvement over the baseline.",
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+        "Contextual Intelligence PDP Recommendation Concept 193 Source: Data Comparison Contextual Intelligence PDP Design Concept 193 Source: Figma File Baseline The page is structured as a progressive commitment ladder — from problem awareness at the top to conversion at the bottom.",
+        "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image."
+      ],
+      "clean_key_numbers": [
+        "193",
+        "66%",
+        "74%",
+        "12%",
+        "31%",
+        "33%"
+      ],
+      "matched_summary": "The new Contextual Intelligence page is a large improvement over the baseline. is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 27,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_200",
+      "concept_id": "200",
+      "concept_title": "Contact Form",
+      "concept_display": "200 - Contact Form",
+      "weeks_seen": [
+        "2026-08-06",
+        "2026-08-13",
+        "2026-08-20"
+      ],
+      "deck_refs": [
+        "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-08-20",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Both designs are the same contact page. A form, a live chat option, and a side panel of other ways to get help, differing only in the words: the headline, the chat invitation, the button label, an",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "helio_compare_id": "cmspc22rz000004k09nuzd13y",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmspc22rz000004k09nuzd13y"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-08-20",
+          "record_id": null,
+          "text": "Engagement: C200 Everpure Live Contact Sales Page Baseline 37% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmspc22rz000004k09nuzd13y",
+          "slide_number": 29
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration ● Do not ship the 2026 update as-is, the headline change costs more understanding than the other copy improvements gain.",
+          "score": 26,
+          "numbers": [
+            "200",
+            "2026"
+          ]
+        },
+        {
+          "text": "2% on the live page), with comments like \"I don't know what challenges they're referring to\" and \"I'm not sure how they can help.\" Contact Form Signal Concept 200 Source: Data Comparison The update felt more complicated than the live page, even though nothing but words changed.",
+          "score": 25,
+          "numbers": [
+            "2%",
+            "200"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Contact Form Design Concept 200 People understood V2 better than any other version.",
+          "score": 25,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Update the page ● Ship V2, it's the strongest version of the page we've tested.",
+          "score": 23,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison On the update, people repeated the headline's words without knowing what they meant.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison V2 is the only version where the form clearly won as the way people would reach out.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Hunch Concept 200 Source: Data Comparison ● Keep the update's button label, chat invitation, and response-time promise.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Recommendation Concept 200 Source: Data Comparison People understood the live page but lost the plot on the update.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration ● Do not ship the 2026 update as-is, the headline change costs more understanding than the other copy improvements gain.",
+        "2% on the live page), with comments like \"I don't know what challenges they're referring to\" and \"I'm not sure how they can help.\" Contact Form Signal Concept 200 Source: Data Comparison The update felt more complicated than the live page, even though nothing but words changed.",
+        "Source: Data Comparison Contact Form Design Concept 200 People understood V2 better than any other version.",
+        "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Update the page ● Ship V2, it's the strongest version of the page we've tested.",
+        "Contact Form Signal Concept 200 Source: Data Comparison On the update, people repeated the headline's words without knowing what they meant."
+      ],
+      "clean_key_numbers": [
+        "200",
+        "2026",
+        "2%"
+      ],
+      "matched_summary": "200 - Contact Form is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 26,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_199",
+      "concept_id": "199",
+      "concept_title": "Chat Avatar",
+      "concept_display": "199 - Chat Avatar",
+      "weeks_seen": [
+        "2026-08-06",
+        "2026-08-13",
+        "2026-08-20"
+      ],
+      "deck_refs": [
+        "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-08-20",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Each person met one avatar cold, with just her name, photo, and first message, the same way a real visitor would meet her on the website. | Everly | Valencia",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "helio_compare_id": "cmsmp6yma000004kw7ln5si3z",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmsmp6yma000004kw7ln5si3z"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-08-20",
+          "record_id": null,
+          "text": "Comprehension: 960d 4d46 912e 97f6a88c6939 72% (High) vs F703486b 333d 4303 B449 Dd8a7807bbee 68% (Average).",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmsmp6yma000004kw7ln5si3z",
+          "slide_number": 21
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison Everly pulled ahead as more people weighed in.",
+          "score": 25,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Recommendation Concept 199 Source: Data Comparison People like her but treat her as generic website help.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Hunch Concept 199 Source: Data Comparison ● Move forward with Everly as the primary avatar candidate.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison People choose the guide that talks plainly.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison \"Hi, I'm Everly, Everpure's digital guide.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Let's turn your data challenge into something simpler, brighter, and more useful.\" Chat Avatar Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design ● Rebuild the conversion around the demo for the next round.",
+          "score": 18,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "UX Metrics ● Success ● Satisfaction Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File Chat Avatar Concept 199 Chat Avatar Design Concept 199 Source: Data Comparison Each person met one avatar cold, with just her name, photo, and ﬁrst message, the same way a real visitor would meet her on the website.",
+          "score": 14,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Everpure is introducing a human avatar as its website chat guide, and we tested two name and voice candidates, Everly and Valencia, with about 170 people from the same B2B audience used in past rounds.",
+          "score": 14,
+          "numbers": [
+            "170"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Chat Avatar Signal Concept 199 Source: Data Comparison Everly pulled ahead as more people weighed in.",
+        "Chat Avatar Recommendation Concept 199 Source: Data Comparison People like her but treat her as generic website help.",
+        "Chat Avatar Hunch Concept 199 Source: Data Comparison ● Move forward with Everly as the primary avatar candidate.",
+        "Chat Avatar Signal Concept 199 Source: Data Comparison People choose the guide that talks plainly.",
+        "Chat Avatar Signal Concept 199 Source: Data Comparison \"Hi, I'm Everly, Everpure's digital guide."
+      ],
+      "clean_key_numbers": [
+        "199",
+        "200",
+        "170"
+      ],
+      "matched_summary": "199 - Chat Avatar is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_edc success blueprint vs edc page",
+      "concept_id": null,
+      "concept_title": "Edc Success Blueprint vs Edc Page",
+      "concept_display": "Edc Success Blueprint vs Edc Page",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Rewrite the hero headline to lead with a specific user outcome, not \"Enterprise Data Cloud.\" Add a CTA descriptor line directly beneath \"Start Your Assessment.\" Copy should name the format, the time commitment, and the output. Establish visual hierarchy betwee",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmpznw53v000004l14u8ct0e8",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmpznw53v000004l14u8ct0e8"
+        },
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Comprehension is partial, and concentrated at the concept level. A brief positioning statement that names the audience (\"If your organization is managing data across multiple systems and teams...\") to help users self-select before the CTA. This will reduce unq",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmqtr6paj000004l7iljnh7re",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmqtr6paj000004l7iljnh7re"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+          "score": 22,
+          "numbers": [
+            "191",
+            "21%",
+            "15%",
+            "23%",
+            "73%",
+            "72%",
+            "65%",
+            "20%",
+            "25%",
+            "32%",
+            "7%",
+            "3%",
+            "4%",
+            "61%",
+            "58%",
+            "59%",
+            "44%",
+            "50%",
+            "49%",
+            "12%",
+            "9%",
+            "8%",
+            "60%",
+            "28%",
+            "26%",
+            "17%",
+            "18%",
+            "16%",
+            "10%",
+            "1"
+          ]
+        },
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 21,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "Sentiment: 191 EDC Success Blueprint Baseline scored 26 (very negative) vs 191 EDC Page V1 scored 44 (negative).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "26",
+            "44"
+          ]
+        },
+        {
+          "text": "Comprehension: 191 EDC Success Blueprint Baseline scored 72 (High) vs 191 EDC Page V1 scored 74 (High).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "72",
+            "74"
+          ]
+        },
+        {
+          "text": "Sentiment: 191 EDC Success Blueprint Baseline 26% (very negative) vs 191 EDC Page V1 44% (negative).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "26%",
+            "44%"
+          ]
+        },
+        {
+          "text": "Engagement: 191 EDC Success Blueprint Baseline scored 52 (Avg) vs 191 EDC Page V1 scored 68 (Avg).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "52",
+            "68"
+          ]
+        },
+        {
+          "text": "Intent: 191 EDC Success Blueprint Baseline 58% (Avg Intent) vs 191 EDC Page V1 63% (Avg Intent).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "58%",
+            "63%"
+          ]
+        },
+        {
+          "text": "Comprehension: 191 EDC Success Blueprint Baseline 72% (High) vs 191 EDC Page V1 74% (High).",
+          "score": 21,
+          "numbers": [
+            "191",
+            "72%",
+            "74%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "EDC Blueprint Page Signal Concept 191 Source: Data Comparison Metric Bas e V1 V2 Change Understood very well 21% 15% 23% recovered to best-of-three very well + most 73% 72% 65% dropped Understood a little 20% 25% 32% highest Did not understand 7% 3% 4% low Met + Exceeded 61% 58% 59% ﬂat Start Assessment (next action) 44% 50% 49% ﬂat \"None of these\" 12% 9% 8% steadily less dead-ending Purely positive sentiment 60% 58% 65% best Purely negative sentiment 28% 26% 25% best \"Overwhelming\" 17% 15% 7% big drop — core problem moved \"Confusing\" 18% 16% 10% down New: \"What's an EDC?\" chosen next — — 26% New direction EDC Blueprint Page Decisions Concept 191 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+        "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+        "Sentiment: 191 EDC Success Blueprint Baseline scored 26 (very negative) vs 191 EDC Page V1 scored 44 (negative).",
+        "Comprehension: 191 EDC Success Blueprint Baseline scored 72 (High) vs 191 EDC Page V1 scored 74 (High).",
+        "Sentiment: 191 EDC Success Blueprint Baseline 26% (very negative) vs 191 EDC Page V1 44% (negative)."
+      ],
+      "clean_key_numbers": [
+        "191",
+        "21%",
+        "15%",
+        "23%",
+        "73%",
+        "72%"
+      ],
+      "matched_summary": "Edc Success Blueprint vs Edc Page appears to be surfacing a negative signal in the current evidence, which points to another iteration rather than a ship decision.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 22,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_evergreen architecture state 1 vs evergreen architecture v2 state 1",
+      "concept_id": null,
+      "concept_title": "Evergreen Architecture State 1 vs Evergreen Architecture V2 State 1",
+      "concept_display": "Evergreen Architecture State 1 vs Evergreen Architecture V2 State 1",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Rewrite the first read. Plain-language outcome headline asserting what Universal Data Intelligence does for the buyer, before any architecture vocabulary. Demote the diagram from lead to supporting evidence; show one labeled plane clearly, collapse the rest be",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmr1fli1u000004l55ehtuev8",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmr1fli1u000004l55ehtuev8"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Even an articulate respondent who got it said it sta Sentiment: Evergreen Architecture State 1 2% (very negative) vs Evergreen Architecture V2 State 1 -1% (very negative) (n=101).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "2%",
+            "1%",
+            "101"
+          ]
+        },
+        {
+          "text": "Sentiment: Evergreen Architecture State 1 scored 2 (very negative) vs Evergreen Architecture V2 State 1 scored -1 (very negative).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "2"
+          ]
+        },
+        {
+          "text": "Comprehension: Evergreen Architecture State 1 scored 62 (Average) vs Evergreen Architecture V2 State 1 scored 63 (Average).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "62",
+            "63"
+          ]
+        },
+        {
+          "text": "Comprehension: Evergreen Architecture State 1 62% (Average) vs Evergreen Architecture V2 State 1 63% (Average).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "62%",
+            "63%"
+          ]
+        },
+        {
+          "text": "Success: Evergreen Architecture State 1 scored 47 (Low) vs Evergreen Architecture V2 State 1 scored 51 (Avg).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "47",
+            "51"
+          ]
+        },
+        {
+          "text": "Success: Evergreen Architecture State 1 47% (Low) vs Evergreen Architecture V2 State 1 51% (Avg).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "47%",
+            "51%"
+          ]
+        },
+        {
+          "text": "Adding social proof, outcome-speciﬁc language, or concrete beneﬁt statements (e.g., time savings, risk reduction metrics) could shift the Neutral block toward Met or Exceeded Emotional response is split between \"Innovative/Helpful\" and \"Overwhelming/Confusing.\" EDC Blueprint Page Signal Concept 191 Source: Data Comparison Comprehension is partial, and concentrated at the concept level.",
+          "score": 18,
+          "numbers": [
+            "191"
+          ]
+        },
+        {
+          "text": "overall_score: Evergreen Architecture State 1 scored 45 vs Evergreen Architecture V2 State 1 scored 46.",
+          "score": 17,
+          "numbers": [
+            "1",
+            "45",
+            "46"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Even an articulate respondent who got it said it sta Sentiment: Evergreen Architecture State 1 2% (very negative) vs Evergreen Architecture V2 State 1 -1% (very negative) (n=101).",
+        "Sentiment: Evergreen Architecture State 1 scored 2 (very negative) vs Evergreen Architecture V2 State 1 scored -1 (very negative).",
+        "Comprehension: Evergreen Architecture State 1 scored 62 (Average) vs Evergreen Architecture V2 State 1 scored 63 (Average).",
+        "Comprehension: Evergreen Architecture State 1 62% (Average) vs Evergreen Architecture V2 State 1 63% (Average).",
+        "Success: Evergreen Architecture State 1 scored 47 (Low) vs Evergreen Architecture V2 State 1 scored 51 (Avg)."
+      ],
+      "clean_key_numbers": [
+        "1",
+        "2%",
+        "1%",
+        "101",
+        "2",
+        "62"
+      ],
+      "matched_summary": "Evergreen Architecture State 1 vs Evergreen Architecture V2 State 1 is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_live events page 1 vs rebranded page for testing v1",
+      "concept_id": null,
+      "concept_title": "Live Events Page 1 vs Rebranded Page For Testing V1",
+      "concept_display": "Live Events Page 1 vs Rebranded Page For Testing V1",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Reframe the hero around the gap, not the product. Shifts the first-impression read from \"AI data tool\" to \"this is for me.\" Make Watch a Demo the co-primary CTA in the hero. 49% of visitors want to watch before they commit. Add a plain-language bridge above th",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmo1jj9kn000004ichootsn74",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmo1jj9kn000004ichootsn74"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "text": "Sentiment: Live Events Page 1 20% (very negative) vs Rebranded Page For Testing V1 27% (very negative).",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmo1jj9kn000004ichootsn74",
+          "slide_number": 42
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Also, the heading text \"tame your data chaos\" means nothing as it is not seo friendly at all..\" \"I can easily understand what they are offering.\" \"This site is simple and easy to understand.\" \"it is obvious that Sentiment: Live Events Page 1 20% (very negative) vs Rebranded Page For Testing V1 27% (very negative).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "20%",
+            "27%"
+          ]
+        },
+        {
+          "text": "Sentiment: Live Events Page 1 20% (very negative) vs Rebranded Page For Testing V1 27% (very negative).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "20%",
+            "27%"
+          ]
+        },
+        {
+          "text": "Success: Live Events Page 1 7% (Very Low) vs Rebranded Page For Testing V1 19% (Very Low).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "7%",
+            "19%"
+          ]
+        },
+        {
+          "text": "Engagement: Live Events Page 1 53% (Avg) vs Rebranded Page For Testing V1 55% (Avg).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "53%",
+            "55%"
+          ]
+        },
+        {
+          "text": "Success: Live Events Page 1 36% (Low) vs Rebranded Page For Testing V1 30% (Low).",
+          "score": 21,
+          "numbers": [
+            "1",
+            "36%",
+            "30%"
+          ]
+        },
+        {
+          "text": "Effort: Live Events Page 1 69% (Average) vs Rebranded Page For Testing V1 76% (Excellent).",
+          "score": 17,
+          "numbers": [
+            "1",
+            "69%",
+            "76%"
+          ]
+        },
+        {
+          "text": "I'm chill, buy my product\".\" \"It's a data storage platform.\" \"Giancarlo and whatever Travolta thing he's doing with his hands.\" \"Cloud storage for enterprises.\" \"tool to help for managing data, excluding storage.\" \"I am not really sure to be honest.\" \"A data management platform.\" \"I believe this page is about Sentiment: Future Of Storage 87% (positive) vs Future Of Storage Live 50% (neutral) (n=101).",
+          "score": 11,
+          "numbers": [
+            "87%",
+            "50%",
+            "101"
+          ]
+        },
+        {
+          "text": "Future of Storage Hunch Concept 159 Source: Figma File Future of Storage Design Concept 159 Baseline Live Figma AI Update Claude AI Update Build one new version.",
+          "score": 11,
+          "numbers": [
+            "159"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Also, the heading text \"tame your data chaos\" means nothing as it is not seo friendly at all..\" \"I can easily understand what they are offering.\" \"This site is simple and easy to understand.\" \"it is obvious that Sentiment: Live Events Page 1 20% (very negative) vs Rebranded Page For Testing V1 27% (very negative).",
+        "Sentiment: Live Events Page 1 20% (very negative) vs Rebranded Page For Testing V1 27% (very negative).",
+        "Success: Live Events Page 1 7% (Very Low) vs Rebranded Page For Testing V1 19% (Very Low).",
+        "Engagement: Live Events Page 1 53% (Avg) vs Rebranded Page For Testing V1 55% (Avg).",
+        "Success: Live Events Page 1 36% (Low) vs Rebranded Page For Testing V1 30% (Low)."
+      ],
+      "clean_key_numbers": [
+        "1",
+        "20%",
+        "27%",
+        "7%",
+        "19%",
+        "53%"
+      ],
+      "matched_summary": "Live Events Page 1 vs Rebranded Page For Testing V1 is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_product pages flasharray vs product pages flashblade",
+      "concept_id": null,
+      "concept_title": "Product Pages FlashArray vs Product Pages FlashBlade",
+      "concept_display": "Product Pages FlashArray vs Product Pages FlashBlade",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Visitors understand the category but cannot articulate the positioning. The pages communicate through technical vocabulary that self-rates as understood but doesn't transfer, people leave knowing it's \"data storage,\" not why it's different. Comprehension top-2",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmrxqoyo4000104jl6i2rp5zb",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmrxqoyo4000104jl6i2rp5zb"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Comprehension top-2 hit 66% (FlashArray) and 72% (FlashBlade), yet only 31% articulated \"uniﬁed/mission-critical\" and 22% articulated \"unstructured/all-ﬂash\" in the open-text probe, while ~92% defaulted to generic \"data storage.\" Product Pages Signal Concept 196 Source: Data Comparison FlashArray visitors converge on Take a Test Drive, FlashBlade visitors split between driving and watching.",
+          "score": 21,
+          "numbers": [
+            "2",
+            "66%",
+            "72%",
+            "31%",
+            "22%",
+            "92%",
+            "196"
+          ]
+        },
+        {
+          "text": "Get in organized with AI.\" \"It transforms raw data into technology use.\" \"It's about data for AI.\" \"A web app or SAAS that takes fragmented data and transforms it into useable.\" \"C'est l'explication de la fragmentation des données.\" \"I believe it utilizes AI.\" Sentiment: Product Pages FlashArray 35% (negative) vs Product Pages FlashBlade 36% (negative).",
+          "score": 17,
+          "numbers": [
+            "35%",
+            "36%"
+          ]
+        },
+        {
+          "text": "Sentiment: Product Pages FlashArray scored 35 (negative) vs Product Pages FlashBlade scored 36 (negative).",
+          "score": 17,
+          "numbers": [
+            "35",
+            "36"
+          ]
+        },
+        {
+          "text": "Comprehension: Product Pages FlashArray scored 73 (High) vs Product Pages FlashBlade scored 75 (High).",
+          "score": 17,
+          "numbers": [
+            "73",
+            "75"
+          ]
+        },
+        {
+          "text": "Engagement: Product Pages FlashArray scored 73 (High) vs Product Pages FlashBlade scored 72 (High).",
+          "score": 17,
+          "numbers": [
+            "73",
+            "72"
+          ]
+        },
+        {
+          "text": "Comprehension: Product Pages FlashArray 73% (High) vs Product Pages FlashBlade 75% (High).",
+          "score": 17,
+          "numbers": [
+            "73%",
+            "75%"
+          ]
+        },
+        {
+          "text": "Engagement: Product Pages FlashArray 73% (High) vs Product Pages FlashBlade 72% (High).",
+          "score": 17,
+          "numbers": [
+            "73%",
+            "72%"
+          ]
+        },
+        {
+          "text": "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+          "score": 15,
+          "numbers": [
+            "193",
+            "66%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Comprehension top-2 hit 66% (FlashArray) and 72% (FlashBlade), yet only 31% articulated \"uniﬁed/mission-critical\" and 22% articulated \"unstructured/all-ﬂash\" in the open-text probe, while ~92% defaulted to generic \"data storage.\" Product Pages Signal Concept 196 Source: Data Comparison FlashArray visitors converge on Take a Test Drive, FlashBlade visitors split between driving and watching.",
+        "Get in organized with AI.\" \"It transforms raw data into technology use.\" \"It's about data for AI.\" \"A web app or SAAS that takes fragmented data and transforms it into useable.\" \"C'est l'explication de la fragmentation des données.\" \"I believe it utilizes AI.\" Sentiment: Product Pages FlashArray 35% (negative) vs Product Pages FlashBlade 36% (negative).",
+        "Sentiment: Product Pages FlashArray scored 35 (negative) vs Product Pages FlashBlade scored 36 (negative).",
+        "Comprehension: Product Pages FlashArray scored 73 (High) vs Product Pages FlashBlade scored 75 (High).",
+        "Engagement: Product Pages FlashArray scored 73 (High) vs Product Pages FlashBlade scored 72 (High)."
+      ],
+      "clean_key_numbers": [
+        "2",
+        "66%",
+        "72%",
+        "31%",
+        "22%",
+        "92%"
+      ],
+      "matched_summary": "Product Pages FlashArray vs Product Pages FlashBlade is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 21,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_1touch product vs 1touch product v2",
+      "concept_id": null,
+      "concept_title": "1touch Product vs 1touch Product V2",
+      "concept_display": "1touch Product vs 1touch Product V2",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "The headline reframe is working, visitors are finally reading the product correctly. Replacing jargon-heavy framing with plain-language outcomes gave visitors a mental model they could hold onto in the first scroll. \"Understood very well\" tripled from 12% to 3",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmrxql7fv000004jl1dfcpmu5",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmrxql7fv000004jl1dfcpmu5"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Sentiment: 1touch Product scored 32 (negative) vs 1touch Product V2 scored 43 (negative).",
+          "score": 18,
+          "numbers": [
+            "32",
+            "43"
+          ]
+        },
+        {
+          "text": "Comprehension: 1touch Product scored 69 (Average) vs 1touch Product V2 scored 76 (High).",
+          "score": 18,
+          "numbers": [
+            "69",
+            "76"
+          ]
+        },
+        {
+          "text": "Sentiment: 1touch Product 32% (negative) vs 1touch Product V2 43% (negative) (n=100).",
+          "score": 18,
+          "numbers": [
+            "32%",
+            "43%",
+            "100"
+          ]
+        },
+        {
+          "text": "Engagement: 1touch Product scored 60 (Avg) vs 1touch Product V2 scored 63 (Avg).",
+          "score": 18,
+          "numbers": [
+            "60",
+            "63"
+          ]
+        },
+        {
+          "text": "Comprehension: 1touch Product 69% (Average) vs 1touch Product V2 76% (High).",
+          "score": 18,
+          "numbers": [
+            "69%",
+            "76%"
+          ]
+        },
+        {
+          "text": "Engagement: 1touch Product 60% (Avg) vs 1touch Product V2 63% (Avg).",
+          "score": 18,
+          "numbers": [
+            "60%",
+            "63%"
+          ]
+        },
+        {
+          "text": "Conversion (consideration → action) Most visitors grasp the category but miss the diﬀerentiation Responses clustered around generic labels, \"AI,\" \"data storage,\" \"data transformation.\" Only after extended exposure did respondents use the product's own framing: \"transforming fragmented data into AI-ready contextual intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Adding a plain-language value statement 66% understood most or very well.",
+          "score": 15,
+          "numbers": [
+            "193",
+            "66%"
+          ]
+        },
+        {
+          "text": "\"Understood very well\" tripled from 12% to 31%, full comprehension lifted from 66% to 74%, and Section 2 open responses shifted from generic labels like \"AI\" and \"data storage\" to the product's own language: \"structuring fractured data for contextual AI,\" \"turn a company's fragmented data into contextual AI data intelligence.\" Contextual Intelligence PDP Signal Concept 193 Source: Data Comparison Visitors want to watch before they commit.",
+          "score": 15,
+          "numbers": [
+            "12%",
+            "31%",
+            "66%",
+            "74%",
+            "2",
+            "193"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Sentiment: 1touch Product scored 32 (negative) vs 1touch Product V2 scored 43 (negative).",
+        "Comprehension: 1touch Product scored 69 (Average) vs 1touch Product V2 scored 76 (High).",
+        "Sentiment: 1touch Product 32% (negative) vs 1touch Product V2 43% (negative) (n=100).",
+        "Engagement: 1touch Product scored 60 (Avg) vs 1touch Product V2 scored 63 (Avg).",
+        "Comprehension: 1touch Product 69% (Average) vs 1touch Product V2 76% (High)."
+      ],
+      "clean_key_numbers": [
+        "32",
+        "43",
+        "69",
+        "76",
+        "32%",
+        "43%"
+      ],
+      "matched_summary": "1touch Product vs 1touch Product V2 is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_title_future of storage vs future of storage live",
+      "concept_id": null,
+      "concept_title": "Future Of Storage vs Future Of Storage Live",
+      "concept_display": "Future Of Storage vs Future Of Storage Live",
+      "weeks_seen": [
+        "2026-06-25",
+        "2026-07-02",
+        "2026-07-14",
+        "2026-07-23",
+        "2026-07-30"
+      ],
+      "deck_refs": [
+        "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-07-30",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "The new variations have a slightly higher comprehension, but the original baseline is easiest for people to understand. This translates to a higher sentiment, as well as engagement. The test variants stalled at about 200 participants across the live and variat",
+          "deck_file_id": "15E6K7hKNrmgs3i5KDXdBEQgUa1pyN7zd9NGnjezvwzY",
+          "helio_compare_id": "cmqs8tl52000004jlz6j8s56x",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmqs8tl52000004jlz6j8s56x"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image.",
+          "score": 18,
+          "numbers": [
+            "194",
+            "49%",
+            "57%",
+            "19%",
+            "29%",
+            "39%",
+            "22%",
+            "56%",
+            "53%",
+            "1",
+            "59%",
+            "58%",
+            "10",
+            "24%",
+            "34%",
+            "7%",
+            "3%"
+          ]
+        },
+        {
+          "text": "Future of Storage Recommendation Concept 159 Source: Data Comparison The new variations have a slightly higher comprehension, but the original baseline is easiest for people to understand.",
+          "score": 18,
+          "numbers": [
+            "159"
+          ]
+        },
+        {
+          "text": "Future of Storage Signal Concept 159 Source: Data Comparison Claude AI Update is the least-bad on comprehension.",
+          "score": 18,
+          "numbers": [
+            "159"
+          ]
+        },
+        {
+          "text": "The verbatims across all three variations say the same thing: \"needs more basic information and less jargon,\" \"hard to see how it all ties together,\" \"too much information to get the point across.\" Future of Storage Signal Concept 159 Source: Data Comparison Future of Storage Design Concept 159 V5 Platform Diagram Update Decisions Concept 159 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+          "score": 17,
+          "numbers": [
+            "159",
+            "1"
+          ]
+        },
+        {
+          "text": "I'm chill, buy my product\".\" \"It's a data storage platform.\" \"Giancarlo and whatever Travolta thing he's doing with his hands.\" \"Cloud storage for enterprises.\" \"tool to help for managing data, excluding storage.\" \"I am not really sure to be honest.\" \"A data management platform.\" \"I believe this page is about Sentiment: Future Of Storage 87% (positive) vs Future Of Storage Live 50% (neutral) (n=101).",
+          "score": 17,
+          "numbers": [
+            "87%",
+            "50%",
+            "101"
+          ]
+        },
+        {
+          "text": "Future of Storage Hunch Concept 159 Source: Figma File Future of Storage Design Concept 159 Baseline Live Figma AI Update Claude AI Update Build one new version.",
+          "score": 17,
+          "numbers": [
+            "159"
+          ]
+        },
+        {
+          "text": "Future of Storage Signal Concept 159 Source: Data Comparison Live's hero CTAs is a proven, banked asset.",
+          "score": 17,
+          "numbers": [
+            "159"
+          ]
+        },
+        {
+          "text": "Engagement: Future Of Storage 95% (Very High) vs Future Of Storage Live 48% (Fell Short).",
+          "score": 17,
+          "numbers": [
+            "95%",
+            "48%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "\"too small on my phone.\" Platform Diagram Update Signal Concept 194 Source: Data Comparison Metric V1 V2 Change Comprehension NET (most/all) 49% 57% Improved \"Did not understand\" (hard ﬂoor) 19% 19% Unmoved Positioning: read as intelligence/platform 29% 39% Improved Positioning: read as storage only 22% 22% Unmoved Expectations met/exceeded 56% 53% Unmoved ≥1 negative sentiment word 59% 58% Unmoved \"Helpful\" 39% 29% Down 10 \"Complicated\" 24% 34% Up 10 \"Joyful\" 7% 3% Halved Platform Diagram Update Decisions Concept 194 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design Sequence density needs to , add a warmth to the image.",
+        "Future of Storage Recommendation Concept 159 Source: Data Comparison The new variations have a slightly higher comprehension, but the original baseline is easiest for people to understand.",
+        "Future of Storage Signal Concept 159 Source: Data Comparison Claude AI Update is the least-bad on comprehension.",
+        "The verbatims across all three variations say the same thing: \"needs more basic information and less jargon,\" \"hard to see how it all ties together,\" \"too much information to get the point across.\" Future of Storage Signal Concept 159 Source: Data Comparison Future of Storage Design Concept 159 V5 Platform Diagram Update Decisions Concept 159 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design 1.",
+        "I'm chill, buy my product\".\" \"It's a data storage platform.\" \"Giancarlo and whatever Travolta thing he's doing with his hands.\" \"Cloud storage for enterprises.\" \"tool to help for managing data, excluding storage.\" \"I am not really sure to be honest.\" \"A data management platform.\" \"I believe this page is about Sentiment: Future Of Storage 87% (positive) vs Future Of Storage Live 50% (neutral) (n=101)."
+      ],
+      "clean_key_numbers": [
+        "194",
+        "49%",
+        "57%",
+        "19%",
+        "29%",
+        "39%"
+      ],
+      "matched_summary": "Future Of Storage vs Future Of Storage Live shows a positive directional signal in the current evidence, but still needs confirmation that the improvement is tied to the intended change.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "iterate",
+      "evidence_strength_score": 18,
+      "evidence_found": true
+    }
+  ]
+}
