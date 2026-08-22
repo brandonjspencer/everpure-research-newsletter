@@ -397,7 +397,7 @@ function buildHelioPack(entry, packs) {
       concept_key: key,
       concept_id: conceptId,
       concept_title: title,
-      concept_display: conceptId ? `Concept ${conceptId} - ${title}` : title,
+      concept_display: conceptId ? `${conceptId} - ${title}` : title,
       weeks_seen: new Set(),
       source_refs: [],
       raw_finding_excerpts: [],

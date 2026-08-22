@@ -82,6 +82,20 @@ function isBoilerplate(value) {
   return false;
 }
 
+// Pack titles are short labels, not evidence sentences, so isBoilerplate's
+// 12-char minimum (tuned for filtering junk evidence text) wrongly drops
+// legitimate short titles like "Chat Avatar" (11 chars). Only reject a title
+// on length if it's a single short token, not a real short phrase.
+function isBoilerplateTitle(value) {
+  const text = normalize(value);
+  if (!text) return true;
+  if (!/\s/.test(text) && text.length < 12) return true;
+  if (text.length < 4) return true;
+  if (BOILERPLATE_PATTERNS.some((rx) => rx.test(text))) return true;
+  if ((text.match(/●/g) || []).length >= 3) return true;
+  return false;
+}
+
 function isBadText(value) {
   const text = normalize(value);
   if (!text) return true;
@@ -159,7 +173,7 @@ function shouldDropPack(pack) {
     pack.concept_title || pack.concept_display || pack.concept_key || pack.title
   );
   if (!title) return true;
-  if (isBoilerplate(title)) return true;
+  if (isBoilerplateTitle(title)) return true;
   if (/^we have\s+/i.test(title)) return true;
   return false;
 }

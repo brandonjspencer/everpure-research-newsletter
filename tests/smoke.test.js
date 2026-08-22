@@ -140,3 +140,40 @@ test("build_evidence_packs.js merges Helio comparisons into packs", () => {
     "an unlabelable garbled comparison should be skipped, not guessed at"
   );
 });
+
+test("clean_evidence_signals.js keeps short-but-real multi-word titles", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "everpure-clean-signals-"));
+  const dataDir = path.join(tmp, "data");
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  const pack = {
+    concept_key: "helio_concept_199",
+    concept_id: "199",
+    // "Chat Avatar" is 11 characters - shorter than the 12-char minimum used
+    // to filter junk evidence *sentences*, but a perfectly legitimate title.
+    concept_title: "Chat Avatar",
+    concept_display: "Concept 199 - Chat Avatar",
+    weeks_seen: ["2026-08-06"],
+    source_refs: [],
+    raw_finding_excerpts: [
+      "Each person met one avatar cold, with just her name, photo, and first message.",
+    ],
+    supporting_numbers: ["72", "68"],
+    comparison_cues: ["comparison"],
+    behavioral_signals: ["comprehension"],
+    deck_refs: ["deck-1"],
+  };
+  const payload = { packs: [pack], pack_count: 1 };
+
+  for (const name of ["evidence_packs.json", "evidence_packs_default_30d.json"]) {
+    fs.writeFileSync(path.join(dataDir, name), JSON.stringify(payload));
+  }
+
+  execFileSync("node", [path.join(ROOT, "netlify", "clean_evidence_signals.js"), tmp], {
+    stdio: "pipe",
+  });
+
+  const cleaned = JSON.parse(fs.readFileSync(path.join(dataDir, "evidence_packs.json"), "utf8"));
+  assert.strictEqual(cleaned.packs.length, 1, "a short but real multi-word title should survive");
+  assert.strictEqual(cleaned.packs[0].concept_title, "Chat Avatar");
+});
