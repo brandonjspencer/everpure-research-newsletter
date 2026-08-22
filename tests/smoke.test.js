@@ -177,3 +177,44 @@ test("clean_evidence_signals.js keeps short-but-real multi-word titles", () => {
   assert.strictEqual(cleaned.packs.length, 1, "a short but real multi-word title should survive");
   assert.strictEqual(cleaned.packs[0].concept_title, "Chat Avatar");
 });
+
+test("build_evidence_packs.js doesn't span a sentence break into a garbled title", () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "everpure-evidence-sentence-"));
+  const dataDir = path.join(tmp, "data");
+  fs.mkdirSync(dataDir, { recursive: true });
+
+  // A two-sentence bullet where the first sentence ends before a name that
+  // happens to precede "needs to" - the concept-title patterns should not
+  // grab the whole span (first sentence + name) as a single title.
+  const weeks = [
+    {
+      week_date: "2026-08-06",
+      record_id: "everpure_2026_08_06",
+      content_groups: {
+        other: [
+          {
+            text: "Get the next concepts into testing. Brandon needs to provide the hunch/angle for the chatbot experience so we can quickly build a test.",
+            level: 1,
+            children: [],
+          },
+        ],
+      },
+    },
+  ];
+  fs.writeFileSync(path.join(dataDir, "weeks.json"), JSON.stringify(weeks));
+  fs.writeFileSync(path.join(dataDir, "deck_content.json"), "[]");
+
+  execFileSync("node", [path.join(ROOT, "netlify", "build_evidence_packs.js"), tmp], {
+    stdio: "pipe",
+  });
+
+  const payload = JSON.parse(fs.readFileSync(path.join(dataDir, "evidence_packs.json"), "utf8"));
+  const garbled = payload.packs.find((p) =>
+    (p.concept_title || "").toLowerCase().includes("brandon")
+  );
+  assert.strictEqual(
+    garbled,
+    undefined,
+    "a title spanning a sentence break into a trailing name should not become a pack"
+  );
+});

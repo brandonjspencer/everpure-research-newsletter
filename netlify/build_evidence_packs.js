@@ -107,6 +107,10 @@ function cleanupConceptTitle(title) {
     .trim();
 }
 
+function spansMultipleSentences(text) {
+  return /[.!?]\s+[A-Z]/.test(text);
+}
+
 function structuredConceptFromLine(text) {
   const t = normalizeWhitespace(text);
   if (!t || isBadEvidenceText(t) || isIntroLine(t)) return null;
@@ -120,6 +124,10 @@ function structuredConceptFromLine(text) {
   for (const rx of patterns) {
     const match = t.match(rx);
     if (!match) continue;
+    // A concept title spanning a full sentence break (e.g. matching "Needs
+    // to" in a second, unrelated sentence) means the pattern grabbed a whole
+    // preceding sentence plus a name/fragment from the next one - not a title.
+    if (spansMultipleSentences(match[1])) continue;
     const title = cleanupConceptTitle(match[1]);
     if (title && title.length >= 3 && title.length <= 72) return title;
   }
