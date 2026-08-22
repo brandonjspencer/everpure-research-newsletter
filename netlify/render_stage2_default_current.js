@@ -891,8 +891,10 @@ function buildNarrativeFindings(groups, statusInfo) {
   return picked.slice(0, 3);
 }
 
-function buildComparisons(groups, sourceComparisons) {
+function buildComparisons(groups, sourceComparisons, excludeTitles = []) {
+  const excluded = new Set(excludeTitles.map((title) => topicKey(title)));
   const candidates = eligibleGroups(groups)
+    .filter((group) => !excluded.has(topicKey(canonicalTopicTitle(group.title))))
     .filter((group) => {
       const text =
         `${group.title} ${(group.comparison_cues || []).join(" ")} ${publicEvidenceLines(group).join(" ")}`.toLowerCase();
@@ -1007,7 +1009,11 @@ function buildStage2Brief() {
     ? sourceFindings.slice(0, 3)
     : buildNarrativeFindings(evidenceGroups, statusInfo);
 
-  const comparisonTests = buildComparisons(evidenceGroups, rawComparisons);
+  const comparisonTests = buildComparisons(
+    evidenceGroups,
+    rawComparisons,
+    surfacedFindings.map((item) => item.title)
+  );
   const unresolvedQuestions = buildUnresolvedQuestions(evidenceGroups, statusInfo);
   const sourceActions = asArray(source.next_actions || sections.next_actions);
   const nextActions = buildRecommendedActions(evidenceGroups, statusInfo, sourceActions);
