@@ -380,4 +380,17 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
     "Alpha Widget: distinct operational action copy",
     "recommended_action override should differ from the Direction/next_step copy"
   );
+
+  const renderedHtml = fs.readFileSync(path.join(newsletterDir, "default.html"), "utf8");
+  for (const id of [
+    "research-findings",
+    "meaningful-comparisons",
+    "unresolved",
+    "recommended-actions",
+  ]) {
+    assert.ok(
+      renderedHtml.includes(`id="${id}"`),
+      `default.html should have a section with id="${id}" so the distribution email's "In this issue" links can jump to it`
+    );
+  }
 });

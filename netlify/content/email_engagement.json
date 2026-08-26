@@ -1,0 +1,5 @@
+{
+  "note": "Aggregate-only engagement data, re-curated monthly from the private Apps Script EngagementSummary sheet after each broadcast. Never add per-recipient names/emails here — this file backs a public page.",
+  "generated_at": null,
+  "issues": []
+}

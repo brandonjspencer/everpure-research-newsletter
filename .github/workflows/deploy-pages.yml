@@ -37,6 +37,9 @@ jobs:
       # Tier A (compare share pages) needs no auth; these are read when present.
       HELIO_APP_ID: ${{ secrets.HELIO_APP_ID }}
       HELIO_API_TOKEN: ${{ secrets.HELIO_API_TOKEN }}
+      # SHA-256 hex digest of the /analytics/ dashboard password — never the plaintext.
+      # Baked into publish/analytics/index.html at build time by render_analytics_dashboard.js.
+      ANALYTICS_DASHBOARD_PASSWORD_HASH: ${{ secrets.ANALYTICS_DASHBOARD_PASSWORD_HASH }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

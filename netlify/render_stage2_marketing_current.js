@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { brandCss, sidebar, themeInit, FONT_LINK, FAVICON_LINK } = require("./dashboard_theme");
+const {
+  brandCss,
+  sidebar,
+  themeInit,
+  FONT_LINK,
+  FAVICON_LINK,
+  analyticsSnippet,
+} = require("./dashboard_theme");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -491,6 +498,7 @@ function buildHtml(payload) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(payload.title)}</title>
   ${FAVICON_LINK}
+  ${analyticsSnippet()}
   ${FONT_LINK}
   ${brandCss()}
   ${themeInit()}

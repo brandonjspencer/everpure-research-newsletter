@@ -37,6 +37,27 @@ test("docHead embeds the brand favicon as a depth-agnostic data URI", () => {
   assert.deepEqual([...bytes.subarray(0, 4)], [0, 0, 1, 0]);
 });
 
+test("analyticsSnippet omits itself for an unconfigured/placeholder id", () => {
+  // The literal placeholder string must never emit a broken/non-functional
+  // gtag reference, regardless of what GA_MEASUREMENT_ID currently resolves to.
+  assert.strictEqual(theme.analyticsSnippet("G-XXXXXXXXXX"), "");
+  assert.strictEqual(theme.analyticsSnippet(""), "");
+});
+
+test("analyticsSnippet emits the gtag.js loader once a real measurement id is set", () => {
+  const snippet = theme.analyticsSnippet("G-REAL12345");
+  assert.match(snippet, /googletagmanager\.com\/gtag\/js\?id=G-REAL12345/);
+  assert.match(snippet, /gtag\("config","G-REAL12345"\)/);
+});
+
+test("docHead() carries the real, configured GA_MEASUREMENT_ID by default", () => {
+  // GA4 is now configured (see GA_MEASUREMENT_ID) - docHead()'s call to
+  // analyticsSnippet() with no argument must pick that up, so every page
+  // built from docHead() actually ships the tag.
+  assert.match(theme.analyticsSnippet(), /googletagmanager\.com\/gtag\/js\?id=G-BZ7N97FRRV/);
+  assert.match(theme.docHead("X"), /googletagmanager\.com\/gtag\/js\?id=G-BZ7N97FRRV/);
+});
+
 test("brandCss defines both light and dark theme variables", () => {
   const css = theme.brandCss();
   assert.match(css, /--paper:#/);

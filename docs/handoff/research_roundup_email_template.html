@@ -100,7 +100,12 @@
                       </tr>
                       <tr>
                         <td class="hero-cta-cell" bgcolor="#D55D1D" style="background-color:#D55D1D;border-radius:4px;">
-                          <a class="hero-cta-link" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html" style="display:inline-block;padding:13px 20px;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:12px;font-weight:700;color:#FFF5E3;letter-spacing:0.11em;text-transform:uppercase;text-decoration:none;white-space:nowrap;">Read Issue &#8594;</a>
+                          <!-- data-track-id opts this link into click tracking (see appsscript/Code.gs
+                               extractTrackedLinks_/personalizeHtml_); the Apps Script sender rewrites
+                               href per-recipient at send time only when tracking is enabled — this
+                               static href (with its utm_ params, for GA4 email attribution — bump
+                               utm_campaign every issue) is what ships if TRACKING_BASE_URL is unset. -->
+                          <a class="hero-cta-link" data-track-id="hero-read-issue" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06" style="display:inline-block;padding:13px 20px;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:12px;font-weight:700;color:#FFF5E3;letter-spacing:0.11em;text-transform:uppercase;text-decoration:none;white-space:nowrap;">Read Issue &#8594;</a>
                         </td>
                       </tr>
                     </table>
@@ -161,7 +166,7 @@
                     <span style="font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#753D1F;letter-spacing:0.1em;">01</span>
                   </td>
                   <td class="index-copy" valign="top" style="padding:16px 44px 20px 12px;">
-                    <a href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html#research-findings" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Research Findings &#8594;</a>
+                    <a data-track-id="index-research-findings" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06#research-findings" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Research Findings &#8594;</a>
                     <span style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:400;color:#888278;line-height:1.65;">EDC Blueprint, Accelerate Live Stream, and Contextual Intelligence show where users need clearer credibility, orientation, and value cues.</span>
                   </td>
                 </tr>
@@ -170,7 +175,7 @@
                     <span style="font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#753D1F;letter-spacing:0.1em;">02</span>
                   </td>
                   <td class="index-copy" valign="top" style="padding:16px 44px 20px 12px;border-top:1px solid #373431;">
-                    <a href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html#meaningful-comparisons" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Meaningful Comparison &#8594;</a>
+                    <a data-track-id="index-meaningful-comparison" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06#meaningful-comparisons" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Meaningful Comparison &#8594;</a>
                     <span style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:400;color:#888278;line-height:1.65;">The Platform Diagram Update needs one focused decision around how clearly the page shifts perception toward an intelligent, AI-ready data platform.</span>
                   </td>
                 </tr>
@@ -179,7 +184,7 @@
                     <span style="font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#753D1F;letter-spacing:0.1em;">03</span>
                   </td>
                   <td class="index-copy" valign="top" style="padding:16px 44px 20px 12px;border-top:1px solid #373431;">
-                    <a href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html#unresolved" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">What Is Still Unresolved &#8594;</a>
+                    <a data-track-id="index-unresolved" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06#unresolved" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">What Is Still Unresolved &#8594;</a>
                     <span style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:400;color:#888278;line-height:1.65;">The open question is how to explain platform intelligence and business value without adding cognitive load or making the story feel abstract.</span>
                   </td>
                 </tr>
@@ -188,7 +193,7 @@
                     <span style="font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#753D1F;letter-spacing:0.1em;">04</span>
                   </td>
                   <td class="index-copy" valign="top" style="padding:16px 44px 32px 12px;border-top:1px solid #373431;">
-                    <a href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html#recommended-actions" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Recommended Actions &#8594;</a>
+                    <a data-track-id="index-recommended-actions" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06#recommended-actions" style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:15px;font-weight:700;color:#DED6C6;letter-spacing:0.03em;margin-bottom:5px;text-decoration:none;">Recommended Actions &#8594;</a>
                     <span style="display:block;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:400;color:#888278;line-height:1.65;">Five concept-labeled actions translate this month’s findings into next steps for copy, hierarchy, CTAs, and follow-up research.</span>
                   </td>
                 </tr>
@@ -236,7 +241,7 @@
                     <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                       <tr>
                         <td bgcolor="#D55D1D" style="background-color:#D55D1D;border-radius:4px;">
-                          <a href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html" style="display:inline-block;padding:14px 28px;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#FFF5E3;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Read Full Roundup &#8594;</a>
+                          <a data-track-id="footer-read-full-roundup" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06" style="display:inline-block;padding:14px 28px;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:13px;font-weight:700;color:#FFF5E3;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Read Full Roundup &#8594;</a>
                         </td>
                       </tr>
                     </table>

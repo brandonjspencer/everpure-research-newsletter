@@ -79,6 +79,18 @@ alongside a **deterministic** variant-frontrunner line). Both degrade gracefully
 back to computed/harvested output. The math is computed; these files are the editorial read and must
 not invent certainty beyond the evidence.
 
+**Engagement tracking** is opt-in and split across two layers. Site-wide page analytics is GA4
+(`analyticsSnippet()` in `netlify/dashboard_theme.js`, spliced into every HTML-producing renderer's
+`<head>` — no-op until a real Measurement ID replaces the `GA_MEASUREMENT_ID` placeholder); GA4's own
+console is the dashboard for it, there's no on-site reflection. Email open/click tracking is
+per-recipient and opt-in via the Apps Script sender's `TRACKING_BASE_URL` Script Property — see
+[appsscript/README.md "Engagement tracking"](appsscript/README.md#engagement-tracking-opens--clicks-opt-in).
+Its **aggregate-only** output (no names/emails) is transcribed monthly into
+`netlify/content/email_engagement.json` (same data-not-code pattern as the dashboard signals above)
+and rendered at the password-gated `/analytics/` page (`netlify/render_analytics_dashboard.js`) — the
+password gate is a client-side deterrent only (GitHub Pages has no server-side auth), which is exactly
+why per-recipient identity never reaches this file or that page.
+
 ## Conventions & guardrails
 
 - **Generated artifacts are not committed.** All of `publish/` and fetched `deck_artifacts/`
@@ -93,9 +105,10 @@ not invent certainty beyond the evidence.
 - **Branded pages share one theme.** `netlify/dashboard_theme.js` is the single source of the
   branded look (light/dark CSS variables, the collapsible hover-expand icon sidebar, the theme
   toggle). The dashboard (homepage), `render_sitemap.js`, the issues archive
-  (`publish_issue_archives.js`), and the activity log (`render_stage2_marketing_current.js`) all
-  pull from it. Nav links are **relative** with a per-page `prefix` (`""` root, `"../"` one level
-  deep) to survive the Pages subpath. SVG chart fills are CSS variables so charts follow the theme.
+  (`publish_issue_archives.js`), the activity log (`render_stage2_marketing_current.js`), and the
+  analytics page (`render_analytics_dashboard.js`) all pull from it. Nav links are **relative**
+  with a per-page `prefix` (`""` root, `"../"` one level deep) to survive the Pages subpath. SVG
+  chart fills are CSS variables so charts follow the theme.
 - **Prefer post-generation static rewriting over editing the API render module**
   (`netlify/api.js`, imported at build time by `generate_static_newsletters.js` to emit the
   static API JSON). There is no live/serverless API — the site is **static on GitHub Pages**
@@ -128,7 +141,12 @@ private keys, or recipient spreadsheets. The Notion source is a **public page** 
 the `SOURCE_URL` secret (no Notion API token or database id is used). Google deck fetch needs
 a `drive.readonly` OAuth token. The Pages deploy (`deploy-pages.yml`) reads secrets
 `SOURCE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`,
-`HELIO_APP_ID`, `HELIO_API_TOKEN`, and the variable `GOOGLE_FETCH_LIMIT`. `GOOGLE_REFRESH_TOKEN`
+`HELIO_APP_ID`, `HELIO_API_TOKEN`, `ANALYTICS_DASHBOARD_PASSWORD_HASH`, and the variable
+`GOOGLE_FETCH_LIMIT`. `ANALYTICS_DASHBOARD_PASSWORD_HASH` is a **SHA-256 hex digest of the
+`/analytics/` dashboard password — never the plaintext** — baked into
+`publish/analytics/index.html` at build time (see `netlify/render_analytics_dashboard.js`);
+compute it with `shasum -a 256` or `crypto.createHash("sha256")`, never commit the password
+itself. `GOOGLE_REFRESH_TOKEN`
 should be a long-lived token from a published (Production/Internal) OAuth app — it does not need
 monthly rotation; see [docs/OPERATIONS.md](docs/OPERATIONS.md) "Google auth". `HELIO_APP_ID` /
 `HELIO_API_TOKEN` are the Enterprise public-API pair (`X-API-ID`/`X-API-TOKEN`) used by

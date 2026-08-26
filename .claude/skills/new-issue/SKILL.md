@@ -135,6 +135,12 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
 2. **CTAs must point to the frozen archive** `/issues/$MONTH/default.html` — never the mutable
    `/newsletter/default.html`. Include the Zscaler authentication note and the
    `#research-and-discovery` Slack feedback link.
+   - **Tracking convention** (bump per issue, copy-paste from the template — no code change):
+     append `?utm_source=email&utm_medium=email&utm_campaign=issue-$MONTH` to every CTA href (GA4
+     email attribution), and keep each tracked CTA's `data-track-id="…"` attribute (used only if
+     the Apps Script sender's opt-in engagement tracking is enabled — see
+     [appsscript/README.md → Engagement tracking](../../../appsscript/README.md#engagement-tracking-opens--clicks-opt-in);
+     harmless static attribute otherwise).
 3. Test in Gmail desktop **and** phone; watch the small breakpoint for horizontal scroll.
 4. Send via the consolidated Apps Script in [`appsscript/`](../../../appsscript/README.md) (the
    user runs it under their own Google auth — you never send). It is **batched**, so there is no
@@ -150,6 +156,13 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
    - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
    - UX-tip emails use `dryRunUxTip` / `sendUxTipTest` / `sendUxTipBroadcast`.
+5. **If engagement tracking is enabled** (`TRACKING_BASE_URL` set — opt-in, see
+   [appsscript/README.md](../../../appsscript/README.md#engagement-tracking-opens--clicks-opt-in)):
+   a few days after the broadcast, run `buildEngagementSummary()` from the Apps Script editor, then
+   transcribe that issue's row (recipients, unique opens/clicks, rates, top link — **aggregate
+   numbers only, never names**) into `netlify/content/email_engagement.json`, alongside the
+   [Dashboard signals](#dashboard-signals-monthly-re-curation) re-curation. This feeds the public,
+   password-gated `/analytics/` page.
 
 ## Phase 7 — Slack announcement ▶ APPROVAL GATE 3
 

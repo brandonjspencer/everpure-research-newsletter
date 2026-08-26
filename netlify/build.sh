@@ -225,6 +225,9 @@ fi
 if [ -f "$ROOT/netlify/render_trends_dashboard.js" ]; then
   node "$ROOT/netlify/render_trends_dashboard.js" "$ROOT"
 fi
+if [ -f "$ROOT/netlify/render_analytics_dashboard.js" ]; then
+  node "$ROOT/netlify/render_analytics_dashboard.js" "$ROOT"
+fi
 if [ -f "$ROOT/netlify/render_sitemap.js" ]; then
   node "$ROOT/netlify/render_sitemap.js" "$ROOT"
 fi

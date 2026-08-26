@@ -39,6 +39,7 @@ function labelFor(rel) {
   const known = {
     "index.html": "Dashboard — research trends (home)",
     "sitemap/index.html": "Sitemap",
+    "analytics/index.html": "Analytics — engagement (password-protected)",
     "issues/index.html": "Issues archive",
     "newsletter/default.html": "Current newsletter — default brief",
     "newsletter/marketing-activity-30d.html": "Research activity log (30d)",

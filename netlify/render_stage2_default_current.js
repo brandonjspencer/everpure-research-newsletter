@@ -6,7 +6,7 @@ const {
   composeEvidenceSummary,
   extractRespondentQuote,
 } = require("./text_utils");
-const { FAVICON_LINK } = require("./dashboard_theme");
+const { FAVICON_LINK, analyticsSnippet } = require("./dashboard_theme");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -1293,6 +1293,7 @@ function renderHtml(data) {
   html.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
   html.push(`<title>${escapeHtml(data.title)}</title>`);
   if (FAVICON_LINK) html.push(FAVICON_LINK);
+  html.push(analyticsSnippet());
   html.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
   html.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
   html.push(
@@ -1492,7 +1493,7 @@ a { color: inherit; }
   html.push(`<div class="brief-copy">${escapeHtml(data.executive_summary)}</div>`);
   html.push("</div></section>");
 
-  html.push('<section class="section"><div class="wrapper">');
+  html.push('<section id="research-findings" class="section"><div class="wrapper">');
   html.push(sectionLabel("Research Findings"));
   html.push('<div class="findings">');
   data.surfaced_findings.forEach((item, idx) =>
@@ -1500,7 +1501,9 @@ a { color: inherit; }
   );
   html.push("</div></div></section>");
 
-  html.push('<section class="section section-dark"><div class="wrapper">');
+  html.push(
+    '<section id="meaningful-comparisons" class="section section-dark"><div class="wrapper">'
+  );
   html.push(sectionLabel("Meaningful Comparisons"));
   html.push('<div class="findings">');
   data.comparison_tests.forEach((item, idx) =>
@@ -1508,7 +1511,7 @@ a { color: inherit; }
   );
   html.push("</div></div></section>");
 
-  html.push('<section class="section section-mint"><div class="wrapper">');
+  html.push('<section id="unresolved" class="section section-mint"><div class="wrapper">');
   html.push(sectionLabel("What Is Still Unresolved"));
   const unresolvedCount = data.unresolved_questions.length;
   const unresolvedLayoutClass =
@@ -1523,7 +1526,7 @@ a { color: inherit; }
   });
   html.push("</div></div></section>");
 
-  html.push('<section class="section"><div class="wrapper">');
+  html.push('<section id="recommended-actions" class="section"><div class="wrapper">');
   html.push(sectionLabel("Recommended Actions"));
   html.push('<div class="actions">');
   data.next_actions.forEach((item, idx) => {
