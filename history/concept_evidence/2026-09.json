@@ -1,0 +1,296 @@
+{
+  "generated_at": "2026-09-24T16:10:22.089Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 3,
+  "with_evidence_count": 3,
+  "concepts": [
+    {
+      "concept_key": "netapp comparison page: establish a baseline and test the updated direction against it.",
+      "concept_id": null,
+      "concept_title": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+      "concept_display": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+      "weeks_seen": [
+        "2026-09-17"
+      ],
+      "deck_refs": [
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-17",
+          "record_id": "everpure_2026_09_17",
+          "group": "other",
+          "text": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+          "score": 28,
+          "numbers": []
+        },
+        {
+          "text": "Platform navigation + landing pages: We’ll pick three platform directions and test the navigation together with the landing page it leads to. The goal is to understand the whole journey—what people expect before clicking, how they understand the open nav, and whether the destination delivers on that expectation.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "EDC Blueprint: Test the updated Blueprint page based on what we’ve learned across the previous rounds.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "Contact page: Put the updated contact experience back into testing.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "Video → homepage journey: Finish synthesizing the test we already have running to understand how well the video story carries through to the landing experience.",
+          "score": 3,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+        "Platform navigation + landing pages: We’ll pick three platform directions and test the navigation together with the landing page it leads to. The goal is to understand the whole journey—what people expect before clicking, how they understand the open nav, and whether the destination delivers on that expectation.",
+        "EDC Blueprint: Test the updated Blueprint page based on what we’ve learned across the previous rounds.",
+        "Contact page: Put the updated contact experience back into testing.",
+        "Video → homepage journey: Finish synthesizing the test we already have running to understand how well the video story carries through to the landing experience."
+      ],
+      "clean_key_numbers": [],
+      "matched_summary": "NetApp comparison page: Establish a baseline and test the updated direction against it. is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 28,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_200",
+      "concept_id": "200",
+      "concept_title": "Contact Form",
+      "concept_display": "200 - Contact Form",
+      "weeks_seen": [
+        "2026-08-06",
+        "2026-08-13",
+        "2026-08-20",
+        "2026-08-27"
+      ],
+      "deck_refs": [
+        "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-08-27",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Both designs are the same contact page. A form, a live chat option, and a side panel of other ways to get help, differing only in the words: the headline, the chat invitation, the button label, an",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "helio_compare_id": "cmspc22rz000004k09nuzd13y",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmspc22rz000004k09nuzd13y"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-08-27",
+          "record_id": null,
+          "text": "Engagement: C200 Everpure Live Contact Sales Page Baseline 36% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmspc22rz000004k09nuzd13y",
+          "slide_number": 29
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration ● Do not ship the 2026 update as-is, the headline change costs more understanding than the other copy improvements gain.",
+          "score": 26,
+          "numbers": [
+            "200",
+            "2026"
+          ]
+        },
+        {
+          "text": "2% on the live page), with comments like \"I don't know what challenges they're referring to\" and \"I'm not sure how they can help.\" Contact Form Signal Concept 200 Source: Data Comparison The update felt more complicated than the live page, even though nothing but words changed.",
+          "score": 25,
+          "numbers": [
+            "2%",
+            "200"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Contact Form Design Concept 200 People understood V2 better than any other version.",
+          "score": 25,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Update the page ● Ship V2, it's the strongest version of the page we've tested.",
+          "score": 23,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison The layout now makes the Chat channel the focus.",
+          "score": 23,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Contact Form Design Concept 200 V3 is the best page of the series, clearest, best-liked, and it finally moved the feel of the page, not just the words.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison V3 is the best-understood version of the page, even without the orange \"Contact Sales\" banner.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "Contact Form Signal Concept 200 Source: Data Comparison On the update, people repeated the headline's words without knowing what they meant.",
+          "score": 22,
+          "numbers": [
+            "200"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Test Iteration ● Do not ship the 2026 update as-is, the headline change costs more understanding than the other copy improvements gain.",
+        "2% on the live page), with comments like \"I don't know what challenges they're referring to\" and \"I'm not sure how they can help.\" Contact Form Signal Concept 200 Source: Data Comparison The update felt more complicated than the live page, even though nothing but words changed.",
+        "Source: Data Comparison Contact Form Design Concept 200 People understood V2 better than any other version.",
+        "Contact Form Signal Concept 200 Source: Data Comparison Contact Form Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Update the page ● Ship V2, it's the strongest version of the page we've tested.",
+        "Contact Form Signal Concept 200 Source: Data Comparison The layout now makes the Chat channel the focus."
+      ],
+      "clean_key_numbers": [
+        "200",
+        "2026",
+        "2%"
+      ],
+      "matched_summary": "200 - Contact Form is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 26,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_199",
+      "concept_id": "199",
+      "concept_title": "Chat Avatar",
+      "concept_display": "199 - Chat Avatar",
+      "weeks_seen": [
+        "2026-08-06",
+        "2026-08-13",
+        "2026-08-20",
+        "2026-08-27"
+      ],
+      "deck_refs": [
+        "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-08-27",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Each person met one avatar cold, with just her name, photo, and first message, the same way a real visitor would meet her on the website. | Everly | Valencia",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "helio_compare_id": "cmsmp6yma000004kw7ln5si3z",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmsmp6yma000004kw7ln5si3z"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-08-27",
+          "record_id": null,
+          "text": "Comprehension: 960d 4d46 912e 97f6a88c6939 72% (High) vs F703486b 333d 4303 B449 Dd8a7807bbee 68% (Average).",
+          "deck_file_id": "16X0srJ1iGnO0Pl5hb8sA8ZK9rdcUcVU0tBJZsjX-r_8",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmsmp6yma000004kw7ln5si3z",
+          "slide_number": 21
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison Everly pulled ahead as more people weighed in.",
+          "score": 25,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Recommendation Concept 199 Source: Data Comparison People like her but treat her as generic website help.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Hunch Concept 199 Source: Data Comparison ● Move forward with Everly as the primary avatar candidate.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison People choose the guide that talks plainly.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Chat Avatar Signal Concept 199 Source: Data Comparison \"Hi, I'm Everly, Everpure's digital guide.",
+          "score": 22,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Let's turn your data challenge into something simpler, brighter, and more useful.\" Chat Avatar Decisions Concept 200 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue Reﬁne Design ● Rebuild the conversion around the demo for the next round.",
+          "score": 18,
+          "numbers": [
+            "200"
+          ]
+        },
+        {
+          "text": "UX Metrics ● Success ● Satisfaction Audiences ● Technical leader (US, UK, GR & FR) ● AI Infrastructure and Technical Leaders (Global) ● Infrastructure Owner (US, UK, GR & FR) ● Front-end & Full Stack Developers (Global) ● Non-Technical Leaders (US, UK, GR & FR) ● Financial Decision Makers (US) Source: Figma File Chat Avatar Concept 199 Chat Avatar Design Concept 199 Source: Data Comparison Each person met one avatar cold, with just her name, photo, and ﬁrst message, the same way a real visitor would meet her on the website.",
+          "score": 14,
+          "numbers": [
+            "199"
+          ]
+        },
+        {
+          "text": "Source: Data Comparison Everpure is introducing a human avatar as its website chat guide, and we tested two name and voice candidates, Everly and Valencia, with about 170 people from the same B2B audience used in past rounds.",
+          "score": 14,
+          "numbers": [
+            "170"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Chat Avatar Signal Concept 199 Source: Data Comparison Everly pulled ahead as more people weighed in.",
+        "Chat Avatar Recommendation Concept 199 Source: Data Comparison People like her but treat her as generic website help.",
+        "Chat Avatar Hunch Concept 199 Source: Data Comparison ● Move forward with Everly as the primary avatar candidate.",
+        "Chat Avatar Signal Concept 199 Source: Data Comparison People choose the guide that talks plainly.",
+        "Chat Avatar Signal Concept 199 Source: Data Comparison \"Hi, I'm Everly, Everpure's digital guide."
+      ],
+      "clean_key_numbers": [
+        "199",
+        "200",
+        "170"
+      ],
+      "matched_summary": "199 - Chat Avatar is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 25,
+      "evidence_found": true
+    }
+  ]
+}
