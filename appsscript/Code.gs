@@ -483,7 +483,7 @@ function saveTrackedLinks_(issueId, linkMap) {
   var rows = sheet.getDataRange().getValues();
   var rowForKey = {};
   for (var i = 1; i < rows.length; i++) {
-    rowForKey[rows[i][0] + "|" + rows[i][1]] = i + 1;
+    rowForKey[normalizeIssueCell_(rows[i][0]) + "|" + rows[i][1]] = i + 1;
   }
   Object.keys(linkMap).forEach(function (linkId) {
     var key = issueId + "|" + linkId;
@@ -499,7 +499,7 @@ function lookupTrackedLink_(issueId, linkId) {
   var sheet = getOrCreateSheet_(prop_("TRACKED_LINKS_TAB"), ["issue", "link_id", "url"]);
   var rows = sheet.getDataRange().getValues();
   for (var i = 1; i < rows.length; i++) {
-    if (String(rows[i][0]) === issueId && String(rows[i][1]) === linkId) {
+    if (normalizeIssueCell_(rows[i][0]) === issueId && String(rows[i][1]) === linkId) {
       return String(rows[i][2] || "");
     }
   }
@@ -544,6 +544,19 @@ function personalizeHtml_(html, token, issueId, trackingBaseUrl) {
 function sheetSafeValue_(value) {
   var s = String(value == null ? "" : value);
   return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+
+// Sheets can silently auto-detect a plain "YYYY-MM" issue id (e.g. "2026-09")
+// as a date and store the cell as a Date instead of the string that was
+// written — which breaks every exact-string comparison this file relies on
+// (TrackedLinks/EmailEvents lookups keyed by issue). Normalize a cell back to
+// "YYYY-MM" before comparing so a coerced cell still matches a plain-string
+// issue id from a request param or from ensureRecipientTokens-style code.
+function normalizeIssueCell_(value) {
+  if (value instanceof Date) {
+    return value.getFullYear() + "-" + String(value.getMonth() + 1).padStart(2, "0");
+  }
+  return String(value == null ? "" : value);
 }
 
 function logEvent_(eventType, token, issueId, linkId) {
@@ -709,7 +722,7 @@ function buildEngagementSummary() {
   for (var i = 1; i < rows.length; i++) {
     var eventType = String(rows[i][1] || "");
     var token = String(rows[i][2] || "");
-    var issue = String(rows[i][3] || "");
+    var issue = normalizeIssueCell_(rows[i][3]);
     var link = String(rows[i][4] || "");
     if (!issue || !token) continue;
     var bucket = forIssue(issue);
