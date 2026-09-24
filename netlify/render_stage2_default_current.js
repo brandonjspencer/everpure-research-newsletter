@@ -851,10 +851,22 @@ function findingFromGroup(group) {
       bestConceptEvidence(title, findingStatement) ||
       stripLeadingConceptLabel(evidenceLine, title) ||
       `${title} appears in ${weekPhrase(group)} ${deckPhrase(group)}. Treat it as a current workstream until the next round shows clearer user behavior or preference signal.`,
-    // Optional verbatim respondent quote: curated override wins, else auto-pull
-    // a genuine participant quote from the substrate ("" when none qualifies).
+    // Optional verbatim respondent quote: an explicit override (including "" to
+    // deliberately suppress one, e.g. when no quote fits the finding's tone)
+    // always wins; only fall back to auto-pulling one from the substrate when
+    // the topic has no override at all.
     respondent_quote:
-      content.topics[topicKey(title)]?.respondent_quote || bestRespondentQuote(title) || "",
+      content.topics[topicKey(title)]?.respondent_quote !== undefined
+        ? content.topics[topicKey(title)].respondent_quote
+        : bestRespondentQuote(title) || "",
+    // Optional short qualifier (e.g. "baseline") so a quote carried forward from
+    // an earlier test round isn't misread as feedback on the round just described.
+    respondent_quote_context: content.topics[topicKey(title)]?.respondent_quote_context || "",
+    // Optional structured metrics, rendered as a scannable stat-chip grid above
+    // the EVIDENCE prose so the numbers read at a glance instead of being buried
+    // in a paragraph. Each: {label, value, compare?, compare_label?, good?
+    // ("up"|"down", which direction is the win), note?, trend?: string[]}.
+    metrics: content.topics[topicKey(title)]?.metrics || [],
     next_step: actionForTopic(title),
     confidence,
     decision_status: decisionStatus,
@@ -889,18 +901,22 @@ function eligibleGroups(groups) {
 
 function buildNarrativeFindings(groups, statusInfo) {
   const preferredOrder = content.selection.findings_preferred_order;
+  // Default cap is 3 (the historical norm); a curator can list a 4th preferred
+  // title when a cycle genuinely has that many well-evidenced findings, capped
+  // at 4 so this doesn't grow unbounded from an accidental long list.
+  const maxFindings = Math.min(4, Math.max(3, preferredOrder.length));
   const candidates = eligibleGroups(groups);
   const picked = [];
   for (const title of preferredOrder) {
     const group = candidates.find((g) => topicKey(g.title) === topicKey(title));
-    if (group && picked.length < 3) picked.push(findingFromGroup(group));
+    if (group && picked.length < maxFindings) picked.push(findingFromGroup(group));
   }
   for (const group of candidates) {
-    if (picked.length >= 3) break;
+    if (picked.length >= maxFindings) break;
     if (!picked.some((item) => topicKey(item.title) === topicKey(group.title)))
       picked.push(findingFromGroup(group));
   }
-  return picked.slice(0, 3);
+  return picked.slice(0, maxFindings);
 }
 
 function buildComparisons(groups, sourceComparisons, excludeTitles = []) {
@@ -986,7 +1002,7 @@ function buildRecommendedActions(groups, statusInfo, sourceActions, topicTitles 
 }
 
 function buildExecutiveSummaryFromBrief(findings, comparisons, unresolved) {
-  const findingTitles = (findings || []).map((item) => item.title).slice(0, 3);
+  const findingTitles = (findings || []).map((item) => item.title).slice(0, 4);
   const unresolvedTitles = (unresolved || [])
     .map((item) => item.title)
     .filter((title) => !findingTitles.includes(title))
@@ -1132,11 +1148,25 @@ function renderMarkdown(data) {
     out.push(item.finding_statement);
     out.push("");
     if (item.respondent_quote) {
-      out.push(`> Respondent quote: “${item.respondent_quote}”`);
+      out.push(
+        `> Respondent quote${item.respondent_quote_context ? ` (${item.respondent_quote_context})` : ""}: “${item.respondent_quote}”`
+      );
       out.push("");
     }
     out.push("#### Evidence");
     out.push("");
+    if (item.metrics && item.metrics.length) {
+      for (const m of item.metrics) {
+        const arrow = m.direction === "down" ? "▼" : m.direction === "up" ? "▲" : "";
+        const compare = m.compare
+          ? ` (${arrow} from ${m.compare}${m.compare_label ? ` ${m.compare_label}` : ""})`
+          : m.note
+            ? ` (${m.note})`
+            : "";
+        out.push(`- **${m.label}: ${m.value}**${compare}`);
+      }
+      out.push("");
+    }
     out.push(item.proof_point);
     out.push("");
     if (item.source_href) {
@@ -1237,6 +1267,37 @@ function sourceLinkInline(label, href, dark = false) {
   return `<a class="source-link-inline ${dark ? "source-link-inline--dark" : ""}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label || "Source deck")} ↗</a>`;
 }
 
+// Renders a finding's optional structured metrics as a scannable stat-chip
+// grid, so the numbers read at a glance instead of being buried in a
+// paragraph. Per metric: `direction` ("up"|"down") is which way the number
+// actually moved vs. `compare` - kept independent of `good` (was that move
+// favorable) so a metric where a *decrease* is the win still renders
+// correctly, not just the common "higher is better" case.
+function renderStatChips(metrics) {
+  if (!metrics || !metrics.length) return "";
+  const chips = metrics
+    .map((m) => {
+      const label = escapeHtml(m.label || "");
+      const value = escapeHtml(m.value || "");
+      let sub = "";
+      if (m.compare) {
+        const arrow = m.direction === "down" ? "▼" : m.direction === "up" ? "▲" : "→";
+        const tone = m.good === false ? "bad" : m.good === true ? "good" : "flat";
+        const compareLabel = m.compare_label ? ` ${escapeHtml(m.compare_label)}` : "";
+        sub = `<div class="stat-chip-sub stat-chip-sub--${tone}">${arrow} from ${escapeHtml(m.compare)}${compareLabel}</div>`;
+      } else if (m.note) {
+        sub = `<div class="stat-chip-sub stat-chip-sub--good">${escapeHtml(m.note)}</div>`;
+      }
+      const trend =
+        m.trend && m.trend.length
+          ? `<div class="stat-chip-trend">${m.trend.map(escapeHtml).join(" → ")}</div>`
+          : "";
+      return `<div class="stat-chip"><div class="stat-chip-label">${label}</div><div class="stat-chip-value">${value}</div>${sub}${trend}</div>`;
+    })
+    .join("");
+  return `<div class="stat-chips">${chips}</div>`;
+}
+
 function renderFinding(item, idx, isLast) {
   const quote = item.respondent_quote;
   const sourceInline = sourceLinkInline(item.source_label, item.source_href);
@@ -1248,10 +1309,11 @@ function renderFinding(item, idx, isLast) {
       ${confidenceBadge(item.confidence)}
     </div>
     <p class="finding-copy${quote ? " finding-copy--quoted" : ""}">${escapeHtml(item.finding_statement)}${quote ? "" : ` ${sourceInline}`}</p>
-    ${quote ? `<p class="finding-quote"><span class="finding-quote-label">Respondent quote:</span> &ldquo;${escapeHtml(quote)}&rdquo; ${sourceInline}</p>` : ""}
+    ${quote ? `<p class="finding-quote"><span class="finding-quote-label">Respondent quote${item.respondent_quote_context ? ` (${escapeHtml(item.respondent_quote_context)})` : ""}:</span> &ldquo;${escapeHtml(quote)}&rdquo; ${sourceInline}</p>` : ""}
     <div class="finding-columns">
       <div class="finding-col evidence-col">
         <div class="mini-head"><span>EVIDENCE</span><div class="mini-line"></div></div>
+        ${renderStatChips(item.metrics)}
         <p>${escapeHtml(item.proof_point)}</p>
       </div>
       <div class="finding-col direction-col">
@@ -1395,6 +1457,15 @@ a { color: inherit; }
 .mini-head--accent-dark span { color: var(--primary); }
 .mini-line { flex:1; height:1px; background:var(--orange-100); }
 .mini-line--dark { background: rgba(255,245,227,0.18); }
+.stat-chips { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.stat-chip { padding:12px 14px; background:rgba(213,93,29,0.05); border:1px solid var(--orange-100); border-radius:10px; }
+.stat-chip-label { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-fg); margin-bottom:5px; }
+.stat-chip-value { font-size:26px; font-weight:700; line-height:1; letter-spacing:-.02em; color:var(--foreground); font-variant-numeric:normal; }
+.stat-chip-sub { margin-top:5px; font-size:12px; font-weight:600; line-height:1.4; }
+.stat-chip-sub--good { color:var(--secondary); }
+.stat-chip-sub--bad { color:var(--primary); }
+.stat-chip-sub--flat { color:var(--muted-fg); }
+.stat-chip-trend { margin-top:4px; font-size:11px; color:var(--muted-fg); font-variant-numeric:tabular-nums; }
 .questions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-top:40px; }
 .questions--two-up { grid-template-columns:1fr 1fr; }
 .question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
@@ -1436,6 +1507,9 @@ a { color: inherit; }
   .question + .question { padding-left:0; border-left:none; padding-top:0; }
   .questions--two-up .question:nth-child(even) { padding-left:0; border-left:none; }
   .questions--two-up .question:nth-child(n+3) { border-top:none; }
+}
+@media (max-width: 480px) {
+  .stat-chips { grid-template-columns:1fr; }
 }
 
     /* Issue 02 unresolved layout refinement: use a wider 2-up layout, and let the last item span when the count is odd. */
