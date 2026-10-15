@@ -400,9 +400,16 @@ def fetch_compare_pages(
     for link in helio_compare_links(links):
         by_id[link["helio_compare_id"]].append(link)
 
+    def latest_week(refs: List[Dict[str, Any]]) -> str:
+        return max((w for ref in refs for w in (ref.get("associated_weeks") or [])), default="")
+
+    # Links arrive in deck order (alphabetical by file id), so the limit must not cut by
+    # position: fetch the most recently referenced compares first. sorted() is stable.
+    ordered = sorted(by_id.items(), key=lambda kv: latest_week(kv[1]), reverse=True)
+
     statuses: List[Dict[str, Any]] = []
     evidence: List[Dict[str, Any]] = []
-    for idx, (compare_id, refs) in enumerate(by_id.items()):
+    for idx, (compare_id, refs) in enumerate(ordered):
         primary = refs[0]
         status: Dict[str, Any] = {
             "source_type": "helio_compare",
