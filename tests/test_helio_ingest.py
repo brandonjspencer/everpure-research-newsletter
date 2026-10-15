@@ -277,6 +277,33 @@ def test_fetch_compare_pages_respects_limit():
     assert statuses[0]["status"] == "skipped_limit"
 
 
+def test_fetch_compare_pages_limit_keeps_most_recent():
+    base = "https://glare-playground.helio.app/share/compare/"
+    links = [
+        {
+            "source_type": "helio_compare",
+            "target_url": base + "old1",
+            "associated_weeks": ["2025-01-02"],
+        },
+        {
+            "source_type": "helio_compare",
+            "target_url": base + "new1",
+            "associated_weeks": ["2026-10-15"],
+        },
+        {
+            "source_type": "helio_compare",
+            "target_url": base + "mid1",
+            "associated_weeks": ["2026-06-04"],
+        },
+    ]
+    session = _FakeSession(_escaped_payload())
+    statuses, _ = helio.fetch_compare_pages(links, max_fetches=2, session=session)
+
+    assert session.calls == [base + "new1", base + "mid1"]
+    skipped = [s["compare_id"] for s in statuses if s["status"] == "skipped_limit"]
+    assert skipped == ["old1"]
+
+
 def test_merge_into_external_evidence_appends(tmp_path):
     seed = {"evidence": [{"source_type": "google_sheet_data_comparison"}], "evidence_count": 1}
     (tmp_path / "external_research_evidence.json").write_text(json.dumps(seed), encoding="utf-8")

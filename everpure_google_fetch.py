@@ -112,7 +112,13 @@ def selected_file_ids(args: argparse.Namespace, deck_details: List[Dict[str, Any
         return args.file_id
     ids = [d["file_id"] for d in deck_details]
     if args.limit:
-        ids = ids[: args.limit]
+        # deck_details is ordered by file id, so a plain slice drops whichever decks happen to
+        # sort last alphabetically — often the newest. Keep the most recently used decks instead.
+        ranked = sorted(
+            deck_details, key=lambda d: max(d.get("associated_weeks") or [""]), reverse=True
+        )
+        keep = {d["file_id"] for d in ranked[: args.limit]}
+        ids = [i for i in ids if i in keep]
     return ids
 
 
