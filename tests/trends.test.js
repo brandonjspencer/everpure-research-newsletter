@@ -9,6 +9,7 @@ const {
   buildTrends,
   helioRows,
   loadUxSignals,
+  applyHelioLabelOverrides,
   thumbnailExpiry,
   normConfidence,
   monthLabel,
@@ -17,6 +18,7 @@ const {
 const {
   render,
   helioComparisons,
+  isOpaqueLabel,
   comparisonFrontrunner,
   matchUxSignal,
   issuesSection,
@@ -1208,4 +1210,58 @@ test("issuesSection with a single page disables both arrows (kept, not hidden)",
   assert.match(html, /class="ic-nav ic-prev"[^>]*disabled/);
   assert.match(html, /class="ic-nav ic-next"[^>]*disabled/);
   assert.doesNotMatch(html, /class="ic-nav[^"]*"[^>]*hidden/);
+});
+
+test("isOpaqueLabel flags Helio asset-id names, not real titles", () => {
+  assert.equal(isOpaqueLabel("8d32272d 1c24 41a6 A547 541bc61cab44"), true);
+  assert.equal(
+    isOpaqueLabel("40ae970f 002b 4d44 8b20 Fef15e4a1647 vs 9679f0af 7265 4e10 98a0 695e189b64a6"),
+    true
+  );
+  assert.equal(isOpaqueLabel("960d 4d46 912e 97f6a88c6939"), true);
+  assert.equal(isOpaqueLabel("EDC Success Blueprint vs EDC Page"), false);
+  assert.equal(isOpaqueLabel("Home Page 50/25 AI vs 75/25 AI"), false);
+  assert.equal(isOpaqueLabel("Edc Page"), false);
+  assert.equal(isOpaqueLabel(""), false);
+});
+
+test("helioComparisons drops comparisons titled only by asset ids", () => {
+  const rows = [
+    {
+      compare_id: "c1",
+      derived_title: "8d32272d 1c24 41a6 A547 541bc61cab44 vs 0d5865f8 Fedc 4a3a 939d 6f609993a29c",
+      concept: "EDC Success Blueprint",
+      test_id: "t1",
+      test_name: "8d32272d 1c24 41a6 A547 541bc61cab44",
+      metrics: { sentiment: 40 },
+    },
+  ];
+  assert.deepEqual(helioComparisons(rows), []);
+});
+
+test("ux_signals title + variant_labels relabel a compare by id", () => {
+  const rows = [
+    { compare_id: "c1", test_id: "r1", test_name: "8d32272d 1c24 41a6 A547 541bc61cab44" },
+    { compare_id: "c1", test_id: "r2", test_name: "0d5865f8 Fedc 4a3a 939d 6f609993a29c" },
+    { compare_id: "c2", test_id: "r3", test_name: "Keep Me" },
+  ];
+  applyHelioLabelOverrides(rows, [
+    { match: "c1", signal: "s", title: "Newsroom benchmark", variant_labels: { r1: "Everpure" } },
+  ]);
+  assert.equal(rows[0].comparison_title, "Newsroom benchmark");
+  assert.equal(rows[0].test_name, "Everpure");
+  // An unlabeled variant keeps its raw name (the renderer shows it as "Variant N").
+  assert.equal(rows[1].test_name, "0d5865f8 Fedc 4a3a 939d 6f609993a29c");
+  assert.equal(rows[2].comparison_title, undefined);
+  assert.equal(rows[2].test_name, "Keep Me");
+});
+
+test("loadUxSignals keeps title and variant_labels", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "uxsig-"));
+  writeJson(path.join(root, "netlify", "content", "ux_signals.json"), {
+    signals: [{ match: "c1", signal: "s", title: "T", variant_labels: { r1: "A" } }],
+  });
+  const [s] = loadUxSignals(root);
+  assert.equal(s.title, "T");
+  assert.deepEqual(s.variant_labels, { r1: "A" });
 });

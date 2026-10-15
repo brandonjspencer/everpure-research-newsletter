@@ -1,7 +1,37 @@
 {
-  "note": "Curated 'Voice of the user' signals for the dashboard rotator. Each entry pairs a significant research signal (pattern) found across the Helio first-impression comprehension tests with the single most compelling REAL verbatim that represents it. Quotes are participant words — never paraphrase or edit them. Re-curate each cycle; if this file is absent or has no patterns, the rotator falls back to the harvested quote pool. Source: Helio first-impression tests, July 2026 cycle (EDC Blueprint, Accelerate Live Stream, Contextual Intelligence, 1touch, Future of Storage).",
-  "source": "Helio first-impression tests · July 2026",
+  "note": "Curated 'Voice of the user' signals for the dashboard rotator. Each entry pairs a significant research signal (pattern) found across the Helio first-impression comprehension tests with the single most compelling REAL verbatim that represents it. Quotes are participant words — never paraphrase or edit them. Re-curate each cycle; if this file is absent or has no patterns, the rotator falls back to the harvested quote pool. Sources: Helio first-impression tests, July 2026 cycle (EDC Blueprint, Accelerate Live Stream, Contextual Intelligence, 1touch, Future of Storage) and October 2026 cycle (Platform Menu, Certified Refurbished, Newsroom).",
+  "source": "Helio first-impression tests · July & October 2026",
   "patterns": [
+    {
+      "signal": "A menu's name sets the story people expect — under “Data Management,” visitors expect Everpure to explain data management.",
+      "quote": "My expectation is the following screen should be an explanation in how Everpure provides Data Management services.",
+      "topic": "Platform Menu",
+      "read": "hit"
+    },
+    {
+      "signal": "Whatever the menu is called, its item descriptions read as marketing copy — the most common complaint across every version.",
+      "quote": "Because it focuses heavily on marketing taglines instead of explicit technical pillars such as Architecture, Security and Storage Engines..",
+      "topic": "Platform Menu",
+      "read": "barrier"
+    },
+    {
+      "signal": "Buyers name rebuilt gear “refurbished,” not “remanufactured” — the word they already know and search for.",
+      "quote": "I’d call it certified refurbished enterprise storage. I’d search for “Everpure certified refurbished storage systems” or “refurbished enterprise data storage.”.",
+      "topic": "Certified Refurbished",
+      "read": "hit"
+    },
+    {
+      "signal": "The maker's warranty is what makes a rebuilt system feel safe to buy — the price is the only difference people want to see.",
+      "quote": "The primary difference is the cost, since it would still be eligible for the same warranty as a new product.",
+      "topic": "Certified Refurbished",
+      "read": "hit"
+    },
+    {
+      "signal": "Everpure is a new name — the newsroom doesn't tell first-time visitors who the company is.",
+      "quote": "It is the news page of Everpure which I am not sure what it is.",
+      "topic": "Newsroom",
+      "read": "barrier"
+    },
     {
       "signal": "The assessment framing is starting to land — some visitors now describe EDC by what you do (run an assessment), not just by storage.",
       "quote": "It emphasizes enterprise data and allows one to do an assessment.",
