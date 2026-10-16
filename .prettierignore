@@ -15,3 +15,6 @@ emails/
 docs/handoff/
 tests/fixtures/
 *.min.js
+
+# Hand-tuned animation document (inline whitespace inside the masked spans is significant)
+video/index.html

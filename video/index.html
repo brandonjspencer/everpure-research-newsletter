@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Research Roundup — October 2026 motion</title>
+<style>
+:root { --L: 168px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #2D2A27; }
+body { font-family: "Pure Sans", "Familjen Grotesk", Helvetica, sans-serif; -webkit-font-smoothing: antialiased; font-kerning: normal; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+
+/* Scene palettes — brand core palette only, mostly single-hue pairings.
+   bg / fg (body) / hi (hero figures) / dim (secondary) / eye (eyebrow) / tick / bh, bb (bars) /
+   subb (bold sub) / acc (underline) / vs / mark (logo symbol). */
+.scene { position: absolute; inset: 0; visibility: hidden; overflow: hidden; isolation: isolate; background: var(--bg); color: var(--fg); }
+.scene.ash   { --bg:#2D2A27; --fg:#FFF5E3; --hi:#FF7023; --dim:#D0C8BA; --eye:#D0C8BA; --tick:#FF7023; --bh:#FF7023; --bb:#8FA596; --subb:#FF7023; --acc:#FF7023; --vs:#8FA596; --mark:#FF7023; }
+.scene.cloud { --bg:#FFF5E3; --fg:#2D2A27; --hi:#2D2A27; --dim:#5A6359; --eye:#5A6359; --tick:#FF7023; --bh:#FF7023; --bb:#5A6359; --subb:#2D2A27; --acc:#FF7023; --vs:#5A6359; --mark:#FF7023; }
+.scene.mint  { --bg:#C5E4CC; --fg:#2D2A27; --hi:#5A6359; --dim:#5A6359; --eye:#5A6359; --tick:#5A6359; --bh:#2D2A27; --bb:#5A6359; --subb:#2D2A27; --acc:#8FA596; --vs:#5A6359; --mark:#2D2A27; }
+.scene.basil { --bg:#5A6359; --fg:#FFF5E3; --hi:#C5E4CC; --dim:#C5E4CC; --eye:#C5E4CC; --tick:#C5E4CC; --bh:#C5E4CC; --bb:#8FA596; --subb:#C5E4CC; --acc:#C5E4CC; --vs:#C5E4CC; --mark:#FFF5E3; }
+.scene.rose  { --bg:#F2CDC4; --fg:#2D2A27; --hi:#71584C; --dim:#71584C; --eye:#71584C; --tick:#71584C; --bh:#71584C; --bb:#DEA193; --subb:#2D2A27; --acc:#DEA193; --vs:#71584C; --mark:#2D2A27; }
+.scene.stone { --bg:#D0C8BA; --fg:#2D2A27; --hi:#2D2A27; --dim:#71584C; --eye:#2D2A27; --tick:#71584C; --bh:#71584C; --bb:#FFF5E3; --subb:#2D2A27; --acc:#71584C; --vs:#71584C; --mark:#2D2A27; }
+.scene.orange{ --bg:#FF7023; --fg:#FFF5E3; --hi:#FFF5E3; --dim:#FFF5E3; --mark:#FFF5E3; }
+/* Walnut on Stone is 3.95:1 — keep it for the large numeral only; small copy goes Ash. */
+.stone .sub, .stone .duo .stat .lab .dim { color: #2D2A27; }
+.content { position: absolute; inset: 0; transform-origin: 25% 55%; }
+.layer { position: absolute; inset: 0; }
+
+.mask { display: block; overflow: hidden; padding: 0 0.08em 0.1em 0; margin: 0 -0.08em -0.1em 0; }
+.mask > span { display: inline-block; will-change: transform; }
+.mask.w { display: inline-block; vertical-align: top; }
+
+.eyebrow { position: absolute; left: var(--L); top: 226px; font-weight: 600; font-size: 60px; color: var(--eyebrow, #FF7023); }
+/* Eyebrows are Pure Orange, toned for their ground: lighter on Basil (Orange 300), darker on the pale
+   Stone and Rose grounds (Orange 700), so each clears 3:1. */
+.scene.basil { --eyebrow: #FF9D75; }
+.scene.stone, .scene.rose { --eyebrow: #AA4B17; }
+
+.big { position: absolute; left: var(--L); top: 300px; font-weight: 800; font-size: 300px; line-height: 0.92; letter-spacing: 0; font-variant-numeric: tabular-nums; white-space: nowrap; transform-origin: left 70%; color: var(--hi); }
+/* The unit at 62%, its top on the digits' top — the figure leads, the unit qualifies. */
+.pct { font-size: 0.62em; vertical-align: 0.41em; margin-left: 0.03em; }
+.big .vs { font-weight: 500; font-size: 0.3em; letter-spacing: 0; margin: 0 0.32em 0 0.2em; vertical-align: 1em; color: var(--vs); }
+
+.line { position: absolute; left: var(--L); top: 636px; font-weight: 600; font-size: 76px; line-height: 1.1; white-space: nowrap; }
+.line .dim { color: var(--dim); }
+.sub { position: absolute; left: var(--L); top: 850px; font-weight: 500; font-size: 60px; line-height: 1.15; white-space: nowrap; color: var(--dim); }
+.sub b { font-weight: 700; color: var(--subb); }
+
+.bars { position: absolute; left: var(--L); width: 1500px; }
+.bar-row { display: grid; grid-template-columns: 560px 1fr; align-items: center; gap: 30px; height: 100px; }
+.bar-label { font-weight: 600; font-size: 58px; white-space: nowrap; }
+.bar-track { position: relative; height: 42px; }
+.bar-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 0 21px 21px 0; }
+.bar-ext { position: absolute; top: 11px; height: 20px; width: 0; border-radius: 0 10px 10px 0; }
+.bar-val { position: absolute; top: 50%; transform: translateY(-50%); font-weight: 700; font-size: 64px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bar-fill.hero, .bar-ext.hero { background: var(--bh); }
+.bar-fill.base, .bar-ext.base { background: var(--bb); }
+
+.headline { position: absolute; left: var(--L); font-weight: 800; line-height: 1.0; white-space: nowrap; }
+.hl-xl { font-size: 144px; }
+.hl-l { font-size: 144px; }
+.ash .accent, .basil .accent { color: var(--hi); }
+
+/* two-stat layout (newsroom) */
+.duo { position: absolute; left: var(--L); top: 300px; display: flex; gap: 120px; align-items: flex-start; }
+.duo .stat .num { height: 276px; display: flex; align-items: flex-end; font-weight: 800; font-size: 300px; line-height: 0.92; letter-spacing: 0; font-variant-numeric: tabular-nums; white-space: nowrap; transform-origin: left 70%; color: var(--hi); }
+.duo .stat.minor .num { font-size: 210px; color: var(--dim); }
+.duo .stat .lab { margin-top: 18px; font-weight: 600; font-size: 58px; white-space: nowrap; }
+.duo .stat .lab .dim { font-weight: 500; color: var(--dim); }
+
+.mark path { fill: var(--mark); }
+/* Hex-mesh transition layer: 720px past every edge so the lattice's ragged border stays off frame.
+   #backing closes the gaps between cells in the outgoing scene's colour. */
+#mesh { position: absolute; left: -720px; top: -720px; width: 3360px; height: 2520px; z-index: 10; visibility: hidden; pointer-events: none; filter: url(#backing); }
+
+#s1 .mark { position: absolute; left: var(--L); top: 250px; width: 180px; }
+#s1 .title { position: absolute; left: var(--L); top: 500px; font-weight: 800; font-size: 184px; line-height: 0.95; white-space: nowrap; }
+#s1 .date { position: absolute; left: var(--L); top: 720px; font-weight: 500; font-size: 64px; color: var(--dim); }
+#s1 .date b { font-weight: 700; color: var(--eye); }
+
+#s9 .mark { position: absolute; left: var(--L); top: 150px; width: 96px; }
+#s9 .closer { position: absolute; left: var(--L); top: 800px; font-weight: 600; font-size: 80px; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="scene ash" id="s1"><div class="content">
+    <svg class="mark" viewBox="0 0 29 26" fill="none"><path d="M19.9941 0H8.82056C7.66536 0 6.59756 0.61636 6.01996 1.61728L0.4332 11.2936C-0.1444 12.2945 -0.1444 13.5272 0.4332 14.5274L6.11268 24.3922C6.69028 25.3931 7.7976 25.9821 8.95356 25.9821H14.516L6.96768 12.9101L10.6871 6.4676H18.1268L21.8462 12.9101L17.3576 20.6842H24.8262L28.3807 14.5274C28.9583 13.5272 28.9583 12.2945 28.3807 11.2936L22.7939 1.61728C22.2163 0.61636 21.1485 0 19.9933 0L19.9941 0Z" fill="#FF7023"/></svg>
+    <div class="title"><span class="mask"><span>Research Roundup</span></span></div>
+    <div class="date"><span class="mask"><span>October 2026 · <b>Seven tests</b></span></span></div>
+  </div></section>
+
+  <section class="scene mint" id="s2"><div class="content">
+    <div class="layer" id="s2a">
+      <div class="headline split hl-xl" style="top:226px"><span class="accent">Plain words</span> win.</div>
+      <div class="bars" style="top:520px">
+        <div class="bar-row"><div class="bar-label"><span class="mask"><span>Plain headline</span></span></div><div class="bar-track"><div class="bar-fill hero" data-pct="69"></div><div class="bar-val" data-pct="69"><span class="mask"><span>69%</span></span></div></div></div>
+        <div class="bar-row"><div class="bar-label"><span class="mask"><span>Clever angle</span></span></div><div class="bar-track"><div class="bar-fill base" data-pct="33"></div><div class="bar-val" data-pct="33"><span class="mask"><span>33%</span></span></div></div></div>
+      </div>
+      <div class="sub" style="top:760px"><span class="mask"><span>picked the right challenge on the</span></span><span class="mask"><span><b>AI Data Readiness page.</b></span></span></div>
+    </div>
+    <div class="layer" id="s2b">
+      <div class="headline split hl-l" style="top:236px">People <span class="accent">look around</span> first.</div>
+      <div class="bars" style="top:520px">
+        <div class="bar-row"><div class="bar-label"><span class="mask"><span>Browse or read</span></span></div><div class="bar-track"><div class="bar-fill hero" data-pct="71"></div><div class="bar-ext hero" data-from="71" data-pct="79"></div><div class="bar-val" data-pct="79"><span class="mask"><span>71–79%</span></span></div></div></div>
+        <div class="bar-row"><div class="bar-label"><span class="mask"><span>Contact sales</span></span></div><div class="bar-track"><div class="bar-fill base" data-pct="5"></div><div class="bar-ext base" data-from="5" data-pct="18"></div><div class="bar-val" data-pct="18"><span class="mask"><span>5–18%</span></span></div></div></div>
+      </div>
+      <div class="sub" style="top:760px"><span class="mask"><span>chose as their next step on</span></span><span class="mask"><span><b>rebuilt-system program pages.</b></span></span></div>
+    </div>
+  </div></section>
+
+  <section class="scene basil" id="s3"><div class="content">
+    <div class="layer" id="s3a">
+      <div class="eyebrow"><span class="mask"><span>Platform menu</span></span></div>
+      <div class="big"><span class="mask"><span><span class="n" data-to="44">0</span><span class="pct">%</span><span class="vs">vs</span><span class="n" data-to="46">0</span><span class="pct">%</span></span></span></div>
+      <div class="bars" style="top:628px">
+        <div class="bar-row"><div class="bar-label hang"><span class="mask"><span>“Data Management”</span></span></div><div class="bar-track"><div class="bar-fill hero" data-pct="44"></div></div></div>
+        <div class="bar-row"><div class="bar-label hang"><span class="mask"><span>“Our Platform”</span></span></div><div class="bar-track"><div class="bar-fill hero" data-pct="46"></div></div></div>
+      </div>
+      <div class="sub" style="top:860px"><span class="mask"><span>found storage under <b>either name.</b></span></span></div>
+    </div>
+    <div class="layer" id="s3b">
+      <div class="headline split hl-l" style="top:330px">The name is a</div>
+      <div class="headline split hl-l" id="s3pos" style="top:490px"><span class="accent">positioning call.</span></div>
+      <div class="sub" style="top:720px"><span class="mask"><span>Next up: testing <b>“Platform & Products”</b></span></span></div>
+    </div>
+  </div></section>
+
+  <section class="scene rose" id="s4"><div class="content">
+    <div class="eyebrow"><span class="mask"><span>Remanufactured storage</span></span></div>
+    <div class="big"><span class="mask"><span><span class="n" data-to="36">0</span><span class="pct">%</span></span></span></div>
+    <div class="line"><span class="mask"><span>said “refurbished.” <span class="dim">4% said “remanufactured.”</span></span></span></div>
+    <div class="sub"><span class="mask"><span>Consider this headwind, and <b>explain the nuance.</b></span></span></div>
+  </div></section>
+
+  <section class="scene ash" id="s5"><div class="content">
+    <div class="eyebrow"><span class="mask"><span>Contact page</span></span></div>
+    <div class="big"><span class="mask"><span><span class="n" data-to="48.5" data-dec="1">0</span><span class="pct">%</span></span></span></div>
+    <div class="line"><span class="mask"><span>of first clicks went to the menu, <span class="dim">not the form.</span></span></span></div>
+    <div class="sub"><span class="mask"><span>Give people <b>a way to look around.</b></span></span></div>
+  </div></section>
+
+  <section class="scene stone" id="s6"><div class="content">
+    <div class="eyebrow"><span class="mask"><span>Newsroom</span></span></div>
+    <div class="duo">
+      <div class="stat"><div class="num"><span class="mask"><span><span class="n" data-to="63">0</span><span class="pct">%</span></span></span></div><div class="lab"><span class="mask"><span>Intent <span class="dim">· highest of five</span></span></span></div></div>
+      <div class="stat minor"><div class="num"><span class="mask"><span><span class="n" data-to="68">0</span><span class="pct">%</span></span></span></div><div class="lab"><span class="mask"><span>Comprehension <span class="dim">· lowest of five</span></span></span></div></div>
+    </div>
+    <div class="sub"><span class="mask"><span>Mostly awareness: <b>Everpure is a new name.</b></span></span></div>
+  </div></section>
+
+  <section class="scene cloud" id="s7"><div class="content">
+    <div class="eyebrow"><span class="mask"><span>Video ad → homepage</span></span></div>
+    <div class="big"><span class="mask"><span><span class="n" data-to="83">0</span>–<span class="n" data-to="90">0</span><span class="pct">%</span></span></span></div>
+    <div class="line"><span class="mask"><span>said the page <span class="dim">matched the ad.</span></span></span></div>
+    <div class="sub"><span class="mask"><span>Next: <b>lock the CTA labels.</b></span></span></div>
+  </div></section>
+
+  <section class="scene orange" id="s9"><div class="content">
+    <svg class="mark" viewBox="0 0 29 26" fill="none"><path d="M19.9941 0H8.82056C7.66536 0 6.59756 0.61636 6.01996 1.61728L0.4332 11.2936C-0.1444 12.2945 -0.1444 13.5272 0.4332 14.5274L6.11268 24.3922C6.69028 25.3931 7.7976 25.9821 8.95356 25.9821H14.516L6.96768 12.9101L10.6871 6.4676H18.1268L21.8462 12.9101L17.3576 20.6842H24.8262L28.3807 14.5274C28.9583 13.5272 28.9583 12.2945 28.3807 11.2936L22.7939 1.61728C22.2163 0.61636 21.1485 0 19.9933 0L19.9941 0Z" fill="#FFF5E3"/></svg>
+    <div class="headline split" id="th1" style="top:330px; font-size:178px">Say it plainly.</div>
+    <div class="headline split" id="th2" style="top:530px; font-size:178px">Show the way in.</div>
+    <div class="closer"><span class="mask"><span>Read the full roundup</span></span></div>
+  </div></section>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="backing" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="128" result="b"/>
+      <feComponentTransfer in="b" result="m"><feFuncA type="linear" slope="40" intercept="-8"/></feComponentTransfer>
+      <feFlood id="backingFlood" flood-color="#2D2A27" result="c"/>
+      <feComposite in="c" in2="m" operator="in" result="fill"/>
+      <feMerge><feMergeNode in="fill"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </svg>
+  <div id="mesh"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="video-mesh.min.js"></script>
+<script>
+gsap.registerPlugin(CustomEase);
+// Brand motion: custom curves only — fast attack + hard stop, decisive exits, soft drift.
+CustomEase.create("snap", "M0,0 C0.08,0.82 0.18,1 1,1");
+CustomEase.create("land", "M0,0 C0.2,0 0.06,1 1,1");
+CustomEase.create("exit", "M0,0 C0.55,0 0.85,0.35 1,1");
+CustomEase.create("drift", "M0,0 C0.3,0.1 0.6,0.9 1,1");
+CustomEase.create("glide", "M0,0 C0.5,0 0.12,1 1,1");
+CustomEase.create("pop", "M0,0 C0.15,0.9 0.3,1.12 0.55,1.04 0.7,1.0 0.85,0.99 1,1");
+
+const BEAT = 60 / 145;
+const BAR = 4 * BEAT;
+const DB = (k) => 1.651 + k * BAR;   // music-edit downbeats (short-02 as bars 0–12 | 9–13 | 10–end)
+const DUR = 43.2;
+const C = { orange: "#FF7023", cloud: "#FFF5E3", ash: "#2D2A27", mint: "#C5E4CC", basil: "#5A6359", rose: "#F2CDC4", stone: "#D0C8BA" };
+// open | lesson 2.5+3 bars | menu 2.5+2.5 | findings 3, 3, 3, 2.5 bars | end slate on the final hit (DB 23)
+const T = { s2: DB(1), s2b: DB(3.5), s3: DB(6.5), s3b: DB(9), s4: DB(11.5), s5: DB(14.5), s6: DB(17.5), s7: DB(20.5), s9: DB(23) };
+
+const tl = gsap.timeline({ paused: true });
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+function splitWords(el) {
+  const frag = document.createDocumentFragment();
+  const unit = (node) => {
+    const m = document.createElement("span"); m.className = "mask w";
+    const inner = document.createElement("span");
+    if (node.nodeType === 3) inner.textContent = node.textContent; else inner.appendChild(node);
+    m.appendChild(inner); frag.appendChild(m);
+  };
+  [...el.childNodes].forEach((n) => {
+    if (n.nodeType !== 3) return unit(n);
+    n.textContent.split(/(\s+)/).forEach((tok) => {
+      if (!tok) return;
+      if (/^\s+$/.test(tok)) frag.appendChild(document.createTextNode(" "));
+      else unit(document.createTextNode(tok));
+    });
+  });
+  el.textContent = ""; el.appendChild(frag);
+}
+$$(".split").forEach(splitWords);
+const scenes = $$(".scene");
+
+// ---- layout ---------------------------------------------------------------
+// Solved from measured ink (solve_layout.py): every stack uses one spacing system — baseline to
+// the next element's ink top — and is centred on the optical centre (y 532); every line's ink
+// starts exactly on the 168px margin (side bearings corrected); opening quotes hang.
+const LAYOUT = [["#s4 .eyebrow", -3, -21.5], ["#s4 .big", -5, -21.5], ["#s4 .line", -1, -32.5], ["#s4 .sub", -1, -70.5], ["#s5 .eyebrow", -1, -20.5], ["#s5 .big", -4, -20.5], ["#s5 .line", -1, -31.5], ["#s5 .sub", -1, -70.5], ["#s7 .eyebrow", 0, -20.0], ["#s7 .big", -4, -19.0], ["#s7 .line", -1, -30.0], ["#s7 .sub", -3, -69.0], ["#s3a .eyebrow", -3, -67.5], ["#s3a .big", -4, -67.5], ["#s3a .bars", 0, -71.5], ["#s3a .sub", -1, -34.5], ["#s3b .headline:not(#s3pos)", -2, 21.5], ["#s3pos", -6, 21.5], ["#s3b .sub", -3, 16.5], ["#s2a .headline", -7, -9.0], ["#s2a .bars", 0, -90.0], ["#s2a .sub", 0, -70.0], ["#s2b .headline", -7, -18.5], ["#s2b .bars", 0, -89.5], ["#s2b .sub", -1, -69.5], ["#s6 .eyebrow", -3, -0.5], ["#s6 .duo", -6, 0.5], ["#s6 .sub", -3, -92.5], ["#s1 .mark", 0, 31.0], ["#s1 .title", -8, 7.0], ["#s1 .date", -1, -3.0], ["#s9 .mark", 0, 39.0], ["#th1", -3, 20.0], ["#th2", -3, 20.0], ["#s9 .closer", -4, -7.0]];
+const LAYOUT_REL = [["#s2a .bar-row:nth-child(1) .bar-label", -3, 0], ["#s2a .bar-row:nth-child(2) .bar-label", -1, 0], ["#s2b .bar-row:nth-child(1) .bar-label", -3, 0], ["#s2b .bar-row:nth-child(2) .bar-label", -1, 0], ["#s3a .bar-row:nth-child(1) .bar-label", -2, 0], ["#s3a .bar-row:nth-child(2) .bar-label", -2, 0], ["#s6 .stat.minor .num", -3, -5.8], ["#s6 .stat:not(.minor) .lab", 3, 0]];
+const EYEBROW_GLIDE = 90.0;
+if (!window.__noLayout) for (const [sel, dx, dy] of LAYOUT) for (const el of $$(sel)) {
+  const cs = getComputedStyle(el);
+  el.style.left = `${parseFloat(cs.left) + dx}px`;
+  el.style.top = `${parseFloat(cs.top) + dy}px`;
+}
+if (!window.__noLayout) for (const [sel, dx, dy] of LAYOUT_REL) for (const el of $$(sel)) {
+  el.style.position = "relative"; el.style.left = `${dx}px`; el.style.top = `${dy}px`;
+}
+{
+  const ctx = document.createElement("canvas").getContext("2d");
+  for (const el of $$(".hang")) {
+    const cs = getComputedStyle(el.querySelector(".mask > span"));
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    el.style.left = `${(parseFloat(el.style.left) || 0) - ctx.measureText("\u201C").width}px`;
+  }
+}
+function showScene(id, at) {
+  scenes.forEach((s) => tl.set(s, { visibility: s.id === id ? "visible" : "hidden" }, at));
+}
+gsap.set(".mask > span", { yPercent: 118 });
+gsap.set(".bar-fill, .bar-ext", { width: 0 });
+gsap.set(".bar-val", { left: 0 });
+gsap.set("#s2b, #s3b", { visibility: "hidden" });
+gsap.set("#s1 .mark, #s9 .mark", { scale: 0, transformOrigin: "50% 50%" });
+
+function reveal(t, at, o = {}) { tl.to(t, { yPercent: 0, duration: o.dur || 0.5, ease: "snap", stagger: o.stagger ?? 0.08 }, at); }
+function conceal(t, at, o = {}) { tl.to(t, { yPercent: -118, duration: o.dur || 0.26, ease: o.ease || "exit", stagger: o.stagger ?? 0.025 }, at); }
+function countUp(el, at, dur = 0.62) {
+  // ffmpeg (tmix=8 → fps=60) builds output frame n from 480fps subframes 8n−4…8n+3 (measured),
+  // so start on a window boundary and hold digits constant within each window.
+  at = (Math.ceil((at * 480 - 4) / 8 - 1e-6) * 8 + 4) / 480;
+  const to = parseFloat(el.dataset.to), dec = parseInt(el.dataset.dec || "0", 10), o = { v: 0 };
+  el.textContent = (0).toFixed(dec);
+  const ease = gsap.parseEase("snap");
+  tl.to(o, { v: to, duration: dur, ease: "none", onUpdate: function () {
+    const f = Math.round(tl.time() * 480);
+    const q = (Math.floor((f + 4) / 8) * 8 - 4) / 480 - at;
+    el.textContent = (to * ease(Math.max(0, Math.min(1, q / dur)))).toFixed(dec);
+  } }, at);
+}
+function pulse(el, at, amt = 1.04) {
+  tl.to(el, { scale: amt, duration: 0.07, ease: "snap" }, at);
+  tl.to(el, { scale: 1, duration: 0.34, ease: "land" }, at + 0.07);
+}
+function drift(id, from, to) {
+  tl.fromTo(`#${id} .content`, { scale: 1, x: 0 }, { scale: 1.03, x: -16, duration: to - from, ease: "drift", immediateRender: false }, from);
+}
+function bars(scope, at) {
+  $$(`${scope} .bar-row`).forEach((row, i) => {
+    const t0 = at + i * 0.1;
+    const f = row.querySelector(".bar-fill"), e = row.querySelector(".bar-ext"), v = row.querySelector(".bar-val");
+    tl.to(f, { width: `${f.dataset.pct}%`, duration: 0.62, ease: "snap" }, t0);
+    if (e) {
+      tl.set(e, { left: `${e.dataset.from}%` }, t0);
+      tl.to(e, { width: `${e.dataset.pct - e.dataset.from}%`, duration: 0.5, ease: "snap" }, t0 + 0.32);
+    }
+    if (v) {
+      tl.to(v, { left: `calc(${v.dataset.pct}% + 26px)`, duration: 0.62, ease: "snap" }, t0);
+      reveal(v.querySelector(".mask > span"), t0 + 0.12, { dur: 0.4 });
+    }
+  });
+  reveal(`${scope} .bar-label .mask > span`, at, { stagger: 0.1, dur: 0.45 });
+}
+function eyebrowIn(scope, at) {
+  reveal(`${scope} .eyebrow .mask > span`, at, { dur: 0.42 });
+}
+function finding(id, at) {
+  const s = `#${id}`;
+  eyebrowIn(s, at + 0.01);
+  reveal(`${s} .big .mask > span`, at + 0.03, { dur: 0.46 });
+  $$(`${s} .big .n`).forEach((el, i) => countUp(el, at + 0.06 + i * 0.05));
+  reveal(`${s} .line .mask > span`, at + 0.28);
+  reveal(`${s} .sub .mask > span`, at + 0.52);
+}
+
+// ---- hex-mesh transitions ------------------------------------------------
+// The official mesh (cells form) builds across the frame in the next scene's colour. One cell of
+// that lattice — the hero: a hexagon, arrow or diamond — arrives first; on the downbeat the next
+// scene takes its place, clipped to that cell's exact outline, and builds in while the cell grows
+// past the frame and swallows the lattice. Every transition has its own build: cell scale, grid
+// offset, hero shape and position, sweep direction and pacing. The sweep is a field added to the
+// mesh's own noise, so its leading edge stays organic.
+const PAD = 720;                              // mesh layer overhang past every frame edge
+const MORPH = 0.42;
+const LAYER = { w: 1920 + 2 * PAD, h: 1080 + 2 * PAD };
+const sweepEase = gsap.parseEase(CustomEase.create("sweep", "M0,0 C0.46,0 0.72,0.62 1,1"));
+// The window starts as gently as the cell landed, then accelerates out past the frame edges.
+const growEase = gsap.parseEase(CustomEase.create("grow", "M0,0 C0.38,0 0.62,0.42 1,1"));
+const DIST = {
+  up: (nx, ny) => 1 - ny,
+  down: (nx, ny) => ny,
+  left: (nx) => 1 - nx,
+  right: (nx) => nx,
+  diag: (nx, ny) => (2 - nx - ny * 1.2) / 2.2,
+  corner: (nx, ny) => Math.hypot(nx * 1.78, 1 - ny) / 2.04,
+  burst: (nx, ny) => Math.hypot((nx - 0.5) * 1.78, ny - 0.5) / 1.02,
+};
+// px = mesh unit size (cell scale); hero.dir = preferred cell direction (arrows, diamonds).
+const TR = [
+  { at: T.s2, prev: "s1", next: "s2", out: "#s1",  from: "ash",   color: "mint",   dir: "up",     px: 14, sweep: 0.40, grow: 0.66, hero: { kind: "hexagon", at: [620, 560] } },
+  { at: T.s3, prev: "s2", next: "s3", out: "#s2b", from: "mint",  color: "basil",  dir: "left",   px: 12, sweep: 0.36, grow: 0.62, hero: { kind: "arrow",   at: [1240, 560], dir: [-1, 0] } },
+  { at: T.s4, prev: "s3", next: "s4", out: "#s3",  from: "basil", color: "rose",   dir: "diag",   px: 16, sweep: 0.42, grow: 0.68, hero: { kind: "diamond", at: [560, 540], dir: [0, 1] } },
+  { at: T.s5, prev: "s4", next: "s5", out: "#s4",  from: "rose",  color: "ash",    dir: "down",   px: 10, sweep: 0.44, grow: 0.64, hero: { kind: "hexagon", at: [700, 500] } },
+  { at: T.s6, prev: "s5", next: "s6", out: "#s5",  from: "ash",   color: "stone",  dir: "right",  px: 13, sweep: 0.38, grow: 0.62, hero: { kind: "arrow",   at: [520, 560], dir: [1, 0] } },
+  { at: T.s7, prev: "s6", next: "s7", out: "#s6",  from: "stone", color: "cloud",  dir: "corner", px: 18, sweep: 0.42, grow: 0.7,  hero: { kind: "diamond", at: [820, 600], dir: [0.5, 0.866] } },
+  { at: T.s9, prev: "s7", next: "s9", out: "#s7",  from: "cloud", color: "orange", dir: "burst",  px: 15, sweep: 0.46, grow: 0.8,  hero: { kind: "hexagon", at: [960, 560] } },
+];
+const LEAD = 0.6;                             // the hero cell starts to unfold this long before the downbeat
+const W = 0.42;                               // sweep front softness (normalised frame units)
+
+// The cell outline at scale s about its centre (frame px): straight edges, tangent arcs at the
+// corners — the figure the mesh's arcTo trace paints. arcSteps > 0 returns a polygon instead.
+function outline(h, s, arcSteps = 0) {
+  const c = h.center, n = h.verts.length;
+  const V = h.verts.map((v) => ({ x: c.x + (v.x - c.x) * s, y: c.y + (v.y - c.y) * s }));
+  const pts = [], cmds = [];
+  for (let i = 0; i < n; i++) {
+    const p = V[(i + n - 1) % n], q = V[i], m = V[(i + 1) % n], r = h.radii[i] * s;
+    const u = { x: p.x - q.x, y: p.y - q.y }, v = { x: m.x - q.x, y: m.y - q.y };
+    const ul = Math.hypot(u.x, u.y), vl = Math.hypot(v.x, v.y);
+    const ang = Math.acos(Math.max(-1, Math.min(1, (u.x * v.x + u.y * v.y) / (ul * vl)))), t = r / Math.tan(ang / 2);
+    const a = { x: q.x + (u.x / ul) * t, y: q.y + (u.y / ul) * t }, b = { x: q.x + (v.x / vl) * t, y: q.y + (v.y / vl) * t };
+    const turn = (q.x - p.x) * (m.y - q.y) - (q.y - p.y) * (m.x - q.x); // >0 convex (clockwise on screen), <0 reflex
+    cmds.push(`${i ? "L" : "M"}${a.x.toFixed(2)} ${a.y.toFixed(2)}A${r.toFixed(2)} ${r.toFixed(2)} 0 0 ${turn > 0 ? 1 : 0} ${b.x.toFixed(2)} ${b.y.toFixed(2)}`);
+    if (arcSteps) {
+      const bis = { x: u.x / ul + v.x / vl, y: u.y / ul + v.y / vl }, bl = Math.hypot(bis.x, bis.y), k = r / Math.sin(ang / 2);
+      const o = { x: q.x + (bis.x / bl) * k, y: q.y + (bis.y / bl) * k };
+      const a0 = Math.atan2(a.y - o.y, a.x - o.x);
+      let da = Math.atan2(b.y - o.y, b.x - o.x) - a0;
+      if (da > Math.PI) da -= 2 * Math.PI;
+      if (da < -Math.PI) da += 2 * Math.PI;
+      for (let j = 0; j <= arcSteps; j++) pts.push({ x: o.x + r * Math.cos(a0 + (da * j) / arcSteps), y: o.y + r * Math.sin(a0 + (da * j) / arcSteps) });
+    }
+  }
+  return arcSteps ? pts : cmds.join("") + "Z";
+}
+const inside = (pts, x, y) => {
+  let c = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const a = pts[i], b = pts[j];
+    if ((a.y > y) !== (b.y > y) && x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x) c = !c;
+  }
+  return c;
+};
+// Per transition: pick the grid's cell of the hero's kind nearest its spot (and closest to its
+// direction), then offset the whole grid so that cell's centre lands exactly on the spot.
+TR.forEach((r) => {
+  r.grid = { vbWidth: LAYER.w / r.px, vbHeight: LAYER.h / r.px };
+  const all = window.VideoMesh.cells(r.grid)[r.hero.kind];
+  const toFrame = (p) => ({ x: p.x * r.px - PAD, y: p.y * r.px - PAD });
+  const want = r.hero.dir && Math.hypot(...r.hero.dir);
+  const score = (c) => {
+    const f = toFrame(c.center), dist = Math.hypot(f.x - r.hero.at[0], f.y - r.hero.at[1]);
+    if (!r.hero.dir) return dist;
+    const align = Math.abs(c.direction.x * r.hero.dir[0] + c.direction.y * r.hero.dir[1]) / want;
+    const same = c.direction.x * r.hero.dir[0] + c.direction.y * r.hero.dir[1] >= 0 || r.hero.kind === "diamond";
+    return dist + (same ? 0 : 1e6) + (1 - align) * 4000;
+  };
+  const cell = all.reduce((best, c) => (!best || score(c) < score(best) ? c : best), null);
+  const c0 = toFrame(cell.center);
+  r.off = { x: r.hero.at[0] - c0.x, y: r.hero.at[1] - c0.y };
+  const toPx = (p) => ({ x: p.x * r.px - PAD + r.off.x, y: p.y * r.px - PAD + r.off.y });
+  r.cell = { diamonds: cell.diamondCenters, center: toPx(cell.center), verts: cell.verts.map(toPx), radii: cell.radii.map((v) => v * r.px) };
+  // Grow until the whole frame is inside the rounded cell (sampled densely — arrows are concave,
+  // so covering the corners isn't enough), plus a margin.
+  const probes = [];
+  for (let y = 0; y <= 1080; y += 40) for (let x = 0; x <= 1920; x += 40) probes.push([x, y]);
+  const covers = (sc) => { const P = outline(r.cell, sc, 24); return probes.every(([x, y]) => inside(P, x, y)); };
+  let lo = 1, hi = 12;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (covers(mid)) hi = mid; else lo = mid; }
+  r.S = hi * 1.08;
+});
+let vt = 0; // timeline time of the current step (seconds)
+let live = null; // the transition the mesh is currently configured for
+function meshField(x, y) {
+  const tr = live;
+  if (!tr || vt < tr.at - LEAD || vt >= tr.at + tr.grow) return 2;   // well above the threshold: no cells
+  if (tr.cell.diamonds.some((c) => Math.abs(c.x - x) < 0.5 && Math.abs(c.y - y) < 0.5)) return -2.5; // hero: first in, alone
+  const t0 = tr.at - LEAD + 0.02;              // the sweep starts a tick after the hero, so the hero merges whole
+  if (vt < t0) return 2;
+  const p = (1 + W) * sweepEase(Math.min(1, (vt - t0) / tr.sweep));
+  const d = DIST[tr.dir]((x * tr.px - PAD + tr.off.x) / 1920, (y * tr.px - PAD + tr.off.y) / 1080);
+  const s = Math.max(0, Math.min(1, (p - d) / W));
+  return 2 - 4.5 * s;                          // s = 1 → far below the threshold: covered
+}
+const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const mesh = window.VideoMesh.mount($("#mesh"), { ...TR[0].grid, morphDuration: MORPH, seed: 20261016, field: meshField });
+TR.forEach((r) => {
+  tl.set("#backingFlood", { attr: { "flood-color": C[r.from] } }, r.at - LEAD - 0.01);
+  tl.set("#mesh", { visibility: "visible" }, r.at - LEAD);
+  // The outgoing copy is out through its masks just before the hero cell starts to unfold.
+  const out = r.at - LEAD - 0.3;
+  conceal(`${r.out} .mask > span`, out, { dur: 0.24, stagger: { amount: 0.06, from: "end" }, ease: "snap" });
+  tl.to(`${r.out} .bar-fill, ${r.out} .bar-ext`, { width: 0, duration: 0.24, ease: "snap" }, out);
+  if (r.prev === "s1") tl.to("#s1 .mark", { scale: 0, duration: 0.24, ease: "snap" }, out);
+  tl.set(`#${r.prev} .content`, { opacity: 0 }, r.at - 0.15);
+  tl.set("#mesh", { visibility: "hidden" }, r.at + r.grow);
+});
+// Which scene is on screen is resolved per step from the timeline time (see __stepTo).
+const SCENE_AT = [["s1", 0], ["s2", T.s2], ["s3", T.s3], ["s4", T.s4], ["s5", T.s5], ["s6", T.s6], ["s7", T.s7], ["s9", T.s9]];
+
+// ---- timeline -------------------------------------------------------------
+// Open: the mark lands on the first hit; title and date follow on the pickup beats.
+showScene("s1", 0);
+tl.fromTo("#s1 .mark", { scale: 0.15, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.5, ease: "pop", immediateRender: false }, 0.28);
+reveal("#s1 .title .mask > span", 0.4, { dur: 0.5 });
+reveal("#s1 .date .mask > span", 0.62, { dur: 0.46 });
+pulse("#s1 .mark", DB(0), 1.06);
+drift("s1", 0, T.s2);
+
+// Lesson, two halves (mint)
+showScene("s2", T.s2);
+reveal("#s2a .headline .mask > span", T.s2 + 0.02, { dur: 0.5 });
+bars("#s2a", T.s2 + BEAT);
+reveal("#s2a .sub .mask > span", T.s2 + BEAT * 1.5);
+pulse("#s2a .headline", DB(1.5), 1.03);
+tl.to("#s2a .accent", { color: C.orange, duration: 0.36, ease: "snap" }, DB(1.5));
+// half-swap: the first half is fully out before the second headline starts
+conceal("#s2a .mask > span", T.s2b - 0.36, { stagger: { amount: 0.08, from: "end" }, ease: "snap" });
+tl.to("#s2a .bar-fill, #s2a .bar-ext", { width: 0, duration: 0.24, ease: "snap" }, T.s2b - 0.36);
+tl.set("#s2b", { visibility: "visible" }, T.s2b - 0.01);
+reveal("#s2b .headline .mask > span", T.s2b + 0.02, { dur: 0.5 });
+bars("#s2b", T.s2b + BEAT);
+reveal("#s2b .sub .mask > span", T.s2b + BEAT * 1.5);
+pulse("#s2b .headline", DB(4), 1.03);
+tl.to("#s2b .accent", { color: C.orange, duration: 0.36, ease: "snap" }, DB(4));
+drift("s2", T.s2, T.s3);
+
+// Platform menu (basil): the stat, then the takeaway on the next phrase
+showScene("s3", T.s3);
+finding("s3a", T.s3);
+bars("#s3a", T.s3 + BEAT * 1.1);
+pulse("#s3a .big", DB(7));
+// half-swap: "Platform menu" stays and glides to the second half's position; the rest is out
+// before the takeaway lands
+conceal("#s3a .big .mask > span, #s3a .bar-label .mask > span, #s3a .sub .mask > span", T.s3b - 0.36, { stagger: { amount: 0.08, from: "end" }, ease: "snap" });
+tl.to("#s3a .bar-fill", { width: 0, duration: 0.24, ease: "snap" }, T.s3b - 0.36);
+tl.to("#s3a .eyebrow", { y: window.__noLayout ? 0 : EYEBROW_GLIDE, duration: 0.62, ease: "glide" }, T.s3b - 0.3);
+tl.set("#s3b", { visibility: "visible" }, T.s3b - 0.01);
+reveal("#s3b .headline .mask > span", T.s3b + 0.03, { stagger: 0.12, dur: 0.5 });
+reveal("#s3b .sub .mask > span", T.s3b + BEAT * 1.2);
+pulse("#s3pos", DB(10), 1.03);
+drift("s3", T.s3, T.s4);
+
+// Remanufactured (rose)
+showScene("s4", T.s4);
+finding("s4", T.s4);
+pulse("#s4 .big", DB(12));
+drift("s4", T.s4, T.s5);
+
+// Contact (ash)
+showScene("s5", T.s5);
+finding("s5", T.s5);
+pulse("#s5 .big", DB(15));
+drift("s5", T.s5, T.s6);
+
+// Newsroom (stone): intent vs comprehension
+showScene("s6", T.s6);
+eyebrowIn("#s6", T.s6 + 0.01);
+reveal("#s6 .stat:not(.minor) .num .mask > span", T.s6 + 0.03, { dur: 0.46 });
+countUp($("#s6 .stat:not(.minor) .n"), T.s6 + 0.06);
+reveal("#s6 .stat:not(.minor) .lab .mask > span", T.s6 + 0.3);
+reveal("#s6 .stat.minor .num .mask > span", T.s6 + BEAT * 1.0, { dur: 0.46 });
+countUp($("#s6 .stat.minor .n"), T.s6 + BEAT * 1.0 + 0.03);
+reveal("#s6 .stat.minor .lab .mask > span", T.s6 + BEAT * 1.0 + 0.27);
+reveal("#s6 .sub .mask > span", T.s6 + BEAT * 1.8);
+pulse("#s6 .stat:not(.minor) .num", DB(19));
+drift("s6", T.s6, T.s7);
+
+// Video -> homepage (cloud)
+showScene("s7", T.s7);
+finding("s7", T.s7);
+pulse("#s7 .big", DB(21));
+drift("s7", T.s7, T.s9);
+
+// End slate (orange, the mesh bursts from the centre on the final hit)
+showScene("s9", T.s9);
+tl.fromTo("#s9 .mark", { scale: 0.2, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.5, ease: "pop", immediateRender: false }, T.s9 + 0.01);
+reveal("#th1 .mask > span", T.s9 + 0.04, { dur: 0.5 });
+reveal("#th2 .mask > span", T.s9 + BEAT, { dur: 0.5 });
+reveal("#s9 .closer .mask > span", T.s9 + 2 * BEAT, { dur: 0.55 });
+tl.to("#s9 .content", { scale: 1.02, duration: DUR - T.s9, ease: "drift" }, T.s9);
+tl.set({}, {}, DUR);
+
+window.__duration = DUR;
+// One render step: pose the timeline at t, resolve scenes and the hero window, then advance the
+// virtual clock (vclock.js) so the mesh simulates up to t.
+window.__stepTo = async (t) => {
+  vt = Math.min(t, DUR);
+  tl.seek(vt, false);
+  // Scenes: the current one, plus — while the hero window grows — the outgoing one underneath,
+  // with the incoming scene above the mesh, clipped to the hero cell.
+  const cur = SCENE_AT.filter(([, at]) => vt >= at).pop()[0];
+  const win = TR.find((r) => vt >= r.at && vt < r.at + r.grow);
+  for (const sc of scenes) {
+    sc.style.visibility = sc.id === cur || (win && sc.id === win.prev) ? "visible" : "hidden";
+    sc.style.zIndex = "";
+    sc.style.clipPath = "";
+  }
+  if (win) {
+    const inc = $(`#${win.next}`);
+    inc.style.zIndex = "11";
+    inc.style.clipPath = `path("${outline(win.cell, 1 + (win.S - 1) * growEase((vt - win.at) / win.grow))}")`;
+  }
+  // Between transitions (mesh hidden): recolour, re-grid and re-offset it for the next one.
+  const next = TR.find((r) => vt < r.at + r.grow);
+  if (next && next !== live && vt < next.at - LEAD) {
+    live = next;
+    mesh.set({ color: rgb(C[next.color]), ...next.grid });
+    $("#mesh").style.transform = `translate(${next.off.x.toFixed(2)}px, ${next.off.y.toFixed(2)}px)`;
+  }
+  if (window.__advanceTo) await window.__advanceTo(vt * 1000);
+};
+window.__ready = document.fonts.ready.then(() => window.__stepTo(0)).then(() => true);
+</script>
+</body>
+</html>
