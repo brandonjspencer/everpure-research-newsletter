@@ -15,15 +15,15 @@
       "read": "barrier"
     },
     {
-      "signal": "Buyers name rebuilt gear “refurbished,” not “remanufactured” — the word they already know and search for.",
+      "signal": "Buyers will likely confuse “remanufactured” with “refurbished” — it's the word they reach for when they search.",
       "quote": "I’d call it certified refurbished enterprise storage.",
-      "topic": "Certified Refurbished",
+      "topic": "Remanufactured Storage",
       "read": "hit"
     },
     {
       "signal": "The maker's warranty is what makes a rebuilt system feel safe to buy — the price is the only difference people want to see.",
       "quote": "The primary difference is the cost, since it would still be eligible for the same warranty as a new product.",
-      "topic": "Certified Refurbished",
+      "topic": "Remanufactured Storage",
       "read": "hit"
     },
     {
