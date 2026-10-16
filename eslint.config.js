@@ -18,6 +18,7 @@ module.exports = [
       "issues/**",
       "history/**",
       "emails/**",
+      "static/vendor/*.min.js",
     ],
   },
   js.configs.recommended,
@@ -34,6 +35,10 @@ module.exports = [
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "no-empty": ["warn", { allowEmptyCatch: true }],
     },
+  },
+  {
+    files: ["static/**/*.js"],
+    languageOptions: { sourceType: "script", globals: { ...globals.browser } },
   },
   prettier,
 ];

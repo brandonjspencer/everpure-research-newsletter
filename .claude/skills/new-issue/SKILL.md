@@ -84,7 +84,12 @@ stop at each approval gate until the user explicitly approves.**
 3. Work through the draft with the user, refining copy in `default-$MONTH.json` (this is **data,
    not code** — see OPERATIONS.md "Editing the default brief's copy"). Re-render after edits.
    Keep EVIDENCE concrete (~250 chars, ceiling ~295), confidence labels evidence-backed, and
-   respondent quotes verbatim-real (drop any that aren't a participant's own words).
+   respondent quotes verbatim-real (drop any that aren't a participant's own words). Author the
+   top-level `executive_summary`, and never prefix a `recommended_action` with "Topic: ".
+4. If the build's 30-day packs miss or mis-title this cycle's tests, curate them from the primary
+   sources into `netlify/content/evidence_pack_overrides.json` with this cycle's `issue_month`
+   (replace or empty last cycle's) — never hand-patch `publish/`. See OPERATIONS.md "Curated
+   evidence-pack overrides".
 
 ## Phase 3 — QC agent pass
 

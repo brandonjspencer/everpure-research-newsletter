@@ -154,7 +154,7 @@ function render(data, passwordHashHex) {
 
   return `<!doctype html>
 <html lang="en"><head>
-${docHead("Everpure Research — Analytics")}
+${docHead("Everpure Research — Analytics", "../")}
 <style>
   .eg-table-card{padding:0;overflow:hidden}
   .eg-table{width:100%;border-collapse:collapse;font-size:14px}

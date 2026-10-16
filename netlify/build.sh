@@ -204,11 +204,18 @@ fi
 node "$ROOT/netlify/refine_default_newsletter.js" "$ROOT/publish"
 node "$ROOT/netlify/fix_default_bottom.js" "$ROOT/publish"
 
+if [ -f "$ROOT/netlify/apply_evidence_pack_overrides.js" ]; then
+  node "$ROOT/netlify/apply_evidence_pack_overrides.js" "$ROOT/publish"
+fi
 node "$ROOT/netlify/render_stage2_default_current.js" "$ROOT/publish"
 node "$ROOT/netlify/render_stage2_marketing_current.js" "$ROOT/publish"
 node "$ROOT/netlify/publish_issue_archives.js" "$ROOT"
 if [ -f "$ROOT/netlify/fix_static_aliases.js" ]; then
   node "$ROOT/netlify/fix_static_aliases.js" "$ROOT/publish"
+fi
+# Committed static assets (vendored site-motion scripts, roundup videos) served from the root.
+if [ -d "$ROOT/static" ]; then
+  cp -R "$ROOT/static/." "$ROOT/publish/"
 fi
 
 # Localize Helio thumbnails into the committed WebP cache and rewrite trends.json to
