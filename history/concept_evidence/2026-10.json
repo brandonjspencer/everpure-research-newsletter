@@ -1,0 +1,527 @@
+{
+  "generated_at": "2026-10-16T20:01:01.634Z",
+  "window": {
+    "days": 30
+  },
+  "concept_count": 5,
+  "with_evidence_count": 5,
+  "concepts": [
+    {
+      "concept_key": "helio_title_c200 everpure live contact sales page baseline vs c200 everpure contact page 2026 update v1",
+      "concept_id": null,
+      "concept_title": "C200 Everpure Live Contact Sales Page Baseline vs C200 Everpure Contact Page 2026 Update V1",
+      "concept_display": "C200 Everpure Live Contact Sales Page Baseline vs C200 Everpure Contact Page 2026 Update V1",
+      "weeks_seen": [
+        "2026-09-03",
+        "2026-09-10",
+        "2026-09-17",
+        "2026-09-24"
+      ],
+      "deck_refs": [
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "V3's chat card was quietly serving the researchers, removing it sent them wandering. The chat card took 30% of first clicks on V3 as the on-page way to learn without committing; with it gone, that demand went to the nav and \"Watch a Demo,\" not to Sage and most",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA",
+          "helio_compare_id": "cmswjv3mx000004l96v6f39q6",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmswjv3mx000004l96v6f39q6"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Engagement: C200 Everpure Live Contact Sales Page Baseline 36% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+          "score": 36,
+          "numbers": [
+            "36%",
+            "2026",
+            "37%"
+          ]
+        },
+        {
+          "text": "Sentiment: C200 Everpure Live Contact Sales Page Baseline 39% (negative) vs C200 Everpure Contact Page 2026 Update V1 40% (negative).",
+          "score": 36,
+          "numbers": [
+            "39%",
+            "2026",
+            "40%"
+          ]
+        },
+        {
+          "text": "Comprehension: C200 Everpure Live Contact Sales Page Baseline 76% (High) vs C200 Everpure Contact Page 2026 Update V1 73% (High).",
+          "score": 36,
+          "numbers": [
+            "76%",
+            "2026",
+            "73%"
+          ]
+        },
+        {
+          "text": "Intent: C200 Everpure Live Contact Sales Page Baseline 69% (Avg Intent) vs C200 Everpure Contact Page 2026 Update V1 66% (Avg Intent).",
+          "score": 32,
+          "numbers": [
+            "69%",
+            "2026",
+            "66%"
+          ]
+        },
+        {
+          "text": "Conecept 206 Everpure's AI Data Readiness page lets visitors pick the challenge that matters most to them. We tested three versions of the top of the page: a general \"data foundation\" message, a data sovereignty message, and a cost and supply chain message. The goal was to see which one people understand best and which makes them want to learn more.",
+          "score": 10,
+          "numbers": [
+            "206"
+          ]
+        },
+        {
+          "text": "V3's chat card was quietly serving the researchers, removing it sent them wandering. The chat card took 30% of first clicks on V3 as the on-page way to learn without committing; with it gone, that demand went to the nav and \"Watch a Demo,\" not to Sage and most",
+          "score": 4,
+          "numbers": [
+            "30%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Engagement: C200 Everpure Live Contact Sales Page Baseline 36% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+        "Sentiment: C200 Everpure Live Contact Sales Page Baseline 39% (negative) vs C200 Everpure Contact Page 2026 Update V1 40% (negative).",
+        "Comprehension: C200 Everpure Live Contact Sales Page Baseline 76% (High) vs C200 Everpure Contact Page 2026 Update V1 73% (High).",
+        "Intent: C200 Everpure Live Contact Sales Page Baseline 69% (Avg Intent) vs C200 Everpure Contact Page 2026 Update V1 66% (Avg Intent).",
+        "Conecept 206 Everpure's AI Data Readiness page lets visitors pick the challenge that matters most to them. We tested three versions of the top of the page: a general \"data foundation\" message, a data sovereignty message, and a cost and supply chain message. The goal was to see which one people understand best and which makes them want to learn more."
+      ],
+      "clean_key_numbers": [
+        "36%",
+        "2026",
+        "37%",
+        "39%",
+        "40%",
+        "76%"
+      ],
+      "matched_summary": "C200 Everpure Live Contact Sales Page Baseline vs C200 Everpure Contact Page 2026 Update V1 is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 36,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "netapp comparison page: establish a baseline and test the updated direction against it.",
+      "concept_id": null,
+      "concept_title": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+      "concept_display": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+      "weeks_seen": [
+        "2026-09-17"
+      ],
+      "deck_refs": [
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-17",
+          "record_id": "everpure_2026_09_17",
+          "group": "other",
+          "text": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+          "score": 28,
+          "numbers": []
+        },
+        {
+          "text": "Engagement: C200 Everpure Live Contact Sales Page Baseline 36% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+          "score": 15,
+          "numbers": [
+            "36%",
+            "2026",
+            "37%"
+          ]
+        },
+        {
+          "text": "Sentiment: C200 Everpure Live Contact Sales Page Baseline 39% (negative) vs C200 Everpure Contact Page 2026 Update V1 40% (negative).",
+          "score": 15,
+          "numbers": [
+            "39%",
+            "2026",
+            "40%"
+          ]
+        },
+        {
+          "text": "Comprehension: C200 Everpure Live Contact Sales Page Baseline 76% (High) vs C200 Everpure Contact Page 2026 Update V1 73% (High).",
+          "score": 15,
+          "numbers": [
+            "76%",
+            "2026",
+            "73%"
+          ]
+        },
+        {
+          "text": "Intent: C200 Everpure Live Contact Sales Page Baseline 69% (Avg Intent) vs C200 Everpure Contact Page 2026 Update V1 66% (Avg Intent).",
+          "score": 11,
+          "numbers": [
+            "69%",
+            "2026",
+            "66%"
+          ]
+        },
+        {
+          "text": "Platform navigation + landing pages: We’ll pick three platform directions and test the navigation together with the landing page it leads to. The goal is to understand the whole journey—what people expect before clicking, how they understand the open nav, and whether the destination delivers on that expectation.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "EDC Blueprint: Test the updated Blueprint page based on what we’ve learned across the previous rounds.",
+          "score": 6,
+          "numbers": []
+        },
+        {
+          "text": "Contact page: Put the updated contact experience back into testing.",
+          "score": 6,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "NetApp comparison page: Establish a baseline and test the updated direction against it.",
+        "Engagement: C200 Everpure Live Contact Sales Page Baseline 36% (Fell Short) vs C200 Everpure Contact Page 2026 Update V1 37% (Fell Short).",
+        "Sentiment: C200 Everpure Live Contact Sales Page Baseline 39% (negative) vs C200 Everpure Contact Page 2026 Update V1 40% (negative).",
+        "Comprehension: C200 Everpure Live Contact Sales Page Baseline 76% (High) vs C200 Everpure Contact Page 2026 Update V1 73% (High).",
+        "Intent: C200 Everpure Live Contact Sales Page Baseline 69% (Avg Intent) vs C200 Everpure Contact Page 2026 Update V1 66% (Avg Intent)."
+      ],
+      "clean_key_numbers": [
+        "36%",
+        "2026",
+        "37%",
+        "39%",
+        "40%",
+        "76%"
+      ],
+      "matched_summary": "NetApp comparison page: Establish a baseline and test the updated direction against it. is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 28,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "📊 data comparison",
+      "concept_id": null,
+      "concept_title": "📊 Data Comparison",
+      "concept_display": "📊 Data Comparison",
+      "weeks_seen": [
+        "2026-10-07",
+        "2026-10-15"
+      ],
+      "deck_refs": [
+        "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-10-15",
+          "record_id": "everpure_2026_10_15",
+          "group": "other",
+          "text": "📊 Data Comparison",
+          "deck_file_id": "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+        },
+        {
+          "week_date": "2026-10-07",
+          "record_id": "everpure_2026_10_07",
+          "group": "other",
+          "text": "📊 Data Comparison",
+          "deck_file_id": "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "\"...the content under this menu overlaps heavily with what users usually expect to ﬁnd under a 'Products' or 'Solutions' tab.\" (C, Our Platform) Platform Menu Signal Concept 203 Source: Helio Comparison Version Found storage Left for the top nav Found it, if they clicked in the list A · Data Management 44% 24% 85% B · Our Platform, AI Data Ready ﬁrst 38% 40% 90% C · Our Platform, EDC ﬁrst 46% 22% 82% D · Platform, merged with Products 58% 16% 78% Putting more in one menu makes items easier to ﬁnd but harder to take in.",
+          "score": 17,
+          "numbers": [
+            "203",
+            "44%",
+            "24%",
+            "85%",
+            "38%",
+            "40%",
+            "90%",
+            "46%",
+            "22%",
+            "82%",
+            "58%",
+            "16%",
+            "78%"
+          ]
+        },
+        {
+          "text": "Newsroom Recommendation Concept 207 Source: Helio Data Comparison pypdf Everpure's newsroom lands in the same range as the other newsrooms, but people understand it less and have no clear place to start.",
+          "score": 17,
+          "numbers": [
+            "207"
+          ]
+        },
+        {
+          "text": "Newsroom Recommendation Concept 207 Source: Helio Data Comparison Everpure's newsroom lands in the same range as the other newsrooms, but people understand it less and have no clear place to start.",
+          "score": 17,
+          "numbers": [
+            "207"
+          ]
+        },
+        {
+          "text": "Platform Menu Recommendation Concept 203 Source: Helio Comparison People rate “Data Management” highest overall because they like it more, not because they can use it better.",
+          "score": 17,
+          "numbers": [
+            "203"
+          ]
+        },
+        {
+          "text": "Newsroom Signal Concept 207 Source: Helio Data Comparison More topic sections make a page feel heavy.",
+          "score": 17,
+          "numbers": [
+            "207"
+          ]
+        },
+        {
+          "text": "\"expected detailed data infrastructure, this is marketing overview.\" (B, Our Platform) Platform Menu Signal Concept 203 Source: Helio Comparison Measure Tech professionals (96) Everyone else (104) Found storage as a service 46% 47% Menu met or beat expectations 64% 68% Picked a negative word 20% 20% Left for the top nav 27% 24% Platform Menu Decisions Concept 203 Implement Reﬁne Design Test Iteration Revisit Later Do Not Pursue ● Both names worked the same in use (44% and 46% found storage), so the choice is about the story Everpure wants to tell.",
+          "score": 14,
+          "numbers": [
+            "203",
+            "96",
+            "104",
+            "46%",
+            "47%",
+            "64%",
+            "68%",
+            "20%",
+            "27%",
+            "24%",
+            "44%"
+          ]
+        },
+        {
+          "text": "Newsroom Signal Concept 207 Source: Helio Data Comparison Who the page is for Everpure VAST Microsoft Apple Spotify IT and business leaders following industry news 47% 40% 29% 4% 11% Customers and users of the company 23% 30% 22% 53% 42% The general public 8% 7% 33% 23% 36% Investors 8% 7% 0% 2% 0% Journalists and media 2% 7% 4% 11% 3% Job seekers 0% 0% 0% 0% 0% Other 0% 3% 2% 0% 0% I'm not sure 12% 7% 10% 6% 8% People see a news page but don't know the company.",
+          "score": 14,
+          "numbers": [
+            "207",
+            "47%",
+            "40%",
+            "29%",
+            "4%",
+            "11%",
+            "23%",
+            "30%",
+            "22%",
+            "53%",
+            "42%",
+            "8%",
+            "7%",
+            "33%",
+            "36%",
+            "0%",
+            "2%",
+            "3%",
+            "12%",
+            "10%",
+            "6%"
+          ]
+        },
+        {
+          "text": "\"Data Management Platform: A uniﬁed system to govern and understand data across the entire organization.\" (A, Data Management) Platform Menu Signal Concept 203 Source: Helio Comparison Version Said data management A · Data Management 52% B · Our Platform, AI Data Ready ﬁrst 22% C · Our Platform, EDC ﬁrst 40% D · Platform, merged with Products 26% When people miss an item, they leave the menu for the top navigation.",
+          "score": 14,
+          "numbers": [
+            "203",
+            "52%",
+            "22%",
+            "40%",
+            "26%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "\"...the content under this menu overlaps heavily with what users usually expect to ﬁnd under a 'Products' or 'Solutions' tab.\" (C, Our Platform) Platform Menu Signal Concept 203 Source: Helio Comparison Version Found storage Left for the top nav Found it, if they clicked in the list A · Data Management 44% 24% 85% B · Our Platform, AI Data Ready ﬁrst 38% 40% 90% C · Our Platform, EDC ﬁrst 46% 22% 82% D · Platform, merged with Products 58% 16% 78% Putting more in one menu makes items easier to ﬁnd but harder to take in.",
+        "Newsroom Recommendation Concept 207 Source: Helio Data Comparison pypdf Everpure's newsroom lands in the same range as the other newsrooms, but people understand it less and have no clear place to start.",
+        "Newsroom Recommendation Concept 207 Source: Helio Data Comparison Everpure's newsroom lands in the same range as the other newsrooms, but people understand it less and have no clear place to start.",
+        "Platform Menu Recommendation Concept 203 Source: Helio Comparison People rate “Data Management” highest overall because they like it more, not because they can use it better.",
+        "Newsroom Signal Concept 207 Source: Helio Data Comparison More topic sections make a page feel heavy."
+      ],
+      "clean_key_numbers": [
+        "203",
+        "44%",
+        "24%",
+        "85%",
+        "38%",
+        "40%"
+      ],
+      "matched_summary": "📊 Data Comparison is active in the current window and now has concept-matched evidence that should be used to tighten the next round of iteration.",
+      "matched_next_step": "Reduce the concept to a tighter comparison, define the success criterion up front, and use the next round to produce a clear preferred option.",
+      "matched_confidence": "moderate",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 17,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_201",
+      "concept_id": "201",
+      "concept_title": "Video and Homepage",
+      "concept_display": "201 - Video and Homepage",
+      "weeks_seen": [
+        "2026-09-03",
+        "2026-09-10",
+        "2026-09-17",
+        "2026-09-24"
+      ],
+      "deck_refs": [
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "We tested a single screenshot of the current Everpure YouTube channel home page, from the banner down through the playlists, Shorts, and videos.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA",
+          "helio_compare_id": "cmtj8sxuh000004jxeo3bwlnj",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmtj8sxuh000004jxeo3bwlnj"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "text": "Sentiment: 81764ec6 6976 4d97 8388 E42f2848086b 89% (positive) vs Aa1c2625 D037 4612 A139 5d6eed28f780 89% (positive).",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmtj8sxuh000004jxeo3bwlnj",
+          "slide_number": 12
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Sentiment: 81764ec6 6976 4d97 8388 E42f2848086b 89% (positive) vs Aa1c2625 D037 4612 A139 5d6eed28f780 89% (positive).",
+          "score": 8,
+          "numbers": [
+            "6976",
+            "8388",
+            "89%",
+            "4612"
+          ]
+        },
+        {
+          "text": "Comprehension: 81764ec6 6976 4d97 8388 E42f2848086b 83% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 88% (High).",
+          "score": 8,
+          "numbers": [
+            "6976",
+            "8388",
+            "83%",
+            "4612",
+            "88%"
+          ]
+        },
+        {
+          "text": "Comprehension: 81764ec6 6976 4d97 8388 E42f2848086b 81% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 84% (High).",
+          "score": 8,
+          "numbers": [
+            "6976",
+            "8388",
+            "81%",
+            "4612",
+            "84%"
+          ]
+        },
+        {
+          "text": "Engagement: 81764ec6 6976 4d97 8388 E42f2848086b 73% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 75% (High).",
+          "score": 8,
+          "numbers": [
+            "6976",
+            "8388",
+            "73%",
+            "4612",
+            "75%"
+          ]
+        },
+        {
+          "text": "We tested a single screenshot of the current Everpure YouTube channel home page, from the banner down through the playlists, Shorts, and videos.",
+          "score": 3,
+          "numbers": []
+        }
+      ],
+      "clean_supporting_signals": [
+        "Sentiment: 81764ec6 6976 4d97 8388 E42f2848086b 89% (positive) vs Aa1c2625 D037 4612 A139 5d6eed28f780 89% (positive).",
+        "Comprehension: 81764ec6 6976 4d97 8388 E42f2848086b 83% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 88% (High).",
+        "Comprehension: 81764ec6 6976 4d97 8388 E42f2848086b 81% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 84% (High).",
+        "Engagement: 81764ec6 6976 4d97 8388 E42f2848086b 73% (High) vs Aa1c2625 D037 4612 A139 5d6eed28f780 75% (High).",
+        "We tested a single screenshot of the current Everpure YouTube channel home page, from the banner down through the playlists, Shorts, and videos."
+      ],
+      "clean_key_numbers": [
+        "6976",
+        "8388",
+        "89%",
+        "4612",
+        "83%",
+        "88%"
+      ],
+      "matched_summary": "201 - Video and Homepage is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Keep the strongest direction, remove the weakest competing elements, and validate the outcome on the primary engagement or conversion signal.",
+      "matched_confidence": "low",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 8,
+      "evidence_found": true
+    },
+    {
+      "concept_key": "helio_concept_204",
+      "concept_id": "204",
+      "concept_title": "Video and Homepage",
+      "concept_display": "204 - Video and Homepage",
+      "weeks_seen": [
+        "2026-09-03",
+        "2026-09-10",
+        "2026-09-17",
+        "2026-09-24"
+      ],
+      "deck_refs": [
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Each test showed people the same real page, but asked them to guess what a different name meant first. Everpure Play Everpure Studio EverpureTV Everpure Demos — the standing candidate Pure3",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA",
+          "helio_compare_id": "cmtqhmz23000004jttpbd0696",
+          "helio_source_url": "https://glare-playground.helio.app/share/compare/cmtqhmz23000004jttpbd0696"
+        },
+        {
+          "group": "external_research_evidence",
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "text": "Sentiment: F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative) vs F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative).",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA",
+          "source_url": "https://glare-playground.helio.app/share/compare/cmtqhmz23000004jttpbd0696",
+          "slide_number": 21
+        }
+      ],
+      "matched_evidence": [
+        {
+          "text": "Sentiment: F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative) vs F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative).",
+          "score": 8,
+          "numbers": [
+            "8878",
+            "48%"
+          ]
+        }
+      ],
+      "clean_supporting_signals": [
+        "Sentiment: F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative) vs F452266a A7b7 4b58 8878 E6c9e4acd540 48% (negative)."
+      ],
+      "clean_key_numbers": [
+        "8878",
+        "48%"
+      ],
+      "matched_summary": "204 - Video and Homepage is surfacing a meaningful signal around user understanding, confidence, or navigation clarity. The current evidence is more useful for deciding the next iteration than for declaring the work finished.",
+      "matched_next_step": "Keep the strongest direction, remove the weakest competing elements, and validate the outcome on the primary engagement or conversion signal.",
+      "matched_confidence": "low",
+      "matched_decision_status": "watch",
+      "evidence_strength_score": 8,
+      "evidence_found": true
+    }
+  ]
+}
