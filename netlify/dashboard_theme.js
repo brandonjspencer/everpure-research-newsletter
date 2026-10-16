@@ -345,14 +345,58 @@ function analyticsSnippet(measurementId = GA_MEASUREMENT_ID) {
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${measurementId}");</script>`;
 }
 
-function docHead(title) {
+// Site motion (Motion, vendored + pinned under static/vendor/ and copied to publish/vendor/ by
+// build.sh, so frozen archives never depend on a CDN). The inline part runs before first paint:
+// unless the visitor prefers reduced motion it adds html.motion, which hides the reveal targets
+// until static/vendor/site-motion.js animates them in — and un-hides everything after 2.5s if
+// that script never arrives. `prefix` is the page's path back to the site root ("" or "../").
+const MOTION_VERSION = "11.18.2";
+const MOTION_REVEAL = [
+  ".panel",
+  ".kpi",
+  ".cmp",
+  ".issue-hero",
+  ".issuelist > *",
+  ".linklist > li",
+  ".card",
+  ".dispatch-finding",
+  ".stats-grid .stat",
+  ".stat-chip",
+  ".roundup-video",
+  ".question",
+  ".action-row",
+].join(",");
+
+function motionHead(prefix = "") {
+  return `<style>html.motion :is(${MOTION_REVEAL}){opacity:0}</style>
+<script>(function(){var d=document.documentElement;try{if(matchMedia("(prefers-reduced-motion: reduce)").matches||!("IntersectionObserver" in window))return;d.classList.add("motion");window.__mSel=${JSON.stringify(MOTION_REVEAL)};setTimeout(function(){if(!window.__siteMotion)d.classList.remove("motion")},2500)}catch(e){}})();</script>
+<script defer src="${prefix}vendor/motion-${MOTION_VERSION}.min.js"></script>
+<script defer src="${prefix}vendor/site-motion.js"></script>`;
+}
+
+// The official Everpure hex mesh (vendored, prebuilt island — see static/vendor/README.md) drawn
+// behind the newsletter masthead in the ghost issue number's tone (Cloud White at 4%), with a fresh
+// random seed per load; it follows the pointer anywhere over the hero. The renderer writes it into
+// the live brief, and publish_issue_archives.js adds it to frozen issues that predate it.
+const HERO_MESH_CSS = `.masthead { position:relative; overflow:hidden; }
+.hero-mesh { position:absolute; inset:0; z-index:0; }
+.masthead > .wrapper { position:relative; z-index:1; }`;
+const HERO_MESH_DIV = '<div class="hero-mesh" aria-hidden="true"></div>';
+
+function heroMeshHead(prefix = "") {
+  return `<script defer src="${prefix}vendor/hex-mesh-hero.min.js"></script>
+<script>document.addEventListener("DOMContentLoaded",function(){var h=document.querySelector(".hero-mesh");if(h&&window.EverpureHexMesh)window.EverpureHexMesh.mount(h,{color:[1,0.961,0.89],opacity:0.04,scale:2,clear:{x:0.5,y:0.95,rx:0.22,ry:0.3,strength:0.85},eventTarget:h.parentElement});});</script>`;
+}
+
+function docHead(title, prefix = "") {
   return `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 ${FAVICON_LINK}
 ${FONT_LINK}
 ${analyticsSnippet()}
 ${brandCss()}
-${themeInit()}`;
+${themeInit()}
+${motionHead(prefix)}`;
 }
 
 module.exports = {
@@ -366,4 +410,9 @@ module.exports = {
   FAVICON_LINK,
   analyticsSnippet,
   GA_MEASUREMENT_ID,
+  motionHead,
+  MOTION_VERSION,
+  heroMeshHead,
+  HERO_MESH_CSS,
+  HERO_MESH_DIV,
 };

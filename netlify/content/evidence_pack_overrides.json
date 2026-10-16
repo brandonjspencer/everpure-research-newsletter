@@ -1,0 +1,254 @@
+{
+  "note": "Curated evidence-pack overrides for one issue month (data, not code). Applied by netlify/apply_evidence_pack_overrides.js right before the default newsletter render, ONLY while the 30-day window's latest week falls in `issue_month`, so they never leak into the next cycle. Use when the CI build's own packs for the window are mis-titled or missing a test. Every pack must be built from the primary sources (ZURB deck readouts, Helio, Notion) — no invented claims. Replace or empty this file each cycle (see the /new-issue skill, Phase 2).",
+  "issue_month": "2026-10",
+  "replace_window_packs": true,
+  "provenance": "Hand-curated 2026-10-15 from the October and September 2026 ZURB decks and Helio, replacing CI packs that were mis-titled (Helio asset-id variant names); not rule-generated.",
+  "packs": [
+    {
+      "concept_key": "platform menu",
+      "concept_id": "203",
+      "concept_title": "Platform Menu",
+      "concept_display": "203 - Platform Menu",
+      "weeks_seen": ["2026-09-24", "2026-10-15"],
+      "first_seen_week": "2026-09-24",
+      "last_seen_week": "2026-10-15",
+      "occurrence_count": 2,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": [
+        "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg",
+        "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+      ],
+      "raw_finding_excerpts": [
+        "People rate “Data Management” highest overall because they like it more, not because they can use it better."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-10-15",
+          "record_id": "everpure_2026_10_15",
+          "group": "helio_evidence",
+          "text": "Four versions of the same menu: A Data Management; B Our Platform, AI Data Ready first; C Our Platform, EDC first; D Platform, merged with Products. Data Management leads Overall UX at 70% against 58% and 55% for the two Our Platform versions; the gap comes almost entirely from sentiment (91% against 61% and 46%), since expectations (73% to 74%) and success (40% to 46%) are nearly identical. 44% found storage as a service under Data Management and 46% under Our Platform. Almost nobody called Everpure a platform: 10% to 12% in every version. 52% said data management under Data Management, against 22% to 40% under the other names, but only 38% said storage under Data Management, against 56% to 76% under the others. 12% picked a negative word for Data Management against 20% for each Our Platform version, which the researchers call directional. The merged Platform menu was easiest to use (58% found storage) but drew the most negative reactions (28%) and the lowest expectation match (60%). Conclusion: ship either name, chosen on positioning.",
+          "deck_file_id": "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+        },
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Earlier round of the navigation-menu naming test: only 26% found the storage-benefits item under Our Platform, against 50% under a trimmed four-item Data Management menu. That round also varied the list length and which item was highlighted, and the research team advised not to use its name-preference numbers as evidence, because people mostly picked the name they had just seen.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["variant", "comparison"],
+      "behavioral_signals": ["sentiment", "expectations", "success"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmv5oxgs4000004jvbjvm2hys"]
+    },
+    {
+      "concept_key": "remanufactured storage program",
+      "concept_id": "208",
+      "concept_title": "Remanufactured Storage Program",
+      "concept_display": "208 - Remanufactured Storage Program",
+      "weeks_seen": ["2026-10-15"],
+      "first_seen_week": "2026-10-15",
+      "last_seen_week": "2026-10-15",
+      "occurrence_count": 1,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"],
+      "raw_finding_excerpts": [
+        "Buyers call rebuilt gear “refurbished,” not “remanufactured,” and they trust it when the maker stands behind it."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-10-15",
+          "record_id": "everpure_2026_10_15",
+          "group": "helio_evidence",
+          "text": "Tested the Cisco, HPE and IBM programs and where people expect Everpure's version on everpuredata.com. Unprompted, 36% called it refurbished and 4% remanufactured; 36% picked Certified Refurbished as the most trustworthy label against 9% for Certified Remanufactured. 58% clicked Products first but only 4% picked the FlashArray row. HPE's Certified Quality drew 39% of trust clicks and Cisco's same warranty and support 22%; IBM's vague trust card drew none. About 3 in 4 want price, performance and warranty compared with new before asking for a quote. 49% would think more of the new models if both were listed together; 2% less. 71% to 79% chose browsing products or reading how it works as their next step; 5% to 18% chose contacting sales. Conclusion: Implement.",
+          "deck_file_id": "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["comparison"],
+      "behavioral_signals": ["comprehension", "intent", "trust"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmv9puqjn000004kxvhyihylg"]
+    },
+    {
+      "concept_key": "contact form",
+      "concept_id": "200",
+      "concept_title": "Contact Form",
+      "concept_display": "200 - Contact Form",
+      "weeks_seen": ["2026-09-24"],
+      "first_seen_week": "2026-09-24",
+      "last_seen_week": "2026-09-24",
+      "occurrence_count": 1,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"],
+      "raw_finding_excerpts": [
+        "V3's chat card was quietly serving the researchers; removing it sent them wandering."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Round 4 (V4) leads with the form and moves chat into a floating AI assistant in the corner, where V3 led with a chat card above the form. The chat card took 30% of first clicks on V3; with it gone, nearly half of V4 first clicks went to the nav (48.5%, against 35.6% on V3) and Watch a Demo took 16%. 40% chose the form as how they would reach out, up from 26% on V3, but clicks show that as a plan for later rather than a first action. The floating assistant drew 2 of 101 first clicks, while 26% still said chat is how they would reach out. Decision: keep the V4 structure, bring back an on-page learn-without-committing path, and decide the assistant's role.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["variant", "v3", "v4"],
+      "behavioral_signals": ["engagement", "intent"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmswjv3mx000004l96v6f39q6"]
+    },
+    {
+      "concept_key": "newsroom",
+      "concept_id": "207",
+      "concept_title": "Newsroom",
+      "concept_display": "207 - Newsroom",
+      "weeks_seen": ["2026-10-07"],
+      "first_seen_week": "2026-10-07",
+      "last_seen_week": "2026-10-07",
+      "occurrence_count": 2,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"],
+      "raw_finding_excerpts": [
+        "Everpure's newsroom lands in the same range as the other newsrooms, but people understand it less and have no clear place to start."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-10-07",
+          "record_id": "everpure_2026_10_07",
+          "group": "helio_evidence",
+          "text": "Benchmarked Everpure's newsroom against Apple, Spotify, Microsoft and VAST Data with IT and business leaders (n = 252). Comprehension is the lowest of the five at 68% (Apple and Spotify 79%), yet Intent is the highest at 63%. First clicks split across featured news (20%), the Discover what's new banner (18%) and the video (17%); 40% of first clicks went to navigation, mostly the main site menu, which leaves the newsroom. 47% said the page is for IT and business leaders, the highest of the five, and 2% said journalists. 13% did not understand the page, against 2% for Apple. Only 52% said finding a topic would be easy, against 82% on Spotify. Decision: refine the design with one lead story, a line saying who Everpure is, and a visible topic row and search, then test against this baseline.",
+          "deck_file_id": "1pctdDZGch1IiQSy6D5YMs0yho81yuLDeXyQAt2QzDCg"
+        },
+        {
+          "week_date": "2026-10-08",
+          "record_id": null,
+          "group": "external_research_evidence",
+          "text": "Live newsroom analytics (Feb 23 – Sep 30, web analytics team deck): Featured Content drives 48.9% of all newsroom page clicks; View All Press Releases is the most-clicked item (315) and the press-release page the top next stop (830 views). ZURB email (Bryan Zmijewski, 2026-10-08): “Finding news by topic is the biggest gap.” Team testing review (2026-10-08): keep archival search, which PR reports journalists use to compare new stories with older ones; explore more visual interest for top stories; find a balance between focused information and a deep taxonomy of categories. Newsroom work resumes after the site migration settles (around November).",
+          "deck_file_id": null
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["baseline", "comparison"],
+      "behavioral_signals": ["comprehension", "intent", "engagement"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmuxdtdp0000004lbhgb67ivl"]
+    },
+    {
+      "concept_key": "ai data readiness page",
+      "concept_id": "206",
+      "concept_title": "AI Data Readiness Page",
+      "concept_display": "206 - AI Data Readiness Page",
+      "weeks_seen": ["2026-09-24"],
+      "first_seen_week": "2026-09-24",
+      "last_seen_week": "2026-09-24",
+      "occurrence_count": 1,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"],
+      "raw_finding_excerpts": ["People understand the general page best."],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Three versions of the top of the AI Data Readiness page, with everything below nearly identical: A General (Build the data foundation AI depends on), B Sovereignty, C Supply Chain. 69% picked the right challenge on the general page, against 53% for sovereignty and 33% for supply chain. Simple fell from 43% to 25% and 32% while Complicated rose from 12% to 28% and 23%. On the supply chain version, Efficiency is architecture was misread: 19% said they did not understand what the platform does, against 8% and 10%. Likelihood to request more information was about 65%, 64% and 65% across the three. Watch Video took 55% of first clicks on the general page; chat and booking a meeting were 7% to 12% of next-step picks. Decision: keep the general headline as the default, rewrite the supply chain headline in plain words and test it against the general one.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["variant", "comparison"],
+      "behavioral_signals": ["comprehension", "sentiment", "intent"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmu4rv1sh000004k1g0u5hxri"]
+    },
+    {
+      "concept_key": "video and homepage",
+      "concept_id": "201",
+      "concept_title": "Video and Homepage",
+      "concept_display": "201 - Video and Homepage",
+      "weeks_seen": ["2026-09-24"],
+      "first_seen_week": "2026-09-24",
+      "last_seen_week": "2026-09-24",
+      "occurrence_count": 1,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"],
+      "raw_finding_excerpts": [
+        "The trimmed page gets people to act, while the long page keeps them reading."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "People saw a 30-second video ad, then one of three Everpure home page variants. The ad earns the click: 85% understood it and 93% had a positive impression, though only 4% echoed the ad's actual claim. 83% to 90% said the page they landed on matched what the ad promised. On the trimmed page, 89% chose a real next step, against 74% on the full page, where 20% said they would just keep reading. Decision: use V2 as the campaign landing page, do not pursue V3, and refine the hero with a plain label on the orange button and a line saying what Everpure is and who it is for.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["variant", "v2", "v3"],
+      "behavioral_signals": ["comprehension", "intent"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "validated_finding",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "high",
+      "source": "helio_evidence",
+      "helio_compare_ids": ["cmtj8sxuh000004jxeo3bwlnj"]
+    },
+    {
+      "concept_key": "netapp comparison page",
+      "concept_id": "205",
+      "concept_title": "NetApp Comparison Page",
+      "concept_display": "205 - NetApp Comparison Page",
+      "weeks_seen": ["2026-09-17", "2026-09-24"],
+      "first_seen_week": "2026-09-17",
+      "last_seen_week": "2026-09-24",
+      "occurrence_count": 1,
+      "groups_seen": ["helio_evidence"],
+      "deck_refs": ["1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"],
+      "raw_finding_excerpts": [
+        "People found the switch-from-NetApp page clear and credible, but almost nobody agreed on what to do next."
+      ],
+      "source_refs": [
+        {
+          "week_date": "2026-09-24",
+          "record_id": null,
+          "group": "helio_evidence",
+          "text": "Single-page test of the switch-from-NetApp landing page. People found it clear and credible, but only the hero button drew real consensus (30% of first clicks) across six possible next steps. People could not see NetApp's side of the comparison table without scrolling or zooming, and one in five picked Generic. Decision: fix the comparison table's visibility and reduce to one clear next step before the page gets more traffic, then re-test.",
+          "deck_file_id": "1s2I6RlFZPT50pGSDKvSt2GhBmADcG5LSXW8A9BALZVA"
+        }
+      ],
+      "supporting_numbers": [],
+      "comparison_cues": ["comparison"],
+      "behavioral_signals": ["comprehension", "engagement"],
+      "evidence_snapshot_rule_based": [],
+      "rule_based_status": "directional_signal",
+      "rule_based_next_step": "iterate",
+      "rule_based_confidence": "moderate",
+      "source": "helio_evidence",
+      "helio_compare_ids": []
+    }
+  ]
+}

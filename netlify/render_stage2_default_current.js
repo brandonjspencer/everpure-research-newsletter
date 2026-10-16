@@ -6,7 +6,14 @@ const {
   composeEvidenceSummary,
   extractRespondentQuote,
 } = require("./text_utils");
-const { FAVICON_LINK, analyticsSnippet } = require("./dashboard_theme");
+const {
+  FAVICON_LINK,
+  analyticsSnippet,
+  motionHead,
+  heroMeshHead,
+  HERO_MESH_CSS,
+  HERO_MESH_DIV,
+} = require("./dashboard_theme");
 
 function ensureDir(p) {
   fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -943,7 +950,8 @@ function buildComparisons(groups, sourceComparisons, excludeTitles = []) {
       decision_criteria:
         override.comparison_criteria || content.comparison_defaults.decision_criteria,
       next_step: actionForTopic(title),
-      confidence: confidenceForGroup(group, "comparison"),
+      metrics: override.metrics || [],
+      confidence: override.confidence_override || confidenceForGroup(group, "comparison"),
       decision_status: "compare",
       source_label: source.label,
       source_href: source.href,
@@ -1063,11 +1071,9 @@ function buildStage2Brief() {
   ]);
   const deckCount = deckContentCount(statusInfo);
 
-  const executiveSummary = buildExecutiveSummaryFromBrief(
-    surfacedFindings,
-    comparisonTests,
-    unresolvedQuestions
-  );
+  const executiveSummary =
+    (typeof content.executive_summary === "string" && content.executive_summary.trim()) ||
+    buildExecutiveSummaryFromBrief(surfacedFindings, comparisonTests, unresolvedQuestions);
 
   const note = content.note;
 
@@ -1084,6 +1090,8 @@ function buildStage2Brief() {
       deck_content_count: deckCount,
     },
     executive_summary: executiveSummary,
+    roundup_video:
+      content.roundup_video && content.roundup_video.src ? content.roundup_video : null,
     surfaced_findings: surfacedFindings.length
       ? surfacedFindings
       : [
@@ -1130,6 +1138,20 @@ function labelConfidence(level) {
   }
 }
 
+function metricsMarkdown(metrics) {
+  if (!metrics || !metrics.length) return [];
+  const lines = metrics.map((m) => {
+    const arrow = m.direction === "down" ? "▼" : m.direction === "up" ? "▲" : "";
+    const compare = m.compare
+      ? ` (${arrow} from ${m.compare}${m.compare_label ? ` ${m.compare_label}` : ""})`
+      : m.note
+        ? ` (${m.note})`
+        : "";
+    return `- **${m.label}: ${m.value}**${compare}`;
+  });
+  return [...lines, ""];
+}
+
 function renderMarkdown(data) {
   const out = [];
   out.push(`# ${data.title}`);
@@ -1138,6 +1160,12 @@ function renderMarkdown(data) {
   out.push("");
   out.push("## Executive summary");
   out.push("");
+  if (data.roundup_video) {
+    out.push(
+      `[▶ ${data.roundup_video.title || "Watch the video recap"}](${data.roundup_video.src})`
+    );
+    out.push("");
+  }
   out.push(data.executive_summary);
   out.push("");
   out.push("## Research Findings");
@@ -1155,18 +1183,7 @@ function renderMarkdown(data) {
     }
     out.push("#### Evidence");
     out.push("");
-    if (item.metrics && item.metrics.length) {
-      for (const m of item.metrics) {
-        const arrow = m.direction === "down" ? "▼" : m.direction === "up" ? "▲" : "";
-        const compare = m.compare
-          ? ` (${arrow} from ${m.compare}${m.compare_label ? ` ${m.compare_label}` : ""})`
-          : m.note
-            ? ` (${m.note})`
-            : "";
-        out.push(`- **${m.label}: ${m.value}**${compare}`);
-      }
-      out.push("");
-    }
+    out.push(...metricsMarkdown(item.metrics));
     out.push(item.proof_point);
     out.push("");
     if (item.source_href) {
@@ -1191,6 +1208,7 @@ function renderMarkdown(data) {
     out.push("");
     out.push("#### Criteria");
     out.push("");
+    out.push(...metricsMarkdown(item.metrics));
     out.push(item.decision_criteria);
     out.push("");
     if (item.source_href) {
@@ -1273,7 +1291,7 @@ function sourceLinkInline(label, href, dark = false) {
 // actually moved vs. `compare` - kept independent of `good` (was that move
 // favorable) so a metric where a *decrease* is the win still renders
 // correctly, not just the common "higher is better" case.
-function renderStatChips(metrics) {
+function renderStatChips(metrics, dark = false) {
   if (!metrics || !metrics.length) return "";
   const chips = metrics
     .map((m) => {
@@ -1295,7 +1313,7 @@ function renderStatChips(metrics) {
       return `<div class="stat-chip"><div class="stat-chip-label">${label}</div><div class="stat-chip-value">${value}</div>${sub}${trend}</div>`;
     })
     .join("");
-  return `<div class="stat-chips">${chips}</div>`;
+  return `<div class="stat-chips${dark ? " stat-chips--dark" : ""}">${chips}</div>`;
 }
 
 function renderFinding(item, idx, isLast) {
@@ -1324,6 +1342,16 @@ function renderFinding(item, idx, isLast) {
   </div>`;
 }
 
+// src/poster are relative to the page ("../media/…" from /newsletter/); a frozen copy sits one
+// level deeper in /issues/YYYY-MM/, and publish_issue_archives.js re-points it there.
+function renderRoundupVideo(video) {
+  if (!video || !video.src) return "";
+  const poster = video.poster ? ` poster="${escapeHtml(video.poster)}"` : "";
+  const label = escapeHtml(video.title || "Research Roundup video recap");
+  const caption = video.caption ? `<figcaption>${escapeHtml(video.caption)}</figcaption>` : "";
+  return `<figure class="roundup-video"><video controls playsinline preload="metadata"${poster} aria-label="${label}"><source src="${escapeHtml(video.src)}" type="video/mp4"></video>${caption}</figure>`;
+}
+
 function renderComparison(item, idx, isLast) {
   return `
   <div class="dispatch-finding dispatch-finding--dark ${isLast ? "is-last" : ""}">
@@ -1336,6 +1364,7 @@ function renderComparison(item, idx, isLast) {
     <div class="finding-columns finding-columns--dark">
       <div class="finding-col evidence-col evidence-col--dark">
         <div class="mini-head mini-head--dark"><span>CRITERIA</span><div class="mini-line mini-line--dark"></div></div>
+        ${renderStatChips(item.metrics, true)}
         <p class="finding-copy-sub finding-copy-sub--dark">${escapeHtml(item.decision_criteria)}</p>
       </div>
       <div class="finding-col direction-col direction-col--dark">
@@ -1356,6 +1385,8 @@ function renderHtml(data) {
   html.push(`<title>${escapeHtml(data.title)}</title>`);
   if (FAVICON_LINK) html.push(FAVICON_LINK);
   html.push(analyticsSnippet());
+  html.push(motionHead("../"));
+  html.push(heroMeshHead("../"));
   html.push('<link rel="preconnect" href="https://fonts.googleapis.com">');
   html.push('<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>');
   html.push(
@@ -1390,6 +1421,7 @@ body { font-family: var(--font-family-primary); }
 a { color: inherit; }
 .wrapper { max-width: 760px; margin: 0 auto; padding: 0 48px; }
 .masthead { background: var(--sidebar); color: var(--sidebar-fg); }
+${HERO_MESH_CSS}
 .meta-bar { display:flex; justify-content:space-between; align-items:center; padding:32px 0 24px; border-bottom:1px solid rgba(255,245,227,0.1); }
 .meta-left, .meta-issue, .meta-date { font-size: var(--text-label); }
 .meta-left { font-weight:700; color: rgba(255,245,227,0.38); letter-spacing:.12em; text-transform:uppercase; }
@@ -1466,6 +1498,15 @@ a { color: inherit; }
 .stat-chip-sub--bad { color:var(--primary); }
 .stat-chip-sub--flat { color:var(--muted-fg); }
 .stat-chip-trend { margin-top:4px; font-size:11px; color:var(--muted-fg); font-variant-numeric:tabular-nums; }
+.stat-chips--dark .stat-chip { background:rgba(255,245,227,0.04); border-color:rgba(255,245,227,0.16); }
+.stat-chips--dark .stat-chip-label, .stat-chips--dark .stat-chip-trend { color:rgba(255,245,227,0.6); }
+.stat-chips--dark .stat-chip-value { color:var(--sidebar-fg); }
+.stat-chips--dark .stat-chip-sub--good { color:var(--mint-400); }
+.stat-chips--dark .stat-chip-sub--bad { color:rgba(240,135,79,1); }
+.stat-chips--dark .stat-chip-sub--flat { color:rgba(255,245,227,0.6); }
+.roundup-video { margin:0 0 28px; }
+.roundup-video video { display:block; width:100%; aspect-ratio:16/9; border-radius:12px; background:var(--sidebar); box-shadow:0 18px 40px rgba(38,35,33,0.28); }
+.roundup-video figcaption { margin-top:10px; font-size:var(--text-label); line-height:1.5; color:var(--primary-fg); opacity:0.75; }
 .questions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; margin-top:40px; }
 .questions--two-up { grid-template-columns:1fr 1fr; }
 .question { padding:36px 28px 36px 0; display:flex; flex-direction:column; gap:20px; }
@@ -1531,6 +1572,7 @@ a { color: inherit; }
   html.push("</head>");
   html.push("<body>");
   html.push('<header class="masthead">');
+  html.push(HERO_MESH_DIV);
   html.push('<div class="wrapper">');
   html.push('<a class="back-link" href="../">See all Issues</a>');
   html.push('<div class="meta-bar">');
@@ -1564,7 +1606,9 @@ a { color: inherit; }
   html.push(
     '<div class="brief-sidebar"><div class="brief-index">00</div><div class="brief-title">The Roundup</div></div>'
   );
-  html.push(`<div class="brief-copy">${escapeHtml(data.executive_summary)}</div>`);
+  html.push(
+    `<div class="brief-copy">${renderRoundupVideo(data.roundup_video)}${escapeHtml(data.executive_summary)}</div>`
+  );
   html.push("</div></section>");
 
   html.push('<section id="research-findings" class="section"><div class="wrapper">');

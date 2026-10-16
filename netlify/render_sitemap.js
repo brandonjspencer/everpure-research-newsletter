@@ -162,7 +162,7 @@ function render(root) {
 
   return `<!doctype html>
 <html lang="en"><head>
-${docHead("Everpure Research — Sitemap")}
+${docHead("Everpure Research — Sitemap", "../")}
 </head>
 <body>
 ${sidebar("sitemap", "../")}

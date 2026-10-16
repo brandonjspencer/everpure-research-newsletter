@@ -321,6 +321,7 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
     contentFile,
     JSON.stringify({
       note: "test note",
+      executive_summary: "Authored summary for this issue.",
       selection: {
         findings_preferred_order: preferredFindings,
         unresolved_preferred_order: preferredFindings,
@@ -334,7 +335,15 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
         gamma_comparison_test: {
           comparison_statement: "Gamma-specific comparison statement",
           comparison_criteria: "Gamma-specific decision criteria",
+          confidence_override: "high",
+          metrics: [{ label: "Matched the ad", value: "83–90%", note: "All three pages" }],
         },
+      },
+      roundup_video: {
+        src: "../media/test-recap.mp4",
+        poster: "../media/test-recap.jpg",
+        title: "Watch the recap",
+        caption: "Recap caption",
       },
     })
   );
@@ -348,6 +357,7 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
 
   const findingTitles = rendered.surfaced_findings.map((f) => f.title);
   assert.deepStrictEqual(findingTitles.sort(), [...preferredFindings].sort());
+  assert.strictEqual(rendered.executive_summary, "Authored summary for this issue.");
 
   const comparisonTitles = rendered.comparison_tests.map((c) => c.title);
   assert.deepStrictEqual(
@@ -359,6 +369,33 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
   const gamma = rendered.comparison_tests.find((c) => c.title === "Gamma Comparison Test");
   assert.strictEqual(gamma.finding_statement, "Gamma-specific comparison statement");
   assert.strictEqual(gamma.decision_criteria, "Gamma-specific decision criteria");
+  assert.strictEqual(gamma.confidence, "high", "comparison confidence_override applies");
+  assert.deepStrictEqual(gamma.metrics, [
+    { label: "Matched the ad", value: "83–90%", note: "All three pages" },
+  ]);
+
+  const html = fs.readFileSync(path.join(newsletterDir, "default.html"), "utf8");
+  assert.match(
+    html,
+    /class="stat-chips stat-chips--dark"/,
+    "comparison metrics render as dark chips"
+  );
+  assert.match(
+    html,
+    /<figure class="roundup-video"><video controls playsinline preload="metadata" poster="\.\.\/media\/test-recap\.jpg"/
+  );
+  assert.match(html, /<source src="\.\.\/media\/test-recap\.mp4" type="video\/mp4">/);
+  assert.match(
+    html,
+    /src="\.\.\/vendor\/site-motion\.js"/,
+    "newsletter loads site motion from the root"
+  );
+  assert.match(html, /<div class="hero-mesh" aria-hidden="true"><\/div>/, "hero carries the mesh");
+  assert.match(html, /src="\.\.\/vendor\/hex-mesh-hero\.min\.js"/);
+  assert.match(html, /EverpureHexMesh\.mount\(h,\{color:\[1,0\.961,0\.89\],opacity:0\.04,scale:2/);
+  const md = fs.readFileSync(path.join(newsletterDir, "default.md"), "utf8");
+  assert.match(md, /\[▶ Watch the recap\]\(\.\.\/media\/test-recap\.mp4\)/);
+  assert.match(md, /- \*\*Matched the ad: 83–90%\*\* \(All three pages\)/);
 
   const alphaFinding = rendered.surfaced_findings.find((f) => f.title === "Alpha Widget");
   assert.strictEqual(alphaFinding.next_step, "Alpha Widget direction copy");
@@ -393,4 +430,26 @@ test("render_stage2_default_current.js: excluded_titles, recommended_action over
       `default.html should have a section with id="${id}" so the distribution email's "In this issue" links can jump to it`
     );
   }
+});
+
+test("motionHead: pre-paint gate, reduced-motion opt-out, depth-relative vendor paths", () => {
+  const { motionHead, docHead, MOTION_VERSION } = require("../netlify/dashboard_theme");
+  const root = motionHead("");
+  const deep = motionHead("../");
+  assert.match(
+    root,
+    new RegExp(`src="vendor/motion-${MOTION_VERSION.replace(/\\./g, "\\\\.")}\\.min\\.js"`)
+  );
+  assert.match(deep, /src="\.\.\/vendor\/site-motion\.js"/);
+  assert.match(root, /prefers-reduced-motion: reduce/);
+  assert.match(root, /html\.motion :is\(/);
+  assert.match(
+    root,
+    /setTimeout\(function\(\)\{if\(!window\.__siteMotion\)d\.classList\.remove\("motion"\)\},2500\)/
+  );
+  assert.match(docHead("T", "../"), /src="\.\.\/vendor\/site-motion\.js"/);
+  assert.ok(
+    fs.existsSync(path.join(ROOT, "static", "vendor", `motion-${MOTION_VERSION}.min.js`)),
+    "pinned Motion build is vendored"
+  );
 });

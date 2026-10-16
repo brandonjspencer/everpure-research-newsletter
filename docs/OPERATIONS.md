@@ -282,6 +282,65 @@ and shows nothing when none qualifies. Use **only real participant words** — n
 (e.g. "Watch a Demo"), product tagline, or analyst paraphrase. Omit the field for topics without
 a compelling quote.
 
+Comparison topics accept the same `metrics` stat chips as findings (rendered dark, above the
+CRITERIA text) and an optional `confidence_override` — otherwise a comparison's confidence comes from
+its evidence pack.
+
+An optional top-level `roundup_video` (`{ src, poster, title, caption }`) embeds a short recap video
+at the top of the Roundup band, above the summary. Commit the web-encoded MP4 and poster under `static/media/` and reference them
+as `../media/<file>` (`build.sh` copies `static/` into `publish/`). That path is relative to
+`/newsletter/`; a frozen copy lives one level deeper in `/issues/YYYY-MM/`, and
+`publish_issue_archives.js` re-points its `../media/` and `../vendor/` references when it publishes
+the archive (see "Site motion and the hero mesh").
+
+An optional top-level `executive_summary` replaces the auto-composed "This month's research is
+centered on…" summary. Prefer authoring it: the generic one names topics without saying what was
+learned, and it is composed from substrate that can differ between local and CI renders.
+
+Action strings (`recommended_action`) must **not** start with "Topic: " — the renderer already
+prints the topic label, so a prefix doubles it ("**Newsroom:** Newsroom: …"; Issue 06 shipped
+with that). The action filters drop any action containing pipeline words (`build`, `publish`,
+`email`, `freeze`, …) or "newsletter" + "test" — reword rather than lose the action.
+
+### Curated evidence-pack overrides (when CI's packs are mis-titled)
+
+If the build's 30-day packs miss or mis-title this cycle's tests (e.g. Helio variants named after
+asset ids, or a "📊 Data Comparison" heading line becoming a topic), don't hand-patch `publish/`:
+put the curated packs in `netlify/content/evidence_pack_overrides.json` (data, not code). Every
+pack must be built from the primary sources (deck readouts, Helio, Notion). `build.sh` runs
+`netlify/apply_evidence_pack_overrides.js` right before the default render; it replaces the
+window packs (`replace_window_packs: true`, or merges by `concept_title`) and merges them into
+the full `evidence_packs.json` the freeze archives — but **only while the window's latest week
+falls in `issue_month`**, so last cycle's overrides never leak into the next one. Replace or
+empty the file each cycle. Because CI applies it too, the freeze can follow the normal CI-deploy
+path and reproduce the reviewed render exactly.
+
+### Site motion and the hero mesh
+
+Every branded page (dashboard, sitemap, issues/activity archive, analytics, and the newsletter)
+loads a small motion layer: `dashboard_theme.motionHead(prefix)` in the `<head>` plus the vendored
+`static/vendor/motion-11.18.2.min.js` and `static/vendor/site-motion.js`. It reveals cards and
+sections as they scroll in, counts stat values up to their number, grows chart bars, and gives
+interactive elements a pointer spring. It is progressive enhancement: nothing is hidden for visitors
+who prefer reduced motion, and a 2.5s failsafe un-hides everything if the scripts don't load. Add a
+selector to `MOTION_REVEAL` in `dashboard_theme.js` to animate a new kind of card.
+
+The newsletter hero draws the official Everpure hex mesh behind the masthead (Cloud White at 4%, the
+ghost issue number's tone; `scale: 2`), randomly seeded on every load and following the pointer. A soft
+`clear` zone (a Gaussian lift on the mesh field, centred low in the hero) keeps hexes away from the
+bottom-centre behind the headline and stats; a few can still drift through the middle. It's
+a prebuilt island — `static/vendor/hex-mesh-hero.min.js`; provenance and the rebuild command are in
+`static/vendor/README.md`. The mount snippet and its CSS live in `dashboard_theme.js`
+(`heroMeshHead`, `HERO_MESH_CSS`, `HERO_MESH_DIV`) so the renderer and the archive publisher share one
+copy.
+
+Frozen issues get the same hero. Frozen pages are byte-for-byte copies of `/newsletter/` pages, so
+their asset paths assume one level of depth. When `publish_issue_archives.js` copies `issues/` into
+`publish/`, it re-points `../vendor/` and `../media/` to `../../` in every archived page (and
+`../media/` links in the `.md`). It also adds the hero mesh to any archived `default.html` whose
+masthead lacks one (Issues 01–06 predate it). Only the published copies change; the committed
+snapshots stay byte-identical. The pass is idempotent (`tests/issue_archives.test.js`).
+
 ---
 
 ## Archive freeze workflow

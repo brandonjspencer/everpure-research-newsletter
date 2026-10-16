@@ -116,8 +116,10 @@ why per-recipient identity never reaches this file or that page.
 - **Do not introduce a React/Vite build path.** On-brand styling is ported into the static
   HTML writer (`render_stage2_default_current.js`) on purpose.
 - **Frozen issues are immutable.** Approved months live in `issues/YYYY-MM/` and `history/`
-  (committed) and are republished verbatim every build. Don't edit a frozen archive unless
-  explicitly asked. Freeze via `node netlify/freeze_issue_snapshot.js . YYYY-MM`.
+  (committed) and are republished verbatim every build — apart from one publish-time pass in
+  `publish_issue_archives.js` that re-points their `../` asset paths for the deeper archive location
+  and adds the hero mesh to older mastheads (published copies only; the committed files never
+  change). Don't edit a frozen archive unless explicitly asked. Freeze via `node netlify/freeze_issue_snapshot.js . YYYY-MM`.
 - **JSON artifacts ship in both underscore and hyphenated forms** (`deck_content.json` +
   `deck-content.json`) — keep the aliasing intact (`fix_static_aliases.js`).
 - **Generated links must be relative** (`newsletter/default.html`), never root-relative, so

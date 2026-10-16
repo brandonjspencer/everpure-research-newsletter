@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const { docHead, sidebar } = require("./dashboard_theme");
+const {
+  docHead,
+  sidebar,
+  heroMeshHead,
+  HERO_MESH_CSS,
+  HERO_MESH_DIV,
+} = require("./dashboard_theme");
 const { monthLabel } = require("./build_trends");
 
 function ensureDir(dir) {
@@ -37,6 +43,49 @@ function removeDirIfExists(dir) {
   if (exists(dir)) {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+}
+
+// Frozen issues are byte-for-byte snapshots of /newsletter/ pages, which reach site assets with
+// "../" (../vendor/…, ../media/…). Their published copies sit one level deeper, in
+// /issues/YYYY-MM/, so those references are re-pointed to "../../". Issues frozen before the hero
+// mesh existed also get it added to their masthead. Only the published copies change — the
+// committed snapshots in issues/ are never rewritten. Idempotent.
+const ARCHIVE_PREFIX = "../../";
+
+function enhanceArchivedHtml(html, { mesh = false } = {}) {
+  let out = html.replace(/(=")\.\.\/(vendor|media)\//g, `$1${ARCHIVE_PREFIX}$2/`);
+  if (mesh && !out.includes('class="hero-mesh"') && out.includes('<header class="masthead">')) {
+    out = out.replace(
+      "</head>",
+      `<style>\n${HERO_MESH_CSS}\n</style>\n${heroMeshHead(ARCHIVE_PREFIX)}\n</head>`
+    );
+    out = out.replace('<header class="masthead">', `<header class="masthead">\n${HERO_MESH_DIV}`);
+  }
+  return out;
+}
+
+function enhanceArchivedMarkdown(md) {
+  return md.replace(/\]\(\.\.\/media\//g, `](${ARCHIVE_PREFIX}media/`);
+}
+
+function enhanceArchivedIssues(publishIssuesDir) {
+  const changed = [];
+  for (const month of listIssueMonths(publishIssuesDir)) {
+    const dir = path.join(publishIssuesDir, month);
+    for (const name of fs.readdirSync(dir)) {
+      const file = path.join(dir, name);
+      const before = fs.readFileSync(file, "utf8");
+      let after = before;
+      if (name.endsWith(".html"))
+        after = enhanceArchivedHtml(before, { mesh: name === "default.html" });
+      else if (name.endsWith(".md")) after = enhanceArchivedMarkdown(before);
+      if (after !== before) {
+        fs.writeFileSync(file, after, "utf8");
+        changed.push(`issues/${month}/${name}`);
+      }
+    }
+  }
+  return changed;
 }
 
 function listIssueMonths(issuesDir) {
@@ -127,7 +176,7 @@ function buildIssuesCatalog(publishDir) {
       : "The monthly research activity log for each cycle.";
     return `<!doctype html>
 <html lang="en"><head>
-${docHead(`Everpure Research — ${heading}`)}
+${docHead(`Everpure Research — ${heading}`, "../")}
 </head>
 <body>
 ${sidebar(isIssues ? "issues" : "activity", "../")}
@@ -162,8 +211,10 @@ function main() {
   removeDirIfExists(publishIssuesDir);
   removeDirIfExists(publishHistoryDir);
 
+  let enhanced = [];
   if (exists(repoIssuesDir)) {
     copyRecursive(repoIssuesDir, publishIssuesDir);
+    enhanced = enhanceArchivedIssues(publishIssuesDir);
   } else {
     ensureDir(publishIssuesDir);
   }
@@ -182,6 +233,7 @@ function main() {
         published_issue_archive: exists(repoIssuesDir),
         published_history: exists(repoHistoryDir),
         issue_count: issueCount,
+        enhanced_archive_files: enhanced,
         outputs: [
           path.join(publishDir, "issues", "index.html"),
           path.join(publishDir, "data", "issues.json"),
@@ -193,4 +245,11 @@ function main() {
   );
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = {
+  enhanceArchivedHtml,
+  enhanceArchivedMarkdown,
+  enhanceArchivedIssues,
+  ARCHIVE_PREFIX,
+};
