@@ -64,3 +64,11 @@ appsscript/.clasp.json
 
 # graphify — generated knowledge graph (graph.json/html, GRAPH_REPORT.md, cache)
 graphify-out/
+
+# Roundup video renders and working files (see video/README.md)
+video/frames/
+video/out/
+video/*.mp4
+video/*.wav
+video/*.jpg
+video/tools/ink_report*.json

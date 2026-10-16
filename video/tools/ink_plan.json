@@ -1,0 +1,57 @@
+[
+  ["s1", 2.0, ["#s1 .mark", "#s1 .title", "#s1 .date"]],
+  [
+    "s2a",
+    6.0,
+    [
+      "#s2a .headline",
+      "#s2a .bar-row:nth-child(1) .bar-label",
+      "#s2a .bar-row:nth-child(1) .bar-track",
+      "#s2a .bar-row:nth-child(2) .bar-label",
+      "#s2a .bar-row:nth-child(2) .bar-track",
+      "#s2a .sub"
+    ]
+  ],
+  [
+    "s2b",
+    10.4,
+    [
+      "#s2b .headline",
+      "#s2b .bar-row:nth-child(1) .bar-label",
+      "#s2b .bar-row:nth-child(1) .bar-track",
+      "#s2b .bar-row:nth-child(2) .bar-label",
+      "#s2b .bar-row:nth-child(2) .bar-track",
+      "#s2b .sub"
+    ]
+  ],
+  [
+    "s3a",
+    15.0,
+    [
+      "#s3a .eyebrow .mask",
+      "#s3a .big",
+      "#s3a .bar-row:nth-child(1) .bar-label",
+      "#s3a .bar-row:nth-child(1) .bar-track",
+      "#s3a .bar-row:nth-child(2) .bar-label",
+      "#s3a .bar-row:nth-child(2) .bar-track",
+      "#s3a .sub"
+    ]
+  ],
+  ["s3b", 19.0, ["#s3a .eyebrow .mask", "#s3b .headline:not(#s3pos)", "#s3pos", "#s3b .sub"]],
+  ["s4", 23.5, ["#s4 .eyebrow .mask", "#s4 .big", "#s4 .line", "#s4 .sub"]],
+  ["s5", 28.5, ["#s5 .eyebrow .mask", "#s5 .big", "#s5 .line", "#s5 .sub"]],
+  [
+    "s6",
+    33.5,
+    [
+      "#s6 .eyebrow .mask",
+      "#s6 .stat:not(.minor) .num",
+      "#s6 .stat:not(.minor) .lab",
+      "#s6 .stat.minor .num",
+      "#s6 .stat.minor .lab",
+      "#s6 .sub"
+    ]
+  ],
+  ["s7", 37.9, ["#s7 .eyebrow .mask", "#s7 .big", "#s7 .line", "#s7 .sub"]],
+  ["s9", 42.6, ["#s9 .mark", "#th1", "#th2", "#s9 .closer"]]
+]

@@ -19,6 +19,7 @@ module.exports = [
       "history/**",
       "emails/**",
       "static/vendor/*.min.js",
+      "video/*.min.js",
     ],
   },
   js.configs.recommended,
@@ -39,6 +40,16 @@ module.exports = [
   {
     files: ["static/**/*.js"],
     languageOptions: { sourceType: "script", globals: { ...globals.browser } },
+  },
+  {
+    // The Roundup video renderer: Node scripts that hand functions to the page (puppeteer), plus the
+    // in-page virtual clock — both sides' globals apply.
+    files: ["video/**/*.js"],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
+    files: ["video/vclock.js"],
+    languageOptions: { sourceType: "script" },
   },
   prettier,
 ];
