@@ -165,10 +165,11 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    [appsscript/README.md](../../../appsscript/README.md#engagement-tracking-opens--clicks-opt-in)):
    on the test send, confirm `email_open` appears in GA4 Realtime overview (Event count by Event
    name — not DebugView, which doesn't list these hits) and a clicked link carries
-   `utm_content` + `rid`. A few days after the broadcast, run `buildEngagementSummary()` for the
-   recipient count and read unique opens/clicks and the top CTA from GA4 Explore (filter
-   `Page location` contains `rid=`), then transcribe them (**aggregate numbers only, never names or
-   tokens**) into `netlify/content/email_engagement.json`, alongside the
+   `utm_content` + `rid`. A day or two after the broadcast, run `buildRecipientEngagement()` from the
+   Apps Script editor (needs `GA_PROPERTY_ID`): it rebuilds the private `RecipientEngagement` tab
+   (per-person open/click rates — stays in the spreadsheet) and `EngagementSummary`. Transcribe that
+   issue's `EngagementSummary` row (**aggregate numbers only, never names, emails, or tokens**) into
+   `netlify/content/email_engagement.json`, alongside the
    [Dashboard signals](#dashboard-signals-monthly-re-curation) re-curation. This feeds the public,
    password-gated `/analytics/` page.
 

@@ -47,6 +47,9 @@ var DEFAULTS = {
   EVENTS_TAB: "EmailEvents", // tracking: one row per open/click event
   TRACKED_LINKS_TAB: "TrackedLinks", // tracking: link_id -> real url, per issue
   SUMMARY_TAB: "EngagementSummary", // tracking: aggregated per-issue stats
+  RECIPIENT_ENGAGEMENT_TAB: "RecipientEngagement", // tracking: private per-person view
+  NAME_HEADER: "name", // optional Recipients column shown in RecipientEngagement
+  GA_START_DATE: "2026-10-01", // GA4 mode's first send; earlier data has no rid
   BATCH_SIZE: "45", // recipients per message — under the per-message BCC limit
   BATCH_PAUSE_MS: "1200",
   FROM_NAME: "Everpure User Research Program",
@@ -62,6 +65,8 @@ var DEFAULTS = {
 //   Optional: ISSUE_HTML_PATTERN / UXTIP_HTML_PATTERN (name substring filter),
 //             UNSUBSCRIBE_URL,
 //             GA_MEASUREMENT_ID (the site's GA4 id, e.g. G-… — opt-in tracking via GA4),
+//             GA_PROPERTY_ID (the numeric GA4 property id — lets the engagement
+//               reports read GA4 opens/clicks; see buildRecipientEngagement()),
 //             TRACKING_BASE_URL (deployed Web App /exec URL — legacy opt-in tracking)
 
 function prop_(key) {
@@ -832,43 +837,154 @@ function ensureRecipientTokens() {
   return { updated: updated };
 }
 
-// Rebuilds the EngagementSummary tab from EmailEvents. Recipient counts come
-// from "sent" events logged at send time, NOT the current activeRecipients_()
-// list — the list's size drifts over time, but a past issue's send count
-// shouldn't. This sheet is a derived view (safe to fully rebuild each run),
-// stays private (normal Sheets sharing), and is the only place per-recipient
-// "who opened/clicked" detail lives — never surfaced on the public site.
+// ---- Engagement reports (private; run a day or two after a send) -------------
+//
+// Opens and clicks come from two places, merged per (recipient token, issue):
+//   - EmailEvents: a "sent" row per recipient (both tracking modes), plus the legacy
+//     Web App mode's open/click rows;
+//   - GA4, when GA_PROPERTY_ID is set: GA4 mode's email_open hits and the page views
+//     its rid-tagged links produce (read via the Google Analytics Data API advanced
+//     service; GA4's standard data lags 24–48 hours).
+// Activity only counts for a (token, issue) with a "sent" row — only send_() writes
+// those, so a crafted GA4 hit or a made-up rid can't add a recipient. A click counts as
+// an open too (opening the email is the only way to click it, and Outlook often blocks
+// the pixel). Test-send tokens ("test-…") are left out. Both
+// reports stay in this private spreadsheet: only EngagementSummary's aggregate
+// numbers are ever transcribed to the public site (netlify/content/email_engagement.json).
+
+// Rebuilds EngagementSummary: one row per issue — recipients, unique opens/clicks,
+// rates, and the most-clicked link. Recipient counts come from "sent" rows logged at
+// send time, not the current Recipients list, so past issues' rates don't drift.
 function buildEngagementSummary() {
-  var eventsSheet = getOrCreateSheet_(prop_("EVENTS_TAB"), [
-    "timestamp",
-    "event",
-    "token",
-    "issue",
-    "link",
+  var data = collectEngagement_();
+  return writeEngagementSummary_(data);
+}
+
+// Rebuilds RecipientEngagement — one row per recipient: issues received, opened, and
+// clicked, their open/click rates, last activity, links clicked, and a status column
+// per issue — and refreshes EngagementSummary from the same data. Names come from an
+// optional "name" column in Recipients (NAME_HEADER); otherwise the email identifies
+// the row. Per-person "opened" is a hint, not proof (Apple Mail pre-loads images,
+// Outlook blocks them, a forward credits the original recipient); clicks are solid.
+function buildRecipientEngagement() {
+  var data = collectEngagement_();
+  var dir = recipientDirectory_();
+  var issues = issuesIn_(data).reverse(); // newest first
+  var header = (dir.hasNames ? ["name"] : []).concat([
+    "email",
+    "active",
+    "issues_received",
+    "issues_opened",
+    "issues_clicked",
+    "open_rate",
+    "click_rate",
+    "last_seen",
+    "links_clicked",
   ]);
-  var rows = eventsSheet.getDataRange().getValues();
-  var byIssue = {};
-  function forIssue(issue) {
-    if (!byIssue[issue]) byIssue[issue] = { sent: {}, opens: {}, clicks: {}, linkCounts: {} };
-    return byIssue[issue];
-  }
+  var base = header.length;
+  header = header.concat(issues);
 
-  for (var i = 1; i < rows.length; i++) {
-    var eventType = String(rows[i][1] || "");
-    var token = String(rows[i][2] || "");
-    var issue = normalizeIssueCell_(rows[i][3]);
-    var link = String(rows[i][4] || "");
-    if (!issue || !token) continue;
-    var bucket = forIssue(issue);
-    if (eventType === "sent") bucket.sent[token] = true;
-    else if (eventType === "open") bucket.opens[token] = true;
-    else if (eventType === "click") {
-      bucket.clicks[token] = true;
-      if (link) bucket.linkCounts[link] = (bucket.linkCounts[link] || 0) + 1;
+  var rows = [];
+  var unmatched = 0;
+  Object.keys(data.byToken).forEach(function (token) {
+    var person = dir.byToken[token];
+    if (!person) {
+      unmatched++;
+      return;
     }
-  }
+    var perIssue = data.byToken[token];
+    var received = 0;
+    var opened = 0;
+    var clicked = 0;
+    var links = Object.create(null);
+    Object.keys(perIssue).forEach(function (issue) {
+      var e = perIssue[issue];
+      received++;
+      if (e.opened || e.clicked) opened++;
+      if (e.clicked) clicked++;
+      Object.keys(e.links).forEach(function (l) {
+        links[l] = (links[l] || 0) + e.links[l];
+      });
+    });
+    var row = (dir.hasNames ? [person.name] : []).concat([
+      person.email,
+      person.active ? "yes" : "no",
+      received,
+      opened,
+      clicked,
+      received ? opened / received : 0,
+      received ? clicked / received : 0,
+      data.lastSeen[token] || "",
+      Object.keys(links)
+        .sort(function (a, b) {
+          return links[b] - links[a] || (a < b ? -1 : 1);
+        })
+        .map(function (l) {
+          return links[l] > 1 ? l + " ×" + links[l] : l;
+        })
+        .join(", "),
+    ]);
+    issues.forEach(function (issue) {
+      var e = perIssue[issue];
+      row.push(!e ? "" : e.clicked ? "clicked" : e.opened ? "opened" : "not opened");
+    });
+    rows.push(row);
+  });
 
-  var headers = [
+  var emailCol = dir.hasNames ? 1 : 0;
+  var clickRateCol = base - 3;
+  var openRateCol = base - 4;
+  rows.sort(function (a, b) {
+    return (
+      b[clickRateCol] - a[clickRateCol] ||
+      b[openRateCol] - a[openRateCol] ||
+      (a[emailCol] < b[emailCol] ? -1 : 1)
+    );
+  });
+
+  var textCols = [base - 2];
+  for (var c = base; c < header.length; c++) textCols.push(c);
+  writeTable_(prop_("RECIPIENT_ENGAGEMENT_TAB"), header, rows, {
+    textCols: textCols,
+    percentCols: [openRateCol, clickRateCol],
+  });
+  writeEngagementSummary_(data);
+
+  if (unmatched) {
+    Logger.log(
+      "%s token(s) have activity but no Recipients row (removed rows?) — skipped.",
+      unmatched
+    );
+  }
+  Logger.log(
+    "Rebuilt RecipientEngagement: %s recipient(s) across %s issue(s)%s.",
+    rows.length,
+    issues.length,
+    data.gaEnabled
+      ? ", with GA4 data (" + data.gaRows + " row(s))"
+      : " (EmailEvents only — set GA_PROPERTY_ID to add GA4)"
+  );
+  return { recipients: rows.length, issues: issues.length, unmatched: unmatched };
+}
+
+function writeEngagementSummary_(data) {
+  var byIssue = Object.create(null);
+  Object.keys(data.byToken).forEach(function (token) {
+    Object.keys(data.byToken[token]).forEach(function (issue) {
+      var e = data.byToken[token][issue];
+      var b =
+        byIssue[issue] ||
+        (byIssue[issue] = { recipients: 0, opens: 0, clicks: 0, links: Object.create(null) });
+      b.recipients++;
+      if (e.opened || e.clicked) b.opens++;
+      if (e.clicked) b.clicks++;
+      Object.keys(e.links).forEach(function (l) {
+        b.links[l] = (b.links[l] || 0) + e.links[l];
+      });
+    });
+  });
+
+  var header = [
     "issue",
     "recipients",
     "unique_opens",
@@ -877,36 +993,282 @@ function buildEngagementSummary() {
     "click_rate",
     "top_link",
   ];
-  var summarySheet = getOrCreateSheet_(prop_("SUMMARY_TAB"), headers);
-  summarySheet.clearContents();
-  summarySheet.appendRow(headers);
-
-  Object.keys(byIssue)
+  var rows = Object.keys(byIssue)
     .sort()
-    .forEach(function (issue) {
+    .map(function (issue) {
       var b = byIssue[issue];
-      var recipients = Object.keys(b.sent).length;
-      var opens = Object.keys(b.opens).length;
-      var clicks = Object.keys(b.clicks).length;
       var topLink = "";
-      var topCount = 0;
-      Object.keys(b.linkCounts).forEach(function (linkId) {
-        if (b.linkCounts[linkId] > topCount) {
-          topCount = b.linkCounts[linkId];
-          topLink = linkId;
-        }
+      Object.keys(b.links).forEach(function (l) {
+        if (!topLink || b.links[l] > b.links[topLink]) topLink = l;
       });
-      summarySheet.appendRow([
+      return [
         issue,
-        recipients,
-        opens,
-        clicks,
-        recipients ? opens / recipients : 0,
-        recipients ? clicks / recipients : 0,
+        b.recipients,
+        b.opens,
+        b.clicks,
+        b.recipients ? b.opens / b.recipients : 0,
+        b.recipients ? b.clicks / b.recipients : 0,
         topLink,
-      ]);
+      ];
     });
-
-  Logger.log("Rebuilt EngagementSummary for %s issue(s).", Object.keys(byIssue).length);
+  writeTable_(prop_("SUMMARY_TAB"), header, rows, { textCols: [0], percentCols: [4, 5] });
+  Logger.log("Rebuilt EngagementSummary for %s issue(s).", rows.length);
   return byIssue;
+}
+
+// Merges EmailEvents and (when GA_PROPERTY_ID is set) GA4 into
+// { byToken: {token: {issue: {opened, clicked, links: {linkId: n}}}}, lastSeen: {token: "YYYY-MM-DD"} },
+// keeping only (token, issue) pairs with a "sent" row and dropping test-send tokens.
+// Keys come from request-derived data, so every map is prototype-free and every
+// token/issue/link id is shape-validated before use.
+function collectEngagement_() {
+  var byToken = Object.create(null);
+  var lastSeen = Object.create(null);
+  function entry(token, issue) {
+    var perIssue = byToken[token] || (byToken[token] = Object.create(null));
+    return (
+      perIssue[issue] ||
+      (perIssue[issue] = {
+        sent: false,
+        opened: false,
+        clicked: false,
+        links: Object.create(null),
+        seen: "",
+      })
+    );
+  }
+  function seen(e, day) {
+    if (day > e.seen) e.seen = day;
+  }
+
+  var events = getOrCreateSheet_(prop_("EVENTS_TAB"), [
+    "timestamp",
+    "event",
+    "token",
+    "issue",
+    "link",
+  ])
+    .getDataRange()
+    .getValues();
+  for (var i = 1; i < events.length; i++) {
+    var type = String(events[i][1] || "");
+    var token = String(events[i][2] || "");
+    var issue = normalizeIssueCell_(events[i][3]);
+    var link = String(events[i][4] || "");
+    if (!isValidToken_(token) || !isValidIssueId_(issue)) continue;
+    var e = entry(token, issue);
+    if (type === "sent") e.sent = true;
+    if (type === "open") e.opened = true;
+    if (type === "click") {
+      e.clicked = true;
+      if (isValidLinkId_(link)) e.links[link] = (e.links[link] || 0) + 1;
+    }
+    if ((type === "open" || type === "click") && events[i][0] instanceof Date)
+      seen(e, ymd_(events[i][0]));
+  }
+
+  var propertyId = prop_("GA_PROPERTY_ID");
+  var gaRows = propertyId ? fetchGaEmailEvents_(propertyId) : [];
+  gaRows.forEach(function (row) {
+    var hit = parseEmailHit_(row.event, row.pageLocation);
+    if (!hit) return;
+    var e = entry(hit.token, hit.issue);
+    if (hit.kind === "open") e.opened = true;
+    else {
+      e.clicked = true;
+      if (hit.link) e.links[hit.link] = (e.links[hit.link] || 0) + row.count;
+    }
+    if (/^\d{8}$/.test(row.date)) {
+      seen(e, row.date.slice(0, 4) + "-" + row.date.slice(4, 6) + "-" + row.date.slice(6));
+    }
+  });
+
+  Object.keys(byToken).forEach(function (token) {
+    var perIssue = byToken[token];
+    Object.keys(perIssue).forEach(function (issue) {
+      if (!perIssue[issue].sent || isTestToken_(token)) delete perIssue[issue];
+    });
+    var kept = Object.keys(perIssue);
+    if (!kept.length) {
+      delete byToken[token];
+      return;
+    }
+    kept.forEach(function (issue) {
+      var day = perIssue[issue].seen;
+      if (day && (!lastSeen[token] || day > lastSeen[token])) lastSeen[token] = day;
+    });
+  });
+
+  return { byToken: byToken, lastSeen: lastSeen, gaEnabled: !!propertyId, gaRows: gaRows.length };
+}
+
+// GA4 rows for every email_open hit and email-link page view (anything whose
+// page_location carries rid=) since GA_START_DATE, via the Google Analytics Data API
+// advanced service (appsscript.json enables it, with the analytics.readonly scope).
+function fetchGaEmailEvents_(propertyId) {
+  var property = /^properties\//.test(propertyId) ? propertyId : "properties/" + propertyId;
+  var rows = [];
+  var limit = 10000;
+  for (var offset = 0; ; offset += limit) {
+    var report = AnalyticsData.Properties.runReport(
+      {
+        dateRanges: [{ startDate: prop_("GA_START_DATE"), endDate: "today" }],
+        dimensions: [{ name: "eventName" }, { name: "pageLocation" }, { name: "date" }],
+        metrics: [{ name: "eventCount" }],
+        dimensionFilter: {
+          andGroup: {
+            expressions: [
+              {
+                filter: {
+                  fieldName: "eventName",
+                  inListFilter: { values: ["email_open", "page_view"] },
+                },
+              },
+              {
+                filter: {
+                  fieldName: "pageLocation",
+                  stringFilter: { matchType: "CONTAINS", value: "rid=" },
+                },
+              },
+            ],
+          },
+        },
+        limit: limit,
+        offset: offset,
+      },
+      property
+    );
+    if (report.metadata && report.metadata.subjectToThresholding) {
+      Logger.log(
+        "GA4 applied data thresholds — some rows may be withheld. Admin → Reporting identity → " +
+          "Device-based removes them."
+      );
+    }
+    (report.rows || []).forEach(function (r) {
+      rows.push({
+        event: r.dimensionValues[0].value,
+        pageLocation: r.dimensionValues[1].value,
+        date: r.dimensionValues[2].value,
+        count: Number(r.metricValues[0].value) || 0,
+      });
+    });
+    if (!report.rows || offset + limit >= (Number(report.rowCount) || 0)) break;
+  }
+  return rows;
+}
+
+// One GA4 row → {kind: "open"|"click", token, issue, link} or null. Opens are
+// email_open hits on <site>/email/YYYY-MM/open; clicks are page views of
+// /issues/YYYY-MM/… whose URL carries rid (only email links add it). Anyone can send
+// GA4 a hit or visit a crafted URL, so everything is shape-validated here.
+function parseEmailHit_(eventName, pageLocation) {
+  var url = String(pageLocation || "");
+  var q = url.indexOf("?");
+  if (q === -1) return null;
+  var path = url.slice(0, q);
+  var params = Object.create(null);
+  url
+    .slice(q + 1)
+    .split("#")[0]
+    .split("&")
+    .forEach(function (pair) {
+      var eq = pair.indexOf("=");
+      try {
+        var k = decodeURIComponent(eq === -1 ? pair : pair.slice(0, eq));
+        params[k] = decodeURIComponent((eq === -1 ? "" : pair.slice(eq + 1)).replace(/\+/g, " "));
+      } catch (err) {
+        // malformed escape — ignore the pair
+      }
+    });
+  var token = params.rid || "";
+  if (!isValidToken_(token)) return null;
+  var m;
+  if (eventName === "email_open" && (m = /\/email\/(\d{4}-\d{2})\/open$/.exec(path))) {
+    return { kind: "open", token: token, issue: m[1], link: "" };
+  }
+  if (eventName === "page_view" && (m = /\/issues\/(\d{4}-\d{2})\//.exec(path))) {
+    var link = params.utm_content || "";
+    return { kind: "click", token: token, issue: m[1], link: isValidLinkId_(link) ? link : "" };
+  }
+  return null;
+}
+
+// Every Recipients row with a token (active or not, so history survives someone
+// leaving the list): {byToken: {token: {email, name, active}}, hasNames}.
+function recipientDirectory_() {
+  var rows = sheetRows_(prop_("RECIPIENTS_TAB"));
+  var byToken = Object.create(null);
+  if (!rows.length) return { byToken: byToken, hasNames: false };
+  var headers = rows[0].map(String).map(function (h) {
+    return h.trim().toLowerCase();
+  });
+  var emailCol = headers.indexOf(prop_("EMAIL_HEADER"));
+  var activeCol = headers.indexOf(prop_("ACTIVE_HEADER"));
+  var tokenCol = headers.indexOf(prop_("TOKEN_HEADER"));
+  var nameCol = headers.indexOf(prop_("NAME_HEADER"));
+  if (emailCol === -1 || tokenCol === -1) {
+    throw new Error(
+      'Recipients tab must include "email" and "token" columns (see ensureRecipientTokens).'
+    );
+  }
+  rows.slice(1).forEach(function (row) {
+    var token = String(row[tokenCol] || "").trim();
+    if (!token) return;
+    byToken[token] = {
+      email: String(row[emailCol] || "").trim(),
+      name: nameCol !== -1 ? String(row[nameCol] || "").trim() : "",
+      active: activeCol !== -1 && isTruthy_(row[activeCol]),
+    };
+  });
+  return { byToken: byToken, hasNames: nameCol !== -1 };
+}
+
+function issuesIn_(data) {
+  var set = Object.create(null);
+  Object.keys(data.byToken).forEach(function (token) {
+    Object.keys(data.byToken[token]).forEach(function (issue) {
+      set[issue] = true;
+    });
+  });
+  return Object.keys(set).sort();
+}
+
+// Reviewers' test sends use synthesized "test-…" tokens (reviewers_()).
+function isTestToken_(token) {
+  return /^test-/.test(token);
+}
+
+function ymd_(date) {
+  return (
+    date.getFullYear() +
+    "-" +
+    String(date.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(date.getDate()).padStart(2, "0")
+  );
+}
+
+// Clears a tab and writes header + rows in one setValues. Strings are defused
+// (sheetSafeValue_) since some come from GA4/request data, and textCols (issue ids
+// like "2026-10", which Sheets would otherwise turn into dates) are pinned to plain
+// text before the write; percentCols get a 0% format.
+function writeTable_(tabName, header, rows, opts) {
+  var sheet = getOrCreateSheet_(tabName, header);
+  sheet.clearContents();
+  var values = [header].concat(rows).map(function (row) {
+    return row.map(function (v) {
+      return typeof v === "string" ? sheetSafeValue_(v) : v;
+    });
+  });
+  sheet.getRange(1, 1, 1, header.length).setNumberFormat("@");
+  (opts.textCols || []).forEach(function (c) {
+    sheet.getRange(1, c + 1, values.length, 1).setNumberFormat("@");
+  });
+  if (rows.length) {
+    (opts.percentCols || []).forEach(function (c) {
+      sheet.getRange(2, c + 1, rows.length, 1).setNumberFormat("0%");
+    });
+  }
+  sheet.getRange(1, 1, values.length, header.length).setValues(values);
+  sheet.setFrozenRows(1);
 }

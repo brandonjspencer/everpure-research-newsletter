@@ -125,16 +125,40 @@ in `netlify/dashboard_theme.js`). Then `personalizeGaHtml_()` writes each recipi
   Outlook often blocks images. **Treat open counts as directional.**
 - **Test sends** add GA4's debug flag (`_dbg=1`) to the open hit. Check for it in **Realtime
   overview → Event count by Event name** — DebugView doesn't list these hits.
-- `EmailEvents` still gets one `sent` row per recipient, so `buildEngagementSummary()` keeps each
-  issue's recipient count; opens and clicks live in GA4, not the sheet.
+- `EmailEvents` still gets one `sent` row per recipient — the record of who each issue went to;
+  opens and clicks live in GA4, not the sheet.
 
-**Reading it** (GA4 → Explore → Free form): dimensions `Event name`, `Page location`, and
-`Session manual ad content` (the CTA); filter `Page location` contains `rid=`. Clicks are
-`page_view`s on `/issues/YYYY-MM/…`; opens are `email_open`s on `/email/YYYY-MM/open`. Match tokens to
-people only in the private Recipients sheet — the URL and GA4 only ever see the opaque token (GA4's
-terms forbid sending emails or names). Transcribe **aggregate numbers only** into
-`netlify/content/email_engagement.json` for the password-gated `/analytics/` page (see the site's
-`CLAUDE.md`). Caveats: a forwarded email credits the original recipient; tracker blockers undercount.
+### Engagement reports (private) — `buildRecipientEngagement()`
+
+A day or two after a send (GA4's standard data lags 24–48 hours), run **`buildRecipientEngagement()`**
+from the Apps Script editor. It merges `EmailEvents` with GA4 and rebuilds two tabs in the Recipients
+spreadsheet:
+
+- **`RecipientEngagement`** — one row per recipient: issues received, opened, and clicked; open and
+  click rate; last activity; links clicked; and a status column per issue (`clicked` / `opened` /
+  `not opened`, newest issue first). Names come from an optional `name` column in Recipients
+  (`NAME_HEADER`); otherwise the email identifies the row. Per-person "opened" is a hint, not proof —
+  Apple Mail pre-loads images, Outlook often blocks them, and a forwarded email credits the original
+  recipient. Clicks are solid.
+- **`EngagementSummary`** — one row per issue: recipients, unique opens/clicks, rates, top link
+  (`buildEngagementSummary()` rebuilds just this tab). Transcribe **aggregate numbers only** into
+  `netlify/content/email_engagement.json` for the `/analytics/` page.
+
+**Per-person data never leaves the spreadsheet.** `/analytics/` is public GitHub Pages from a public
+repo: its password only hides the page on screen, and anything it shows is in the page source and the
+repo's history. GA4 likewise only ever sees opaque tokens (its terms forbid emails or names).
+
+Rules: activity only counts for a recipient and issue with a `sent` row (only `send_()` writes those,
+so a crafted GA4 hit or a made-up `rid` can't add anyone); a click counts as an open; test sends
+(`test-…` tokens) are left out; every cell is formula-defused. Setup: set **`GA_PROPERTY_ID`** — the
+numeric id in GA4 **Admin → Property details**, not the `G-` id. `appsscript.json` enables the Google
+Analytics Data API advanced service with the read-only `analytics.readonly` scope, so the first run
+asks you to re-authorize once. If GA4 applies data thresholds the log says so (Admin → Reporting
+identity → Device-based removes them). Without `GA_PROPERTY_ID` the reports use `EmailEvents` only.
+
+For ad-hoc digging, GA4 → Explore → Free form with dimensions `Event name`, `Page location`, and
+`Session manual ad content` (the CTA), filtered on `Page location` contains `rid=`: clicks are
+`page_view`s on `/issues/YYYY-MM/…`, opens are `email_open`s on `/email/YYYY-MM/open`.
 
 ### Web App mode (legacy) — `TRACKING_BASE_URL`
 
