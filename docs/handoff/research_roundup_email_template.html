@@ -101,10 +101,10 @@
                       <tr>
                         <td class="hero-cta-cell" bgcolor="#D55D1D" style="background-color:#D55D1D;border-radius:4px;">
                           <!-- data-track-id opts this link into click tracking (see appsscript/Code.gs
-                               extractTrackedLinks_/personalizeHtml_); the Apps Script sender rewrites
-                               href per-recipient at send time only when tracking is enabled — this
-                               static href (with its utm_ params, for GA4 email attribution — bump
-                               utm_campaign every issue) is what ships if TRACKING_BASE_URL is unset. -->
+                               personalizeGaHtml_); when tracking is enabled the Apps Script sender adds
+                               utm_content=<this id> and the recipient's rid token to this href at send
+                               time. Keep the utm_ params here (GA4 email attribution — bump
+                               utm_campaign every issue); this static href is what ships untracked. -->
                           <a class="hero-cta-link" data-track-id="hero-read-issue" href="https://brandonjspencer.github.io/everpure-research-newsletter/issues/2026-06/default.html?utm_source=email&utm_medium=email&utm_campaign=issue-2026-06" style="display:inline-block;padding:13px 20px;font-family:'Familjen Grotesk', Arial, Helvetica, sans-serif;font-size:12px;font-weight:700;color:#FFF5E3;letter-spacing:0.11em;text-transform:uppercase;text-decoration:none;white-space:nowrap;">Read Issue &#8594;</a>
                         </td>
                       </tr>
