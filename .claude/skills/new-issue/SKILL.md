@@ -163,7 +163,8 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    - UX-tip emails use `dryRunUxTip` / `sendUxTipTest` / `sendUxTipBroadcast`.
 5. **If engagement tracking is enabled** (`GA_MEASUREMENT_ID` set — opt-in, see
    [appsscript/README.md](../../../appsscript/README.md#engagement-tracking-opens--clicks-opt-in)):
-   on the test send, confirm `email_open` appears in GA4 DebugView and a clicked link carries
+   on the test send, confirm `email_open` appears in GA4 Realtime overview (Event count by Event
+   name — not DebugView, which doesn't list these hits) and a clicked link carries
    `utm_content` + `rid`. A few days after the broadcast, run `buildEngagementSummary()` for the
    recipient count and read unique opens/clicks and the top CTA from GA4 Explore (filter
    `Page location` contains `rid=`), then transcribe them (**aggregate numbers only, never names or

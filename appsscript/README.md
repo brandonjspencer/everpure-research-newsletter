@@ -119,11 +119,12 @@ in `netlify/dashboard_theme.js`). Then `personalizeGaHtml_()` writes each recipi
 - **Opens:** a 1×1 `email_open` hit to GA4's collection endpoint (`google-analytics.com/g/collect`,
   the one gtag.js uses) with client id = the token and `page_location` =
   `<site>/email/YYYY-MM/open?rid=<token>` (a synthetic path, so opens never count toward the issue
-  page's users). GA4 documents no GET endpoint for email, so this is best-effort: Apple Mail
-  pre-loads images (false opens), Gmail caches after the first open (no repeat opens), Outlook often
-  blocks images, and GA4 may filter Google's image proxy as a bot. **Treat open counts as
-  directional.**
-- **Test sends** add `_dbg=1` to the open hit, so it shows in GA4 **Admin → DebugView**.
+  page's users). GA4 documents no GET endpoint for email, so this is best-effort — though a Gmail
+  test send on 2026-10-16 confirmed the hit gets through Gmail's image proxy and is counted. Apple
+  Mail pre-loads images (false opens), Gmail caches after the first open (no repeat opens), and
+  Outlook often blocks images. **Treat open counts as directional.**
+- **Test sends** add GA4's debug flag (`_dbg=1`) to the open hit. Check for it in **Realtime
+  overview → Event count by Event name** — DebugView doesn't list these hits.
 - `EmailEvents` still gets one `sent` row per recipient, so `buildEngagementSummary()` keeps each
   issue's recipient count; opens and clicks live in GA4, not the sheet.
 
@@ -153,9 +154,9 @@ so the pixel's response is an empty text body — invisible, since the `<img>` i
 
 **Verify before a real broadcast:** `dryRunIssue` first — it logs the tracking mode, the issue id, and
 the tracked link ids — then `sendIssueTest` to `REVIEWERS` only. In GA4 mode: open the test email in
-Gmail and look for `email_open` in DebugView, click a link and confirm the address carries
-`utm_content` and `rid` (and that GA4 Realtime shows the page view). Only then run
-`sendIssueBroadcast`.
+Gmail and look for `email_open` in GA4 **Realtime overview** (Event count by Event name), then click
+a link and confirm the address carries `utm_content` and `rid` and Realtime shows the page view. Only
+then run `sendIssueBroadcast`.
 
 ## Scaling notes
 

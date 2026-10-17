@@ -492,7 +492,9 @@ function trackingMode_() {
 // in the click path. Opens are a 1×1 hit to GA4's collection endpoint, the one
 // gtag.js itself uses: GA4 has no documented GET endpoint for email opens, so treat
 // these as directional (Apple Mail pre-loads images; Gmail caches after the first
-// open). `debug` (test sends) flags the hits for GA4 DebugView.
+// open). `debug` (test sends) adds GA4's _dbg flag. Verify opens in GA4 Realtime overview
+// (Event count by Event name): DebugView doesn't list these GET hits, but Realtime does —
+// confirmed with a Gmail test send on 2026-10-16, so Gmail's image proxy gets through.
 function personalizeGaHtml_(html, token, issueId, measurementId, debug, nowMs) {
   var out = String(html).replace(/<a\b[^>]*>/gi, function (tag) {
     var idMatch = /\bdata-track-id\s*=\s*["']([^"']+)["']/i.exec(tag);
