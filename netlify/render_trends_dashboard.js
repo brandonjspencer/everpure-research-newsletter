@@ -124,6 +124,27 @@ function displayName(s) {
   return fixAcronymCasing(String(s || "").replace(/\b(\d{1,3})\s+(\d{1,3})(\s+AI\b)/gi, "$1/$2$3"));
 }
 
+// Helio falls back to uploaded asset ids for variant names ("8d32272d 1c24 41a6 A547
+// 541bc61cab44"); those, and titles built from them, must never be shown as labels.
+function isOpaqueLabel(s) {
+  const parts = String(s || "")
+    .split(/\s+vs\.?\s+/i)
+    .filter(Boolean);
+  if (!parts.length) return false;
+  return parts.every((part) => {
+    const tokens = part.trim().split(/\s+/);
+    return (
+      tokens.length >= 3 &&
+      tokens.every((t) => /^[0-9a-f]{4,12}$/i.test(t)) &&
+      tokens.some((t) => /\d/.test(t))
+    );
+  });
+}
+
+function variantName(v, index) {
+  return isOpaqueLabel(v.test_name) ? `Variant ${index + 1}` : displayName(v.test_name);
+}
+
 // Tidy a comparison title: drop leading test-number prefixes ("191 "), collapse a
 // trailing version on the variant side ("…Page V1" → "v1"), and de-duplicate a
 // repeated multi-word prefix on the right of "vs" ("Home Page 50/25 AI vs Home Page
@@ -174,7 +195,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url, lead = "") {
           const score = v.metrics[m];
           if (typeof score !== "number") return "";
           const color = VARIANT_COLORS[vi % VARIANT_COLORS.length];
-          return `<div class="mc-row" title="${esc(displayName(v.test_name))} — ${esc(m)}: ${score}%"><div class="mc-track"><div class="mc-fill" style="width:${score}%;background:${color}"></div></div><span class="mc-val">${score}%</span></div>`;
+          return `<div class="mc-row" title="${esc(variantName(v, vi))} — ${esc(m)}: ${score}%"><div class="mc-track"><div class="mc-fill" style="width:${score}%;background:${color}"></div></div><span class="mc-val">${score}%</span></div>`;
         })
         .join("");
       return `<div class="mc-metric"><div class="mc-label">${esc(m.replace(/_/g, " "))}</div><div class="mc-bars">${rows}</div></div>`;
@@ -183,7 +204,7 @@ function comparisonChart(title, n, variants, metricKeys, key, url, lead = "") {
   const legend = vars
     .map((v, i) => {
       const sw = `<i style="background:${VARIANT_COLORS[i % VARIANT_COLORS.length]}"></i>`;
-      const name = esc(displayName(v.test_name));
+      const name = esc(variantName(v, i));
       const thumb = safeHref(v.thumbnail);
       // Hovering a variant with a screenshot pops its thumbnail (Helio compare page).
       if (!thumb) return `<span class="lg">${sw}${name}</span>`;
@@ -464,10 +485,11 @@ function helioComparisons(helioMetrics) {
       if (b.rank > cur.rep.rank) cur.rep = b;
     }
   }
-  return [...groups.values()].map(({ rep, rows }) => {
-    const title = succinctTitle(
-      rep.comparisonTitle || (rep.trusted ? rep.concept : rep.derivedTitle || rep.concept)
-    );
+  return [...groups.values()].flatMap(({ rep, rows }) => {
+    const raw =
+      rep.comparisonTitle || (rep.trusted ? rep.concept : rep.derivedTitle || rep.concept);
+    if (isOpaqueLabel(raw)) return [];
+    const title = succinctTitle(raw);
     return {
       key: rep.key,
       title,
@@ -500,6 +522,7 @@ function helioTitleById(helioMetrics) {
     const raw =
       e.comparison_title ||
       (conceptTrusted(e.concept, e.derived_title) ? e.concept : e.derived_title || e.concept);
+    if (isOpaqueLabel(raw)) continue;
     const title = succinctTitle(raw);
     if (title) out[id] = title;
   }
@@ -1138,6 +1161,7 @@ module.exports = {
   issuesSection,
   helioSection,
   helioComparisons,
+  isOpaqueLabel,
   comparisonFrontrunner,
   matchUxSignal,
   frontrunnerBlock,

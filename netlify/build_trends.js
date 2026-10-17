@@ -129,6 +129,10 @@ function loadUxSignals(root) {
     .map((s) => ({
       match: s.match.trim(),
       signal: s.signal.trim(),
+      ...(typeof s.title === "string" && s.title.trim() ? { title: s.title.trim() } : {}),
+      ...(s.variant_labels && typeof s.variant_labels === "object"
+        ? { variant_labels: s.variant_labels }
+        : {}),
       ...(typeof s.read === "string" && s.read.trim() ? { read: s.read.trim() } : {}),
       ...(typeof s.recommendation === "string" && s.recommendation.trim()
         ? { recommendation: s.recommendation.trim() }
@@ -219,6 +223,23 @@ function truncate(text, limit = 180) {
   const cut = t.slice(0, limit);
   const lastSpace = cut.lastIndexOf(" ");
   return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).replace(/[.,;:]$/, "") + "…";
+}
+
+// Helio names a compare's variants after uploaded asset ids, so some comparisons arrive
+// with no usable title or variant names. A ux_signals entry matched by compare_id can
+// supply both (`title`, `variant_labels` keyed by report id) as curated data.
+function applyHelioLabelOverrides(rows, uxSignals) {
+  const byCompare = new Map(
+    (uxSignals || []).filter((s) => s.title || s.variant_labels).map((s) => [s.match, s])
+  );
+  for (const row of rows) {
+    const s = byCompare.get(row.compare_id);
+    if (!s) continue;
+    if (s.title) row.comparison_title = s.title;
+    const label = s.variant_labels && s.variant_labels[row.test_id];
+    if (typeof label === "string" && label.trim()) row.test_name = label.trim();
+  }
+  return rows;
 }
 
 // Flatten a helio_evidence payload into one row per variant per comparison.
@@ -435,6 +456,7 @@ function buildTrends(root) {
       if (!seen.has(`${row.month}|${row.test_id}`)) helioMetrics.push(row);
     }
   }
+  applyHelioLabelOverrides(helioMetrics, loadUxSignals(root));
   // Backfill null concepts by cross-referencing the same test_id elsewhere: the
   // same Helio test is often linked from several slides, some of which inferred a
   // concept and some didn't. This rescues most "untitled" comparisons.
@@ -540,6 +562,7 @@ module.exports = {
   buildTrends,
   helioRows,
   loadUxSignals,
+  applyHelioLabelOverrides,
   thumbnailExpiry,
   normConfidence,
   normDecision,

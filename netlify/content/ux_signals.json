@@ -1,7 +1,47 @@
 {
-  "note": "Curated UX-metric signals for the dashboard — the quantitative analogue of voice_of_user.json. Each entry pairs a Helio comparison with the meaningful directional read of its scores. The dashboard renders the signal beneath that comparison's chart, alongside a variant 'Frontrunner' line it ALWAYS computes deterministically from the scores. So this file is for the editorial read, not the math. Re-curate each cycle (see the /new-issue skill, 'Dashboard signals'). Match a comparison by its compare_id (exact) or a case-insensitive substring of its displayed title. Cite real scores; never invent certainty. Source: Helio UX-metric compare pages, July 2026 cycle.",
-  "source": "Helio UX-metric compare pages · July 2026",
+  "note": "Curated UX-metric signals for the dashboard — the quantitative analogue of voice_of_user.json. Each entry pairs a Helio comparison with the meaningful directional read of its scores. The dashboard renders the signal beneath that comparison's chart, alongside a variant 'Frontrunner' line it ALWAYS computes deterministically from the scores. So this file is for the editorial read, not the math. Re-curate each cycle (see the /new-issue skill, 'Dashboard signals'). Match a comparison by its compare_id (exact) or a case-insensitive substring of its displayed title. Cite real scores; never invent certainty. When Helio names variants after raw asset ids, an entry matched by compare_id may also set `title` and `variant_labels` (keyed by the variant's report id) — verify each label against the variant's thumbnail before adding it. Sources: Helio UX-metric compare pages, July and October 2026 cycles.",
+  "source": "Helio UX-metric compare pages · July & October 2026",
   "signals": [
+    {
+      "match": "cmv5oxgs4000004jvbjvm2hys",
+      "title": "Platform Menu: Data Management vs Our Platform",
+      "variant_labels": {
+        "01M4RFWSTPXMAWKNH0NS8S2HYZ": "A · Data Management",
+        "01M4RFWV7PA773DTSZ9HTPCJRY": "B · Our Platform, AI Data Ready first",
+        "01M4RFWVY579SHVNJFJB1SGC4S": "C · Our Platform, EDC first",
+        "01M4RFWX2WEYDH4YCJMAGZFJXC": "D · Platform, merged with Products"
+      },
+      "signal": "“Data Management” leads Overall UX (70 vs 58 and 55 for the two “Our Platform” versions) on sentiment alone (91 vs 61 and 46) — task success is a near-tie (44 vs 40 and 46), so the name changes how people feel about the menu, not whether they can use it.",
+      "read": "mixed",
+      "recommendation": "Pick the name on positioning, not usability; if it stays “Our Platform”, lead with EDC — and rewrite item descriptions in plain terms either way."
+    },
+    {
+      "match": "cmuxdtdp0000004lbhgb67ivl",
+      "title": "Newsroom benchmark: Everpure vs Apple, Spotify, Microsoft, VAST",
+      "variant_labels": {
+        "01M3SM0G8X94YEHSP52B0WN7D8": "Everpure",
+        "01M3STKPB42ZD2M8MYSZKN0EBJ": "Apple",
+        "01M3STNQ7AD43WMQWNH61MMNTW": "Spotify",
+        "01M3STP5JN1MFN1PRJZ6MM572H": "Microsoft",
+        "01M3STPH4QZX62KR64B61A1SXS": "VAST Data"
+      },
+      "signal": "Everpure's newsroom draws the highest Intent of the five (63) but the lowest comprehension (68, against 79 for Apple and Spotify) and the lowest overall score (57) — the top of the page doesn't say who Everpure is or which story matters most.",
+      "read": "mixed",
+      "recommendation": "Add one clear lead story, a line saying who Everpure is, and a visible topic row and search — then re-test against this baseline."
+    },
+    {
+      "match": "cmv9puqjn000004kxvhyihylg",
+      "title": "Remanufactured storage: Cisco, HPE and IBM programs",
+      "variant_labels": {
+        "01M4VK90RH27PBY983A3F2ZB68": "Cisco Refresh",
+        "01M4VK95NVC6PHRXZHNRR6C71B": "HPE Renew",
+        "01M4VK9AJDNACZ0K6E8MPHKCQ0": "IBM Certified Pre-Owned",
+        "01M4VK9F573KY39XJ8XVA1D8Y5": "Everpure site (find the program)"
+      },
+      "signal": "All three competitor programs read clearly (comprehension 70–78) but drive little Intent (18–32) — buyers want price, performance and warranty compared with new before they act. On Everpure's own site, task success for finding the program is just 33.",
+      "read": "mixed",
+      "recommendation": "Give the program its own named line in the Products menu and lead its page with what the warranty and support cover."
+    },
     {
       "match": "cmqtr6paj000004l7iljnh7re",
       "signal": "Across four EDC variants, the EDC Page direction leads (+8 avg), with Sentiment the biggest mover (+18) — the redesign direction is working, and the assessment framing is starting to land in the verbatims.",
