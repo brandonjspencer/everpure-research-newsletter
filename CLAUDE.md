@@ -83,7 +83,11 @@ not invent certainty beyond the evidence.
 (`analyticsSnippet()` in `netlify/dashboard_theme.js`, spliced into every HTML-producing renderer's
 `<head>` — no-op until a real Measurement ID replaces the `GA_MEASUREMENT_ID` placeholder); GA4's own
 console is the dashboard for it, there's no on-site reflection. Email open/click tracking is
-per-recipient and opt-in via the Apps Script sender's `TRACKING_BASE_URL` Script Property — see
+per-recipient and opt-in via the Apps Script sender's `GA_MEASUREMENT_ID` Script Property: tracked
+links go straight to the frozen issue with the recipient's opaque token (`rid`) + `utm_content`, and
+opens are a GA4 collection hit — so it all lands in GA4, with no redirect or sign-in in the click path.
+(The older `TRACKING_BASE_URL` Web App mode can't work here: the Pure Workspace won't allow "Anyone"
+access.) See
 [appsscript/README.md "Engagement tracking"](appsscript/README.md#engagement-tracking-opens--clicks-opt-in).
 Its **aggregate-only** output (no names/emails) is transcribed monthly into
 `netlify/content/email_engagement.json` (same data-not-code pattern as the dashboard signals above)

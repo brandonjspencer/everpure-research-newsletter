@@ -161,11 +161,14 @@ issue for freeze. Do not proceed to Phase 5 without explicit approval.**
    - **Ask the user to approve the broadcast. Do not broadcast without explicit approval.**
    - **Broadcast**: `sendIssueBroadcast` (full active list, batched, suppression-filtered).
    - UX-tip emails use `dryRunUxTip` / `sendUxTipTest` / `sendUxTipBroadcast`.
-5. **If engagement tracking is enabled** (`TRACKING_BASE_URL` set — opt-in, see
+5. **If engagement tracking is enabled** (`GA_MEASUREMENT_ID` set — opt-in, see
    [appsscript/README.md](../../../appsscript/README.md#engagement-tracking-opens--clicks-opt-in)):
-   a few days after the broadcast, run `buildEngagementSummary()` from the Apps Script editor, then
-   transcribe that issue's row (recipients, unique opens/clicks, rates, top link — **aggregate
-   numbers only, never names**) into `netlify/content/email_engagement.json`, alongside the
+   on the test send, confirm `email_open` appears in GA4 Realtime overview (Event count by Event
+   name — not DebugView, which doesn't list these hits) and a clicked link carries
+   `utm_content` + `rid`. A few days after the broadcast, run `buildEngagementSummary()` for the
+   recipient count and read unique opens/clicks and the top CTA from GA4 Explore (filter
+   `Page location` contains `rid=`), then transcribe them (**aggregate numbers only, never names or
+   tokens**) into `netlify/content/email_engagement.json`, alongside the
    [Dashboard signals](#dashboard-signals-monthly-re-curation) re-curation. This feeds the public,
    password-gated `/analytics/` page.
 

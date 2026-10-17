@@ -19,15 +19,22 @@
  *   sendIssueBroadcast    — issue email to the full active list (batched)
  *   dryRunUxTip / sendUxTipTest / sendUxTipBroadcast — same for a UX tip
  *
- * Engagement tracking (opens/clicks) is OPT-IN: it only activates once the
- * TRACKING_BASE_URL Script Property is set (the deployed Web App's /exec
- * URL — see README.md "Engagement tracking"). Until then, send_() behaves
- * exactly as before: one batched MailApp call per BATCH_SIZE recipients,
- * identical html for everyone. Once TRACKING_BASE_URL is set, send_() sends
- * ONE call per recipient instead, each with a personalized open pixel and
- * per-recipient tracked-link redirects — real per-recipient identity is the
- * whole point, which a shared batch body can't carry. See
- * ensureRecipientTokens() / doGet() / buildEngagementSummary() below.
+ * Engagement tracking (opens/clicks) is OPT-IN, in one of two modes (see
+ * README.md "Engagement tracking"):
+ *   - GA4 (GA_MEASUREMENT_ID set — preferred): each tracked link goes straight
+ *     to the site with the recipient's opaque token (rid) and the link id
+ *     (utm_content) added, so GA4 records the visit; opens are a 1×1 hit to
+ *     GA4's collection endpoint. Nothing sits in the click path, so there's no
+ *     sign-in and external recipients get through.
+ *   - Web App (only TRACKING_BASE_URL set — legacy): links and the open pixel
+ *     route through doGet(). Only works if the Web App's access is "Anyone";
+ *     the Pure Storage Workspace only allows "Anyone within Pure Storage",
+ *     which puts a Google sign-in in front of every click.
+ * Until either is set, send_() sends one batched MailApp call per BATCH_SIZE
+ * recipients, identical html for everyone. Once tracking is on, it sends ONE
+ * call per recipient instead — real per-recipient identity is the whole
+ * point, which a shared batch body can't carry. See ensureRecipientTokens() /
+ * personalizeGaHtml_() / doGet() / buildEngagementSummary() below.
  */
 
 // ---- Config (defaults; override via Script Properties) ----------------------
@@ -53,7 +60,9 @@ var DEFAULTS = {
 //     - ISSUE_EMAIL_FOLDER_ID / UXTIP_EMAIL_FOLDER_ID  → auto-pick newest .html (recommended)
 //     - ISSUE_HTML_FILE_ID / UXTIP_HTML_FILE_ID         → pin an exact file (overrides the folder)
 //   Optional: ISSUE_HTML_PATTERN / UXTIP_HTML_PATTERN (name substring filter),
-//             UNSUBSCRIBE_URL, TRACKING_BASE_URL (deployed Web App /exec URL — opt-in tracking)
+//             UNSUBSCRIBE_URL,
+//             GA_MEASUREMENT_ID (the site's GA4 id, e.g. G-… — opt-in tracking via GA4),
+//             TRACKING_BASE_URL (deployed Web App /exec URL — legacy opt-in tracking)
 
 function prop_(key) {
   var v = PropertiesService.getScriptProperties().getProperty(key);
@@ -134,21 +143,36 @@ function send_(opts) {
 
   var batchSize = Math.max(1, parseInt(prop_("BATCH_SIZE"), 10) || 45);
   var pauseMs = parseInt(prop_("BATCH_PAUSE_MS"), 10) || 1200;
+  var trackingMode = trackingMode_();
   var trackingUrl = trackingBaseUrl_();
+  var gaId = prop_("GA_MEASUREMENT_ID");
 
   if (dryRun) {
-    var previewBatches = trackingUrl ? recipients.length : chunk_(recipients, batchSize).length;
+    var previewBatches = trackingMode ? recipients.length : chunk_(recipients, batchSize).length;
     Logger.log(
       "[DRY RUN] %s/%s — %s recipient(s), %s, %s. Quota remaining: %s.",
       type,
       mode,
       recipients.length,
-      trackingUrl
+      trackingMode
         ? "sent individually (tracking enabled)"
         : previewBatches + " batch(es) of " + batchSize,
-      trackingUrl ? "tracked" : "untracked",
+      trackingMode === "ga"
+        ? "tracked via GA4 " + gaId
+        : trackingMode === "webapp"
+          ? "tracked via the Web App"
+          : "untracked",
       remaining
     );
+    if (trackingMode) {
+      var trackedIds = Object.keys(extractTrackedLinks_(html));
+      Logger.log(
+        "Issue: %s. Tracked links: %s (%s).",
+        issueIdFromHtml_(html) || type,
+        trackedIds.length,
+        trackedIds.join(", ")
+      );
+    }
     Logger.log(
       "Sample: %s",
       recipients
@@ -161,13 +185,17 @@ function send_(opts) {
     return { dryRun: true, recipients: recipients.length, batches: previewBatches };
   }
 
-  // Tracking (opens/clicks) is opt-in: only activates once TRACKING_BASE_URL is
-  // set. Real per-recipient identity needs a personalized body, which a shared
-  // BCC batch can't carry, so this path sends one MailApp call per recipient.
-  if (trackingUrl) {
+  // Tracking (opens/clicks) is opt-in: only activates once GA_MEASUREMENT_ID or
+  // TRACKING_BASE_URL is set. Real per-recipient identity needs a personalized body,
+  // which a shared BCC batch can't carry, so this path sends one MailApp call per
+  // recipient. "sent" events still land in EmailEvents in both modes, so
+  // buildEngagementSummary() keeps each issue's recipient count.
+  if (trackingMode) {
     var issueId = issueIdFromHtml_(html) || type;
-    var linkMap = extractTrackedLinks_(html);
-    if (Object.keys(linkMap).length) saveTrackedLinks_(issueId, linkMap);
+    if (trackingMode === "webapp") {
+      var linkMap = extractTrackedLinks_(html);
+      if (Object.keys(linkMap).length) saveTrackedLinks_(issueId, linkMap);
+    }
     var missingTokens = recipients.filter(function (r) {
       return !r.token;
     }).length;
@@ -182,9 +210,11 @@ function send_(opts) {
     var trackedSent = 0;
     for (var i = 0; i < recipients.length; i++) {
       var recipient = recipients[i];
-      var personalized = recipient.token
-        ? personalizeHtml_(html, recipient.token, issueId, trackingUrl)
-        : html;
+      var personalized = !recipient.token
+        ? html
+        : trackingMode === "ga"
+          ? personalizeGaHtml_(html, recipient.token, issueId, gaId, mode === "test", Date.now())
+          : personalizeHtml_(html, recipient.token, issueId, trackingUrl);
       MailApp.sendEmail({
         to: recipient.email,
         subject: subject,
@@ -199,13 +229,20 @@ function send_(opts) {
     }
 
     Logger.log(
-      "Sent %s/%s to %s recipient(s) individually (tracked, issue=%s).",
+      "Sent %s/%s to %s recipient(s) individually (tracked via %s, issue=%s).",
       type,
       mode,
       trackedSent,
+      trackingMode === "ga" ? "GA4" : "the Web App",
       issueId
     );
-    return { dryRun: false, recipients: trackedSent, batches: trackedSent, tracked: true };
+    return {
+      dryRun: false,
+      recipients: trackedSent,
+      batches: trackedSent,
+      tracked: true,
+      trackingMode: trackingMode,
+    };
   }
 
   // Untracked path (unchanged): one batched MailApp call per BATCH_SIZE recipients,
@@ -438,6 +475,103 @@ function injectUnsubscribeFooter_(html, unsubscribeUrl) {
 
 function trackingBaseUrl_() {
   return prop_("TRACKING_BASE_URL");
+}
+
+// "ga" when GA_MEASUREMENT_ID is set (it wins over the Web App), "webapp" when only
+// TRACKING_BASE_URL is set, "" when tracking is off.
+function trackingMode_() {
+  if (prop_("GA_MEASUREMENT_ID")) return "ga";
+  if (trackingBaseUrl_()) return "webapp";
+  return "";
+}
+
+// GA4 mode. Each data-track-id link keeps its real destination and gains two
+// params: utm_content (the link id — which CTA) and rid (the recipient's opaque
+// token — never an email, which GA4's terms forbid). The site's gtag config records
+// both in page_location on page load, so no redirect, sign-in, or Sheets write sits
+// in the click path. Opens are a 1×1 hit to GA4's collection endpoint, the one
+// gtag.js itself uses: GA4 has no documented GET endpoint for email opens, so treat
+// these as directional (Apple Mail pre-loads images; Gmail caches after the first
+// open). `debug` (test sends) adds GA4's _dbg flag. Verify opens in GA4 Realtime overview
+// (Event count by Event name): DebugView doesn't list these GET hits, but Realtime does —
+// confirmed with a Gmail test send on 2026-10-16, so Gmail's image proxy gets through.
+function personalizeGaHtml_(html, token, issueId, measurementId, debug, nowMs) {
+  var out = String(html).replace(/<a\b[^>]*>/gi, function (tag) {
+    var idMatch = /\bdata-track-id\s*=\s*["']([^"']+)["']/i.exec(tag);
+    var hrefMatch = /\bhref\s*=\s*["']([^"']*)["']/i.exec(tag);
+    if (!idMatch || !hrefMatch) return tag;
+    var url = withQueryParams_(decodeEntities_(hrefMatch[1]), {
+      utm_content: idMatch[1],
+      rid: token,
+    });
+    return tag.replace(hrefMatch[0], function () {
+      return 'href="' + escapeAttr_(url) + '"';
+    });
+  });
+
+  var pixelUrl = gaOpenPixelUrl_(
+    measurementId,
+    token,
+    issueId,
+    siteRootFromHtml_(html),
+    debug,
+    nowMs
+  );
+  var pixel =
+    '<img src="' +
+    escapeAttr_(pixelUrl) +
+    '" width="1" height="1" alt="" style="display:none;border:0;" />';
+  return /<\/body>/i.test(out) ? out.replace(/<\/body>/i, pixel + "</body>") : out + pixel;
+}
+
+// The open hit: event email_open, client id = the recipient's token. page_location is
+// a synthetic /email/<issue>/open path on the site (carrying rid, like the click
+// side), so opens are filterable in GA4 without a custom dimension and never count
+// toward the issue page's own users. No session-start flags, so an open alone isn't
+// an engaged session.
+function gaOpenPixelUrl_(measurementId, token, issueId, siteRoot, debug, nowMs) {
+  var params = {
+    v: "2",
+    tid: measurementId,
+    cid: token,
+    sid: String(Math.floor((nowMs || 0) / 1000)),
+    sct: "1",
+    seg: "0",
+    en: "email_open",
+    dt: "Email open · " + issueId,
+    "ep.issue_id": issueId,
+  };
+  if (siteRoot)
+    params.dl = withQueryParams_(siteRoot + "/email/" + issueId + "/open", { rid: token });
+  if (debug) params._dbg = "1";
+  return withQueryParams_("https://www.google-analytics.com/g/collect", params);
+}
+
+// The site root the email links into (everything before /issues/YYYY-MM/), or "".
+function siteRootFromHtml_(html) {
+  var m = /(https?:\/\/[^"'\s<>]+?)\/issues\/\d{4}-\d{2}\//.exec(String(html || ""));
+  return m ? m[1] : "";
+}
+
+// Sets query params on a URL (replacing any already there), keeping the #fragment last.
+function withQueryParams_(url, params) {
+  var s = String(url);
+  var hashAt = s.indexOf("#");
+  var hash = hashAt === -1 ? "" : s.slice(hashAt);
+  var rest = hashAt === -1 ? s : s.slice(0, hashAt);
+  var qAt = rest.indexOf("?");
+  var base = qAt === -1 ? rest : rest.slice(0, qAt);
+  var pairs = (qAt === -1 ? "" : rest.slice(qAt + 1)).split("&").filter(function (p) {
+    return p && !Object.prototype.hasOwnProperty.call(params, p.split("=")[0]);
+  });
+  Object.keys(params).forEach(function (k) {
+    pairs.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k]));
+  });
+  return base + "?" + pairs.join("&") + hash;
+}
+
+function escapeAttr_(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 }
 
 // Every tracked email links to its frozen archive (CLAUDE.md requires this —
